@@ -78,14 +78,13 @@ namespace particles
     void SetParticleRender(ParticleRender* render);
 
     // Particle updating methods
-    virtual void UpdateUnified(float deltaTime);
-    virtual void UpdateSeparated(float deltaTime);
+    virtual void Update(float deltaTime) = 0;
 
     // Particle render updating method
-    virtual void UpdateRender();
+    virtual void UpdateRender() = 0;
 
     // Render method
-    virtual void Render();
+    virtual void Render() = 0;
 
   };
 

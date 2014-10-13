@@ -102,7 +102,7 @@ message("${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/DefaultParticleSystem
 
 # Build library
 add_library (${PROJECT_NAME} SHARED
-${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/DefaultParticleSystem.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/DefaultParticleSystem.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/ParticleRender.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/ParticleSystem.cpp
 )

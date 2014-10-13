@@ -31,7 +31,7 @@ namespace particles
     tparticleptr particle;
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-      particle = new Particle(counter, counter < initialParticlesNumber);
+      particle = new tparticle(counter, counter < initialParticlesNumber);
       counter++;
     }
 
@@ -89,47 +89,6 @@ namespace particles
     this->render = render;
   }
 
-  void ParticleSystem::UpdateUnified(float deltaTime)
-  {
-    int i = 0;
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-    {
-
-      // Emit each particle with its own emitter
-      emitters->at(particleEmitter[i])->Emit(i, deltaTime);
-
-      // Update each particle with its own updater
-      updaters->at(particleUpdater[i])->Update(i, deltaTime);
-
-      i++;
-    }
-  }
-
-  void ParticleSystem::UpdateSeparated(float deltaTime)
-  {
-    for (int i = 0; i < emitters->size(); i++)
-    {
-      emitters->at(i)->Update(deltaTime);
-    }
-
-    for (int i = 0; i < updaters->size(); i++)
-    {
-      updaters->at(i)->Update(deltaTime);
-    }
-
-  }
-
-  void ParticleSystem::UpdateRender()
-  {
-    this->sorter->Sort();
-
-    this->renderConfigurer->SetupRender();
-  }
-
-  void ParticleSystem::Render()
-  {
-    this->render->Paint();
-  }
 
 
 

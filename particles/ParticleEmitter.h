@@ -21,6 +21,9 @@ namespace particles
 
     ParticleCollection* particles;
 
+    int maxParticles;
+    float emissionRate;
+    bool loop;
 
     ParticleEmitter(ParticleCollection* particlesArray) : particles(particlesArray){}
     virtual ~ParticleEmitter(){}

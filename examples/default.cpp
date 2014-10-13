@@ -1,10 +1,11 @@
 #include <particles/ParticleSystem.h>
+#include <particles/default/DefaultParticleSystem.h>
 
-using namespace particles;
+using namespace particles::defaultParticleSystem;
 
 int main(int argc, char** argv)
 {
-  ParticleSystem ps(10, 10, 10, true);
+  DefaultGLParticleSystem ps(10, 10, 10, true);
 
   delete (&ps);
 }
