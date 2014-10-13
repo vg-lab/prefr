@@ -18,6 +18,14 @@ namespace particles
 
   class ParticleRender
   {
+public:
+    ParticleCollection* particles;
+
+    ParticleRender(ParticleCollection* particlesArray): particles(particlesArray){}
+
+    virtual ~ParticleRender();
+
+    virtual void Paint();
 
   };
 

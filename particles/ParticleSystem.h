@@ -27,15 +27,6 @@ using namespace utils;
 namespace particles
 {
 
-  class SortUnit
-  {
-  public:
-     int idx;
-     float distance;
-
-     static bool sort (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance > rhs.distance;}
-  };
-
   typedef InterpolationSet<float> vectortfloat;
   typedef InterpolationSet<vec3> vectortvec3;
   typedef InterpolationSet<vec4> vectortvec4;
@@ -66,39 +57,35 @@ namespace particles
     ParticleRenderConfig* renderConfigurer;
     ParticleRender* render;
 
+    vector<int> particleEmitter;
+    vector<int> particleUpdater;
+
     int aliveParticles;
     int maxParticles;
     float emissionRate;
 
     bool loop;
 
-    ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate, bool _loop = true)
-    :
-     emitters(nullptr_t)
-    , updaters(nullptr_t)
-    , sorter(nullptr_t)
-    , renderConfigurer(nullptr_t)
-    , render(nullptr_t)
-    , maxParticles (_maxParticles)
-    , emissionRate(_emissionRate)
-    , loop(_loop)
-    {
-      tparticleContainer* p = new tparticleContainer(maxParticles);
-      particles = new ParticleCollection(p, 0, maxParticles);
+    ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
+                   , bool _loop = true);
 
-      int counter = 0;
-      tparticleptr particle;
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      {
-        //TODO
-//        particle = new Particle(counter, vec3zero, )
-      }
+    virtual ~ParticleSystem();
 
-      aliveParticles = initialParticlesNumber;
-    }
+    void AddEmitter(ParticleEmitter* emitter);
+    void AddUpdater(ParticleUpdater* updater);
+    void SetSorter(ParticleSorter* sorter);
+    void SetRenderConfig(ParticleRenderConfig* renderConfig);
+    void SetParticleRender(ParticleRender* render);
 
-    void UpdateUnified(float deltaTime);
-    void UpdateSeparated(float deltaTime);
+    // Particle updating methods
+    virtual void UpdateUnified(float deltaTime);
+    virtual void UpdateSeparated(float deltaTime);
+
+    // Particle render updating method
+    virtual void UpdateRender();
+
+    // Render method
+    virtual void Render();
 
   };
 

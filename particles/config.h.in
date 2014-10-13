@@ -1,3 +1,8 @@
+#define particles_VERSION_MAJOR @particles_VERSION_MAJOR@
+#define particles_VERSION_MINOR @particles_VERSION_MINOR@
+#define particles_VERSION_PATCH @particles_VERSION_PATCH@
+#define particles_VERSION @particles_VERSION@
+
 #pragma once
 
 #define GLM_FORCE_RADIANS
@@ -34,8 +39,6 @@
 #include "Particle.h"
 #include "ElementCollection.hpp"
 
-static glm::vec3 vec3zero (0,0,0);
-static glm::vec3 vec3one (1,1,1);
 
 namespace particles
 {
@@ -43,6 +46,8 @@ namespace particles
   typedef tparticle* tparticleptr;
   typedef std::vector<tparticleptr> tparticleContainer;
   typedef utils::ElementCollection<tparticle> ParticleCollection;
+
+
 }
 
 // Use this to debug a single particle (surprisely not working after all)

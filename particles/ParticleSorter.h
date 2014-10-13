@@ -17,7 +17,7 @@ namespace particles
 {
   class ParticleSorter
   {
-
+public:
     ParticleCollection* particles;
 
     void Sort();

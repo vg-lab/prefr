@@ -17,7 +17,7 @@ namespace particles
 {
   class ParticleRenderConfig
   {
-
+public:
 
     void SetupRender();
   };

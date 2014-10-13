@@ -1,19 +1,33 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#   particles
+#   2014 (c) GMRV / Universidad Rey Juan Carlos
+#   gmrv@gmrv.es
+#   www.gmrv.es
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required(VERSION 2.8)
-
 project(particles)
 
+# Version numbers
+set(${PROJECT_NAME}_VERSION_MAJOR 0)
+set(${PROJECT_NAME}_VERSION_MINOR 1)
+set(${PROJECT_NAME}_VERSION_PATCH 0)
+set(${PROJECT_NAME}_VERSION
+    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH})
+
+# Add CMake dir to the module path
 list(APPEND CMAKE_MODULE_PATH 
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
-SET(SRCDIR src)
-SET(INCDIR src)
+# Standard configs like version, debug as default
+include(StandardConfig)
 
-FILE(GLOB particles_SOURCES ${SRCDIR}/*.cpp)
-FILE(GLOB particles_HEADERS ${INCDIR}/*.h)
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x") # -Wall
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${INCDIR})
+# Custom flags for Release and Debug
+set(CMAKE_CXX_FLAGS 
+  "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS_DEBUG 
+  "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 #########################################################
 # FIND GLEW
@@ -21,7 +35,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${IN
 
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
-message(${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_LIBRARY_DIRS})
 add_definitions(${GLEW_DEFINITIONS})
 if(NOT GLEW_FOUND)
@@ -39,8 +52,6 @@ add_definitions(${X11_DEFINITIONS})
 if(NOT X11_FOUND)
     message(ERROR " X11 not found!")
 endif(NOT X11_FOUND)
-
-
 
 #########################################################
 # FIND GLUT
@@ -87,7 +98,32 @@ endif(NOT CUDA_FOUND)
 
 find_package(FreeImage REQUIRED)
 
+message("${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/DefaultParticleSystem.cpp")
 
-add_executable(particles ${particles_SOURCES})
-# ${X11_LIBRARIES}
-TARGET_LINK_LIBRARIES(particles ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${CUDA_LIBRARIES} ${FREEIMAGE_LIBRARIES})
+# Build library
+add_library (${PROJECT_NAME} SHARED
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/DefaultParticleSystem.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/ParticleRender.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/ParticleSystem.cpp
+)
+set_target_properties(${CMAKE_PROJECT_NAME}
+  PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
+)
+
+# Install rules
+# Find files to install 
+file(GLOB DEPLOY_FILES_AND_DIRS 
+"${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*"
+)
+include(InstallLibrary)
+
+# Doxygen documentation generation
+include(Doxygen)
+
+# Examples subdirectory 
+add_subdirectory(examples)
+
+# Export library
+include(ExportLibrary)
+
+

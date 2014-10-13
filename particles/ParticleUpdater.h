@@ -18,14 +18,14 @@ namespace particles
   // This class updates the particles through the particle life cycle
   class ParticleUpdater
   {
-
+public:
     ParticleCollection* particles;
 
     // Updates collection particles
-    void Update();
+    void Update(float deltaTime);
 
     // Update a single particle by the given particle collection index
-    void Update(unsigned int i);
+    void Update(unsigned int i, float deltaTime);
 
   };
 }
