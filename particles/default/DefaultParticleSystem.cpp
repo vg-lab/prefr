@@ -14,18 +14,25 @@ namespace particles
     DefaultGLParticleSystem::DefaultGLParticleSystem (int initialParticlesNumber, int _maxParticles
                                                       , float _emissionRate, bool _loop)
     : ParticleSystem( initialParticlesNumber, _maxParticles, _emissionRate, _loop )
-    , vao( -1 )
-    , vboBillboardVertex( -1 )
-    , vboParticlesPositions( -1 )
-    , vboParticlesColor( -1 )
     , updateLoopUnified( true )
     {
       distances = new distanceArray(this->maxParticles);
+      renderConfig = new RenderConfig();
 
-      billboardVertices = new glvectorf( 4 );
-      particlePositions = new glvectorf( this->maxParticles * 4 );
-      particleColors = new glvectorch( this->maxParticles * 4 );
+      for (unsigned int i = 0; i < this->maxParticles; i++)
+      {
+        distances->at(i) = SortUnit();
+      }
 
+    }
+
+
+    void DefaultGLParticleSystem::Start()
+    {
+      for (unsigned int i = 0; i < aliveParticles; i++)
+      {
+        emitters->at(particleEmitter[i])->EmitFunction(i, true);
+      }
     }
 
     void DefaultGLParticleSystem::Update(float deltaTime)
@@ -40,32 +47,45 @@ namespace particles
 
     void DefaultGLParticleSystem::UpdateUnified(float deltaTime)
     {
-      int i = 0;
+      unsigned int i = 0;
+
+      // Set emitter delta time to calculate the number of particles to emit this frame
+      for (i = 0; i < emitters->size(); i++)
+      {
+        emitters->at(i)->StartEmission(deltaTime);
+      }
+
+      int accumulator = 0;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
+        i = ((tparticleptr) *it)->id;
 
         // Emit each particle with its own emitter
-        emitters->at(particleEmitter[i])->Emit(i, deltaTime);
+        emitters->at(particleEmitter[i])->EmitSingle(i);
 
         // Update each particle with its own updater
         updaters->at(particleUpdater[i])->Update(i, deltaTime);
 
-        i++;
+        accumulator += (*it)->Alive();
       }
+
+      this->aliveParticles = accumulator;
     }
 
     void DefaultGLParticleSystem::UpdateSeparated(float deltaTime)
     {
-      for (int i = 0; i < emitters->size(); i++)
+      for (unsigned int i = 0; i < emitters->size(); i++)
       {
-        emitters->at(i)->Update(deltaTime);
+        emitters->at(i)->EmitAll(deltaTime);
       }
 
-      for (int i = 0; i < updaters->size(); i++)
+      int accumulator = 0;
+      for (unsigned int i = 0; i < updaters->size(); i++)
       {
-        updaters->at(i)->Update(deltaTime);
+        accumulator += updaters->at(i)->Update(deltaTime);
       }
 
+      this->aliveParticles = accumulator;
     }
 
 

@@ -11,7 +11,6 @@
 #include "config.h"
 
 #include "ElementCollection.hpp"
-#include "InterpolationSet.hpp"
 
 #include "ParticleEmitter.h"
 #include "ParticleUpdater.h"
@@ -26,24 +25,6 @@ using namespace utils;
 
 namespace particles
 {
-
-  typedef InterpolationSet<float> vectortfloat;
-  typedef InterpolationSet<vec3> vectortvec3;
-  typedef InterpolationSet<vec4> vectortvec4;
-
-  typedef struct
-  {
-    float maxLife;
-    float dispersion;
-
-    vectortfloat size;
-
-    vec3 positionOffset;
-
-    vectortvec3 velocity;
-    vectortvec4 color;
-
-  } ParticlePrototype;
 
   class ParticleSystem
   {
@@ -60,8 +41,8 @@ namespace particles
     vector<int> particleEmitter;
     vector<int> particleUpdater;
 
-    int aliveParticles;
-    int maxParticles;
+    unsigned int aliveParticles;
+    unsigned int maxParticles;
     float emissionRate;
 
     bool loop;
@@ -76,6 +57,8 @@ namespace particles
     void SetSorter(ParticleSorter* sorter);
     void SetRenderConfig(ParticleRenderConfig* renderConfig);
     void SetParticleRender(ParticleRender* render);
+
+    virtual void Start() = 0;
 
     // Particle updating methods
     virtual void Update(float deltaTime) = 0;

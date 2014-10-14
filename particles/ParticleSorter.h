@@ -18,9 +18,25 @@ namespace particles
   class ParticleSorter
   {
 public:
+
+    enum SortOrder
+    {
+      Descending = 0,
+      Ascending = 1,
+    };
+
     ParticleCollection* particles;
 
-    void Sort();
+    ParticleSorter(ParticleCollection* particlesArray)
+    : particles(particlesArray)
+    {}
+
+    virtual ~ParticleSorter()
+    {
+      delete( particles );
+    }
+
+    virtual void Sort(SortOrder order = Descending) = 0;
   };
 }
 

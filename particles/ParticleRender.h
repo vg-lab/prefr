@@ -23,9 +23,9 @@ public:
 
     ParticleRender(ParticleCollection* particlesArray): particles(particlesArray){}
 
-    virtual ~ParticleRender();
+    virtual ~ParticleRender() = 0;
 
-    virtual void Paint();
+    virtual void Paint() = 0;
 
   };
 

@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include "ElementCollection.hpp"
+#include "ParticleEmitter.h"
 
 using namespace utils;
 
@@ -20,12 +21,24 @@ namespace particles
   {
 public:
     ParticleCollection* particles;
+    ParticlePrototype* particleBase;
+
+    ParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype)
+    : particles( particlesArray )
+    , particleBase( particlePrototype )
+    {}
+
+    virtual ~ParticleUpdater()
+    {
+      delete (particles);
+      delete (particleBase);
+    }
 
     // Updates collection particles
-    void Update(float deltaTime);
+    virtual int Update(float deltaTime) = 0;
 
     // Update a single particle by the given particle collection index
-    void Update(unsigned int i, float deltaTime);
+    virtual void Update(unsigned int i, float deltaTime) = 0;
 
   };
 }

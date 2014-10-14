@@ -19,7 +19,19 @@ namespace particles
   {
 public:
 
-    void SetupRender();
+    ParticleCollection* particles;
+
+    ParticleRenderConfig(ParticleCollection* particlesArray)
+    : particles(particlesArray)
+    {}
+
+
+    virtual ~ParticleRenderConfig()
+    {
+      delete( particles );
+    }
+
+    virtual void SetupRender(unsigned int aliveParticles = 0) = 0;
   };
 
 

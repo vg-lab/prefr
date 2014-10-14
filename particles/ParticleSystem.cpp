@@ -28,10 +28,10 @@ namespace particles
     particleUpdater.resize(maxParticles);
 
     int counter = 0;
-    tparticleptr particle;
+//    tparticleptr particle;
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-      particle = new tparticle(counter, counter < initialParticlesNumber);
+      particles->elements->at(counter) = new tparticle(counter, counter < initialParticlesNumber);
       counter++;
     }
 

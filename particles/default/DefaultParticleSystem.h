@@ -24,17 +24,17 @@ namespace particles
       int idx;
       float distance;
 
-      static bool sort (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance > rhs.distance;}
+      static bool sortDescending (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance > rhs.distance;}
+      static bool sortAscending (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance < rhs.distance;}
     };
 
     typedef vector<SortUnit> distanceArray;
     typedef vector<GLfloat> glvectorf;
     typedef vector<GLchar> glvectorch;
 
-    class DefaultGLParticleSystem : public ParticleSystem
+    class RenderConfig
     {
     public:
-      distanceArray* distances;
 
       // Triangles vertices
       glvectorf* billboardVertices;
@@ -47,12 +47,24 @@ namespace particles
       GLuint vboParticlesPositions;
       GLbyte vboParticlesColor;
 
+    };
+
+    class DefaultGLParticleSystem : public ParticleSystem
+    {
+    public:
+
+      distanceArray* distances;
+
+      RenderConfig* renderConfig;
+
       bool updateLoopUnified;
 
       DefaultGLParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
                    , bool _loop = true);
 
 
+
+      virtual void Start();
       virtual void Update(float deltaTime);
       virtual void UpdateUnified(float deltaTime);
       virtual void UpdateSeparated(float deltaTime);

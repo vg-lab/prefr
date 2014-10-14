@@ -51,7 +51,7 @@ namespace utils
       size = times.size();
     }
 
-    T& GetValue(float time)
+    T GetValue(float time)
     {
       if (size > 1)
       {
@@ -63,11 +63,11 @@ namespace utils
         {
           if (time >= times[i] && time < times[i+1])
           {
-            return (time * values[i] + (1.0f - time) * values[i+1].value);
+            return (time * values[i] + (1.0f - time) * values[i+1]);
           }
         }
 
-        return (time * values[size-2] + (1.0f - time) * values[size-1].value);
+        return (time * values[size-2] + (1.0f - time) * values[size-1]);
 
       }
       else

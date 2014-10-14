@@ -10,16 +10,57 @@
 
 #include "../config.h"
 
+#include "../ParticleEmitter.h"
+
 namespace particles
 {
   namespace defaultParticleSystem
   {
 
-    class DefaultParticleEmitter: public ParticleEmitter
+    static float invRandMax = 1.0f / RAND_MAX;
+
+    //**********************************************************
+    // Default Emitter
+    //**********************************************************
+
+    class DefaultParticleEmitter : public ParticleEmitter
     {
-      DefaultParticleEmitter (ParticleCollection* particlesArray, vec3 position);
+public:
 
 
+      DefaultParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
+                              , float _emissionRate, bool _loop);
+
+      ~DefaultParticleEmitter();
+
+      void EmitAll(float deltaTime);
+
+      int EmitSingle(unsigned int i);
+
+protected:
+
+      virtual void EmitFunction(unsigned int i, bool override = false) = 0;
+
+
+      float lifeThreshold;
+
+    };
+
+    //**********************************************************
+    // Point Emitter
+    //**********************************************************
+
+    class PointParticleEmitter : public DefaultParticleEmitter
+    {
+public:
+      vec3 position;
+
+      PointParticleEmitter(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
+                                   , float _emissionRate, bool _loop, vec3 position);
+
+
+    protected:
+      virtual void EmitFunction(unsigned int i, bool override);
     };
 
   }

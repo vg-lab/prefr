@@ -43,6 +43,9 @@ namespace particles
       : id(_id), alive(true), life(_life), size(_size), velocityModule(0.f), position(_pos)
       , velocity(_vel), color(_color),  distance(-1) {}
 
+
+    bool Alive(){return this->alive;}
+
   };
 
 }
