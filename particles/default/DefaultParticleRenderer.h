@@ -9,27 +9,30 @@
 #define DEFAULTPARTICLERENDERCONFIG_H_
 
 #include "../config.h"
+#include "../ParticleRenderer.h"
 #include "DefaultParticleSystem.h"
-#include "DefaultParticleRenderConfig.h"
+
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
 
-    class DefaultParticleRenderConfig : public ParticleRenderConfig
+    class DefaultParticleRenderer : public ParticleRenderer
     {
-
+    public:
       distanceArray* distances;
 
       RenderConfig* renderConfig;
 
-      DefaultParticleRenderConfig(ParticleCollection* particlesArray, distanceArray* distancesArray
+      DefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
                                   , RenderConfig* renderConfiguration);
 
-      virtual ~DefaultParticleRenderConfig();
+      virtual ~DefaultParticleRenderer();
 
       virtual void SetupRender(unsigned int aliveParticles = 0);
+
+      virtual void Paint(unsigned int aliveParticles = 0);
 
     };
 

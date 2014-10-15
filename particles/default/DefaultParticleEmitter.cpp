@@ -85,8 +85,8 @@ namespace particles
     {
       float theta, phi, vxz;
 
-      theta = asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
-      phi = clamp(rand()*invRandMax, 0.0f, 1.0f) * 4.0f * pi<float>();
+      theta = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * pi<float>();//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
+      phi = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * pi<float>();
       vxz = sinf(theta);
 
       return vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);

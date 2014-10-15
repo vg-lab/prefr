@@ -15,8 +15,8 @@
 #include "ParticleEmitter.h"
 #include "ParticleUpdater.h"
 #include "ParticleSorter.h"
-#include "ParticleRenderConfig.h"
-#include "ParticleRender.h"
+#include "ParticleRenderer.h"
+
 
 #include <vector>
 
@@ -35,8 +35,7 @@ namespace particles
     vector<ParticleEmitter*>* emitters;
     vector<ParticleUpdater*>* updaters;
     ParticleSorter* sorter;
-    ParticleRenderConfig* renderConfigurer;
-    ParticleRender* render;
+    ParticleRenderer* renderer;
 
     vector<int> particleEmitter;
     vector<int> particleUpdater;
@@ -55,8 +54,8 @@ namespace particles
     void AddEmitter(ParticleEmitter* emitter);
     void AddUpdater(ParticleUpdater* updater);
     void SetSorter(ParticleSorter* sorter);
-    void SetRenderConfig(ParticleRenderConfig* renderConfig);
-    void SetParticleRender(ParticleRender* render);
+    void SetRenderer(ParticleRenderer* renderConfig);
+
 
     virtual void Start() = 0;
 

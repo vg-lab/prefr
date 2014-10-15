@@ -19,10 +19,10 @@ namespace particles
       distances = new distanceArray(this->maxParticles);
       renderConfig = new RenderConfig();
 
-      for (unsigned int i = 0; i < this->maxParticles; i++)
-      {
-        distances->at(i) = SortUnit();
-      }
+//      for (unsigned int i = 0; i < this->maxParticles; i++)
+//      {
+//        distances->at(i) = new SortUnit();
+//      }
 
     }
 
@@ -33,11 +33,11 @@ namespace particles
       {
         emitters->at(particleEmitter[i])->EmitFunction(i, true);
       }
+
     }
 
     void DefaultGLParticleSystem::Update(float deltaTime)
     {
-
       if (updateLoopUnified)
         UpdateUnified(deltaTime);
       else
@@ -48,6 +48,7 @@ namespace particles
     void DefaultGLParticleSystem::UpdateUnified(float deltaTime)
     {
       unsigned int i = 0;
+
 
       // Set emitter delta time to calculate the number of particles to emit this frame
       for (i = 0; i < emitters->size(); i++)
@@ -88,17 +89,26 @@ namespace particles
       this->aliveParticles = accumulator;
     }
 
+    void DefaultGLParticleSystem::UpdateCameraDistances(vec3 cameraPosition)
+    {
+      unsigned int i = 0;
+      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+      {
+        i = ((tparticleptr) *it)->id;
+        static_cast<DefaultParticleUpdater*>(updaters->at(particleUpdater[i]))->UpdateCameraDistance(i, cameraPosition);
+      }
+    }
 
     void DefaultGLParticleSystem::UpdateRender()
     {
       this->sorter->Sort();
 
-      this->renderConfigurer->SetupRender();
+      static_cast<DefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
     }
 
     void DefaultGLParticleSystem::Render()
     {
-      this->render->Paint();
+      static_cast<DefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
     }
 
   }

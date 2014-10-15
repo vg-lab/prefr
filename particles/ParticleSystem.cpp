@@ -15,17 +15,19 @@ namespace particles
   : emitters(nullptr)
   , updaters(nullptr)
   , sorter(nullptr)
-  , renderConfigurer(nullptr)
-  , render(nullptr)
+  , renderer(nullptr)
   , maxParticles (_maxParticles)
   , emissionRate(_emissionRate)
   , loop(_loop)
   {
     tparticleContainer* p = new tparticleContainer(maxParticles);
-    particles = new ParticleCollection(p, 0, maxParticles);
+    particles = new ParticleCollection(p, p->begin(), p->end());
 
     particleEmitter.resize(maxParticles);
     particleUpdater.resize(maxParticles);
+
+    emitters = new vector<ParticleEmitter*>;
+    updaters = new vector<ParticleUpdater*>;
 
     int counter = 0;
 //    tparticleptr particle;
@@ -44,8 +46,7 @@ namespace particles
     delete(emitters);
     delete(updaters);
     delete(sorter);
-    delete(renderConfigurer);
-    delete(render);
+    delete(renderer);
   }
 
   void ParticleSystem::AddEmitter(ParticleEmitter* emitter)
@@ -58,7 +59,7 @@ namespace particles
 
     for (int i = start; i < end; i++)
     {
-      this->particleEmitter[i] = size;
+      this->particleEmitter[i] = size-1;
     }
 
   }
@@ -72,7 +73,7 @@ namespace particles
 
     for (int i = start; i < end; i++)
     {
-      this->particleUpdater[i] = size;
+      this->particleUpdater[i] = size-1;
     }
 
   }
@@ -80,13 +81,9 @@ namespace particles
   {
     this->sorter = sorter;
   }
-  void ParticleSystem::SetRenderConfig(ParticleRenderConfig* renderConfig)
+  void ParticleSystem::SetRenderer(ParticleRenderer* renderConfig)
   {
-    this->renderConfigurer = renderConfig;
-  }
-  void ParticleSystem::SetParticleRender(ParticleRender* render)
-  {
-    this->render = render;
+    this->renderer = renderConfig;
   }
 
 

@@ -44,6 +44,7 @@ namespace utils
           size = times.size();
           return;
         }
+        i++;
       }
 
       times.push_back(time);
@@ -65,6 +66,7 @@ namespace utils
           {
             return (time * values[i] + (1.0f - time) * values[i+1]);
           }
+          i++;
         }
 
         return (time * values[size-2] + (1.0f - time) * values[size-1]);

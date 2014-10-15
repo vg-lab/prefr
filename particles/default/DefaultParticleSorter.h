@@ -27,7 +27,7 @@ namespace particles
       , distances(distancesArray)
       {}
 
-      ~DefaultParticleSorter()
+      virtual ~DefaultParticleSorter()
       {
         delete( particles );
         delete( distances );

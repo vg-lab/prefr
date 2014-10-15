@@ -124,4 +124,5 @@ add_subdirectory(examples)
 # Export library
 include(ExportLibrary)
 
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${CUDA_LIBRARIES} ${FREEIMAGE_LIBRARIES})
 

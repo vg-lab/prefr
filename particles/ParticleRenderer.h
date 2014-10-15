@@ -15,25 +15,27 @@ using namespace utils;
 
 namespace particles
 {
-  class ParticleRenderConfig
+
+  class ParticleRenderer
   {
-public:
+  public:
 
     ParticleCollection* particles;
 
-    ParticleRenderConfig(ParticleCollection* particlesArray)
+    ParticleRenderer(ParticleCollection* particlesArray)
     : particles(particlesArray)
     {}
 
 
-    virtual ~ParticleRenderConfig()
+    virtual ~ParticleRenderer()
     {
       delete( particles );
     }
 
     virtual void SetupRender(unsigned int aliveParticles = 0) = 0;
-  };
 
+    virtual void Paint(unsigned int aliveParticles = 0) = 0;
+  };
 
 }
 

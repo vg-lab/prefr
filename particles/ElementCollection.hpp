@@ -25,7 +25,7 @@ namespace utils
       this->elements = elementsArray;
       this->start = elementsArray->begin() + _start;
       this->end = elementsArray->begin() + _end;
-      this->size = _start - _end;
+      this->size = _end - _start;
     }
 
     ElementCollection(vector<ELEM*>* elementsArray, typename vector<ELEM*>::iterator _start, typename vector<ELEM*>::iterator _end)
@@ -33,12 +33,33 @@ namespace utils
       this->elements = elementsArray;
       this->start = _start;
       this->end = _end;
-      this->size = _start - _end;
+      this->size = _end - _start;
     }
 
-    ELEM* GetElement (unsigned int i)
+    ElementCollection(ElementCollection* other, unsigned int _start, unsigned int _end)
+    {
+      this->elements = other->elements;
+      this->start = other->elements->begin() + _start;
+      this->end = other->elements->begin() + _end;
+      this->size = _end - _start;
+    }
+
+    ElementCollection(ElementCollection* other, typename vector<ELEM*>::iterator _start, typename vector<ELEM*>::iterator _end)
+    {
+      this->elements = other->elements;
+      this->start = _start;
+      this->end = _end;
+      this->size = _end - _start;
+    }
+
+    ELEM* GetElementLocal (unsigned int i)
     {
       return this->elements->at(this->start + i);
+    }
+
+    ELEM* GetElement( unsigned int i)
+    {
+      return this->elements->at(i);
     }
 
   };

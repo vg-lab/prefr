@@ -57,6 +57,7 @@ namespace particles
 
         current->position += current->velocity * current->velocityModule * deltaTime;
 
+//        std::cout << current->position.x << " " << current->position.y << " " << current->position.z << std::endl;
       }
     }
 

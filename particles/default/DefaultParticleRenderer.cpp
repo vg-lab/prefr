@@ -5,7 +5,7 @@
  *      Author: sergio
  */
 
-#include "DefaultParticleRenderConfig.h"
+#include "DefaultParticleRenderer.h"
 
 namespace particles
 {
@@ -13,9 +13,9 @@ namespace particles
   {
 
 
-    DefaultParticleRenderConfig::DefaultParticleRenderConfig(ParticleCollection* particlesArray, distanceArray* distancesArray
+    DefaultParticleRenderer::DefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
                                                              , RenderConfig* renderConfiguration)
-    : ParticleRenderConfig( particlesArray )
+    : ParticleRenderer( particlesArray )
     , distances( distancesArray)
     , renderConfig( renderConfiguration)
     {
@@ -57,13 +57,12 @@ namespace particles
 
     }
 
-    DefaultParticleRenderConfig::~DefaultParticleRenderConfig()
+    DefaultParticleRenderer::~DefaultParticleRenderer()
     {
       delete( particles );
     }
 
-
-    void DefaultParticleRenderConfig::SetupRender(unsigned int aliveParticles)
+    void DefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
     {
       tparticleptr currentParticle;
       int idx;
@@ -96,6 +95,33 @@ namespace particles
       glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLbyte) * aliveParticles * 4, &renderConfig->particleColors->front());
 
 
+    }
+
+    void DefaultParticleRenderer::Paint(unsigned int aliveParticles)
+    {
+      // Bind vertices
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void *) 0);
+
+
+        glVertexAttribDivisor(0, 0);
+        glVertexAttribDivisor(1, 1);
+        glVertexAttribDivisor(2, 1);
+
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, aliveParticles);
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
     }
 
   }
