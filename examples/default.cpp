@@ -277,18 +277,22 @@ int main(int argc, char** argv)
 
   makeProjectionMatrix();
 
-  int maxParticles;
-  if (argc == 2)
+  int maxParticles = 10;
+  int maxEmitters = 1;
+
+  if (argc >= 2)
     maxParticles = atoi(argv[1]);
-  else
-    maxParticles = 10;
+
+  if (argc >= 3)
+    maxEmitters = atoi(argv[2]);
+
 
 
   ps = new DefaultGLParticleSystem(10, maxParticles, 0.5f, true);
 
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
-  prototype->maxLife = 10.0f;
+  prototype->maxLife = 5.0f;
   prototype->color.Insert(0.0f, vec4(0, 127, 127, 0));
   prototype->color.Insert(1.0f, vec4(127, 0, 127, 0));
 
@@ -299,14 +303,30 @@ int main(int argc, char** argv)
 
   std::cout << "Created prototype." << std::endl;
 
-  ParticleCollection* colEmitter = new ParticleCollection(ps->particles, 0, maxParticles);
+  ParticleCollection* colEmitter;
+
   ParticleCollection* colUpdater = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colSorter = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colRenderer = new ParticleCollection(ps->particles, 0, maxParticles);
 
   std::cout << "Created collections" << std::endl;
 
-  PointParticleEmitter* emitter = new PointParticleEmitter(colEmitter, prototype, 0.5f, true, vec3(0,0,0));
+  PointParticleEmitter* emitter;
+
+
+  int particlesPerEmitter = maxParticles / maxEmitters;
+
+  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
+
+  for (unsigned int i = 0; i < maxEmitters; i++)
+  {
+    colEmitter = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
+    std::cout << "Creating emitter " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+    emitter = new PointParticleEmitter(colEmitter, prototype, 0.5f, true, vec3(i * 10, 0, 0));
+    ps->AddEmitter(emitter);
+  }
+
+
   std::cout << "Created emitter" << std::endl;
   DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype, ps->distances);
   std::cout << "Created updater" << std::endl;
@@ -317,7 +337,7 @@ int main(int argc, char** argv)
   std::cout << "Created systems" << std::endl;
 
 
-  ps->AddEmitter(emitter);
+
   ps->AddUpdater(updater);
   ps->SetSorter(sorter);
   ps->SetRenderer(renderer);

@@ -67,7 +67,7 @@ namespace particles
   {
     this->updaters->push_back(updater);
 
-    int size = this->emitters->size();
+    int size = this->updaters->size();
     int start = updater->particles->start - this->particles->start;
     int end = updater->particles->end - this->particles->start;
 
