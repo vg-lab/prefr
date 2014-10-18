@@ -13,6 +13,7 @@
 
 #include "DefaultParticleUpdater.h"
 #include "DefaultParticleRenderer.h"
+#include "DefaultParticleSorter.h"
 
 using namespace std;
 using namespace particles;

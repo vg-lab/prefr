@@ -95,7 +95,7 @@ namespace particles
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
         i = ((tparticleptr) *it)->id;
-        static_cast<DefaultParticleUpdater*>(updaters->at(particleUpdater[i]))->UpdateCameraDistance(i, cameraPosition);
+        static_cast<DefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
       }
     }
 

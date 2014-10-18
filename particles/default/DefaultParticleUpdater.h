@@ -29,8 +29,7 @@ public:
       virtual int Update(float deltaTime);
       virtual void Update(unsigned int i, float deltaTime);
 
-      void UpdateCameraDistance(vec3 cameraPosition);
-      void UpdateCameraDistance(unsigned int i, vec3 cameraPosition);
+
     };
 
 

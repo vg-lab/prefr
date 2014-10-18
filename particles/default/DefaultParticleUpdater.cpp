@@ -61,21 +61,7 @@ namespace particles
       }
     }
 
-    void DefaultParticleUpdater::UpdateCameraDistance(vec3 cameraPosition)
-    {
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      {
-        UpdateCameraDistance((*it)->id, cameraPosition);
-      }
-    }
 
-    void DefaultParticleUpdater::UpdateCameraDistance(unsigned int i, vec3 cameraPosition)
-    {
-      tparticleptr current = particles->elements->at(i);
-
-      distances->at(i).idx = current->id;
-      distances->at(i).distance = current->Alive() ?  (current->position - cameraPosition).length() : -1;
-    }
   }
 
 }

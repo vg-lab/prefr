@@ -46,7 +46,7 @@ bool emit = true;
 
 void initShaders()
 {
-  particlesShader = new CShader(false, false, "/home/sgalindo/development/particles/particles/default/shd/particle.vert", "/home/sgalindo/development/particles/particles/default/shd/particle.frag");
+  particlesShader = new CShader(false, false, "../particles/default/shd/particle.vert", "../particles/default/shd/particle.frag");
 }
 
 // Camera Movement

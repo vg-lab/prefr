@@ -96,14 +96,34 @@ if(NOT CUDA_FOUND)
     message(ERROR " CUDA not found!")
 endif(NOT CUDA_FOUND)
 
+#########################################################
+# FIND Thrust
+#########################################################
+find_package(CUDAThrust)
+include_directories(${CUDATHRUST_INCLUDE_DIRS})
+link_directories(${CUDATHRUST_LIBRARY_DIRS})
+add_definitions(${CUDATHRUST_DEFINITIONS})
+if(NOT CUDATHRUST_FOUND)
+    message(ERROR " CUDATHRUST not found!")
+endif(NOT CUDATHRUST_FOUND)
+
 find_package(FreeImage REQUIRED)
 
 FILE(GLOB particles_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/*.cpp)
 
-# Build library
-add_library (${PROJECT_NAME} SHARED
-${particles_SOURCES}
-)
+if(NOT CUDA_FOUND)
+	# Build library
+	add_library (${PROJECT_NAME} SHARED
+		${particles_SOURCES}
+	)
+else(CUDA_FOUND)	
+	CUDA_ADD_LIBRARY(${PROJECT_NAME} SHARED
+		${particles_SOURCES}
+		particles/cuda/ThrustParticleSorter.cpp
+	OPTIONS -arch sm_10
+	)
+endif(NOT CUDA_FOUND)
+
 set_target_properties(${CMAKE_PROJECT_NAME}
   PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
 )
@@ -124,5 +144,7 @@ add_subdirectory(examples)
 # Export library
 include(ExportLibrary)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${CUDA_LIBRARIES} ${FREEIMAGE_LIBRARIES})
+
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${CUDA_LIBRARIES} ${FREEIMAGE_LIBRARIES} ${CUDATHRUST_LIBRARIES})
 
