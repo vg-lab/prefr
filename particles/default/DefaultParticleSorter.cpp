@@ -29,8 +29,10 @@ namespace particles
     {
       tparticleptr current = particles->elements->at(i);
 
-      distances->at(i).Id() = current->id;
-      distances->at(i).Distance() = current->Alive() ?  (current->position - cameraPosition).length() : -1;
+      distances->ids->at(i) = current->id;
+//      distances->elements->at(i).id = &distances->ids->at(i);
+      distances->distances->at(i) = current->Alive() ?  (current->position - cameraPosition).length() : -1;
+//      distances->elements->at(i).distance = &distances->distances->at(i);
     }
 
   }
