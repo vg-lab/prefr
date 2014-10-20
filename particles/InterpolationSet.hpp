@@ -20,7 +20,7 @@ namespace utils
   template <class T>
   class InterpolationSet
   {
-  private:
+  public:
 
     vector<float> times;
     vector<T> values;
@@ -50,26 +50,36 @@ namespace utils
       times.push_back(time);
       values.push_back(value);
       size = times.size();
+
     }
 
     T GetValue(float time)
     {
-      if (size > 1)
+      if (size > 1 && time > 0.0f)
       {
         assert(time >= 0 && time <= 1.0f);
 
         unsigned int i = 0;
 
-        while (i < size-1)
+        while (time > times[i+1] && i < times.size()-1)
         {
-          if (time >= times[i] && time < times[i+1])
-          {
-            return (time * values[i] + (1.0f - time) * values[i+1]);
-          }
           i++;
         }
 
-        return (time * values[size-2] + (1.0f - time) * values[size-1]);
+//        time = (time - times[i]) / (times[i+1] - times[i]);
+
+        return (time * values[i] + (1.0f - time) * values[i+1]);
+//
+//        while (i < size-1)
+//        {
+//          if (time >= times[i] && time < times[i+1])
+//          {
+//            return (time * values[i] + (1.0f - time) * values[i+1]);
+//          }
+//          i++;
+//        }
+//
+//        return (time * values[size-2] + (1.0f - time) * values[size-1]);
 
       }
       else

@@ -298,8 +298,16 @@ int main(int argc, char** argv)
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
   prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, vec4(0, 127, 127, 0));
-  prototype->color.Insert(1.0f, vec4(127, 0, 127, 0));
+  prototype->color.Insert(0.0f, particles::RGBToHSV(vec4(0, 0, 255, 0)));
+  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.8f, particles::RGBToHSV(vec4(0, 255, 0, 0)));
+  prototype->color.Insert(1.0f, particles::RGBToHSV(vec4(255, 0, 0, 0)));
+
+  for (int i = 0; i < prototype->color.size; i++)
+  {
+    glm::vec4 c = prototype->color.values[i];
+    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
+  }
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(0.0f, 15.0f);

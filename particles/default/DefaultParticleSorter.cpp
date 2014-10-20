@@ -31,7 +31,7 @@ namespace particles
 
       distances->ids->at(i) = current->id;
 //      distances->elements->at(i).id = &distances->ids->at(i);
-      distances->distances->at(i) = current->Alive() ?  (current->position - cameraPosition).length() : -1;
+      distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
 //      distances->elements->at(i).distance = &distances->distances->at(i);
     }
 

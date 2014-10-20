@@ -49,9 +49,9 @@ namespace particles
       if (current->Alive())
       {
 
-        refLife = clamp(current->life / particleBase->maxLife, 0.0f, 1.0f);
+        refLife = clamp((current->life - particleBase->minLife) / (particleBase->maxLife - particleBase->minLife), 0.0f, 1.0f);
 
-        current->color = particleBase->color.GetValue(refLife);
+        current->color = HSVToRGB(particleBase->color.GetValue(refLife));
         current->size = particleBase->size.GetValue(refLife);
         current->velocityModule = particleBase->velocity.GetValue(refLife);
 
