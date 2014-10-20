@@ -9,7 +9,7 @@
 #define DEFAULTPARTICLEUPDATER_H_
 
 
-#include "../config.h"
+#include <particles/config.h>
 #include "DefaultParticleSystem.h"
 #include "../ParticleUpdater.h"
 

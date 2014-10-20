@@ -8,7 +8,7 @@
 #ifndef PARTICLEEMITTER_H_
 #define PARTICLEEMITTER_H_
 
-#include "config.h"
+#include <particles/config.h>
 #include "InterpolationSet.hpp"
 #include "ElementCollection.hpp"
 

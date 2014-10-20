@@ -8,7 +8,7 @@
 #ifndef PARTICLERENDERCONFIG_H_
 #define PARTICLERENDERCONFIG_H_
 
-#include "config.h"
+#include <particles/config.h>
 #include "ElementCollection.hpp"
 
 using namespace utils;

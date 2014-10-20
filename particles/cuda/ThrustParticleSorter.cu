@@ -1,37 +1,36 @@
-#ifndef THRUSTPARTICLESORTER_H_
-#define THRUSTPARTICLESORTER_H_
+#include "../Definitions.h"
+#include "ThrustParticleSorter.cuh"
 
-#include "../config.h"
-#include "../default/DefaultTypes.h"
-#include "../ParticleSorter.h"
-#include "../default/DefaultParticleSorter.h"
-
-#include <thrust/sort.h>
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
 
 namespace particles
 {
     namespace defaultParticleSystem
     {
 
-        class ThrustParticleSorter : DefaultParticleSorter
-        {
+      ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray)
+      : DefaultParticleSorter(arrayParticles, distanceArray)
+      {}
 
+      void ThrustParticleSorter::Sort(SortOrder order)
+      {
+        thrust::host_vector<int> hostID(distances->ids->begin(), distances->ids->end());//at(distances->ids->size()-1));
+        thrust::device_vector<int> devID = hostID;
 
+        thrust::host_vector<double> hostDistance(distances->distances->begin(), distances->distances->end());//at(distances->distances->size()-1));
+        thrust::device_vector<double> devDistance = hostDistance;
 
-          ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray);
+        thrust::stable_sort_by_key(devDistance.begin(), devDistance.end(), devID.begin(), thrust::greater<double>());
 
-          void Sort(SortOrder order);
+        thrust::copy(devID.begin(), devID.end(), hostID.begin());
+      }
 
-//          virtual void UpdateCameraDistance(vec3 cameraPosition);
-//          virtual void UpdateCameraDistance(unsigned int i, vec3 cameraPosition);
-
-        };
+//      void ThrustParticleSorter::UpdateCameraDistance(vec3 cameraPosition)
+//      {
+//
+//      }
+//      void ThrustParticleSorter::UpdateCameraDistance(unsigned int i, vec3 cameraPosition){}
 
 
     }
 
 }
-
-#endif

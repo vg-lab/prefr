@@ -4,6 +4,9 @@
 #include <particles/default/DefaultParticleUpdater.h>
 #include <particles/default/DefaultParticleSorter.h>
 #include <particles/default/DefaultParticleRenderer.h>
+#if (particles_WITH_CUDA)
+  #include <particles/cuda/ThrustParticleSorter.cuh>
+#endif
 
 #include <particles/default/CShader.h>
 
@@ -46,7 +49,9 @@ bool emit = true;
 
 void initShaders()
 {
-  particlesShader = new CShader(false, false, "../particles/default/shd/particle.vert", "../particles/default/shd/particle.frag");
+  particlesShader = new CShader(false, false,
+                                "./particle.vert",
+                                "./particle.frag");
 }
 
 // Camera Movement
@@ -330,8 +335,16 @@ int main(int argc, char** argv)
   std::cout << "Created emitter" << std::endl;
   DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype, ps->distances);
   std::cout << "Created updater" << std::endl;
+
+#if (particles_WITH_CUDA == 1)
+  ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
+#else
   DefaultParticleSorter* sorter = new DefaultParticleSorter(colSorter, ps->distances);
+
+
+#endif
   std::cout << "Created sorter" << std::endl;
+
   DefaultParticleRenderer* renderer = new DefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
 
   std::cout << "Created systems" << std::endl;
