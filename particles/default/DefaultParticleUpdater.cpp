@@ -60,8 +60,6 @@ namespace particles
 //        std::cout << current->position.x << " " << current->position.y << " " << current->position.z << std::endl;
       }
     }
-
-
   }
 
 }

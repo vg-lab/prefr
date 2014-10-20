@@ -17,7 +17,7 @@ namespace particles
       std::sort(distances->begin(), distances->end(), order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
     }
 
-    void DefaultParticleSorter::UpdateCameraDistance(vec3 cameraPosition)
+    void DefaultParticleSorter::UpdateCameraDistance(const vec3& cameraPosition)
     {
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
@@ -25,7 +25,7 @@ namespace particles
       }
     }
 
-    void DefaultParticleSorter::UpdateCameraDistance(unsigned int i, vec3 cameraPosition)
+    void DefaultParticleSorter::UpdateCameraDistance(unsigned int i, const vec3& cameraPosition)
     {
       tparticleptr current = particles->elements->at(i);
 

@@ -29,7 +29,6 @@ public:
       virtual int Update(float deltaTime);
       virtual void Update(unsigned int i, float deltaTime);
 
-
     };
 
 
