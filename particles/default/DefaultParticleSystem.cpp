@@ -89,13 +89,13 @@ namespace particles
       this->aliveParticles = accumulator;
     }
 
-    void DefaultGLParticleSystem::UpdateCameraDistances(vec3 cameraPosition)
+    void DefaultGLParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
     {
       unsigned int i = 0;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
         i = ((tparticleptr) *it)->id;
-        static_cast<DefaultParticleUpdater*>(updaters->at(particleUpdater[i]))->UpdateCameraDistance(i, cameraPosition);
+        static_cast<DefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
       }
     }
 

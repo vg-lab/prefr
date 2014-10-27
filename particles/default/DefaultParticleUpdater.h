@@ -9,7 +9,7 @@
 #define DEFAULTPARTICLEUPDATER_H_
 
 
-#include "../config.h"
+#include <particles/config.h>
 #include "DefaultParticleSystem.h"
 #include "../ParticleUpdater.h"
 
@@ -29,8 +29,6 @@ public:
       virtual int Update(float deltaTime);
       virtual void Update(unsigned int i, float deltaTime);
 
-      void UpdateCameraDistance(vec3 cameraPosition);
-      void UpdateCameraDistance(unsigned int i, vec3 cameraPosition);
     };
 
 

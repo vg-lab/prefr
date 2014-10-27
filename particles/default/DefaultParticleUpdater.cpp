@@ -49,32 +49,17 @@ namespace particles
       if (current->Alive())
       {
 
-        refLife = clamp(current->life / particleBase->maxLife, 0.0f, 1.0f);
-
-        current->color = particleBase->color.GetValue(refLife);
+        refLife = 1.0f - clamp((current->life) / (particleBase->maxLife), 0.0f, 1.0f);
+//        std::cout << refLife << std::endl;
+        current->color = /*HSVToRGB*/(particleBase->color.GetValue(refLife));
+//        std::cout << current->color.x << " " << current->color.y << " " << current->color.z<< " " << current->color.w << std::endl;
         current->size = particleBase->size.GetValue(refLife);
         current->velocityModule = particleBase->velocity.GetValue(refLife);
-
+//        std::cout << refLife << " : " << current->velocityModule << std::endl;
         current->position += current->velocity * current->velocityModule * deltaTime;
 
 //        std::cout << current->position.x << " " << current->position.y << " " << current->position.z << std::endl;
       }
-    }
-
-    void DefaultParticleUpdater::UpdateCameraDistance(vec3 cameraPosition)
-    {
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      {
-        UpdateCameraDistance((*it)->id, cameraPosition);
-      }
-    }
-
-    void DefaultParticleUpdater::UpdateCameraDistance(unsigned int i, vec3 cameraPosition)
-    {
-      tparticleptr current = particles->elements->at(i);
-
-      distances->at(i).idx = current->id;
-      distances->at(i).distance = current->Alive() ?  (current->position - cameraPosition).length() : -1;
     }
   }
 

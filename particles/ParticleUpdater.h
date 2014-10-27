@@ -8,7 +8,7 @@
 #ifndef PARTICLEUPDATER_H_
 #define PARTICLEUPDATER_H_
 
-#include "config.h"
+#include <particles/config.h>
 #include "ElementCollection.hpp"
 #include "ParticleEmitter.h"
 

@@ -8,7 +8,7 @@
 #ifndef DEFAULTPARTICLEEMITTER_H_
 #define DEFAULTPARTICLEEMITTER_H_
 
-#include "../config.h"
+#include <particles/config.h>
 
 #include "../ParticleEmitter.h"
 

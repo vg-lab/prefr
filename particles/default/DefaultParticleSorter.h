@@ -8,7 +8,7 @@
 #ifndef DEFAULTPARTICLESORTER_H_
 #define DEFAULTPARTICLESORTER_H_
 
-#include "../config.h"
+#include <particles/config.h>
 #include "DefaultParticleSystem.h"
 
 
@@ -34,6 +34,9 @@ namespace particles
       }
 
       virtual void Sort(SortOrder order = Descending);
+
+      virtual void UpdateCameraDistance(const vec3& cameraPosition);
+      virtual void UpdateCameraDistance(unsigned int i, const vec3& cameraPosition);
 
     };
 

@@ -9,6 +9,15 @@
 cmake_minimum_required(VERSION 2.8)
 project(particles)
 
+# Option to build with shared pointers or raw pointers
+option(WITH_CUDA "WITH_SHARED_PTR" OFF)
+if (WITH_CUDA)
+  set(${PROJECT_NAME}_WITH_CUDA 1)
+else()
+  set(${PROJECT_NAME}_WITH_CUDA 0)
+endif()
+
+
 # Version numbers
 set(${PROJECT_NAME}_VERSION_MAJOR 0)
 set(${PROJECT_NAME}_VERSION_MINOR 1)
@@ -25,9 +34,10 @@ include(StandardConfig)
 
 # Custom flags for Release and Debug
 set(CMAKE_CXX_FLAGS 
-  "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-unknown-pragmas")
+  "${CMAKE_CXX_FLAGS} -std=c++11  -Wall -Wno-unknown-pragmas")
 set(CMAKE_CXX_FLAGS_DEBUG 
   "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
 
 #########################################################
 # FIND GLEW
@@ -88,25 +98,81 @@ endif(NOT OPENGL_FOUND)
 #########################################################
 # FIND CUDA
 #########################################################
-find_package(CUDA)
-include_directories(${CUDA_INCLUDE_DIRS})
-link_directories(${CUDA_LIBRARY_DIRS})
-add_definitions(${CUDA_DEFINITIONS})
-if(NOT CUDA_FOUND)
+
+if (WITH_CUDA)
+  find_package(CUDA REQUIRED)
+  include_directories(${CUDA_INCLUDE_DIRS})
+  message(${CUDA_INCLUDE_DIRS})
+  link_directories(${CUDA_LIBRARY_DIRS})
+  add_definitions(${CUDA_DEFINITIONS})
+  if(NOT CUDA_FOUND)
     message(ERROR " CUDA not found!")
-endif(NOT CUDA_FOUND)
+  endif(NOT CUDA_FOUND)
+
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
+    -O3 -gencode arch=compute_20,code=sm_20 -std=c++11)
+
+
+endif()  
+
+#########################################################
+# FIND Thrust
+#########################################################
+if (WITH_CUDA)
+  find_package(CUDAThrust REQUIRED)
+  include_directories(${CUDATHRUST_INCLUDE_DIRS})
+  link_directories(${CUDATHRUST_LIBRARY_DIRS})
+  add_definitions(${CUDATHRUST_DEFINITIONS})
+  if(NOT CUDATHRUST_FOUND)
+    message(ERROR " CUDATHRUST not found!")
+  endif(NOT CUDATHRUST_FOUND)
+endif()  
 
 find_package(FreeImage REQUIRED)
 
-FILE(GLOB particles_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/*.cpp)
+FILE(GLOB particles_SOURCES 
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp 
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/*.cpp)
 
-# Build library
-add_library (${PROJECT_NAME} SHARED
-${particles_SOURCES}
+
+configure_file (
+  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/shd/particle.vert"
+  "${CMAKE_CURRENT_BINARY_DIR}/examples/particle.vert"
 )
+configure_file (
+  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/shd/particle.frag"
+  "${CMAKE_CURRENT_BINARY_DIR}/examples/particle.frag"
+)
+
+
+SET( CUDA_PROPAGATE_HOST_FLAGS OFF ) 
+
+if (NOT WITH_CUDA)
+  # Build library
+  add_library (${PROJECT_NAME} SHARED
+    ${particles_SOURCES})
+else()	
+  message(${CUDA_VERSION})
+  CUDA_ADD_LIBRARY(${PROJECT_NAME} SHARED
+    ${particles_SOURCES}
+    particles/cuda/ThrustParticleSorter.cu
+    OPTIONS -arch sm_20
+    )
+endif()
+
 set_target_properties(${CMAKE_PROJECT_NAME}
-  PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
+  PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} 
+  SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
 )
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
+  ${OPENGL_LIBRARIES} 
+  ${GLUT_LIBRARY} 
+  ${GLEW_LIBRARIES} 
+  ${CUDA_LIBRARIES} 
+  ${FREEIMAGE_LIBRARIES} 
+  ${CUDATHRUST_LIBRARIES})
+
 
 # Install rules
 # Find files to install 
@@ -124,5 +190,6 @@ add_subdirectory(examples)
 # Export library
 include(ExportLibrary)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${CUDA_LIBRARIES} ${FREEIMAGE_LIBRARIES})
+
+
 

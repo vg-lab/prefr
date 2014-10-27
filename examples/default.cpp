@@ -4,6 +4,9 @@
 #include <particles/default/DefaultParticleUpdater.h>
 #include <particles/default/DefaultParticleSorter.h>
 #include <particles/default/DefaultParticleRenderer.h>
+#if (particles_WITH_CUDA)
+  #include <particles/cuda/ThrustParticleSorter.cuh>
+#endif
 
 #include <particles/default/CShader.h>
 
@@ -46,7 +49,9 @@ bool emit = true;
 
 void initShaders()
 {
-  particlesShader = new CShader(false, false, "/home/sgalindo/development/particles/particles/default/shd/particle.vert", "/home/sgalindo/development/particles/particles/default/shd/particle.frag");
+  particlesShader = new CShader(false, false,
+                                "./particle.vert",
+                                "./particle.frag");
 }
 
 // Camera Movement
@@ -293,11 +298,19 @@ int main(int argc, char** argv)
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
   prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, vec4(0, 127, 127, 0));
-  prototype->color.Insert(1.0f, vec4(127, 0, 127, 0));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(220, 127, 0, 0)));
+
+  for (int i = 0; i < prototype->color.size; i++)
+  {
+    glm::vec4 c = prototype->color.values[i];
+    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
+  }
 
   prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(0.0f, 15.0f);
+  prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
 
@@ -330,8 +343,16 @@ int main(int argc, char** argv)
   std::cout << "Created emitter" << std::endl;
   DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype, ps->distances);
   std::cout << "Created updater" << std::endl;
+
+#if (particles_WITH_CUDA == 1)
+  ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
+#else
   DefaultParticleSorter* sorter = new DefaultParticleSorter(colSorter, ps->distances);
+
+
+#endif
   std::cout << "Created sorter" << std::endl;
+
   DefaultParticleRenderer* renderer = new DefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
 
   std::cout << "Created systems" << std::endl;

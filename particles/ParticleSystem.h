@@ -8,7 +8,7 @@
 #ifndef PARTICLESYSTEM_H_
 #define PARTICLESYSTEM_H_
 
-#include "config.h"
+#include <particles/config.h>
 
 #include "ElementCollection.hpp"
 

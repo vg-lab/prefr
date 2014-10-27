@@ -69,7 +69,7 @@ namespace particles
 
       for (unsigned int i = 0; i < aliveParticles; i++)
       {
-        currentParticle = particles->elements->at(distances->at(i).idx);
+        currentParticle = particles->elements->at(distances->at(i).Id());
 
         idx = i * 4;
 

@@ -8,7 +8,7 @@
 #ifndef DEFAULTPARTICLERENDERCONFIG_H_
 #define DEFAULTPARTICLERENDERCONFIG_H_
 
-#include "../config.h"
+#include <particles/config.h>
 #include "../ParticleRenderer.h"
 #include "DefaultParticleSystem.h"
 

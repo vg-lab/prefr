@@ -13,6 +13,7 @@
 
 #include "DefaultParticleUpdater.h"
 #include "DefaultParticleRenderer.h"
+#include "DefaultParticleSorter.h"
 
 using namespace std;
 using namespace particles;
@@ -44,7 +45,7 @@ namespace particles
       virtual void Update(float deltaTime);
       virtual void UpdateUnified(float deltaTime);
       virtual void UpdateSeparated(float deltaTime);
-      virtual void UpdateCameraDistances(vec3 cameraPosition);
+      virtual void UpdateCameraDistances(const vec3& cameraPosition);
       virtual void UpdateRender();
       virtual void Render();
     };

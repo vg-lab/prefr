@@ -37,7 +37,7 @@ y Luis Hijarrubia. 2014
 
 #pragma once
 
-#include "../config.h"
+#include <particles/config.h>
 
 class CShader
 {
