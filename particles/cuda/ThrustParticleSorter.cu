@@ -34,11 +34,19 @@ namespace particles
         }
       }
 
-//      void ThrustParticleSorter::UpdateCameraDistance(vec3 cameraPosition)
-//      {
-//
-//      }
-//      void ThrustParticleSorter::UpdateCameraDistance(unsigned int i, vec3 cameraPosition){}
+      void ThrustParticleSorter::UpdateCameraDistance(const vec3& cameraPosition)
+      {
+        for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+        {
+          UpdateCameraDistance((*it)->id, cameraPosition);
+        }
+      }
+      void ThrustParticleSorter::UpdateCameraDistance(unsigned int i,  const vec3& cameraPosition)
+      {
+        tparticleptr current = particles->elements->at(i);
+        distances->ids->at(i) = current->id;
+        distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
+      }
 
 
     }

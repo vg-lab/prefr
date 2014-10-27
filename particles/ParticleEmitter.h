@@ -16,12 +16,16 @@ using namespace utils;
 
 namespace particles
 {
-  static glm::vec4 RGBToHSV(const glm::vec4 RGB)
-  {
-     float max;
-     float min;
-     float Chroma;
-     glm::vec4 HSV;
+  static glm::vec4 RGBToHSV(glm::vec4 RGB)
+{
+   float max;
+   float min;
+   float Chroma;
+   glm::vec4 HSV;
+
+   RGB.x /= 255.0f;
+   RGB.y /= 255.0f;
+   RGB.z /= 255.0f;
 
     min = std::fmin(std::fmin(RGB.x, RGB.y), RGB.z);
     max = std::fmax(std::fmax(RGB.x, RGB.y), RGB.z);
@@ -59,17 +63,17 @@ namespace particles
   }
 
 
-  static glm::vec4 HSVToRGB(const glm::vec4 HSV)
+  static glm::vec4 HSVToRGB(glm::vec4 HSV)
   {
      float Min;
      float Chroma;
      float Hdash;
      float X;
-     glm::vec4 RGB;
+     glm::vec4 RGB(0,0,0,0);
 
     Chroma = HSV.y * HSV.z;
     Hdash = HSV.x / 60.0;
-    X = Chroma * (1.0f - std::abs((std::fmod(Hdash,2.0f)) - 1.0f));
+    X = Chroma * (1.0f - std::fabs((std::fmod(Hdash,2.0f)) - 1.0f));
 
     if(Hdash < 1.0)
     {
@@ -109,6 +113,19 @@ namespace particles
     RGB.z += Min;
     RGB.a = HSV.a;
 
+//    float c = HSV.y * HSV.z;
+//    float x = c * (1.0f - fabs(fmod(HSV.x / 60.0f, 2)-1.0));
+//    float m = HSV.z - c;
+//
+//    if (H >= )
+
+    RGB.x *= 255;
+    RGB.y *= 255;
+    RGB.z *= 255;
+//    RGB.a *= 255;
+
+//    std::cout << RGB.x << " " << RGB.y << " " << RGB.z << " " << RGB.a << " " << std::endl;
+
     return RGB;
   }
 
@@ -121,6 +138,7 @@ namespace particles
   public:
     float minLife = 0;
     float maxLife;
+    float lifeNormalization;
     float dispersion;
 
     vectortfloat size;

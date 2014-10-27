@@ -50,7 +50,6 @@ namespace utils
       times.push_back(time);
       values.push_back(value);
       size = times.size();
-
     }
 
     T GetValue(float time)
@@ -61,25 +60,31 @@ namespace utils
 
         unsigned int i = 0;
 
-        while (time > times[i+1] && i < times.size()-1)
+        while (time > times[i+1])
         {
+//          std::cout << time << " > " << i+1 << " " << times[i+1] << std::endl;
           i++;
         }
 
-//        time = (time - times[i]) / (times[i+1] - times[i]);
+        float relTime = (time - times[i]) / (times[i+1] - times[i]);
 
-        return (time * values[i] + (1.0f - time) * values[i+1]);
-//
+//        std::cout << time << " -> times[" << i << "] = " << times[i]
+//                          << " -> times[" << i+1 << "] = " << times[i+1]
+//                          << " = " << relTime << std::endl;
+        T res = ((1.0f - relTime) * values[i] + relTime * values[i+1]);
+
+        return res;
+
 //        while (i < size-1)
 //        {
 //          if (time >= times[i] && time < times[i+1])
 //          {
-//            return (time * values[i] + (1.0f - time) * values[i+1]);
+//            return ((1.0f - time) * values[i] + time * values[i+1]);
 //          }
 //          i++;
 //        }
 //
-//        return (time * values[size-2] + (1.0f - time) * values[size-1]);
+//        return ((1.0f - time) * values[size-2] + time * values[size-1]);
 
       }
       else

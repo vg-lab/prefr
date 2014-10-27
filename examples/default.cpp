@@ -298,10 +298,10 @@ int main(int argc, char** argv)
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
   prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, particles::RGBToHSV(vec4(0, 0, 255, 0)));
-  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.8f, particles::RGBToHSV(vec4(0, 255, 0, 0)));
-  prototype->color.Insert(1.0f, particles::RGBToHSV(vec4(255, 0, 0, 0)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(220, 127, 0, 0)));
 
   for (int i = 0; i < prototype->color.size; i++)
   {
@@ -310,7 +310,7 @@ int main(int argc, char** argv)
   }
 
   prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(0.0f, 15.0f);
+  prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
 
