@@ -21,9 +21,8 @@ namespace particles
     class DefaultParticleUpdater : public ParticleUpdater
     {
 public:
-      distanceArray* distances;
 
-      DefaultParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype,  distanceArray* distancesArray);
+      DefaultParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype);
       virtual ~DefaultParticleUpdater();
 
       virtual int Update(float deltaTime);

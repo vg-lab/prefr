@@ -1,16 +1,17 @@
 #include <particles/ParticleSystem.h>
-#include <particles/default/DefaultParticleSystem.h>
+#include <particles/default/GL/GLDefaultParticleSystem.h>
 #include <particles/default/DefaultParticleEmitter.h>
 #include <particles/default/DefaultParticleUpdater.h>
-#include <particles/default/DefaultParticleSorter.h>
-#include <particles/default/DefaultParticleRenderer.h>
+#include <particles/default/GL/GLDefaultParticleSorter.h>
+#include <particles/default/GL/GLDefaultParticleRenderer.h>
 #if (particles_WITH_CUDA)
   #include <particles/cuda/ThrustParticleSorter.cuh>
 #endif
 
-#include <particles/default/CShader.h>
+#include <particles/default/GL/CShader.h>
 
 using namespace particles::defaultParticleSystem;
+using namespace particles::defaultParticleSystem::GL;
 
 using namespace glm;
 
@@ -43,7 +44,7 @@ float mouseYThreshold;
 
 CShader* particlesShader;
 
-DefaultGLParticleSystem* ps;
+GLDefaultParticleSystem* ps;
 
 bool emit = true;
 
@@ -225,7 +226,7 @@ void sceneRender (void)
   cameraUp = glGetUniformLocation(shader, "cameraUp");
   cameraRight = glGetUniformLocation(shader, "cameraRight");
 
-  vec3 right = normalize(cross(vforward, worldUp));
+//  vec3 right = normalize(cross(vforward, worldUp));
 
   glUniform3f(cameraUp, viewM[0][1], viewM[1][1], viewM[2][1]);
   glUniform3f(cameraRight, viewM[0][0], viewM[1][0], viewM[2][0]);
@@ -283,7 +284,7 @@ int main(int argc, char** argv)
   makeProjectionMatrix();
 
   int maxParticles = 10;
-  int maxEmitters = 1;
+  unsigned int maxEmitters = 1;
 
   if (argc >= 2)
     maxParticles = atoi(argv[1]);
@@ -293,7 +294,7 @@ int main(int argc, char** argv)
 
 
 
-  ps = new DefaultGLParticleSystem(10, maxParticles, 0.5f, true);
+  ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
 
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
@@ -301,7 +302,7 @@ int main(int argc, char** argv)
   prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
   prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(220, 127, 0, 0)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 0)));
 
   for (int i = 0; i < prototype->color.size; i++)
   {
@@ -341,19 +342,19 @@ int main(int argc, char** argv)
 
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype, ps->distances);
+  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype);
   std::cout << "Created updater" << std::endl;
 
 #if (particles_WITH_CUDA == 1)
   ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
 #else
-  DefaultParticleSorter* sorter = new DefaultParticleSorter(colSorter, ps->distances);
+  GLDefaultParticleSorter* sorter = new GLDefaultParticleSorter(colSorter, ps->distances);
 
 
 #endif
   std::cout << "Created sorter" << std::endl;
 
-  DefaultParticleRenderer* renderer = new DefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
 
   std::cout << "Created systems" << std::endl;
 

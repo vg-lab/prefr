@@ -4,7 +4,7 @@
 #include <particles/config.h>
 #include "../default/DefaultTypes.h"
 #include "../ParticleSorter.h"
-#include "../default/DefaultParticleSorter.h"
+#include "../default/GL/GLDefaultParticleSorter.h"
 
 
 #include <thrust/sort.h>
@@ -14,25 +14,28 @@
 
 namespace particles
 {
-    namespace defaultParticleSystem
+  namespace defaultParticleSystem
+  {
+
+    namespace GL
     {
 
-        class ThrustParticleSorter : public DefaultParticleSorter
-        {
-		public:
+      class ThrustParticleSorter : public GLDefaultParticleSorter
+      {
+      public:
 
 
-          ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray);
+        ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray);
 
-          void Sort(SortOrder order);
+        void Sort(SortOrder order);
 
-          virtual void UpdateCameraDistance(const vec3& cameraPosition);
-          virtual void UpdateCameraDistance(unsigned int i, const vec3& cameraPosition);
+        virtual void UpdateCameraDistance(const vec3& cameraPosition);
+        virtual void UpdateCameraDistance(unsigned int i, const vec3& cameraPosition);
 
-        };
-
+      };
 
     }
+  }
 
 }
 

@@ -3,11 +3,14 @@
 
 namespace particles
 {
-    namespace defaultParticleSystem
-    {
+  namespace defaultParticleSystem
+  {
 
+    namespace GL
+    {
+    
       ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray)
-      : DefaultParticleSorter(arrayParticles, distanceArray)
+      : GLDefaultParticleSorter(arrayParticles, distanceArray)
       {}
 
       void ThrustParticleSorter::Sort(SortOrder order)
@@ -48,7 +51,8 @@ namespace particles
         distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
       }
 
-
     }
+
+  }
 
 }

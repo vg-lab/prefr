@@ -17,7 +17,7 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    static float invRandMax = 1.0f / RAND_MAX;
+
 
     //**********************************************************
     // Default Emitter

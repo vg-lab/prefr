@@ -86,26 +86,7 @@ namespace particles
     };
 
 //    typedef vector<SortUnit> distanceArray;
-    typedef DistanceArray distanceArray;
-    typedef vector<GLfloat> glvectorf;
-    typedef vector<GLchar> glvectorch;
 
-    class RenderConfig
-    {
-    public:
-
-      // Triangles vertices
-      glvectorf* billboardVertices;
-      glvectorf* particlePositions;
-      glvectorch* particleColors;
-
-      // OpenGL pointers
-      GLuint vao;
-      GLuint vboBillboardVertex;
-      GLuint vboParticlesPositions;
-      GLbyte vboParticlesColor;
-
-    };
 
   }
 }

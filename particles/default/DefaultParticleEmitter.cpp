@@ -80,6 +80,7 @@ namespace particles
 
     }
 
+    static float invRandMax = 1.0f / RAND_MAX;
 
     vec3 GetRandomVelocityDirection()
     {
@@ -101,9 +102,10 @@ namespace particles
         {
           current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * lifeThreshold + particleBase->minLife;
 
-          current->position = this->position;
-
           current->velocity = GetRandomVelocityDirection();
+          current->position = this->position + 3.0f * current->velocity;
+
+
           current->velocityModule = this->particleBase->velocity.GetValue(0);
           current->color = this->particleBase->color.GetValue(0);
           current->size = this->particleBase->size.GetValue(0);

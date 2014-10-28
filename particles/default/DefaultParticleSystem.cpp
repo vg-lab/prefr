@@ -11,23 +11,14 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    DefaultGLParticleSystem::DefaultGLParticleSystem (int initialParticlesNumber, int _maxParticles
+    DefaultParticleSystem::DefaultParticleSystem (int initialParticlesNumber, int _maxParticles
                                                       , float _emissionRate, bool _loop)
     : ParticleSystem( initialParticlesNumber, _maxParticles, _emissionRate, _loop )
     , updateLoopUnified( true )
-    {
-      distances = new distanceArray(this->maxParticles);
-      renderConfig = new RenderConfig();
-
-//      for (unsigned int i = 0; i < this->maxParticles; i++)
-//      {
-//        distances->at(i) = new SortUnit();
-//      }
-
-    }
+    {}
 
 
-    void DefaultGLParticleSystem::Start()
+    void DefaultParticleSystem::Start()
     {
       for (unsigned int i = 0; i < aliveParticles; i++)
       {
@@ -36,7 +27,7 @@ namespace particles
 
     }
 
-    void DefaultGLParticleSystem::Update(float deltaTime)
+    void DefaultParticleSystem::Update(float deltaTime)
     {
       if (updateLoopUnified)
         UpdateUnified(deltaTime);
@@ -45,7 +36,7 @@ namespace particles
 
     }
 
-    void DefaultGLParticleSystem::UpdateUnified(float deltaTime)
+    void DefaultParticleSystem::UpdateUnified(float deltaTime)
     {
       unsigned int i = 0;
 
@@ -73,7 +64,7 @@ namespace particles
       this->aliveParticles = accumulator;
     }
 
-    void DefaultGLParticleSystem::UpdateSeparated(float deltaTime)
+    void DefaultParticleSystem::UpdateSeparated(float deltaTime)
     {
       for (unsigned int i = 0; i < emitters->size(); i++)
       {
@@ -89,28 +80,7 @@ namespace particles
       this->aliveParticles = accumulator;
     }
 
-    void DefaultGLParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
-    {
-      unsigned int i = 0;
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      {
-        i = ((tparticleptr) *it)->id;
-        static_cast<DefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
-      }
-    }
-
-    void DefaultGLParticleSystem::UpdateRender()
-    {
-      this->sorter->Sort();
-
-      static_cast<DefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
-    }
-
-    void DefaultGLParticleSystem::Render()
-    {
-      static_cast<DefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
-    }
-
   }
+
 
 }

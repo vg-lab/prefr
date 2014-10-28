@@ -12,16 +12,14 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    DefaultParticleUpdater::DefaultParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype, distanceArray* distancesArray)
+    DefaultParticleUpdater::DefaultParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype)
     : ParticleUpdater(particlesArray, particlePrototype)
-    , distances(distancesArray)
     {}
 
     DefaultParticleUpdater::~DefaultParticleUpdater()
     {
       delete( particles );
       delete( particleBase );
-      delete( distances );
     }
 
     int DefaultParticleUpdater::Update(float deltaTime)
