@@ -1,17 +1,27 @@
 #include <particles/ParticleSystem.h>
-#include <particles/default/GL/GLDefaultParticleSystem.h>
+
 #include <particles/default/DefaultParticleEmitter.h>
 #include <particles/default/DefaultParticleUpdater.h>
-#include <particles/default/GL/GLDefaultParticleSorter.h>
-#include <particles/default/GL/GLDefaultParticleRenderer.h>
+
 #if (particles_WITH_CUDA)
-  #include <particles/cuda/ThrustParticleSorter.cuh>
+  #include <particles/default/cuda/ThrustParticleSorter.cuh>
+  #include <particles/default/cuda/CUDAParticleSystem.cuh>
+  #include <particles/default/cuda/GLCUDAParticleRenderer.cuh>
+#else
+  #include <particles/default/GL/GLDefaultParticleSystem.h>
+  #include <particles/default/GL/GLDefaultParticleSorter.h>
+  #include <particles/default/GL/GLDefaultParticleRenderer.h>
 #endif
 
 #include <particles/default/GL/CShader.h>
 
 using namespace particles::defaultParticleSystem;
-using namespace particles::defaultParticleSystem::GL;
+
+#if (particles_WITH_CUDA)
+  using namespace particles::defaultParticleSystem::CUDATHRUST;
+#else
+  using namespace particles::defaultParticleSystem::GL;
+#endif
 
 using namespace glm;
 
@@ -44,7 +54,11 @@ float mouseYThreshold;
 
 CShader* particlesShader;
 
-GLDefaultParticleSystem* ps;
+#if (particles_WITH_CUDA)
+  CUDAParticleSystem* ps;
+#else
+  GLDefaultParticleSystem* ps;
+#endif
 
 bool emit = true;
 
@@ -293,8 +307,11 @@ int main(int argc, char** argv)
     maxEmitters = atoi(argv[2]);
 
 
-
+#if (particles_WITH_CUDA == 1)
+  ps = new CUDAParticleSystem(10, maxParticles, 0.3f, true);
+#else
   ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
+#endif
 
   ParticlePrototype* prototype = new ParticlePrototype();
   prototype->minLife = 3.0f;
@@ -345,16 +362,20 @@ int main(int argc, char** argv)
   DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype);
   std::cout << "Created updater" << std::endl;
 
-#if (particles_WITH_CUDA == 1)
+#if (particles_WITH_CUDA)
   ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
 #else
   GLDefaultParticleSorter* sorter = new GLDefaultParticleSorter(colSorter, ps->distances);
-
-
 #endif
+
+
   std::cout << "Created sorter" << std::endl;
 
+#if (particles_WITH_CUDA)
+  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+#else
   GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+#endif
 
   std::cout << "Created systems" << std::endl;
 

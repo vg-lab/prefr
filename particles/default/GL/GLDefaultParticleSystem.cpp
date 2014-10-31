@@ -25,26 +25,26 @@ namespace particles
 
 
       void GLDefaultParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
-         {
-           unsigned int i = 0;
-           for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-           {
-             i = ((tparticleptr) *it)->id;
-             static_cast<GLDefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
-           }
-         }
+      {
+        unsigned int i = 0;
+        for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+        {
+         i = ((tparticleptr) *it)->id;
+         static_cast<GLDefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
+        }
+      }
 
-         void GLDefaultParticleSystem::UpdateRender()
-         {
-           this->sorter->Sort();
+      void GLDefaultParticleSystem::UpdateRender()
+      {
+       this->sorter->Sort();
 
-           static_cast<GLDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
-         }
+       static_cast<GLDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
+      }
 
-         void GLDefaultParticleSystem::Render()
-         {
-           static_cast<GLDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
-         }
+      void GLDefaultParticleSystem::Render()
+      {
+       static_cast<GLDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
+      }
 
      }
 
