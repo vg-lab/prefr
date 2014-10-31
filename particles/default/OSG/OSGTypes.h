@@ -16,7 +16,7 @@ namespace particles
 {
   namespace defaultParticleSystem
   {
-    namespace OSG
+    namespace OSGParticleSystem
     {
       typedef DistanceArray distanceArray;
       typedef vector<GLfloat> glvectorf;
