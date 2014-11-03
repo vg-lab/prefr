@@ -28,7 +28,7 @@ namespace particles
 
       void GLDefaultParticleSorter::UpdateCameraDistance(unsigned int i, const vec3& cameraPosition)
       {
-        tparticleptr current = particles->elements->at(i);
+        tparticle_ptr current = particles->elements->at(i);
 
         distances->elements->at(i).Id() = current->id;
   //      distances->ids->at(i) = current->id;

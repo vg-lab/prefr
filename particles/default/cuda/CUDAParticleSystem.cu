@@ -36,7 +36,7 @@ namespace particles
         unsigned int i = 0;
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
         {
-         i = ((tparticleptr) *it)->id;
+         i = ((tparticle_ptr) *it)->id;
          static_cast<ThrustParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
         }
       }

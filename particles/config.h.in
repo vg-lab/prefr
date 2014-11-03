@@ -44,14 +44,15 @@
 #include <vector>
 #include <particles/Particle.h>
 #include <particles/ElementCollection.hpp>
-
+#include <particles/InterpolationSet.hpp>
 
 namespace particles
 {
   typedef particles::Particle tparticle;
-  typedef tparticle* tparticleptr;
-  typedef std::vector<tparticleptr> tparticleContainer;
+  typedef tparticle* tparticle_ptr;
+  typedef std::vector<tparticle_ptr> tparticleContainer;
   typedef utils::ElementCollection<tparticle> ParticleCollection;
+
 
 
 }

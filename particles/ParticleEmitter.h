@@ -11,6 +11,7 @@
 #include <particles/config.h>
 #include "InterpolationSet.hpp"
 #include "ElementCollection.hpp"
+#include "ParticlePrototype.h"
 
 using namespace utils;
 
@@ -129,26 +130,7 @@ namespace particles
 //    return RGB;
 //  }
 
-  typedef InterpolationSet<float> vectortfloat;
-  typedef InterpolationSet<vec3> vectortvec3;
-  typedef InterpolationSet<vec4> vectortvec4;
 
-  class ParticlePrototype
-  {
-  public:
-    float minLife = 0;
-    float maxLife;
-    float lifeNormalization;
-    float dispersion;
-
-    vectortfloat size;
-
-    vec3 positionOffset;
-
-    vectortfloat velocity;
-    vectortvec4 color;
-
-  };
 
 
   class ParticleEmitter
@@ -157,16 +139,18 @@ namespace particles
 
     ParticleCollection* particles;
 
-    ParticlePrototype* particleBase;
+    PrototypesArray* prototypes;
+    vector<int>* refPrototypes;
 
     int maxParticles;
     int particlesPerCycle;
     float emissionRate;
     bool loop;
 
-    ParticleEmitter(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype, float _emissionRate, bool _loop)
-    : particles(particlesArray)
-    , particleBase(particlePrototype)
+    ParticleEmitter(ParticleCollection* particlesArray, PrototypesArray* particlePrototypes, vector<int>* _refPrototypes, float _emissionRate, bool _loop)
+    : particles( particlesArray )
+    , prototypes( particlePrototypes )
+    , refPrototypes( _refPrototypes )
     , particlesPerCycle(0)
     , emissionRate(_emissionRate)
     , loop (_loop)
@@ -177,7 +161,7 @@ namespace particles
     virtual ~ParticleEmitter()
     {
       delete( particles );
-      delete( particleBase );
+      delete( prototypes );
 
     }
 

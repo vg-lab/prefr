@@ -65,7 +65,7 @@ namespace particles
 
       void GLDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
       {
-        tparticleptr currentParticle;
+        tparticle_ptr currentParticle;
         int idx;
 
         for (unsigned int i = 0; i < aliveParticles; i++)

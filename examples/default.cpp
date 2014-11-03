@@ -1,5 +1,7 @@
 #include <particles/ParticleSystem.h>
 
+#include <particles/ParticlePrototype.h>
+
 #include <particles/default/DefaultParticleEmitter.h>
 #include <particles/default/DefaultParticleUpdater.h>
 
@@ -313,13 +315,20 @@ int main(int argc, char** argv)
   ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
 #endif
 
-  ParticlePrototype* prototype = new ParticlePrototype();
-  prototype->minLife = 3.0f;
-  prototype->maxLife = 5.0f;
+  ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles);
+
+  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
+//  prototype->minLife = 3.0f;
+//  prototype->maxLife = 5.0f;
   prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
   prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
   prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 0)));
+
+  prototype->particles = colProto;
+
+  ps->AddPrototype(prototype);
+
 
   for (int i = 0; i < prototype->color.size; i++)
   {
@@ -353,13 +362,13 @@ int main(int argc, char** argv)
   {
     colEmitter = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emitter " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
-    emitter = new PointParticleEmitter(colEmitter, prototype, 0.5f, true, vec3(i * 10, 0, 0));
+    emitter = new PointParticleEmitter(colEmitter, ps->prototypes, &ps->particlePrototype, 0.5f, true, vec3(i * 10, 0, 0));
     ps->AddEmitter(emitter);
   }
 
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype);
+  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, ps->prototypes, &ps->particlePrototype);
   std::cout << "Created updater" << std::endl;
 
 #if (particles_WITH_CUDA)
