@@ -17,6 +17,12 @@ else()
   set(${PROJECT_NAME}_WITH_CUDA 0)
 endif()
 
+option(PROFILE "ACTIVATE PROFILING" OFF)
+IF (PROFILE)
+  SET(${PROJECT_NAME}_PROFILING 1)
+ELSE ()
+  SET(${PROJECT_NAME}_PROFILING 0)
+ENDIF()
 
 # Version numbers
 set(${PROJECT_NAME}_VERSION_MAJOR 0)
@@ -38,6 +44,12 @@ set(CMAKE_CXX_FLAGS
 set(CMAKE_CXX_FLAGS_DEBUG 
   "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
+SET(LINK_MODE "SHARED")
+IF (PROFILE)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+	SET(LINK_MODE "STATIC")
+	MESSAGE("${PROJECT_NAME} Profiling ON, LINK MODE ${LINK_MODE}" )	
+ENDIF()
 
 #########################################################
 # FIND GLEW
@@ -161,11 +173,11 @@ SET( CUDA_PROPAGATE_HOST_FLAGS OFF )
 
 if (NOT WITH_CUDA)
   # Build library
-  add_library (${PROJECT_NAME} SHARED
+  add_library (${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES})
 else()	
   message(${CUDA_VERSION})
-  CUDA_ADD_LIBRARY(${PROJECT_NAME} SHARED
+  CUDA_ADD_LIBRARY(${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES}
     particles/default/cuda/ThrustParticleSorter.cu
     particles/default/cuda/GLCUDAParticleRenderer.cu
