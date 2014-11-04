@@ -167,7 +167,7 @@ namespace particles
 
 
 
-    virtual void StartEmission(float deltaTime){ particlesPerCycle = emissionRate * maxParticles;}
+    virtual void StartEmission(float deltaTime){ particlesPerCycle = emissionRate * maxParticles * deltaTime;}
     virtual int EmitSingle(unsigned int i) = 0;
 
     virtual void EmitAll(float deltaTime) = 0;

@@ -25,7 +25,9 @@ namespace utils
     vector<float> times;
     vector<T> values;
 
-    int size;
+    unsigned int size;
+
+    InterpolationSet(void): size(0){}
 
   public:
 
@@ -35,7 +37,7 @@ namespace utils
 
       int i = 0;
 
-      while (i < size)
+      while (i < size-1 && size > 0)
       {
         if (time < times[i])
         {

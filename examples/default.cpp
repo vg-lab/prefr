@@ -315,31 +315,60 @@ int main(int argc, char** argv)
   ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
 #endif
 
-  ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles);
+  ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
   ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
 //  prototype->minLife = 3.0f;
 //  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 50)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 0)));
-
-  prototype->particles = colProto;
-
-  ps->AddPrototype(prototype);
-
-
-  for (int i = 0; i < prototype->color.size; i++)
-  {
-    glm::vec4 c = prototype->color.values[i];
-    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
-  }
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(0, 127, 127, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
+
+  prototype->particles = colProto;
+
+  ps->AddPrototype(prototype);
+
+  colProto = new ParticleCollection(ps->particles, maxParticles / 2, maxParticles);
+
+  prototype = new ParticlePrototype(3.0f, 5.0f);
+
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(255, 255, 0, 50)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 255, 255, 0)));
+
+  prototype->velocity.Insert(0.0f, 3.0f);
+  prototype->velocity.Insert(1.0f, 5.0f);
+
+  prototype->size.Insert(0.0f, 1.0f);
+
+  prototype->particles = colProto;
+
+  ps->AddPrototype(prototype);
+
+//  for (int i = 0; i < prototype->color.size; i++)
+//  {
+//    glm::vec4 c = prototype->color.values[i];
+//    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
+//  }
+
+//  for (unsigned int i = 0; i < ps->particlePrototype.size(); i++)
+//  {
+//    ParticlePrototype* current = ps->prototypes->at(ps->particlePrototype[i]);
+//    vec4 color = current->color.values[0];
+//    std::cout << i << " "<< ps->particlePrototype[i] << " color: " <<
+//                                                          color.x << " " <<
+//                                                          color.y << " " <<
+//                                                          color.z << " " <<
+//                                                          color.w << " " <<
+//                                                          std::endl;
+//  }
 
   std::cout << "Created prototype." << std::endl;
 
@@ -362,7 +391,7 @@ int main(int argc, char** argv)
   {
     colEmitter = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emitter " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
-    emitter = new PointParticleEmitter(colEmitter, ps->prototypes, &ps->particlePrototype, 0.5f, true, vec3(i * 10, 0, 0));
+    emitter = new PointParticleEmitter(colEmitter, ps->prototypes, &ps->particlePrototype, 0.3f, true, vec3(i * 10, 0, 0));
     ps->AddEmitter(emitter);
   }
 

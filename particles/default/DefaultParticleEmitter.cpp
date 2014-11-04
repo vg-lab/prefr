@@ -33,7 +33,7 @@ namespace particles
     void DefaultParticleEmitter::EmitAll(float deltaTime)
     {
 
-      this->particlesPerCycle = emissionRate * deltaTime;
+      this->particlesPerCycle = emissionRate * deltaTime * maxParticles;
 
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
@@ -52,7 +52,7 @@ namespace particles
 
     int DefaultParticleEmitter::EmitSingle(unsigned int i)
     {
-      if (this->particlesPerCycle)
+      if (this->particlesPerCycle && !particles->elements->at(i)->Alive())
       {
         this->EmitFunction(i);
         this->particlesPerCycle--;
