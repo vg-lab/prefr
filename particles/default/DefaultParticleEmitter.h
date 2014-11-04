@@ -10,6 +10,7 @@
 
 #include <particles/config.h>
 
+#include "../Particle.h"
 #include "../ParticleEmitter.h"
 
 namespace particles
@@ -28,7 +29,7 @@ namespace particles
 public:
 
 
-      DefaultParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
+      DefaultParticleEmitter (ParticleCollection* particlesArray, PrototypesArray* particlePrototype, vector<int>* _refPrototypes
                               , float _emissionRate, bool _loop);
 
       ~DefaultParticleEmitter();
@@ -41,9 +42,6 @@ protected:
 
       virtual void EmitFunction(unsigned int i, bool override = false) = 0;
 
-
-      float lifeThreshold;
-
     };
 
     //**********************************************************
@@ -55,8 +53,8 @@ protected:
 public:
       vec3 position;
 
-      PointParticleEmitter(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                   , float _emissionRate, bool _loop, vec3 position);
+      PointParticleEmitter(ParticleCollection* particlesArray, PrototypesArray* particlePrototype
+                           , vector<int>* _refPrototypes, float _emissionRate, bool _loop, vec3 position);
 
 
     protected:

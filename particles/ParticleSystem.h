@@ -17,6 +17,7 @@
 #include "ParticleSorter.h"
 #include "ParticleRenderer.h"
 
+#include "ParticlePrototype.h"
 
 #include <vector>
 
@@ -26,17 +27,21 @@ using namespace utils;
 namespace particles
 {
 
+
   class ParticleSystem
   {
   public:
 
     ParticleCollection* particles;
 
+    PrototypesArray* prototypes;
+
     vector<ParticleEmitter*>* emitters;
     vector<ParticleUpdater*>* updaters;
     ParticleSorter* sorter;
     ParticleRenderer* renderer;
 
+    vector<int> particlePrototype;
     vector<int> particleEmitter;
     vector<int> particleUpdater;
 
@@ -51,6 +56,7 @@ namespace particles
 
     virtual ~ParticleSystem();
 
+    void AddPrototype(ParticlePrototype* prototype);
     void AddEmitter(ParticleEmitter* emitter);
     void AddUpdater(ParticleUpdater* updater);
     void SetSorter(ParticleSorter* sorter);

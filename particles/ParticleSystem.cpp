@@ -23,9 +23,11 @@ namespace particles
     tparticleContainer* p = new tparticleContainer(maxParticles);
     particles = new ParticleCollection(p, p->begin(), p->end());
 
+    particlePrototype.resize(maxParticles);
     particleEmitter.resize(maxParticles);
     particleUpdater.resize(maxParticles);
 
+    prototypes = new PrototypesArray;
     emitters = new vector<ParticleEmitter*>;
     updaters = new vector<ParticleUpdater*>;
 
@@ -47,6 +49,20 @@ namespace particles
     delete(updaters);
     delete(sorter);
     delete(renderer);
+  }
+
+  void ParticleSystem::AddPrototype(ParticlePrototype* prototype)
+  {
+    this->prototypes->push_back(prototype);
+
+    int size = this->prototypes->size();
+    int start = prototype->particles->start - this->particles->start;
+    int end = prototype->particles->end - this->particles->start;
+
+    for (int i = start; i < end; i++)
+    {
+      this->particlePrototype[i] = size-1;
+    }
   }
 
   void ParticleSystem::AddEmitter(ParticleEmitter* emitter)

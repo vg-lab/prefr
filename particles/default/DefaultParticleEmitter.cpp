@@ -17,26 +17,23 @@ namespace particles
     //**********************************************************
 
 
-    DefaultParticleEmitter::DefaultParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                  , float _emissionRate, bool _loop)
-     : ParticleEmitter(particlesArray, particlePrototype, _emissionRate, loop)
-    {
-
-      lifeThreshold = particlePrototype->maxLife - particlePrototype->minLife;
-
-    }
+    DefaultParticleEmitter::DefaultParticleEmitter (ParticleCollection* particlesArray, PrototypesArray* particlePrototype
+                                                    , vector<int>* _refPrototypes
+                                                    , float _emissionRate, bool _loop)
+    : ParticleEmitter(particlesArray, particlePrototype, _refPrototypes, _emissionRate, loop)
+    {}
 
     DefaultParticleEmitter::~DefaultParticleEmitter()
     {
       delete( particles );
-      delete( particleBase );
+      delete( prototypes );
     }
 
 
     void DefaultParticleEmitter::EmitAll(float deltaTime)
     {
 
-      this->particlesPerCycle = emissionRate * deltaTime;
+      this->particlesPerCycle = emissionRate * deltaTime * maxParticles;
 
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
@@ -55,7 +52,7 @@ namespace particles
 
     int DefaultParticleEmitter::EmitSingle(unsigned int i)
     {
-      if (this->particlesPerCycle)
+      if (this->particlesPerCycle && !particles->elements->at(i)->Alive())
       {
         this->EmitFunction(i);
         this->particlesPerCycle--;
@@ -72,10 +69,11 @@ namespace particles
     //**********************************************************
 
 
-    PointParticleEmitter::PointParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                      , float _emissionRate, bool _loop, vec3 position)
-         : DefaultParticleEmitter(particlesArray, particlePrototype, _emissionRate, loop)
-         , position(position)
+    PointParticleEmitter::PointParticleEmitter (ParticleCollection* particlesArray, PrototypesArray* particlePrototypes
+                                                , vector<int>* _refPrototypes
+                                                , float _emissionRate, bool _loop, vec3 position)
+    : DefaultParticleEmitter(particlesArray, particlePrototypes, _refPrototypes, _emissionRate, loop)
+    , position(position)
     {
 
     }
@@ -96,19 +94,20 @@ namespace particles
     void PointParticleEmitter::EmitFunction(unsigned int i, bool override)
     {
 
-        tparticleptr current = particles->elements->at(i);
+        tparticle_ptr current = particles->elements->at(i);
+        tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
 
-        if (!current->Alive() || override)
+        if (currentPrototype && (!current->Alive() || override))
         {
-          current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * lifeThreshold + particleBase->minLife;
+          current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
 
           current->velocity = GetRandomVelocityDirection();
-          current->position = this->position + 3.0f * current->velocity;
+          current->position = this->position;// + 3.0f * current->velocity;
 
 
-          current->velocityModule = this->particleBase->velocity.GetValue(0);
-          current->color = this->particleBase->color.GetValue(0);
-          current->size = this->particleBase->size.GetValue(0);
+          current->velocityModule = currentPrototype->velocity.GetValue(0);
+          current->color = currentPrototype->color.GetValue(0);
+          current->size = currentPrototype->size.GetValue(0);
 
       }
     }

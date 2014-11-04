@@ -67,7 +67,7 @@ namespace particles
         //************************
 
 
-        tparticleptr current = particles->elements->at(i);
+        tparticle_ptr current = particles->elements->at(i);
         distances->hostID[i] = current->id;
         distances->hostDistances[i] = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
 
