@@ -12,8 +12,8 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    DefaultParticleUpdater::DefaultParticleUpdater(ParticleCollection* particlesArray, PrototypesArray* particlePrototypes, vector<int>* _refPrototypes)
-    : ParticleUpdater(particlesArray, particlePrototypes, _refPrototypes)
+    DefaultParticleUpdater::DefaultParticleUpdater(ParticleCollection* particlesArray)
+    : ParticleUpdater(particlesArray)
     {}
 
     DefaultParticleUpdater::~DefaultParticleUpdater()

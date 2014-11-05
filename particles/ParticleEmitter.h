@@ -130,7 +130,19 @@ namespace particles
 //    return RGB;
 //  }
 
+  class EmissionNode
+  {
+  public:
+    ParticleCollection* particles;
 
+    EmissionNode(ParticleCollection* arrayParticles): particles(arrayParticles){}
+    virtual ~EmissionNode(void) {delete particles;}
+
+    virtual vec3 GetEmissionPosition() = 0;
+    virtual vec3 GetEmissionVelocityDirection() = 0;
+  };
+
+  typedef vector<EmissionNode*> EmissionNodesArray;
 
 
   class ParticleEmitter
@@ -138,6 +150,9 @@ namespace particles
   public:
 
     ParticleCollection* particles;
+
+    vector<EmissionNode*>* emissionNodes;
+    vector<int>* refEmissionNodes;
 
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
@@ -147,13 +162,15 @@ namespace particles
     float emissionRate;
     bool loop;
 
-    ParticleEmitter(ParticleCollection* particlesArray, PrototypesArray* particlePrototypes, vector<int>* _refPrototypes, float _emissionRate, bool _loop)
+    ParticleEmitter(ParticleCollection* particlesArray, float _emissionRate, bool _loop)
     : particles( particlesArray )
-    , prototypes( particlePrototypes )
-    , refPrototypes( _refPrototypes )
-    , particlesPerCycle(0)
-    , emissionRate(_emissionRate)
-    , loop (_loop)
+    , emissionNodes( nullptr )
+    , refEmissionNodes( nullptr )
+    , prototypes( nullptr )
+    , refPrototypes( nullptr )
+    , particlesPerCycle( 0 )
+    , emissionRate( _emissionRate )
+    , loop( _loop )
     {
       maxParticles = particlesArray->size;
     }
