@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <vector>
+#include <string>
 
 #include <algorithm>
 
@@ -24,6 +25,9 @@ namespace utils
 
     vector<float> times;
     vector<T> values;
+
+    vector<int> quickReference;
+    float step;
 
     unsigned int size;
 
@@ -52,7 +56,11 @@ namespace utils
       times.push_back(time);
       values.push_back(value);
       size = times.size();
+
+      UpdateQuickReference(time);
     }
+
+
 
     T GetValue(float time)
     {
@@ -96,7 +104,45 @@ namespace utils
 
     }
 
+  private:
+
+    void UpdateQuickReference(float newTime)
+    {
+      int precision = 0;
+      std::string cad;// = std::to_string(newTime);
+//      precision = str.find_last_of('.');
+//      precision = precision > 0 ? str.length() - precision : 0;
+//      precision = pow(10.f, precision);
+
+      if (precision > quickReference.size())
+        quickReference.resize(precision);
+
+      step = 1.0f / quickReference.size();
+
+
+      vector<int> limits(times.size());
+
+      for (unsigned int i = 0; i < limits.size()-1; i++)
+      {
+        limits[i] = int(floor(times[i+1] * step * precision));
+      }
+
+      limits[limits.size()-1] = quickReference.size();
+
+      unsigned int pos = 0;
+      for (unsigned int i = 0; i < quickReference.size(); i++)
+      {
+        if (i >= limits[pos])
+          pos++;
+        quickReference[i] = pos;
+
+        std::cout << quickReference[i] << " ";
+      }
+      std::cout << std::endl;
+    }
   };
+
+
 
 
 }
