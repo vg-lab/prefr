@@ -22,7 +22,7 @@ namespace particles
     {
 public:
 
-      DefaultParticleUpdater(ParticleCollection* particlesArray, PrototypesArray* particlePrototype, vector<int>* _refPrototypes);
+      DefaultParticleUpdater(ParticleCollection* particlesArray);
       virtual ~DefaultParticleUpdater();
 
       virtual int Update(float deltaTime);

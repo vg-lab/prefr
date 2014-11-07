@@ -372,16 +372,17 @@ int main(int argc, char** argv)
 
   std::cout << "Created prototype." << std::endl;
 
-  ParticleCollection* colEmitter;
+  ParticleCollection* colEmissionNode;
 
+  ParticleCollection* colEmitter = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colUpdater = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colSorter = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colRenderer = new ParticleCollection(ps->particles, 0, maxParticles);
 
   std::cout << "Created collections" << std::endl;
 
-  PointParticleEmitter* emitter;
 
+  PointEmissionNode* emissionNode;
 
   int particlesPerEmitter = maxParticles / maxEmitters;
 
@@ -389,15 +390,19 @@ int main(int argc, char** argv)
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    colEmitter = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
-    std::cout << "Creating emitter " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
-    emitter = new PointParticleEmitter(colEmitter, ps->prototypes, &ps->particlePrototype, 0.3f, true, vec3(i * 10, 0, 0));
-    ps->AddEmitter(emitter);
+    colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
+    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+
+    emissionNode = new PointEmissionNode(colEmissionNode, vec3(i * 10, 0, 0));
+    ps->AddEmissionNode(emissionNode);
   }
 
+  DefaultParticleEmitter* emitter = new DefaultParticleEmitter(colEmitter, 0.3f, true);
+  ps->AddEmitter(emitter);
+  emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, ps->prototypes, &ps->particlePrototype);
+  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater);
   std::cout << "Created updater" << std::endl;
 
 #if (particles_WITH_CUDA)

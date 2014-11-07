@@ -24,10 +24,10 @@ public:
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
 
-    ParticleUpdater(ParticleCollection* particlesArray, PrototypesArray* particlePrototype, vector<int>* _refPrototypes)
+    ParticleUpdater(ParticleCollection* particlesArray)
     : particles( particlesArray )
-    , prototypes( particlePrototype )
-    , refPrototypes( _refPrototypes )
+    , prototypes( nullptr )
+    , refPrototypes( nullptr )
     {}
 
     virtual ~ParticleUpdater()

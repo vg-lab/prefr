@@ -34,6 +34,8 @@ namespace particles
 
     ParticleCollection* particles;
 
+    EmissionNodesArray* emissionNodes;
+
     PrototypesArray* prototypes;
 
     vector<ParticleEmitter*>* emitters;
@@ -41,6 +43,7 @@ namespace particles
     ParticleSorter* sorter;
     ParticleRenderer* renderer;
 
+    vector<int> particleEmissionNodes;
     vector<int> particlePrototype;
     vector<int> particleEmitter;
     vector<int> particleUpdater;
@@ -51,16 +54,16 @@ namespace particles
 
     bool loop;
 
-    ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
-                   , bool _loop = true);
+    ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate, bool _loop = true);
 
     virtual ~ParticleSystem();
 
-    void AddPrototype(ParticlePrototype* prototype);
-    void AddEmitter(ParticleEmitter* emitter);
-    void AddUpdater(ParticleUpdater* updater);
-    void SetSorter(ParticleSorter* sorter);
-    void SetRenderer(ParticleRenderer* renderConfig);
+    virtual void AddEmissionNode(EmissionNode* node);
+    virtual void AddPrototype(ParticlePrototype* prototype);
+    virtual void AddEmitter(ParticleEmitter* emitter);
+    virtual void AddUpdater(ParticleUpdater* updater);
+    virtual void SetSorter(ParticleSorter* sorter);
+    virtual void SetRenderer(ParticleRenderer* renderConfig);
 
 
     virtual void Start() = 0;
