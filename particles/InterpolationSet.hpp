@@ -27,7 +27,9 @@ namespace utils
     vector<T> values;
 
     vector<int> quickReference;
+    vector<float> invIntervals;
     float step;
+
 
     unsigned int size;
 
@@ -61,6 +63,10 @@ namespace utils
     }
 
 
+    T GetFirstValue()
+    {
+      return values[0];
+    }
 
     T GetValue(float time)
     {
@@ -68,34 +74,16 @@ namespace utils
       {
         assert(time >= 0 && time <= 1.0f);
 
-        unsigned int i = 0;
+        int i = floor(time * quickReference.size());
 
-        while (time > times[i+1])
-        {
-//          std::cout << time << " > " << i+1 << " " << times[i+1] << std::endl;
-          i++;
-        }
+        int ref = quickReference[i];
+        float relTime = clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
 
-        float relTime = (time - times[i]) / (times[i+1] - times[i]);
+//        std::cout << size << ", " << quickReference.size() << " time " << time << " step " << invIntervals[ref] << " -> " << i  << " times " << times[ref] << " - " << times[ref+1] << " reltime " << relTime << std::endl;
 
-//        std::cout << time << " -> times[" << i << "] = " << times[i]
-//                          << " -> times[" << i+1 << "] = " << times[i+1]
-//                          << " = " << relTime << std::endl;
-        T res = ((1.0f - relTime) * values[i] + relTime * values[i+1]);
+        T res = ((1.0f - relTime) * values[ref] + relTime * values[ref+1]);
 
         return res;
-
-//        while (i < size-1)
-//        {
-//          if (time >= times[i] && time < times[i+1])
-//          {
-//            return ((1.0f - time) * values[i] + time * values[i+1]);
-//          }
-//          i++;
-//        }
-//
-//        return ((1.0f - time) * values[size-2] + time * values[size-1]);
-
       }
       else
       {
@@ -109,27 +97,54 @@ namespace utils
     void UpdateQuickReference(float newTime)
     {
       int precision = 0;
-      std::string cad;// = std::to_string(newTime);
-//      precision = str.find_last_of('.');
-//      precision = precision > 0 ? str.length() - precision : 0;
-//      precision = pow(10.f, precision);
+      string str = std::to_string(newTime);
+
+      unsigned int pos = str.length()-1;
+      while (pos > 0)
+      {
+        if (str[pos] != '0')
+          break;
+        pos--;
+      }
+      str = str.substr(0, pos+1);
+
+      precision = str.rfind('.');
+      precision = precision > 0 ? str.length() - precision - 1 : 0;
+      precision = pow(10.f, precision);
+
+      std::cout << newTime << " -> " << str << " -> " << precision << std::endl;
 
       if (precision > quickReference.size())
         quickReference.resize(precision);
 
       step = 1.0f / quickReference.size();
 
+      invIntervals.resize(times.size(), 1.0f);
+
+      std::cout << "Intervals: " << invIntervals.size() << std::endl;
+      if (times.size() > 1)
+        for (unsigned int i = 0; i < times.size()-1; i++)
+        {
+
+          invIntervals[i] = 1.0f / (times[i+1] - times[i]);
+          std::cout << times[i+1] << " - " << times[i] << " = "  << invIntervals[i] << std::endl;
+        }
+      std::cout << std::endl;
 
       vector<int> limits(times.size());
 
+      std::cout << "Limits: " << limits.size() << std::endl;
       for (unsigned int i = 0; i < limits.size()-1; i++)
       {
-        limits[i] = int(floor(times[i+1] * step * precision));
+        limits[i] = int(floor(times[i+1] * quickReference.size()));
+        std::cout << limits[i] << " ";
+
       }
+      std::cout << std::endl;
 
       limits[limits.size()-1] = quickReference.size();
 
-      unsigned int pos = 0;
+      pos = 0;
       for (unsigned int i = 0; i < quickReference.size(); i++)
       {
         if (i >= limits[pos])

@@ -141,9 +141,9 @@ namespace particles
    //          current->position = this->position;// + 3.0f * current->velocity;
 
 
-             current->velocityModule = currentPrototype->velocity.GetValue(0);
-             current->color = currentPrototype->color.GetValue(0);
-             current->size = currentPrototype->size.GetValue(0);
+             current->velocityModule = currentPrototype->velocity.GetFirstValue();
+             current->color = currentPrototype->color.GetFirstValue();
+             current->size = currentPrototype->size.GetFirstValue();
 
          }
        }
