@@ -9,6 +9,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(particles)
 
+# Disable in source building 
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
+
 # Option to build with shared pointers or raw pointers
 option(WITH_CUDA "WITH_SHARED_PTR" OFF)
 if (WITH_CUDA)
@@ -40,6 +45,33 @@ set(CMAKE_CXX_FLAGS_DEBUG
 
 
 #########################################################
+# FIND NVIDIA OPENGL
+#########################################################
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  find_package(nvidiaOpenGL)
+  if ( NVIDIA_OPENGL_gl_LIBRARY )
+    set( CMAKE_EXE_LINKER_FLAGS "-L${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
+  endif()
+endif()
+
+
+#########################################################
+# FIND OPENGL
+#########################################################
+
+if (NOT OPENGL_FOUND)
+  find_package(OpenGL REQUIRED)
+  include_directories(${OpenGL_INCLUDE_DIRS})
+  link_directories(${OpenGL_LIBRARY_DIRS})
+  add_definitions(${OpenGL_DEFINITIONS})
+  if(NOT OPENGL_FOUND)
+    message(ERROR " OPENGL not found!")
+  endif(NOT OPENGL_FOUND)
+endif()
+
+
+#########################################################
 # FIND GLEW
 #########################################################
 
@@ -67,7 +99,7 @@ endif(NOT X11_FOUND)
 # FIND GLUT
 #########################################################
 
-find_package(GLUT)
+find_package(GLUT REQUIRED)
 include_directories(${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})
 add_definitions(${GLUT_DEFINITIONS})
@@ -75,16 +107,6 @@ if(NOT GLUT_FOUND)
     message(ERROR " GLUT not found!")
 endif(NOT GLUT_FOUND)
 
-#########################################################
-# FIND OPENGL
-#########################################################
-find_package(OpenGL REQUIRED)
-include_directories(${OpenGL_INCLUDE_DIRS})
-link_directories(${OpenGL_LIBRARY_DIRS})
-add_definitions(${OpenGL_DEFINITIONS})
-if(NOT OPENGL_FOUND)
-    message(ERROR " OPENGL not found!")
-endif(NOT OPENGL_FOUND)
 
 
 #find_package(X11 REQUIRED)
@@ -178,6 +200,7 @@ set_target_properties(${CMAKE_PROJECT_NAME}
   PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} 
   SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
 )
+
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
   ${OPENGL_LIBRARIES} 
