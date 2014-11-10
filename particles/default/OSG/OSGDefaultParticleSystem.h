@@ -11,43 +11,56 @@
 #include "../DefaultParticleSystem.h"
 
 #include <osg/Array>
-//#include <osg/>
+
+#include <osg/NodeVisitor>
+
+#include <osgGA/StandardManipulator>
+
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
 
-    namespace OSG
+    namespace OSGParticleSystem
     {
-//      class OSGPSNodeCallBack : public osg::NodeCallback
-//      {
-//      public:
+
+      class OSGPSNodeCallBack : public osg::NodeCallback
+      {
+      public:
+
+        void operator()(osg::Node* node, osg::NodeVisitor* nv)
+        {
+//          osg::ref_ptr<OSGDefaultParticleSystem> osgps =
+//              dynamic_cast<OSGDefaultParticleSystem*>( node->getUserData() );
 //
-//        void operator()(osg::Node* node, osg::NodeVisitor* nv)
-//        {
+//          if (osgps)
+//          {
+//            osgps->Update(0.1f);
+//          }
 //
-//        }
-//
-//      };
-//
-//      class OSGDefaultParticleSystem : public DefaultParticleSystem, public osg::Referenced
-//      {
-//      public:
-//
-//        osg::ref_ptr<osg::Vec3Array> vertices;
-//        osg::ref_ptr<osg::Vec4Array> positions;
-//        osg::ref_ptr<osg::Vec4Array> colors;
-//
-//        OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
-//                     , bool _loop = true){}
-//
-//
-//        virtual void UpdateCameraDistances(const vec3& cameraPosition);
-//        virtual void UpdateRender();
-//        virtual void Render();
-//
-//      };
+//          traverse(node, nv);
+        }
+
+      };
+
+      class OSGDefaultParticleSystem : public DefaultParticleSystem, public osg::Referenced
+      {
+      public:
+
+        osg::ref_ptr<osg::Vec3Array> vertices;
+        osg::ref_ptr<osg::Vec4Array> positions;
+        osg::ref_ptr<osg::Vec4Array> colors;
+
+        OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles
+                                 , float _emissionRate, bool _loop = true
+                                 , osgGA::StandardManipulator* cam = nullptr);
+
+        virtual void UpdateCameraDistances(const vec3& cameraPosition);
+        virtual void UpdateRender();
+        virtual void Render();
+
+      };
     }
 
   }
