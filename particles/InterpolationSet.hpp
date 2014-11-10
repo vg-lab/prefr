@@ -33,7 +33,7 @@ namespace utils
 
     unsigned int size;
 
-    InterpolationSet(void): size(0){}
+    InterpolationSet(void): step(1), size(0){}
 
   public:
 
@@ -68,15 +68,14 @@ namespace utils
       return values[0];
     }
 
+    // Implementation exportable to kernel due to avoiding loops
     T GetValue(float time)
     {
       if (size > 1 && time > 0.0f)
       {
         assert(time >= 0 && time <= 1.0f);
 
-        int i = floor(time * quickReference.size());
-
-        int ref = quickReference[i];
+        int ref = quickReference[floor(time * quickReference.size())];
         float relTime = clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
 
 //        std::cout << size << ", " << quickReference.size() << " time " << time << " step " << invIntervals[ref] << " -> " << i  << " times " << times[ref] << " - " << times[ref+1] << " reltime " << relTime << std::endl;
@@ -90,6 +89,37 @@ namespace utils
         return values[0];
       }
 
+    }
+
+    // Faster implementation for CPU interpolation.
+    T GetValueQuick(float time)
+    {
+      assert(time >= 0 && time <= 1.0f);
+
+      if (size > 1 && time > 0.0f)
+      {
+       unsigned int i = 0;
+
+       while (time > times[i+1])
+       {
+//          std::cout << time << " > " << i+1 << " " << times[i+1] << std::endl;
+         i++;
+       }
+
+       float relTime = (time - times[i]) * invIntervals[i];// / (times[i+1] - times[i]);
+
+//        std::cout << time << " -> times[" << i << "] = " << times[i]
+//                          << " -> times[" << i+1 << "] = " << times[i+1]
+//                          << " = " << relTime << std::endl;
+       T res = ((1.0f - relTime) * values[i] + relTime * values[i+1]);
+
+       return res;
+
+      }
+      else
+      {
+        return values[0];
+      }
     }
 
   private:
