@@ -10,12 +10,26 @@
 
 #include <particles/config.h>
 
+#include "../Particle.h"
 #include "../ParticleEmitter.h"
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
+
+    class PointEmissionNode : public EmissionNode
+    {
+    public:
+
+      vec3 position;
+
+      PointEmissionNode(ParticleCollection* arrayParticles, vec3 _position);
+      virtual ~PointEmissionNode();
+
+      virtual vec3 GetEmissionPosition();
+      virtual vec3 GetEmissionVelocityDirection();
+    };
 
 
 
@@ -25,24 +39,29 @@ namespace particles
 
     class DefaultParticleEmitter : public ParticleEmitter
     {
-public:
+    private:
 
+      float normalizationFactor;
 
-      DefaultParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                              , float _emissionRate, bool _loop);
+    public:
+
+      vector<int> emissionNodeParticlesPerCycle;
+
+      DefaultParticleEmitter (ParticleCollection* particlesArray, float _emissionRate, bool _loop);
 
       ~DefaultParticleEmitter();
 
-      void EmitAll(float deltaTime);
+      virtual void EmitAll(float deltaTime);
 
-      int EmitSingle(unsigned int i);
+      virtual void StartEmission(float deltaTime);
+      virtual int EmitSingle(unsigned int i);
 
-protected:
-
-      virtual void EmitFunction(unsigned int i, bool override = false) = 0;
+      virtual void UpdateConfiguration();
 
 
-      float lifeThreshold;
+    protected:
+
+      virtual void EmitFunction(unsigned int i, bool override = false);
 
     };
 
@@ -50,18 +69,17 @@ protected:
     // Point Emitter
     //**********************************************************
 
-    class PointParticleEmitter : public DefaultParticleEmitter
-    {
-public:
-      vec3 position;
-
-      PointParticleEmitter(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                   , float _emissionRate, bool _loop, vec3 position);
-
-
-    protected:
-      virtual void EmitFunction(unsigned int i, bool override);
-    };
+//    class PointParticleEmitter : public DefaultParticleEmitter
+//    {
+//public:
+//      vec3 position;
+//
+//      PointParticleEmitter(ParticleCollection* particlesArray, float _emissionRate, bool _loop, vec3 position);
+//
+//
+//    protected:
+//      virtual void EmitFunction(unsigned int i, bool override);
+//    };
 
   }
 }

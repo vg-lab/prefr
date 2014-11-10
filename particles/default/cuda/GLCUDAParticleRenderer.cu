@@ -1,20 +1,21 @@
 /*
- * DefaultParticleRenderConfig.cpp
+ * GLCUDAParticleRenderer.cpp
  *
- *  Created on: 15/10/2014
- *      Author: sergio
+ *  Created on: 31/10/2014
+ *      Author: sgalindo
  */
 
-#include "GLDefaultParticleRenderer.h"
+#include "GLCUDAParticleRenderer.cuh"
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
-    namespace GL
+    namespace CUDATHRUST
     {
 
-      GLDefaultParticleRenderer::GLDefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
+
+      GLCUDAParticleRenderer::GLCUDAParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
                                                                , RenderConfig* renderConfiguration)
       : ParticleRenderer( particlesArray )
       , distances( distancesArray)
@@ -58,19 +59,19 @@ namespace particles
 
       }
 
-      GLDefaultParticleRenderer::~GLDefaultParticleRenderer()
+      GLCUDAParticleRenderer::~GLCUDAParticleRenderer()
       {
         delete( particles );
       }
 
-      void GLDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
+      void GLCUDAParticleRenderer::SetupRender(unsigned int aliveParticles)
       {
         tparticle_ptr currentParticle;
         int idx;
 
         for (unsigned int i = 0; i < aliveParticles; i++)
         {
-          currentParticle = particles->elements->at(distances->at(i).Id());
+          currentParticle = particles->elements->at(distances->hostID[i]);
 
           idx = i * 4;
 
@@ -98,7 +99,7 @@ namespace particles
 
       }
 
-      void GLDefaultParticleRenderer::Paint(unsigned int aliveParticles)
+      void GLCUDAParticleRenderer::Paint(unsigned int aliveParticles)
       {
         // Bind vertices
           glEnableVertexAttribArray(0);
@@ -124,6 +125,12 @@ namespace particles
           glDisableVertexAttribArray(1);
           glDisableVertexAttribArray(2);
       }
+
+
     }
+
   }
+
 }
+
+

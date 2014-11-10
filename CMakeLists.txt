@@ -9,6 +9,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(particles)
 
+# Disable in source building 
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
+
 # Option to build with shared pointers or raw pointers
 option(WITH_CUDA "WITH_SHARED_PTR" OFF)
 if (WITH_CUDA)
@@ -17,6 +22,12 @@ else()
   set(${PROJECT_NAME}_WITH_CUDA 0)
 endif()
 
+option(PROFILE "ACTIVATE PROFILING" OFF)
+IF (PROFILE)
+  SET(${PROJECT_NAME}_PROFILING 1)
+ELSE ()
+  SET(${PROJECT_NAME}_PROFILING 0)
+ENDIF()
 
 # Version numbers
 set(${PROJECT_NAME}_VERSION_MAJOR 0)
@@ -37,6 +48,39 @@ set(CMAKE_CXX_FLAGS
   "${CMAKE_CXX_FLAGS} -std=c++11  -Wall -Wno-unknown-pragmas")
 set(CMAKE_CXX_FLAGS_DEBUG 
   "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
+SET(LINK_MODE "SHARED")
+IF (PROFILE)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+	SET(LINK_MODE "STATIC")
+	MESSAGE("${PROJECT_NAME} Profiling ON, LINK MODE ${LINK_MODE}" )	
+ENDIF()
+
+#########################################################
+# FIND NVIDIA OPENGL
+#########################################################
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  find_package(nvidiaOpenGL)
+  if ( NVIDIA_OPENGL_gl_LIBRARY )
+    set( CMAKE_EXE_LINKER_FLAGS "-L${NVIDIA_OPENGL_gl_LIBRARY_PATH}" )
+  endif()
+endif()
+
+
+#########################################################
+# FIND OPENGL
+#########################################################
+
+if (NOT OPENGL_FOUND)
+  find_package(OpenGL REQUIRED)
+  include_directories(${OpenGL_INCLUDE_DIRS})
+  link_directories(${OpenGL_LIBRARY_DIRS})
+  add_definitions(${OpenGL_DEFINITIONS})
+  if(NOT OPENGL_FOUND)
+    message(ERROR " OPENGL not found!")
+  endif(NOT OPENGL_FOUND)
+endif()
 
 
 #########################################################
@@ -67,7 +111,7 @@ endif(NOT X11_FOUND)
 # FIND GLUT
 #########################################################
 
-find_package(GLUT)
+find_package(GLUT REQUIRED)
 include_directories(${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})
 add_definitions(${GLUT_DEFINITIONS})
@@ -75,16 +119,6 @@ if(NOT GLUT_FOUND)
     message(ERROR " GLUT not found!")
 endif(NOT GLUT_FOUND)
 
-#########################################################
-# FIND OPENGL
-#########################################################
-find_package(OpenGL REQUIRED)
-include_directories(${OpenGL_INCLUDE_DIRS})
-link_directories(${OpenGL_LIBRARY_DIRS})
-add_definitions(${OpenGL_DEFINITIONS})
-if(NOT OPENGL_FOUND)
-    message(ERROR " OPENGL not found!")
-endif(NOT OPENGL_FOUND)
 
 
 #find_package(X11 REQUIRED)
@@ -143,7 +177,8 @@ INCLUDE_DIRECTORIES(${OPENSCENEGRAPH_INCLUDE_DIRS})
 FILE(GLOB particles_SOURCES 
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/*.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/GL/*.cpp)
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/GL/*.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/OSG/*.cpp)
 
 
 configure_file (
@@ -160,13 +195,15 @@ SET( CUDA_PROPAGATE_HOST_FLAGS OFF )
 
 if (NOT WITH_CUDA)
   # Build library
-  add_library (${PROJECT_NAME} SHARED
+  add_library (${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES})
 else()	
   message(${CUDA_VERSION})
-  CUDA_ADD_LIBRARY(${PROJECT_NAME} SHARED
+  CUDA_ADD_LIBRARY(${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES}
-    particles/cuda/ThrustParticleSorter.cu
+    particles/default/cuda/ThrustParticleSorter.cu
+    particles/default/cuda/GLCUDAParticleRenderer.cu
+    particles/default/cuda/CUDAParticleSystem.cu
     OPTIONS -arch sm_20
     )
 endif()
@@ -175,6 +212,7 @@ set_target_properties(${CMAKE_PROJECT_NAME}
   PROPERTIES VERSION ${${CMAKE_PROJECT_NAME}_VERSION} 
   SOVERSION ${${CMAKE_PROJECT_NAME}_VERSION}
 )
+
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
   ${OPENGL_LIBRARIES} 

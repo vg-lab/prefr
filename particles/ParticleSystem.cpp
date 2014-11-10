@@ -10,12 +10,9 @@
 namespace particles
 {
 
-  ParticleSystem::ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
-               , bool _loop)
-  : emitters(nullptr)
-  , updaters(nullptr)
-  , sorter(nullptr)
-  , renderer(nullptr)
+  ParticleSystem::ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate, bool _loop)
+  : sorter( nullptr )
+  , renderer( nullptr )
   , maxParticles (_maxParticles)
   , emissionRate(_emissionRate)
   , loop(_loop)
@@ -23,9 +20,13 @@ namespace particles
     tparticleContainer* p = new tparticleContainer(maxParticles);
     particles = new ParticleCollection(p, p->begin(), p->end());
 
-    particleEmitter.resize(maxParticles);
-    particleUpdater.resize(maxParticles);
+    particleEmissionNodes.resize(maxParticles, -1);
+    particlePrototype.resize(maxParticles, -1);
+    particleEmitter.resize(maxParticles, -1);
+    particleUpdater.resize(maxParticles, -1);
 
+    emissionNodes = new EmissionNodesArray;
+    prototypes = new PrototypesArray;
     emitters = new vector<ParticleEmitter*>;
     updaters = new vector<ParticleUpdater*>;
 
@@ -43,10 +44,40 @@ namespace particles
 
   ParticleSystem::~ParticleSystem()
   {
-    delete(emitters);
-    delete(updaters);
-    delete(sorter);
-    delete(renderer);
+    delete( emissionNodes );
+    delete( prototypes);
+    delete( emitters );
+    delete( updaters );
+    delete( sorter );
+    delete( renderer );
+  }
+
+  void ParticleSystem::AddEmissionNode(EmissionNode* node)
+  {
+    this->emissionNodes->push_back(node);
+
+    int size = this->emissionNodes->size();
+    int start = node->particles->start - this->particles->start;
+    int end = node->particles->end - this->particles->start;
+
+    for (int i = start; i < end; i++)
+    {
+      this->particleEmissionNodes[i] = size-1;
+    }
+  }
+
+  void ParticleSystem::AddPrototype(ParticlePrototype* prototype)
+  {
+    this->prototypes->push_back(prototype);
+
+    int size = this->prototypes->size();
+    int start = prototype->particles->start - this->particles->start;
+    int end = prototype->particles->end - this->particles->start;
+
+    for (int i = start; i < end; i++)
+    {
+      this->particlePrototype[i] = size-1;
+    }
   }
 
   void ParticleSystem::AddEmitter(ParticleEmitter* emitter)
@@ -62,6 +93,12 @@ namespace particles
       this->particleEmitter[i] = size-1;
     }
 
+    emitter->emissionNodes = this->emissionNodes;
+    emitter->refEmissionNodes = &this->particleEmissionNodes;
+
+    emitter->prototypes = this->prototypes;
+    emitter->refPrototypes = &this->particlePrototype;
+
   }
   void ParticleSystem::AddUpdater(ParticleUpdater* updater)
   {
@@ -75,6 +112,9 @@ namespace particles
     {
       this->particleUpdater[i] = size-1;
     }
+
+    updater->prototypes = this->prototypes;
+    updater->refPrototypes = &this->particlePrototype;
 
   }
   void ParticleSystem::SetSorter(ParticleSorter* sorter)

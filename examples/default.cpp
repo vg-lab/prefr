@@ -1,17 +1,29 @@
 #include <particles/ParticleSystem.h>
-#include <particles/default/GL/GLDefaultParticleSystem.h>
+
+#include <particles/ParticlePrototype.h>
+
 #include <particles/default/DefaultParticleEmitter.h>
 #include <particles/default/DefaultParticleUpdater.h>
-#include <particles/default/GL/GLDefaultParticleSorter.h>
-#include <particles/default/GL/GLDefaultParticleRenderer.h>
+
 #if (particles_WITH_CUDA)
-  #include <particles/cuda/ThrustParticleSorter.cuh>
+  #include <particles/default/cuda/ThrustParticleSorter.cuh>
+  #include <particles/default/cuda/CUDAParticleSystem.cuh>
+  #include <particles/default/cuda/GLCUDAParticleRenderer.cuh>
+#else
+  #include <particles/default/GL/GLDefaultParticleSystem.h>
+  #include <particles/default/GL/GLDefaultParticleSorter.h>
+  #include <particles/default/GL/GLDefaultParticleRenderer.h>
 #endif
 
 #include <particles/default/GL/CShader.h>
 
 using namespace particles::defaultParticleSystem;
-using namespace particles::defaultParticleSystem::GL;
+
+#if (particles_WITH_CUDA)
+  using namespace particles::defaultParticleSystem::CUDATHRUST;
+#else
+  using namespace particles::defaultParticleSystem::GL;
+#endif
 
 using namespace glm;
 
@@ -44,7 +56,11 @@ float mouseYThreshold;
 
 CShader* particlesShader;
 
-GLDefaultParticleSystem* ps;
+#if (particles_WITH_CUDA)
+  CUDAParticleSystem* ps;
+#else
+  GLDefaultParticleSystem* ps;
+#endif
 
 bool emit = true;
 
@@ -293,40 +309,80 @@ int main(int argc, char** argv)
     maxEmitters = atoi(argv[2]);
 
 
-
+#if (particles_WITH_CUDA == 1)
+  ps = new CUDAParticleSystem(10, maxParticles, 0.3f, true);
+#else
   ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
+#endif
 
-  ParticlePrototype* prototype = new ParticlePrototype();
-  prototype->minLife = 3.0f;
-  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 255)));
+  ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
+
+  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
+//  prototype->minLife = 3.0f;
+//  prototype->maxLife = 5.0f;
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 50)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 255)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 0)));
-
-  for (int i = 0; i < prototype->color.size; i++)
-  {
-    glm::vec4 c = prototype->color.values[i];
-    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
-  }
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(0, 127, 127, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
 
+  prototype->particles = colProto;
+
+  ps->AddPrototype(prototype);
+
+  colProto = new ParticleCollection(ps->particles, maxParticles / 2, maxParticles);
+
+  prototype = new ParticlePrototype(3.0f, 5.0f);
+
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(255, 255, 0, 50)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 255, 255, 0)));
+
+  prototype->velocity.Insert(0.0f, 3.0f);
+  prototype->velocity.Insert(1.0f, 5.0f);
+
+  prototype->size.Insert(0.0f, 1.0f);
+
+  prototype->particles = colProto;
+
+  ps->AddPrototype(prototype);
+
+//  for (int i = 0; i < prototype->color.size; i++)
+//  {
+//    glm::vec4 c = prototype->color.values[i];
+//    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
+//  }
+
+//  for (unsigned int i = 0; i < ps->particlePrototype.size(); i++)
+//  {
+//    ParticlePrototype* current = ps->prototypes->at(ps->particlePrototype[i]);
+//    vec4 color = current->color.values[0];
+//    std::cout << i << " "<< ps->particlePrototype[i] << " color: " <<
+//                                                          color.x << " " <<
+//                                                          color.y << " " <<
+//                                                          color.z << " " <<
+//                                                          color.w << " " <<
+//                                                          std::endl;
+//  }
+
   std::cout << "Created prototype." << std::endl;
 
-  ParticleCollection* colEmitter;
+  ParticleCollection* colEmissionNode;
 
+  ParticleCollection* colEmitter = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colUpdater = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colSorter = new ParticleCollection(ps->particles, 0, maxParticles);
   ParticleCollection* colRenderer = new ParticleCollection(ps->particles, 0, maxParticles);
 
   std::cout << "Created collections" << std::endl;
 
-  PointParticleEmitter* emitter;
 
+  PointEmissionNode* emissionNode;
 
   int particlesPerEmitter = maxParticles / maxEmitters;
 
@@ -334,27 +390,35 @@ int main(int argc, char** argv)
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    colEmitter = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
-    std::cout << "Creating emitter " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
-    emitter = new PointParticleEmitter(colEmitter, prototype, 0.5f, true, vec3(i * 10, 0, 0));
-    ps->AddEmitter(emitter);
+    colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
+    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+
+    emissionNode = new PointEmissionNode(colEmissionNode, vec3(i * 10, 0, 0));
+    ps->AddEmissionNode(emissionNode);
   }
 
+  DefaultParticleEmitter* emitter = new DefaultParticleEmitter(colEmitter, 0.3f, true);
+  ps->AddEmitter(emitter);
+  emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater, prototype);
+  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater);
   std::cout << "Created updater" << std::endl;
 
-#if (particles_WITH_CUDA == 1)
+#if (particles_WITH_CUDA)
   ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
 #else
   GLDefaultParticleSorter* sorter = new GLDefaultParticleSorter(colSorter, ps->distances);
-
-
 #endif
+
+
   std::cout << "Created sorter" << std::endl;
 
+#if (particles_WITH_CUDA)
+  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+#else
   GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+#endif
 
   std::cout << "Created systems" << std::endl;
 

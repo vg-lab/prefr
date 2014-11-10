@@ -11,6 +11,7 @@
 #include <particles/config.h>
 #include "InterpolationSet.hpp"
 #include "ElementCollection.hpp"
+#include "ParticlePrototype.h"
 
 using namespace utils;
 
@@ -129,26 +130,19 @@ namespace particles
 //    return RGB;
 //  }
 
-  typedef InterpolationSet<float> vectortfloat;
-  typedef InterpolationSet<vec3> vectortvec3;
-  typedef InterpolationSet<vec4> vectortvec4;
-
-  class ParticlePrototype
+  class EmissionNode
   {
   public:
-    float minLife = 0;
-    float maxLife;
-    float lifeNormalization;
-    float dispersion;
+    ParticleCollection* particles;
 
-    vectortfloat size;
+    EmissionNode(ParticleCollection* arrayParticles): particles(arrayParticles){}
+    virtual ~EmissionNode(void) {delete particles;}
 
-    vec3 positionOffset;
-
-    vectortfloat velocity;
-    vectortvec4 color;
-
+    virtual vec3 GetEmissionPosition() = 0;
+    virtual vec3 GetEmissionVelocityDirection() = 0;
   };
+
+  typedef vector<EmissionNode*> EmissionNodesArray;
 
 
   class ParticleEmitter
@@ -157,19 +151,26 @@ namespace particles
 
     ParticleCollection* particles;
 
-    ParticlePrototype* particleBase;
+    vector<EmissionNode*>* emissionNodes;
+    vector<int>* refEmissionNodes;
+
+    PrototypesArray* prototypes;
+    vector<int>* refPrototypes;
 
     int maxParticles;
     int particlesPerCycle;
     float emissionRate;
     bool loop;
 
-    ParticleEmitter(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype, float _emissionRate, bool _loop)
-    : particles(particlesArray)
-    , particleBase(particlePrototype)
-    , particlesPerCycle(0)
-    , emissionRate(_emissionRate)
-    , loop (_loop)
+    ParticleEmitter(ParticleCollection* particlesArray, float _emissionRate, bool _loop)
+    : particles( particlesArray )
+    , emissionNodes( nullptr )
+    , refEmissionNodes( nullptr )
+    , prototypes( nullptr )
+    , refPrototypes( nullptr )
+    , particlesPerCycle( 0 )
+    , emissionRate( _emissionRate )
+    , loop( _loop )
     {
       maxParticles = particlesArray->size;
     }
@@ -177,13 +178,13 @@ namespace particles
     virtual ~ParticleEmitter()
     {
       delete( particles );
-      delete( particleBase );
+      delete( prototypes );
 
     }
 
 
 
-    virtual void StartEmission(float deltaTime){ particlesPerCycle = emissionRate * maxParticles;}
+    virtual void StartEmission(float deltaTime){ particlesPerCycle = emissionRate * maxParticles * deltaTime;}
     virtual int EmitSingle(unsigned int i) = 0;
 
     virtual void EmitAll(float deltaTime) = 0;

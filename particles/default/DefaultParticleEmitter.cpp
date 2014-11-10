@@ -11,78 +11,9 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-
-    //**********************************************************
-    // Default Emitter
-    //**********************************************************
-
-
-    DefaultParticleEmitter::DefaultParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                  , float _emissionRate, bool _loop)
-     : ParticleEmitter(particlesArray, particlePrototype, _emissionRate, loop)
-    {
-
-      lifeThreshold = particlePrototype->maxLife - particlePrototype->minLife;
-
-    }
-
-    DefaultParticleEmitter::~DefaultParticleEmitter()
-    {
-      delete( particles );
-      delete( particleBase );
-    }
-
-
-    void DefaultParticleEmitter::EmitAll(float deltaTime)
-    {
-
-      this->particlesPerCycle = emissionRate * deltaTime;
-
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      {
-        if (particlesPerCycle)
-        {
-          this->EmitFunction((*it)->id);
-          particlesPerCycle--;
-        }
-        else
-        {
-          break;
-        }
-      }
-
-    }
-
-    int DefaultParticleEmitter::EmitSingle(unsigned int i)
-    {
-      if (this->particlesPerCycle)
-      {
-        this->EmitFunction(i);
-        this->particlesPerCycle--;
-      }
-
-      // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
-      return particlesPerCycle;
-    }
-
-
-
-    //**********************************************************
-    // Point Emitter
-    //**********************************************************
-
-
-    PointParticleEmitter::PointParticleEmitter (ParticleCollection* particlesArray, ParticlePrototype* particlePrototype
-                                      , float _emissionRate, bool _loop, vec3 position)
-         : DefaultParticleEmitter(particlesArray, particlePrototype, _emissionRate, loop)
-         , position(position)
-    {
-
-    }
-
     static float invRandMax = 1.0f / RAND_MAX;
 
-    vec3 GetRandomVelocityDirection()
+    vec3 GetRandomDirection()
     {
       float theta, phi, vxz;
 
@@ -93,25 +24,168 @@ namespace particles
       return vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
     }
 
-    void PointParticleEmitter::EmitFunction(unsigned int i, bool override)
+
+    PointEmissionNode::PointEmissionNode(ParticleCollection* arrayParticles, vec3 _position)
+    : EmissionNode( arrayParticles )
+    ,position( _position )
+    {}
+
+    PointEmissionNode::~PointEmissionNode()
+    {
+      delete ( particles );
+    }
+
+    vec3 PointEmissionNode::GetEmissionPosition()
+    {
+      return position;
+    }
+
+    vec3 PointEmissionNode::GetEmissionVelocityDirection()
+    {
+      return GetRandomDirection();
+    }
+
+
+
+    //**********************************************************
+    // Default Emitter
+    //**********************************************************
+
+
+    DefaultParticleEmitter::DefaultParticleEmitter (ParticleCollection* particlesArray
+                                                    , float _emissionRate, bool _loop)
+    : ParticleEmitter(particlesArray, _emissionRate, loop)
+    {
+      normalizationFactor = 1.0f/particles->size;
+
+      UpdateConfiguration();
+    }
+
+    DefaultParticleEmitter::~DefaultParticleEmitter()
+    {
+      delete( particles );
+      delete( prototypes );
+    }
+
+    void DefaultParticleEmitter::UpdateConfiguration()
+    {
+      if (emissionNodes)
+        emissionNodeParticlesPerCycle.resize(emissionNodes->size());
+    }
+
+    void DefaultParticleEmitter::EmitAll(float deltaTime)
     {
 
-        tparticleptr current = particles->elements->at(i);
+      this->particlesPerCycle = emissionRate * deltaTime * maxParticles;
 
-        if (!current->Alive() || override)
+      for (unsigned int i = 0; i < emissionNodes->size(); i ++)
+      {
+        emissionNodeParticlesPerCycle[i] = particlesPerCycle * normalizationFactor;
+        std::cout << emissionNodeParticlesPerCycle[i] << std::endl;
+      }
+
+      int* nodeParticlesPerCycle;
+      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+      {
+        nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( (*it)->id )];
+        if (*nodeParticlesPerCycle)
         {
-          current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * lifeThreshold + particleBase->minLife;
+          this->EmitFunction((*it)->id);
+          (*nodeParticlesPerCycle)--;
+        }
+        else
+        {
+          break;
+        }
+      }
 
-          current->velocity = GetRandomVelocityDirection();
-          current->position = this->position + 3.0f * current->velocity;
+    }
 
+    void DefaultParticleEmitter::StartEmission(float deltaTime)
+    {
+      particlesPerCycle = emissionRate * maxParticles * deltaTime;
 
-          current->velocityModule = this->particleBase->velocity.GetValue(0);
-          current->color = this->particleBase->color.GetValue(0);
-          current->size = this->particleBase->size.GetValue(0);
+      for (unsigned int i = 0; i < emissionNodes->size(); i ++)
+      {
 
+        emissionNodeParticlesPerCycle[i] = fmax(1.0f, particlesPerCycle * emissionNodes->at(i)->particles->size * normalizationFactor);
+//        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
       }
     }
+
+    int DefaultParticleEmitter::EmitSingle(unsigned int i)
+    {
+      int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( i )];
+      if (*nodeParticlesPerCycle && !particles->elements->at( i )->Alive())
+      {
+        this->EmitFunction(i);
+        (*nodeParticlesPerCycle)--;
+      }
+
+      // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
+      return (*nodeParticlesPerCycle);
+    }
+
+    void DefaultParticleEmitter::EmitFunction(unsigned int i, bool override)
+       {
+
+           tparticle_ptr current = particles->elements->at(i);
+           tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
+
+           if (currentPrototype && (!current->Alive() || override))
+           {
+             current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+
+             current->velocity = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionVelocityDirection();
+             current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();
+   //          current->position = this->position;// + 3.0f * current->velocity;
+
+
+             current->velocityModule = currentPrototype->velocity.GetFirstValue();
+             current->color = currentPrototype->color.GetFirstValue();
+             current->size = currentPrototype->size.GetFirstValue();
+
+         }
+       }
+
+
+
+    //**********************************************************
+    // Point Emitter
+    //**********************************************************
+
+
+//    PointParticleEmitter::PointParticleEmitter (ParticleCollection* particlesArray
+//                                                , float _emissionRate, bool _loop, vec3 position)
+//    : DefaultParticleEmitter(particlesArray, _emissionRate, loop)
+//    , position(position)
+//    {
+//
+//    }
+
+
+
+//    void PointParticleEmitter::EmitFunction(unsigned int i, bool override)
+//    {
+//
+//        tparticle_ptr current = particles->elements->at(i);
+//        tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
+//
+//        if (currentPrototype && (!current->Alive() || override))
+//        {
+//          current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+//
+//          current->velocity = GetRandomVelocityDirection();
+//          current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();
+////          current->position = this->position;// + 3.0f * current->velocity;
+//
+//
+//          current->velocityModule = currentPrototype->velocity.GetValue(0);
+//          current->color = currentPrototype->color.GetValue(0);
+//          current->size = currentPrototype->size.GetValue(0);
+//
+//      }
+//    }
 
 
   }

@@ -2,14 +2,11 @@
 #define THRUSTPARTICLESORTER_H_
 
 #include <particles/config.h>
-#include "../default/DefaultTypes.h"
-#include "../ParticleSorter.h"
-#include "../default/GL/GLDefaultParticleSorter.h"
+#include "CUDAThrustTypes.cuh"
+#include "../../ParticleSorter.h"
 
 
 #include <thrust/sort.h>
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
 #include <thrust/copy.h>
 
 namespace particles
@@ -17,15 +14,16 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    namespace GL
+    namespace CUDATHRUST
     {
 
-      class ThrustParticleSorter : public GLDefaultParticleSorter
+      class ThrustParticleSorter : public ParticleSorter
       {
       public:
 
+        distanceArray* distances;
 
-        ThrustParticleSorter(ParticleCollection* arrayParticles, DistanceArray* distanceArray);
+        ThrustParticleSorter(ParticleCollection* arrayParticles, distanceArray* distanceArray);
 
         void Sort(SortOrder order);
 

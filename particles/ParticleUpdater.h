@@ -21,17 +21,19 @@ namespace particles
   {
 public:
     ParticleCollection* particles;
-    ParticlePrototype* particleBase;
+    PrototypesArray* prototypes;
+    vector<int>* refPrototypes;
 
-    ParticleUpdater(ParticleCollection* particlesArray, ParticlePrototype* particlePrototype)
+    ParticleUpdater(ParticleCollection* particlesArray)
     : particles( particlesArray )
-    , particleBase( particlePrototype )
+    , prototypes( nullptr )
+    , refPrototypes( nullptr )
     {}
 
     virtual ~ParticleUpdater()
     {
       delete (particles);
-      delete (particleBase);
+      delete (prototypes);
     }
 
     // Updates collection particles

@@ -11,9 +11,11 @@
 #include "../DefaultParticleSystem.h"
 
 #include <osg/Array>
+
 #include <osg/NodeVisitor>
 
 #include <osgGA/StandardManipulator>
+
 
 namespace particles
 {

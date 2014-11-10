@@ -50,7 +50,7 @@ namespace particles
       int accumulator = 0;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
-        i = ((tparticleptr) *it)->id;
+        i = ((tparticle_ptr) *it)->id;
 
         // Emit each particle with its own emitter
         emitters->at(particleEmitter[i])->EmitSingle(i);
