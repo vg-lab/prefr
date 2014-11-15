@@ -8,14 +8,23 @@
 #ifndef OSGDEFAULTPARTICLESYSTEM_H_
 #define OSGDEFAULTPARTICLESYSTEM_H_
 
+#include "OSGTypes.h"
 #include "../DefaultParticleSystem.h"
 
 #include <osg/Array>
+#include <osg/Geometry>
 
 #include <osg/NodeVisitor>
 
 #include <osgGA/StandardManipulator>
 
+#include <osgDB/FileUtils>
+
+#include <osg/State>
+#include <osg/GL>
+
+#include "OSGDefaultParticleSorter.h"
+#include "OSGDefaultParticleRenderer.h"
 
 namespace particles
 {
@@ -25,41 +34,51 @@ namespace particles
     namespace OSGParticleSystem
     {
 
-      class OSGPSNodeCallBack : public osg::NodeCallback
+      #define ATRIB_ARRAY_POSITIONS 1
+
+      class OSGPSNodeCallBack : public osg::Drawable::UpdateCallback
       {
       public:
 
-        void operator()(osg::Node* node, osg::NodeVisitor* nv)
-        {
-//          osg::ref_ptr<OSGDefaultParticleSystem> osgps =
-//              dynamic_cast<OSGDefaultParticleSystem*>( node->getUserData() );
-//
-//          if (osgps)
-//          {
-//            osgps->Update(0.1f);
-//          }
-//
-//          traverse(node, nv);
-        }
+        void update(osg::NodeVisitor* nv, osg::Drawable* node);
 
       };
 
-      class OSGDefaultParticleSystem : public DefaultParticleSystem, public osg::Referenced
+      class OSGDefaultParticleSystem : public DefaultParticleSystem, public osg::Drawable
       {
       public:
 
-        osg::ref_ptr<osg::Vec3Array> vertices;
-        osg::ref_ptr<osg::Vec4Array> positions;
-        osg::ref_ptr<osg::Vec4Array> colors;
+        osgGA::StandardManipulator* cameraManipulator;
 
+        distanceArray* distances;
+
+        RenderConfig* renderConfig;
+
+        osg::Geode* rootNode;
+
+        OSGDefaultParticleSystem();
+        OSGDefaultParticleSystem(const OSGDefaultParticleSystem& other, const osg::CopyOp& copyOp);
         OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles
                                  , float _emissionRate, bool _loop = true
                                  , osgGA::StandardManipulator* cam = nullptr);
 
+        META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
+
+        virtual void SetCameraManipulator(osgGA::StandardManipulator* cam);
+        virtual void LoadProgram();
+
+        virtual void SetRenderer(ParticleRenderer* renderConfig);
+
+        virtual void Update(float deltaTime);
         virtual void UpdateCameraDistances(const vec3& cameraPosition);
         virtual void UpdateRender();
-        virtual void Render();
+        virtual void Render() const;
 
+        virtual osg::BoundingBox computeBound() const;
+        virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
+        virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
+        virtual void accept(osg::PrimitiveFunctor& functor) const;
+        virtual void releaseGLObjects(osg::State* state) const;
       };
     }
 

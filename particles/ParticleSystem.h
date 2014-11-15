@@ -75,7 +75,7 @@ namespace particles
     virtual void UpdateRender() = 0;
 
     // Render method
-    virtual void Render() = 0;
+    virtual void Render() const = 0;
 
   };
 

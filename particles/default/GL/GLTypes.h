@@ -8,7 +8,17 @@
 #ifndef GLTYPES_H_
 #define GLTYPES_H_
 
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
+#include <FreeImage.h>
+
 #include "../DefaultTypes.h"
+
+#include <vector>
+
+using namespace std;
 
 namespace particles
 {
@@ -106,7 +116,7 @@ namespace particles
         GLuint vao;
         GLuint vboBillboardVertex;
         GLuint vboParticlesPositions;
-        GLbyte vboParticlesColor;
+        GLuint vboParticlesColor;
 
       };
     }

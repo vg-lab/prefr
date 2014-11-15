@@ -34,7 +34,7 @@ namespace particles
 
     virtual void SetupRender(unsigned int aliveParticles = 0) = 0;
 
-    virtual void Paint(unsigned int aliveParticles = 0) = 0;
+    virtual void Paint(unsigned int aliveParticles = 0) const = 0;
   };
 
 }

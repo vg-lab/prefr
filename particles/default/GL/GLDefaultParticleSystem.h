@@ -34,7 +34,7 @@ namespace particles
 
         virtual void UpdateCameraDistances(const vec3& cameraPosition);
         virtual void UpdateRender();
-        virtual void Render();
+        virtual void Render() const;
       };
 
     }

@@ -35,7 +35,7 @@ namespace particles
       virtual void UpdateSeparated(float deltaTime);
       virtual void UpdateCameraDistances(const vec3& cameraPosition) = 0;
       virtual void UpdateRender() = 0;
-      virtual void Render() = 0;
+      virtual void Render() const = 0;
     };
 
   }

@@ -22,8 +22,6 @@ namespace particles
 
       }
 
-
-
       void GLDefaultParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
       {
         unsigned int i = 0;
@@ -41,7 +39,7 @@ namespace particles
        static_cast<GLDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
       }
 
-      void GLDefaultParticleSystem::Render()
+      void GLDefaultParticleSystem::Render() const
       {
        static_cast<GLDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
       }

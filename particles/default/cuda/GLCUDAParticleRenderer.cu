@@ -99,7 +99,7 @@ namespace particles
 
       }
 
-      void GLCUDAParticleRenderer::Paint(unsigned int aliveParticles)
+      void GLCUDAParticleRenderer::Paint(unsigned int aliveParticles) const
       {
         // Bind vertices
           glEnableVertexAttribArray(0);
