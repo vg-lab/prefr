@@ -30,13 +30,9 @@ namespace particles
         int currentAliveParticles;
 
 
-
-//        META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleRenderer)
-
-//        OSGDefaultParticleRenderer();
-//        OSGDefaultParticleRenderer(const OSGDefaultParticleRenderer& other, const osg::CopyOp& copyOp);
-        OSGDefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
-                                    , RenderConfig* renderConfiguration);
+        OSGDefaultParticleRenderer(ParticleCollection* particlesArray, 
+				   distanceArray* distancesArray,
+				   RenderConfig* renderConfiguration);
 
         virtual ~OSGDefaultParticleRenderer();
 

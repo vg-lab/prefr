@@ -12,6 +12,7 @@
 #include <GL/gl.h>
 
 #include "../DefaultTypes.h"
+#include <particles/config.h>
 
 
 #include <osg/Array>
@@ -29,17 +30,62 @@ namespace particles
         int* id;
         float* distance;
 
-        DistanceUnit(void):id(nullptr), distance(nullptr){}
-        DistanceUnit(int* id, float* distance) : id(id), distance(distance){}
-        int& Id(void){return (int&)*id;}
-        float& Distance(void){return (float&)*distance;}
+        // DistanceUnit(void)
+	//   : id(nullptr)
+	//   , distance(nullptr)
+	// {
+	// }
 
-        const int& getID(void){return (const int&)*id;}
-        const float& getDistance(void){return (const float&)*distance;}
+        DistanceUnit(int* id = nullptr, float* distance = nullptr) 
+	  : id(id)
+	  , distance(distance)
+	{
+	}
+
+        int& Id(void)
+	{
+	  #ifdef DEBUG
+	  if ( !id )
+	    PARTICLES_THROW( "id pointer is null");
+          #endif
+
+	  return (int&)*id;
+	}
+
+        float& Distance(void)
+	{
+	  #ifdef DEBUG
+	  if ( !distance )
+	    PARTICLES_THROW( "distance pointer is null");
+          #endif
+
+	  return (float&)*distance;
+	}
+
+        const int& getID(void)
+	{
+	  #ifdef DEBUG
+	  if ( !id )
+	    PARTICLES_THROW( "id pointer is null");
+          #endif
+
+	  return (const int&)*id;
+	}
+        
+	const float& getDistance(void)
+	{
+	  #ifdef DEBUG
+	  if ( !distance )
+	    PARTICLES_THROW( "distance pointer is null");
+          #endif
+
+	  return (const float&)*distance;
+	}
+
       };
 
       typedef DistanceUnit tdunit;
-      typedef vector<tdunit> tdcontainter;
+      typedef std::vector<tdunit> tdcontainter;
 
       class DistanceArray
       {

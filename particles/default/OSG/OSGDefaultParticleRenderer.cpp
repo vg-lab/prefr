@@ -14,33 +14,20 @@ namespace particles
     namespace OSGParticleSystem
     {
 
-//      OSGDefaultParticleRenderer::OSGDefaultParticleRenderer()
-//      : ParticleRenderer( nullptr )
-//      , osg::Drawable()
-//      , distances( nullptr )
-//      , renderConfig( nullptr )
-//      , currentAliveParticles( 0 )
-//      {}
-//
-//      OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(const OSGDefaultParticleRenderer& other, const osg::CopyOp& copyOp)
-//      : ParticleRenderer( nullptr )
-//      , osg::Drawable(other, copyOp)
-//      , distances( nullptr )
-//      , renderConfig( nullptr )
-//      , currentAliveParticles( 0 )
-//      {
-//
-//      }
 
-      OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
-                                                               , RenderConfig* renderConfiguration)
+      OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(ParticleCollection* particlesArray, 
+							     distanceArray* distancesArray,
+                                                             RenderConfig* renderConfiguration)
       : ParticleRenderer( particlesArray )
       , distances( distancesArray)
       , renderConfig( renderConfiguration)
       , currentAliveParticles( 0 )
       {
 
-        GLfloat b[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f};
+        GLfloat b[] = {-0.5f, -0.5f, 0.0f, 
+		       0.5f,  -0.5f, 0.0f, 
+		       -0.5f, 0.5f, 0.0f, 
+		       0.5f, 0.5f, 0.0f};
 
         renderConfig->billboardVertices = new osg::Vec3Array();
         renderConfig->billboardIndices = new osg::DrawElementsUByte(GL_TRIANGLE_STRIP);
@@ -49,10 +36,9 @@ namespace particles
 
         for (unsigned int i = 0; i < 4; i++)
         {
-//          renderConfig->billboardVertices->at(i) = b[i];
-          renderConfig->billboardVertices->push_back(osg::Vec3( b[i*3]
-                                                                , b[i*3 + 1]
-                                                                , b[i*3 + 2] ));
+          renderConfig->billboardVertices->push_back(osg::Vec3( b[i*3],
+                                                                b[i*3 + 1],
+                                                                b[i*3 + 2] ));
 
           renderConfig->billboardIndices->push_back(i);
         }
@@ -103,11 +89,13 @@ namespace particles
         // Bind vertices
         glBindVertexArray(renderConfig->vao);
 
-//        std::cout << renderConfig->vboBillboardVertex << ", " << renderConfig->vboParticlesPositions << ", " << renderConfig->vboParticlesColor << std::endl;
+	glDrawElementsInstanced(renderConfig->billboardIndices->getMode(), 
+				renderConfig->billboardIndices->getNumIndices(), 
+				GL_UNSIGNED_BYTE, 
+				NULL, 
+				aliveParticles);
 
-	   glDrawElementsInstanced(renderConfig->billboardIndices->getMode(), renderConfig->billboardIndices->getNumIndices(), GL_UNSIGNED_BYTE, NULL, aliveParticles);
 //        glDrawElementsInstanced(m_drawElements->getMode(), m_drawElements->getNumIndices(), dataType, NULL, m_drawElements->getNumInstances());
-
 
         glBindVertexArray(0);
       }
@@ -176,10 +164,6 @@ namespace particles
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
-
-
-
-
 
     }
   }

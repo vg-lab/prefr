@@ -11,9 +11,9 @@ namespace particles
 {
   ParticlePrototype::ParticlePrototype()
   : maxLife  ( 0.0f )
-  , dispersion  ( 0.0f )
-  , lifeNormalization  ( 1.0f )
   , lifeInterval  ( 0.0f )
+  , lifeNormalization  ( 1.0f )
+  , dispersion  ( 0.0f )
   , particles( nullptr )
   {
   }

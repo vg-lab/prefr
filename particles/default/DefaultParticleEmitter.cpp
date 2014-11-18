@@ -17,8 +17,8 @@ namespace particles
     {
       float theta, phi, vxz;
 
-      theta = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
-      phi = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;
+      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
+      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;
       vxz = sinf(theta);
 
       return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
@@ -134,7 +134,7 @@ namespace particles
 
            if (currentPrototype && (!current->Alive() || override))
            {
-             current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+             current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
 
              current->velocity = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionVelocityDirection();
              current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();

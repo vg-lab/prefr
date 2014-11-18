@@ -7,6 +7,8 @@
 
 #include "OSGDefaultParticleSystem.h"
 
+#include <particles/config.h>
+
 namespace particles
 {
   namespace defaultParticleSystem
@@ -34,13 +36,22 @@ namespace particles
       , cameraManipulator( nullptr )
       , rootNode( nullptr )
       {
+
+	#ifdef DEBUG
+	if ( (void * ) glDrawElementsInstanced == nullptr )
+	  PARTICLES_THROW("glDrawElementsInstanced is nullptr");
+        #endif
+
         setUseDisplayList(false);
         setUseVertexBufferObjects(true);
 
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();
       }
-      OSGDefaultParticleSystem::OSGDefaultParticleSystem(const OSGDefaultParticleSystem& other, const osg::CopyOp& copyOp)
+      
+      OSGDefaultParticleSystem::OSGDefaultParticleSystem(
+	const OSGDefaultParticleSystem& other, 
+	const osg::CopyOp& copyOp)
       : DefaultParticleSystem(0, 0, 0, false)
       , osg::Drawable(other, copyOp)
       , cameraManipulator( nullptr )
@@ -52,17 +63,22 @@ namespace particles
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();
       }
-      OSGDefaultParticleSystem::OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles
-														, float _emissionRate, bool _loop
-                                       , osgGA::StandardManipulator* cam)
-      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _emissionRate, loop)
+
+      OSGDefaultParticleSystem::OSGDefaultParticleSystem(
+	int initialParticlesNumber, int _maxParticles,
+	float _emissionRate, bool _loop, 
+	osgGA::StandardManipulator* cam)
+      : DefaultParticleSystem(initialParticlesNumber, 
+			      _maxParticles, 
+			      _emissionRate, 
+			      loop)
       , osg::Drawable()
       , cameraManipulator( cam )
       , rootNode( nullptr )
       {
+
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();
-
 
         this->setUpdateCallback(new OSGPSNodeCallBack);
 
@@ -73,6 +89,14 @@ namespace particles
          setUseDisplayList(false);
          setUseVertexBufferObjects(true);
 
+      }
+
+      OSGDefaultParticleSystem::~OSGDefaultParticleSystem()
+      {
+	if ( distances ) 
+	  delete distances;
+	// if ( renderConfig ) 
+	//   delete renderConfig;
       }
 
       void OSGDefaultParticleSystem::LoadProgram()
@@ -104,8 +128,11 @@ namespace particles
         program->addShader( vertexShader );
         program->addShader( fragmentShader );
 
-        renderConfig->uCameraUp = new osg::Uniform("cameraUp", osg::Vec3f());
-        renderConfig->uCameraRight = new osg::Uniform("cameraRight", osg::Vec3f());
+        renderConfig->uCameraUp = 
+	  new osg::Uniform("cameraUp", osg::Vec3f());
+
+        renderConfig->uCameraRight = 
+	  new osg::Uniform("cameraRight", osg::Vec3f());
 
         psState->addUniform(renderConfig->uCameraUp);
         psState->addUniform(renderConfig->uCameraRight);
@@ -174,7 +201,18 @@ namespace particles
         unsigned int i = 0;
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
         {
+          #ifdef DEBUG
+	  if ( ! *it )
+	    PARTICLES_THROW( "null pointer access" );
+	  #endif 
+
          i = ((tparticle_ptr) *it)->id;
+
+          #ifdef DEBUG
+	  if ( ! static_cast<OSGDefaultParticleSorter*>(sorter) )
+	    PARTICLES_THROW( "casting failed" );
+	  #endif 
+
          static_cast<OSGDefaultParticleSorter*>(sorter)->UpdateCameraDistance(i, cameraPosition);
         }
 
@@ -184,6 +222,11 @@ namespace particles
       {
         this->sorter->Sort();
 
+        #ifdef DEBUG
+	if ( ! static_cast<OSGDefaultParticleRenderer*>(this->renderer) )
+	  PARTICLES_THROW( "casting failed" );
+	#endif 
+
         static_cast<OSGDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
 
         dirtyBound();
@@ -192,17 +235,32 @@ namespace particles
 
       void OSGDefaultParticleSystem::Render() const
       {
+        #ifdef DEBUG
+	if ( ! static_cast<OSGDefaultParticleRenderer*>(this->renderer) )
+	  PARTICLES_THROW( "casting failed" );
+	#endif 
+
         static_cast<OSGDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
       }
 
       osg::BoundingBox OSGDefaultParticleSystem::computeBound() const
       {
+        #ifdef DEBUG
+	if ( ! renderConfig )
+	  PARTICLES_THROW( "renderConfig is nullptr" );
+	#endif 
+
         return renderConfig->boundingBox;
       }
 
 
       void OSGDefaultParticleSystem::compileGLObjects( osg::RenderInfo& renderInfo ) const
       {
+        #ifdef DEBUG
+	if ( ! static_cast<OSGDefaultParticleRenderer*>(this->renderer) )
+	  PARTICLES_THROW( "casting failed" );
+	#endif 
+
         static_cast<OSGDefaultParticleRenderer*>(this->renderer)->osgCompileGLObjects(renderInfo);
       }
 
@@ -213,6 +271,11 @@ namespace particles
 
       void OSGDefaultParticleSystem::accept(osg::PrimitiveFunctor& functor) const
       {
+        #ifdef DEBUG
+	if ( ! renderConfig )
+	  PARTICLES_THROW( "renderConfig is nullptr" );
+	#endif 
+
         if (!renderConfig->billboardVertices)
           return;
 
@@ -222,7 +285,7 @@ namespace particles
 
       void OSGDefaultParticleSystem::releaseGLObjects(osg::State* state) const
       {
-        delete( renderConfig );
+        delete renderConfig ;
       }
 
     }

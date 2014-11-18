@@ -48,11 +48,11 @@
 #include <particles/InterpolationSet.hpp>
 
 #ifdef WIN32
-	template<typename T>
-	T const & clamp (T const & val_, T const & min_, T const & max_)
-	{
-		return std::max (min_, std::min(max_, val_));
-	}
+//	template<typename T>
+//	T const & clamp (T const & val_, T const & min_, T const & max_)
+//	{
+//		return std::max (min_, std::min(max_, val_));
+//	}
 #endif
 
 namespace particles
@@ -65,6 +65,25 @@ namespace particles
 
 
 }
+
+
+#ifdef DEBUG
+  #define PARTICLES_LOG( msg )                                   \
+    std::cerr << "particles "                                    \
+              << __FILE__ << "("                                 \
+              << __LINE__ << "): "                               \
+              << msg << std::endl;
+#else
+  #define PARTICLES_LOG( msg ) 
+#endif
+
+
+#define PARTICLES_THROW( msg )                                    \
+  {                                                               \
+    PARTICLES_LOG( msg );          				  \
+    throw std::runtime_error( msg );				  \
+  }
+
 
 // Use this to debug a single particle (surprisely not working after all)
 //#define PARTICLE_DEBUG
