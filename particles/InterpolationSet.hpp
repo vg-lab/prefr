@@ -127,7 +127,7 @@ namespace utils
     void UpdateQuickReference(float newTime)
     {
       int precision = 0;
-      string str = std::to_string(newTime);
+      string str = std::to_string(long double(newTime));
 
       unsigned int pos = str.length()-1;
       while (pos > 0)

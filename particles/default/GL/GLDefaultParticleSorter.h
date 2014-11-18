@@ -37,8 +37,8 @@ namespace particles
 
         virtual void Sort(SortOrder order = Descending);
 
-        virtual void UpdateCameraDistance(const vec3& cameraPosition);
-        virtual void UpdateCameraDistance(unsigned int i, const vec3& cameraPosition);
+        virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
+        virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
 
       };
     }

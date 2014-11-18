@@ -42,7 +42,7 @@ namespace particles
       float refLife;
 
 
-      current->life = fmax(0, current->life - deltaTime);
+      current->life = std::max(0.0f, current->life - deltaTime);
       current->alive = current->life > 0;
 
       if (current->Alive() && currentPrototype)

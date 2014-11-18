@@ -12,20 +12,19 @@
 #include "ElementCollection.hpp"
 #include "InterpolationSet.hpp"
 
-using namespace glm;
 using namespace utils;
 
 namespace particles
 {
 
   typedef InterpolationSet<float> vectortfloat;
-  typedef InterpolationSet<vec3> vectortvec3;
-  typedef InterpolationSet<vec4> vectortvec4;
+  typedef InterpolationSet<glm::vec3> vectortvec3;
+  typedef InterpolationSet<glm::vec4> vectortvec4;
 
   class ParticlePrototype
   {
   public:
-    float minLife = 0;
+    float minLife;
     float maxLife;
 
     float lifeInterval;
@@ -34,7 +33,7 @@ namespace particles
 
     vectortfloat size;
 
-    vec3 positionOffset;
+    glm::vec3 positionOffset;
 
     vectortfloat velocity;
     vectortvec4 color;

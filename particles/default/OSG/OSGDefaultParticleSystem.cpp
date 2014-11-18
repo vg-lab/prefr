@@ -14,14 +14,14 @@ namespace particles
     namespace OSGParticleSystem
     {
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles
-                                       , float _emissionRate, bool _loop
+														, float _emissionRate, bool _loop
                                        , osgGA::StandardManipulator* cam)
       : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _emissionRate, loop)
       {
 
       }
 
-      void OSGDefaultParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
+      void OSGDefaultParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
       {
 
       }
