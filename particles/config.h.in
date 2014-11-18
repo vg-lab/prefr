@@ -9,6 +9,11 @@
 
 #define GLM_FORCE_RADIANS
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#include <algorithm>
+
 #if (particles_WITH_CUDA == 1)
   #include <cuda.h>
 #endif
@@ -41,6 +46,14 @@
 #include <particles/Particle.h>
 #include <particles/ElementCollection.hpp>
 #include <particles/InterpolationSet.hpp>
+
+#ifdef WIN32
+	template<typename T>
+	T const & clamp (T const & val_, T const & min_, T const & max_)
+	{
+		return std::max (min_, std::min(max_, val_));
+	}
+#endif
 
 namespace particles
 {

@@ -53,7 +53,7 @@ namespace particles
         renderConfig = new RenderConfig();
       }
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(int initialParticlesNumber, int _maxParticles
-                                       , float _emissionRate, bool _loop
+														, float _emissionRate, bool _loop
                                        , osgGA::StandardManipulator* cam)
       : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _emissionRate, loop)
       , osg::Drawable()
@@ -149,7 +149,7 @@ namespace particles
         renderConfig->eye = osg::Vec3f(eye);
         renderConfig->center = osg::Vec3f(center);
         renderConfig->up = osg::Vec3f(up);
-        UpdateCameraDistances(vec3(renderConfig->eye.x(), renderConfig->eye.y(), renderConfig->eye.z()));
+        UpdateCameraDistances(glm::vec3(renderConfig->eye.x(), renderConfig->eye.y(), renderConfig->eye.z()));
 
 //        std::cout << center.x() << ", " << center.y() << ", " << center.z() << ", " << std::endl;
 
@@ -168,7 +168,7 @@ namespace particles
       }
 
 
-      void OSGDefaultParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
+      void OSGDefaultParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
       {
 
         unsigned int i = 0;

@@ -105,10 +105,10 @@ int main(int argc, char** argv)
   ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
 //  prototype->minLife = 3.0f;
 //  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 50)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0, 255, 50)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(glm::vec4(0, 255, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(0, 127, 127, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -123,10 +123,10 @@ int main(int argc, char** argv)
 
   prototype = new ParticlePrototype(3.0f, 5.0f);
 
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(255, 255, 0, 50)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 255, 255, 0)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(255, 255, 0, 50)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(glm::vec4(255, 0, 0, 50)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(255, 255, 255, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
     colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
-    emissionNode = new PointEmissionNode(colEmissionNode, vec3(i * 10, 0, 0));
+    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
     ps->AddEmissionNode(emissionNode);
   }
 

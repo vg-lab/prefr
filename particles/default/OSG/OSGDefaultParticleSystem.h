@@ -70,7 +70,8 @@ namespace particles
         virtual void SetRenderer(ParticleRenderer* renderConfig);
 
         virtual void Update(float deltaTime);
-        virtual void UpdateCameraDistances(const vec3& cameraPosition);
+        virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
+
         virtual void UpdateRender();
         virtual void Render() const;
 

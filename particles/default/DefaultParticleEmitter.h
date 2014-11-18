@@ -22,13 +22,13 @@ namespace particles
     {
     public:
 
-      vec3 position;
+      glm::vec3 position;
 
-      PointEmissionNode(ParticleCollection* arrayParticles, vec3 _position);
+      PointEmissionNode(ParticleCollection* arrayParticles, glm::vec3 _position);
       virtual ~PointEmissionNode();
 
-      virtual vec3 GetEmissionPosition();
-      virtual vec3 GetEmissionVelocityDirection();
+      virtual glm::vec3 GetEmissionPosition();
+      virtual glm::vec3 GetEmissionVelocityDirection();
     };
 
 

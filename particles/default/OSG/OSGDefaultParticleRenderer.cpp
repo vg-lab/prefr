@@ -47,14 +47,14 @@ namespace particles
         renderConfig->particlePositions = new vector<GLfloat>(particles->size * 4);
         renderConfig->particleColors = new vector<GLfloat>(particles->size * 4);
 
-        for (unsigned int i = 0; i < renderConfig->billboardVertices->size(); i++)
+        for (unsigned int i = 0; i < 4; i++)
         {
 //          renderConfig->billboardVertices->at(i) = b[i];
           renderConfig->billboardVertices->push_back(osg::Vec3( b[i*3]
                                                                 , b[i*3 + 1]
                                                                 , b[i*3 + 2] ));
 
-          renderConfig->billboardIndices->at(i) = i;
+          renderConfig->billboardIndices->push_back(i);
         }
 
 
@@ -95,7 +95,7 @@ namespace particles
 
         currentAliveParticles = aliveParticles;
 
-
+		renderConfig->billboardIndices->setNumInstances(aliveParticles);
       }
 
       void OSGDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
@@ -105,7 +105,7 @@ namespace particles
 
 //        std::cout << renderConfig->vboBillboardVertex << ", " << renderConfig->vboParticlesPositions << ", " << renderConfig->vboParticlesColor << std::endl;
 
-        glDrawElementsInstanced(renderConfig->billboardIndices->getMode(), renderConfig->billboardIndices->getNumIndices(), GL_UNSIGNED_BYTE, NULL, aliveParticles);
+	   glDrawElementsInstanced(renderConfig->billboardIndices->getMode(), renderConfig->billboardIndices->getNumIndices(), GL_UNSIGNED_BYTE, NULL, aliveParticles);
 //        glDrawElementsInstanced(m_drawElements->getMode(), m_drawElements->getNumIndices(), dataType, NULL, m_drawElements->getNumInstances());
 
 

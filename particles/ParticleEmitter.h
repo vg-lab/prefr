@@ -138,8 +138,8 @@ namespace particles
     EmissionNode(ParticleCollection* arrayParticles): particles(arrayParticles){}
     virtual ~EmissionNode(void) {delete particles;}
 
-    virtual vec3 GetEmissionPosition() = 0;
-    virtual vec3 GetEmissionVelocityDirection() = 0;
+    virtual glm::vec3 GetEmissionPosition() = 0;
+    virtual glm::vec3 GetEmissionVelocityDirection() = 0;
   };
 
   typedef vector<EmissionNode*> EmissionNodesArray;
