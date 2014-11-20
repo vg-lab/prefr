@@ -16,19 +16,29 @@ namespace particles
     namespace OSGParticleSystem
     {
 
-      void OSGPSNodeCallBack::update(osg::NodeVisitor* nv, osg::Drawable* node)
+//      void OSGPSNodeCallBack::update(osg::NodeVisitor* nv, osg::Drawable* node)
+//      {
+//        osg::ref_ptr<OSGDefaultParticleSystem> osgps =
+//            static_cast<OSGDefaultParticleSystem*>( node );
+//
+//        if (osgps)
+//        {
+//          osgps->Update(0.1f);
+//        }
+//
+////          traverse(node, nv);
+//      }
+
+      void OSGPSNodeCallBack::operator()(osg::Node* node, osg::NodeVisitor* nv)
       {
         osg::ref_ptr<OSGDefaultParticleSystem> osgps =
-            static_cast<OSGDefaultParticleSystem*>( node );
+            static_cast<OSGDefaultParticleSystem*>( node->asGeode()->getDrawable(0) );
 
         if (osgps)
         {
           osgps->Update(0.1f);
         }
-
-//          traverse(node, nv);
       }
-
 
       OSGDefaultParticleSystem::OSGDefaultParticleSystem()
       : DefaultParticleSystem(0, 0, 0, false)
@@ -80,9 +90,10 @@ namespace particles
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();
 
-        this->setUpdateCallback(new OSGPSNodeCallBack);
 
         LoadProgram();
+
+        rootNode->setCullCallback(new OSGPSNodeCallBack);
 
          //TODO Render bins, etc
 
@@ -118,12 +129,16 @@ namespace particles
 
         if ( !fullPath.empty() )
           assert(vertexShader->loadShaderSourceFromFile( fullPath ));
+        else
+          std::cout << "Path vacío" << std::endl;
 
         // Load fragment shader
         fullPath = osgDB::findDataFile( "shd/particle.frag" );
 
         if ( !fullPath.empty() )
           assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
+        else
+          std::cout << "Path vacío" << std::endl;
 
         program->addShader( vertexShader );
         program->addShader( fragmentShader );
@@ -145,7 +160,28 @@ namespace particles
 
         psState->setAttributeAndModes(program, osg::StateAttribute::ON);
 
+        psState->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+
+        psState->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+        osg::BlendFunc* blendFunc = new osg::BlendFunc();
+
+        blendFunc->setSource(osg::BlendFunc::CONSTANT_ALPHA);
+        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+
+        psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
+
+
         rootNode->addDrawable(this);
+        psState->setMode( GL_BLEND, osg::StateAttribute::ON );
+
+
+        setUseDisplayList(false);
+        setUseVertexBufferObjects(true);
+
+
+
       }
 
       void OSGDefaultParticleSystem::SetCameraManipulator(osgGA::StandardManipulator* cam)
@@ -156,7 +192,6 @@ namespace particles
       void OSGDefaultParticleSystem::SetRenderer(ParticleRenderer* renderConfig)
       {
         ParticleSystem::SetRenderer(renderConfig);
-
 
       }
 
@@ -188,10 +223,12 @@ namespace particles
 
         UpdateRender();
 
-        std::cout << renderConfig->boundingBox.xMin() << ", " << renderConfig->boundingBox.xMax() << " "
-                  << renderConfig->boundingBox.yMin() << ", " << renderConfig->boundingBox.yMax() << " "
-                  << renderConfig->boundingBox.zMin() << ", " << renderConfig->boundingBox.zMax()
-                  << std::endl;
+//        std::cout << renderConfig->boundingBox.xMin() << ", " << renderConfig->boundingBox.xMax() << " "
+//                  << renderConfig->boundingBox.yMin() << ", " << renderConfig->boundingBox.yMax() << " "
+//                  << renderConfig->boundingBox.zMin() << ", " << renderConfig->boundingBox.zMax()
+//                  << std::endl;
+
+        std::cout << "Update" << std::endl;
       }
 
 
@@ -230,7 +267,7 @@ namespace particles
         static_cast<OSGDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
 
         dirtyBound();
-        dirtyDisplayList();
+//        dirtyDisplayList();
       }
 
       void OSGDefaultParticleSystem::Render() const
@@ -250,7 +287,9 @@ namespace particles
 	  PARTICLES_THROW( "renderConfig is nullptr" );
 	#endif 
 
+        std::cout << "Compute bound" << std::endl;
         return renderConfig->boundingBox;
+
       }
 
 
@@ -266,6 +305,12 @@ namespace particles
 
       void OSGDefaultParticleSystem::drawImplementation(osg::RenderInfo& renderInfo) const
       {
+        osg::State* state = renderInfo.getState();
+        state->setUseVertexAttributeAliasing(true);
+
+        state->dirtyVertexAttribPointer(renderConfig->vboParticlesPositions);
+        state->dirtyVertexAttribPointer(renderConfig->vboParticlesColor);
+
         Render();
       }
 
@@ -276,11 +321,14 @@ namespace particles
 	  PARTICLES_THROW( "renderConfig is nullptr" );
 	#endif 
 
-        if (!renderConfig->billboardVertices)
+        if (!renderConfig->billboardVertices || !renderConfig->billboardIndices)
+        {
+          std::cout << "Accept error" << std::endl;
           return;
-
-        functor.setVertexArray(aliveParticles, static_cast<const osg::Vec3*>(renderConfig->billboardVertices->getDataPointer()));
+        }
+        functor.setVertexArray(renderConfig->billboardVertices->size(), static_cast<const osg::Vec3*>(renderConfig->billboardVertices->getDataPointer()));
         renderConfig->billboardIndices->accept(functor);
+        std::cout << "Accept" << std::endl;
       }
 
       void OSGDefaultParticleSystem::releaseGLObjects(osg::State* state) const

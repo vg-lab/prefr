@@ -147,6 +147,7 @@ namespace particles
         // OpenGL pointers
         GLuint vao;
         GLuint vboBillboardVertex;
+        GLuint vboDrawElements;
         GLuint vboParticlesPositions;
         GLuint vboParticlesColor;
 
@@ -166,6 +167,7 @@ namespace particles
         , particleColors( nullptr )
         , vao( 0 )
         , vboBillboardVertex( 0 )
+        , vboDrawElements( 0 )
         , vboParticlesPositions( 0 )
         , vboParticlesColor( 0 )
         , uCameraUp( nullptr )
@@ -176,6 +178,7 @@ namespace particles
         ~RenderConfig()
         {
           glDeleteBuffers(1, &vboBillboardVertex);
+          glDeleteBuffers(1, &vboDrawElements);
           glDeleteBuffers(1, &vboParticlesPositions);
           glDeleteBuffers(1, &vboParticlesColor);
           glDeleteVertexArrays(1, &vao);

@@ -22,6 +22,7 @@
 
 #include <osg/State>
 #include <osg/GL>
+#include <osg/BlendFunc>
 
 #include "OSGDefaultParticleSorter.h"
 #include "OSGDefaultParticleRenderer.h"
@@ -36,11 +37,12 @@ namespace particles
 
       #define ATRIB_ARRAY_POSITIONS 1
 
-      class OSGPSNodeCallBack : public osg::Drawable::UpdateCallback
+      class OSGPSNodeCallBack : public osg::NodeCallback
       {
       public:
 
-        void update(osg::NodeVisitor* nv, osg::Drawable* node);
+//        void update(osg::NodeVisitor* nv, osg::Drawable* node);
+        virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
       };
 

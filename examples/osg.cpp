@@ -200,13 +200,13 @@ int main(int argc, char** argv)
   osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 1));
   osg::Geode* sdg = new osg::Geode;
   sdg->addDrawable(sd);
-  sd->setColor(osg::Vec4(0,0,0,1));
+  sd->setColor(osg::Vec4(1,1,1,1));
 
   osg::StateSet* ss = sdg->getOrCreateStateSet();
   ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
   ss->setAttributeAndModes(
       new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
-                           osg::PolygonMode::LINE));
+                           osg::PolygonMode::FILL));
 
 
 
@@ -227,7 +227,7 @@ int main(int argc, char** argv)
 
   osg::State* cameraState = viewer->getCamera()->getGraphicsContext()->getState();
   cameraState->setUseModelViewAndProjectionUniforms(true);
-  cameraState->setUseVertexAttributeAliasing(true);
+//  cameraState->setUseVertexAttributeAliasing(true);
 
   return viewer->run();
 
