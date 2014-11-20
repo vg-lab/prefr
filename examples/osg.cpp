@@ -206,7 +206,7 @@ int main(int argc, char** argv)
   ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
   ss->setAttributeAndModes(
       new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
-                           osg::PolygonMode::FILL));
+                           osg::PolygonMode::LINE));
 
 
 

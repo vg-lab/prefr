@@ -9,8 +9,10 @@
 
 #define GLM_FORCE_RADIANS
 
+#ifdef WIN32
 #define _USE_MATH_DEFINES
 #include <cmath>
+#endif
 
 #include <algorithm>
 

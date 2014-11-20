@@ -113,6 +113,7 @@ namespace particles
       void OSGDefaultParticleSystem::LoadProgram()
       {
         rootNode = new osg::Geode;
+        rootNode->addDrawable(this);
 
         osg::StateSet* psState = rootNode->getOrCreateStateSet();
 
@@ -125,29 +126,32 @@ namespace particles
         std::string fullPath;
 
         // Load vertex shader
-        fullPath = osgDB::findDataFile( "shd/particle.vert" );
+        fullPath = osgDB::findDataFile( "../../particles/default/OSG/shd/osg.vert" );
 
         if ( !fullPath.empty() )
           assert(vertexShader->loadShaderSourceFromFile( fullPath ));
         else
           std::cout << "Path vacío" << std::endl;
 
+        std::cout << "Loaded vertex shader:\n" << vertexShader->getShaderSource() << std::endl;
+
         // Load fragment shader
-        fullPath = osgDB::findDataFile( "shd/particle.frag" );
+        fullPath = osgDB::findDataFile( "../../particles/default/OSG/shd/osg.frag" );
 
         if ( !fullPath.empty() )
           assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
         else
           std::cout << "Path vacío" << std::endl;
 
+        std::cout << "Loaded fragment shader:\n" << vertexShader->getShaderSource() << std::endl;
+
         program->addShader( vertexShader );
         program->addShader( fragmentShader );
 
-        renderConfig->uCameraUp = 
-	  new osg::Uniform("cameraUp", osg::Vec3f());
 
-        renderConfig->uCameraRight = 
-	  new osg::Uniform("cameraRight", osg::Vec3f());
+
+        renderConfig->uCameraUp = new osg::Uniform("cameraUp", osg::Vec3f());
+        renderConfig->uCameraRight = new osg::Uniform("cameraRight", osg::Vec3f());
 
         psState->addUniform(renderConfig->uCameraUp);
         psState->addUniform(renderConfig->uCameraRight);
@@ -156,31 +160,30 @@ namespace particles
         program->addBindAttribLocation( "particlePosition", 1 );
         program->addBindAttribLocation( "particleColor", 2 );
 
-        psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
+//        psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
+//
+//
+//
+//        psState->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+//        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+//
+//        psState->setMode(GL_BLEND, osg::StateAttribute::ON);
+//
+//        osg::BlendFunc* blendFunc = new osg::BlendFunc();
+//
+//        blendFunc->setSource(osg::BlendFunc::CONSTANT_ALPHA);
+//        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+//
+//        psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
+
+
+
+
+
+
+
 
         psState->setAttributeAndModes(program, osg::StateAttribute::ON);
-
-        psState->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
-        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
-
-        psState->setMode(GL_BLEND, osg::StateAttribute::ON);
-
-        osg::BlendFunc* blendFunc = new osg::BlendFunc();
-
-        blendFunc->setSource(osg::BlendFunc::CONSTANT_ALPHA);
-        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
-
-        psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
-
-
-        rootNode->addDrawable(this);
-        psState->setMode( GL_BLEND, osg::StateAttribute::ON );
-
-
-        setUseDisplayList(false);
-        setUseVertexBufferObjects(true);
-
-
 
       }
 
@@ -208,14 +211,18 @@ namespace particles
         // Get camera position to calculate distances
         osg::Vec3d eye, center, up;
         cameraManipulator->getTransformation(eye, center, up);
+
         renderConfig->eye = osg::Vec3f(eye);
         renderConfig->center = osg::Vec3f(center);
         renderConfig->up = osg::Vec3f(up);
+
         UpdateCameraDistances(glm::vec3(renderConfig->eye.x(), renderConfig->eye.y(), renderConfig->eye.z()));
 
-//        std::cout << center.x() << ", " << center.y() << ", " << center.z() << ", " << std::endl;
+//        std::cout << eye.x() << ", " << eye.y() << ", " << eye.z() << ", " << std::endl;
 
-        renderConfig->right = renderConfig->up ^ renderConfig->center;
+        osg::Vec3f forward = (renderConfig->center - renderConfig->eye);
+        forward.normalize();
+        renderConfig->right = renderConfig->up ^ forward;
 
         renderConfig->uCameraUp->set( renderConfig->up );
 
@@ -308,8 +315,8 @@ namespace particles
         osg::State* state = renderInfo.getState();
         state->setUseVertexAttributeAliasing(true);
 
-        state->dirtyVertexAttribPointer(renderConfig->vboParticlesPositions);
-        state->dirtyVertexAttribPointer(renderConfig->vboParticlesColor);
+//        state->dirtyVertexAttribPointer(renderConfig->vboParticlesPositions);
+//        state->dirtyVertexAttribPointer(renderConfig->vboParticlesColor);
 
         Render();
       }

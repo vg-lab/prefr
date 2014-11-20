@@ -17,6 +17,7 @@
 #include <osg/NodeVisitor>
 
 #include <osgGA/StandardManipulator>
+#include <osgGA/TrackballManipulator>
 
 #include <osgDB/FileUtils>
 
