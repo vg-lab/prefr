@@ -5,6 +5,3 @@ target_link_libraries(default particles)
 
 add_executable(defaultosg osg.cpp)
 target_link_libraries(defaultosg particles)
-
-add_executable(defaultdrawable drawable.cpp)
-target_link_libraries(defaultdrawable particles)
