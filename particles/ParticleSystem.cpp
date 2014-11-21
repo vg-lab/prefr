@@ -10,11 +10,10 @@
 namespace particles
 {
 
-  ParticleSystem::ParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate, bool _loop)
+  ParticleSystem::ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
   : sorter( nullptr )
   , renderer( nullptr )
   , maxParticles (_maxParticles)
-  , emissionRate(_emissionRate)
   , loop(_loop)
   {
     tparticleContainer* p = new tparticleContainer(maxParticles);
@@ -30,8 +29,12 @@ namespace particles
     emitters = new vector<ParticleEmitter*>;
     updaters = new vector<ParticleUpdater*>;
 
-    int counter = 0;
-//    tparticleptr particle;
+
+    if (initialParticlesNumber > maxParticles)
+      initialParticlesNumber = maxParticles;
+
+    unsigned int counter = 0;
+
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
       particles->elements->at(counter) = new tparticle(counter, counter < initialParticlesNumber);

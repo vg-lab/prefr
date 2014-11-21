@@ -12,6 +12,11 @@
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
+
 using namespace std;
 
 namespace particles

@@ -245,6 +245,7 @@ void sceneRender (void)
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 
   makeModelViewProj();
   glFrontFace(GL_CCW);
@@ -330,9 +331,9 @@ int main(int argc, char** argv)
 
 
 #if (particles_WITH_CUDA == 1)
-  ps = new CUDAParticleSystem(10, maxParticles, 0.3f, true);
+  ps = new CUDAParticleSystem(10, maxParticles, true);
 #else
-  ps = new GLDefaultParticleSystem(10, maxParticles, 0.3f, true);
+  ps = new GLDefaultParticleSystem(10, maxParticles, true);
 #endif
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);

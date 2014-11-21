@@ -16,9 +16,9 @@ namespace particles
     namespace CUDATHRUST
     {
 
-      CUDAParticleSystem::CUDAParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
+      CUDAParticleSystem::CUDAParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles
                            , bool _loop)
-      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _emissionRate, _loop)
+      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _loop)
       {
 
         distances = new distanceArray;
@@ -31,7 +31,7 @@ namespace particles
         renderConfig = new RenderConfig();
       }
 
-      void CUDAParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
+      void CUDAParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
       {
         unsigned int i = 0;
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)

@@ -30,12 +30,6 @@ namespace particles
         int* id;
         float* distance;
 
-        // DistanceUnit(void)
-	//   : id(nullptr)
-	//   , distance(nullptr)
-	// {
-	// }
-
         DistanceUnit(int* id = nullptr, float* distance = nullptr) 
 	  : id(id)
 	  , distance(distance)
@@ -176,13 +170,7 @@ namespace particles
         {}
 
         ~RenderConfig()
-        {
-          glDeleteBuffers(1, &vboBillboardVertex);
-          glDeleteBuffers(1, &vboDrawElements);
-          glDeleteBuffers(1, &vboParticlesPositions);
-          glDeleteBuffers(1, &vboParticlesColor);
-          glDeleteVertexArrays(1, &vao);
-        }
+        {}
 
       };
 

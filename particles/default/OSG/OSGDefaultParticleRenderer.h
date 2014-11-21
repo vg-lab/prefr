@@ -20,7 +20,7 @@ namespace particles
   {
     namespace OSGParticleSystem
     {
-      class OSGDefaultParticleRenderer : public ParticleRenderer//, public osg::Drawable
+      class OSGDefaultParticleRenderer : public ParticleRenderer
       {
       public:
         distanceArray* distances;
@@ -28,7 +28,6 @@ namespace particles
         RenderConfig* renderConfig;
 
         int currentAliveParticles;
-
 
         OSGDefaultParticleRenderer(ParticleCollection* particlesArray, 
 				   distanceArray* distancesArray,

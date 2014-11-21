@@ -26,8 +26,9 @@ namespace particles
 
       bool updateLoopUnified;
 
-      DefaultParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
-                   , bool _loop = true);
+      DefaultParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
+      virtual ~DefaultParticleSystem(){}
+
 
       virtual void Start();
       virtual void Update(float deltaTime);

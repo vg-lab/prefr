@@ -29,10 +29,9 @@ namespace particles
         distanceArray* distances;
         RenderConfig* renderConfig;
 
-        CUDAParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
-                             , bool _loop = true);
+        CUDAParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
 
-        virtual void UpdateCameraDistances(const vec3& cameraPosition);
+        virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
         virtual void UpdateRender();
         virtual void Render() const;
 

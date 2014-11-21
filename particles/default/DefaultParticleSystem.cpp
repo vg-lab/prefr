@@ -11,9 +11,9 @@ namespace particles
   namespace defaultParticleSystem
   {
 
-    DefaultParticleSystem::DefaultParticleSystem (int initialParticlesNumber, int _maxParticles
-                                                      , float _emissionRate, bool _loop)
-    : ParticleSystem( initialParticlesNumber, _maxParticles, _emissionRate, _loop )
+    DefaultParticleSystem::DefaultParticleSystem (unsigned int initialParticlesNumber, unsigned int _maxParticles
+                                                      , bool _loop)
+    : ParticleSystem( initialParticlesNumber, _maxParticles, _loop )
     , updateLoopUnified( true )
     {}
 

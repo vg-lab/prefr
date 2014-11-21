@@ -42,14 +42,12 @@ namespace particles
       {
       public:
 
-//        void update(osg::NodeVisitor* nv, osg::Drawable* node);
         virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
       };
 
-      class OSGDefaultParticleSystem 
-	: public DefaultParticleSystem
-	, public osg::Drawable
+      class OSGDefaultParticleSystem  : public DefaultParticleSystem
+                                      , public osg::Drawable
       {
       public:
 
@@ -62,15 +60,13 @@ namespace particles
         osg::Geode* rootNode;
 
         OSGDefaultParticleSystem();
-	~OSGDefaultParticleSystem();
+        ~OSGDefaultParticleSystem();
 
         OSGDefaultParticleSystem(const OSGDefaultParticleSystem& other, 
-				 const osg::CopyOp& copyOp);
+                                 const osg::CopyOp& copyOp);
 
-        OSGDefaultParticleSystem(int initialParticlesNumber, 
-				 int _maxParticles,
-                                 float _emissionRate, bool _loop = true,
-                                 osgGA::StandardManipulator* cam = nullptr);
+        OSGDefaultParticleSystem(unsigned int initialParticlesNumber,
+                                 unsigned int _maxParticles, bool _loop = true);
 
         META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
