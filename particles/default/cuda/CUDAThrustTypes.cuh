@@ -12,6 +12,8 @@
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 
+#include <GL/glew.h>
+
 using namespace std;
 
 namespace particles

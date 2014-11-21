@@ -31,7 +31,7 @@ namespace particles
         renderConfig = new RenderConfig();
       }
 
-      void CUDAParticleSystem::UpdateCameraDistances(const vec3& cameraPosition)
+      void CUDAParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
       {
         unsigned int i = 0;
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)

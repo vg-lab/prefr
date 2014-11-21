@@ -99,13 +99,14 @@ int main(int argc, char** argv)
 
 
   ps->SetCameraManipulator((osgGA::StandardManipulator*)viewer->getCameraManipulator());
-#endif
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
   vertPath.append("default/OSG/shd/osg.vert");
   fragPath.append("default/OSG/shd/osg.frag");
   ps->ConfigureProgram(vertPath, fragPath);
+
+#endif
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
@@ -218,7 +219,9 @@ int main(int argc, char** argv)
 
 
   osg::Group* groupNode = new osg::Group;
+#if (!particles_WITH_CUDA)
   groupNode->addChild(ps->rootNode);
+#endif
   groupNode->addChild(sdg);
 
 //  osg::Geode* geode = new osg::Geode;
