@@ -13,19 +13,19 @@ namespace particles
 
     static float invRandMax = 1.0f / RAND_MAX;
 
-    vec3 GetRandomDirection()
+    glm::vec3 GetRandomDirection()
     {
       float theta, phi, vxz;
 
-      theta = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * pi<float>();//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
-      phi = clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * pi<float>();
+      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
+      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;
       vxz = sinf(theta);
 
-      return vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
+      return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
     }
 
 
-    PointEmissionNode::PointEmissionNode(ParticleCollection* arrayParticles, vec3 _position)
+    PointEmissionNode::PointEmissionNode(ParticleCollection* arrayParticles, glm::vec3 _position)
     : EmissionNode( arrayParticles )
     ,position( _position )
     {}
@@ -35,12 +35,12 @@ namespace particles
       delete ( particles );
     }
 
-    vec3 PointEmissionNode::GetEmissionPosition()
+    glm::vec3 PointEmissionNode::GetEmissionPosition()
     {
       return position;
     }
 
-    vec3 PointEmissionNode::GetEmissionVelocityDirection()
+    glm::vec3 PointEmissionNode::GetEmissionVelocityDirection()
     {
       return GetRandomDirection();
     }
@@ -108,7 +108,7 @@ namespace particles
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
       {
 
-        emissionNodeParticlesPerCycle[i] = fmax(1.0f, particlesPerCycle * emissionNodes->at(i)->particles->size * normalizationFactor);
+        emissionNodeParticlesPerCycle[i] = std::max(1.0f, particlesPerCycle * emissionNodes->at(i)->particles->size * normalizationFactor);
 //        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
       }
     }
@@ -134,7 +134,7 @@ namespace particles
 
            if (currentPrototype && (!current->Alive() || override))
            {
-             current->life = clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+             current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
 
              current->velocity = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionVelocityDirection();
              current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();

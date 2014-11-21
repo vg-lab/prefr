@@ -49,12 +49,12 @@ namespace particles
                      , &renderConfig->billboardVertices->front(), GL_STATIC_DRAW);
 
         //glGenBuffers(1, &vboParticlesPositions);
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_STATIC_DRAW);
-
-        //glGenBuffers(1, &vboParticlesColor);
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_STATIC_DRAW);
+//
+//        //glGenBuffers(1, &vboParticlesColor);
+//        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_STATIC_DRAW);
 
       }
 
@@ -98,7 +98,7 @@ namespace particles
 
       }
 
-      void GLDefaultParticleRenderer::Paint(unsigned int aliveParticles)
+      void GLDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
       {
         // Bind vertices
           glEnableVertexAttribArray(0);

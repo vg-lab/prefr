@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 #include <particles/config.h>
 
-using namespace glm;
 
 namespace particles
 {
@@ -29,10 +28,10 @@ namespace particles
     float velocityModule;
 
     // Position, velocity...
-    vec3 position, oldPosition, velocity;
+    glm::vec3 position, oldPosition, velocity;
 
     // Color
-    vec4 color;
+    glm::vec4 color;
 
     // Distance to camera
     float distance;
@@ -45,11 +44,11 @@ namespace particles
     , velocityModule(0.f)
     , position(vec3zero)
     , velocity(vec3zero)
-    , color(vec4(vec3one,1))
+    , color(glm::vec4(vec3one,1))
     , distance(-1)
     {}
 
-    Particle (int _id, vec3 _pos, vec3 _vel, vec3 _dir, vec4 _color, float _life, float _size)
+    Particle (int _id, glm::vec3 _pos, glm::vec3 _vel, glm::vec3 _dir, glm::vec4 _color, float _life, float _size)
     : id(_id)
     , alive(true)
     , life(_life)

@@ -42,13 +42,13 @@ namespace particles
       float refLife;
 
 
-      current->life = fmax(0, current->life - deltaTime);
+      current->life = std::max(0.0f, current->life - deltaTime);
       current->alive = current->life > 0;
 
       if (current->Alive() && currentPrototype)
       {
 
-        refLife = 1.0f - clamp((current->life) / (currentPrototype->maxLife), 0.0f, 1.0f);
+        refLife = 1.0f - glm::clamp((current->life) / (currentPrototype->maxLife), 0.0f, 1.0f);
 
         current->color = /*HSVToRGB*/(currentPrototype->color.GetValue(refLife));
 

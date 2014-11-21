@@ -47,7 +47,7 @@ namespace particles
         static_cast<GLCUDAParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
 
       }
-      void CUDAParticleSystem::Render()
+      void CUDAParticleSystem::Render() const
       {
         static_cast<GLCUDAParticleRenderer*>(this->renderer)->Paint(aliveParticles);
       }

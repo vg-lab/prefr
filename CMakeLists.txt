@@ -36,6 +36,8 @@ set(${PROJECT_NAME}_VERSION_PATCH 0)
 set(${PROJECT_NAME}_VERSION
     ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH})
 
+SET(${PROJECT_NAME}_LIBRARY_BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/)
+
 # Add CMake dir to the module path
 list(APPEND CMAKE_MODULE_PATH 
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
@@ -44,12 +46,19 @@ list(APPEND CMAKE_MODULE_PATH
 include(StandardConfig)
 
 # Custom flags for Release and Debug
+if (MSVC)
+set(CMAKE_CXX_FLAGS 
+  "${CMAKE_CXX_FLAGS} -std=c++11 /W4")
+else() 
 set(CMAKE_CXX_FLAGS 
   "${CMAKE_CXX_FLAGS} -std=c++11  -Wall -Wno-unknown-pragmas")
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG 
   "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
-SET(LINK_MODE "SHARED")
+  
+SET(LINK_MODE "STATIC")
 IF (PROFILE)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 	SET(LINK_MODE "STATIC")
@@ -95,24 +104,13 @@ if(NOT GLEW_FOUND)
     message(ERROR " GLEW not found!")
 endif(NOT GLEW_FOUND)
 
-#########################################################
-# FIND X11
-#########################################################
-
-find_package(X11)
-include_directories(${X11_INCLUDE_DIRS})
-link_directories(${X11_LIBRARY_DIRS})
-add_definitions(${X11_DEFINITIONS})
-if(NOT X11_FOUND)
-    message(ERROR " X11 not found!")
-endif(NOT X11_FOUND)
 
 #########################################################
 # FIND GLUT
 #########################################################
 
 find_package(GLUT REQUIRED)
-include_directories(${GLUT_INCLUDE_DIRS})
+include_directories(${GLUT_INCLUDE_DIR})
 link_directories(${GLUT_LIBRARY_DIRS})
 add_definitions(${GLUT_DEFINITIONS})
 if(NOT GLUT_FOUND)
@@ -126,7 +124,7 @@ endif(NOT GLUT_FOUND)
 #########################################################
 # FIND GLM
 #########################################################
-
+include_directories(${GLM_INCLUDE_DIRS})
 #include_directories(/usr/include/glm/)
 
 #########################################################
@@ -162,7 +160,7 @@ if (WITH_CUDA)
   endif(NOT CUDATHRUST_FOUND)
 endif()  
 
-find_package(FreeImage REQUIRED)
+#find_package(FreeImage REQUIRED)
 
 FIND_PACKAGE(OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil REQUIRED)
 
@@ -172,7 +170,8 @@ OSG_FIND_LIBRARY(OSGQT osgQt)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(osgQt DEFAULT_MSG
     OSGQT_LIBRARY OSGQT_INCLUDE_DIR)
 
-INCLUDE_DIRECTORIES(${OPENSCENEGRAPH_INCLUDE_DIRS}) 
+INCLUDE_DIRECTORIES(BEFORE SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS}) 
+
 
 FILE(GLOB particles_SOURCES 
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp 
@@ -182,12 +181,12 @@ ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/OSG/*.cpp)
 
 
 configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/shd/particle.vert"
-  "${CMAKE_CURRENT_BINARY_DIR}/examples/particle.vert"
+  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.vert"
+  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.vert"
 )
 configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/shd/particle.frag"
-  "${CMAKE_CURRENT_BINARY_DIR}/examples/particle.frag"
+  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.frag"
+  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.frag"
 )
 
 
@@ -215,13 +214,14 @@ set_target_properties(${CMAKE_PROJECT_NAME}
 
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
+  ${OPENSCENEGRAPH_LIBRARIES}
   ${OPENGL_LIBRARIES} 
   ${GLUT_LIBRARY} 
   ${GLEW_LIBRARIES} 
   ${CUDA_LIBRARIES} 
-  ${FREEIMAGE_LIBRARIES} 
+#  ${FREEIMAGE_LIBRARIES} 
   ${CUDATHRUST_LIBRARIES}
-  ${OPENSCENEGRAPH_LIBRARIES})
+)
 
 
 # Install rules

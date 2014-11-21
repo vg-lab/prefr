@@ -76,7 +76,7 @@ namespace utils
         assert(time >= 0 && time <= 1.0f);
 
         int ref = quickReference[floor(time * quickReference.size())];
-        float relTime = clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
+        float relTime = glm::clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
 
 //        std::cout << size << ", " << quickReference.size() << " time " << time << " step " << invIntervals[ref] << " -> " << i  << " times " << times[ref] << " - " << times[ref+1] << " reltime " << relTime << std::endl;
 
@@ -127,7 +127,7 @@ namespace utils
     void UpdateQuickReference(float newTime)
     {
       int precision = 0;
-      string str = std::to_string(newTime);
+      string str = std::to_string( (long double) (newTime));
 
       unsigned int pos = str.length()-1;
       while (pos > 0)
@@ -142,7 +142,7 @@ namespace utils
       precision = precision > 0 ? str.length() - precision - 1 : 0;
       precision = pow(10.f, precision);
 
-      std::cout << newTime << " -> " << str << " -> " << precision << std::endl;
+//      std::cout << newTime << " -> " << str << " -> " << precision << std::endl;
 
       if (precision > quickReference.size())
         quickReference.resize(precision);
@@ -151,26 +151,26 @@ namespace utils
 
       invIntervals.resize(times.size(), 1.0f);
 
-      std::cout << "Intervals: " << invIntervals.size() << std::endl;
+//      std::cout << "Intervals: " << invIntervals.size() << std::endl;
       if (times.size() > 1)
         for (unsigned int i = 0; i < times.size()-1; i++)
         {
 
           invIntervals[i] = 1.0f / (times[i+1] - times[i]);
-          std::cout << times[i+1] << " - " << times[i] << " = "  << invIntervals[i] << std::endl;
+//          std::cout << times[i+1] << " - " << times[i] << " = "  << invIntervals[i] << std::endl;
         }
-      std::cout << std::endl;
+//      std::cout << std::endl;
 
       vector<int> limits(times.size());
 
-      std::cout << "Limits: " << limits.size() << std::endl;
+//      std::cout << "Limits: " << limits.size() << std::endl;
       for (unsigned int i = 0; i < limits.size()-1; i++)
       {
         limits[i] = int(floor(times[i+1] * quickReference.size()));
-        std::cout << limits[i] << " ";
+//        std::cout << limits[i] << " ";
 
       }
-      std::cout << std::endl;
+//      std::cout << std::endl;
 
       limits[limits.size()-1] = quickReference.size();
 
@@ -181,9 +181,9 @@ namespace utils
           pos++;
         quickReference[i] = pos;
 
-        std::cout << quickReference[i] << " ";
+//        std::cout << quickReference[i] << " ";
       }
-      std::cout << std::endl;
+//      std::cout << std::endl;
     }
   };
 

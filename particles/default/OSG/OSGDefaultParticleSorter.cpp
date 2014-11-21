@@ -5,20 +5,20 @@
  *      Author: sergio
  */
 
-#include "GLDefaultParticleSorter.h"
+#include "OSGDefaultParticleSorter.h"
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
-    namespace GL
+    namespace OSGParticleSystem
     {
-      void GLDefaultParticleSorter::Sort(SortOrder order)
+      void OSGDefaultParticleSorter::Sort(SortOrder order)
       {
         std::sort(distances->begin(), distances->end(), order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
       }
 
-      void GLDefaultParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
+      void OSGDefaultParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
       {
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
         {
@@ -26,7 +26,7 @@ namespace particles
         }
       }
 
-      void GLDefaultParticleSorter::UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition)
+      void OSGDefaultParticleSorter::UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition)
       {
         tparticle_ptr current = particles->elements->at(i);
 

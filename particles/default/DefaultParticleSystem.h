@@ -33,9 +33,9 @@ namespace particles
       virtual void Update(float deltaTime);
       virtual void UpdateUnified(float deltaTime);
       virtual void UpdateSeparated(float deltaTime);
-      virtual void UpdateCameraDistances(const vec3& cameraPosition) = 0;
+      virtual void UpdateCameraDistances(const glm::vec3& cameraPosition) = 0;
       virtual void UpdateRender() = 0;
-      virtual void Render() = 0;
+      virtual void Render() const = 0;
     };
 
   }

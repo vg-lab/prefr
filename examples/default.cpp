@@ -17,6 +17,21 @@
 
 #include <particles/default/GL/CShader.h>
 
+#define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
+#define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )
+
+#define WINDOW_TITLE "Particle Engine - Splatting"
+#define OGLVER 3
+#define OGLSUBVER 3
+#define BG_COLOR 0.86f, 0.823f, 0.823f, 1.0f
+#define SCREEN_SIZE 800, 600
+
+//#define fov 60.0f
+#define fov 1.05f
+#define defaultAspect 1.0f
+#define nearPlane 0.3f
+#define farPlane 20000.0f
+
 using namespace particles::defaultParticleSystem;
 
 #if (particles_WITH_CUDA)
@@ -40,7 +55,7 @@ vec3 worldUp = vec3(0.0f,1.0f,0.0f);
 int resolution[] = {SCREEN_SIZE};
 float aspect=defaultAspect;
 
-float deltaTime = 0.01f;
+float deltaTime = 0.1f;
 
 int mouseX, mouseY;
 
@@ -66,9 +81,14 @@ bool emit = true;
 
 void initShaders()
 {
+  std::string vertPath, fragPath;
+  fragPath = vertPath = std::string( particles_LIBRARY_BASE_PATH );
+  vertPath.append("default/GL/shd/GL.vert");
+  fragPath.append("default/GL/shd/GL.frag");
   particlesShader = new CShader(false, false,
-                                "./particle.vert",
-                                "./particle.frag");
+                                 vertPath.c_str() ,
+                                 fragPath.c_str()
+                                );
 }
 
 // Camera Movement

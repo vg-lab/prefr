@@ -32,9 +32,9 @@ namespace particles
         GLDefaultParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
                      , bool _loop = true);
 
-        virtual void UpdateCameraDistances(const vec3& cameraPosition);
+        virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
         virtual void UpdateRender();
-        virtual void Render();
+        virtual void Render() const;
       };
 
     }

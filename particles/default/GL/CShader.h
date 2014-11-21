@@ -38,6 +38,7 @@ y Luis Hijarrubia. 2014
 #pragma once
 
 #include <particles/config.h>
+#include "GLTypes.h"
 
 class CShader
 {
