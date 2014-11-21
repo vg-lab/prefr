@@ -119,7 +119,7 @@ namespace particles
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        std::cout << "Compile GL objects" << std::endl;
+//        std::cout << "Compile GL objects" << std::endl;
       }
 
       void OSGDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
@@ -144,10 +144,10 @@ namespace particles
                                 , currentParticle->position.y
                                 , currentParticle->position.z));
 
-          renderConfig->particleColors->at(idx) = (int)currentParticle->color.x;
-          renderConfig->particleColors->at(idx+1) = (int)currentParticle->color.y;
-          renderConfig->particleColors->at(idx+2) = (int)currentParticle->color.z;
-          renderConfig->particleColors->at(idx+3) = (int)currentParticle->color.w;
+          renderConfig->particleColors->at(idx) = currentParticle->color.x;
+          renderConfig->particleColors->at(idx+1) = currentParticle->color.y;
+          renderConfig->particleColors->at(idx+2) = currentParticle->color.z;
+          renderConfig->particleColors->at(idx+3) = currentParticle->color.w;
         }
 
         currentAliveParticles = aliveParticles;
@@ -162,13 +162,13 @@ namespace particles
 
         glBindVertexArray(renderConfig->vao);
 
-        std::cout << "Paint " << aliveParticles << std::endl;
+//        std::cout << "Paint " << aliveParticles << std::endl;
 
         glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &renderConfig->particlePositions->front());
 
-//        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLbyte) * aliveParticles * 4, &renderConfig->particleColors->front());
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &renderConfig->particleColors->front());
 
 //        glDrawElements(renderConfig->billboardIndices->getMode()
 //                       , renderConfig->billboardIndices->getNumIndices()

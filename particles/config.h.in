@@ -29,21 +29,6 @@
 
 #include <iostream>
 
-#define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
-#define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )
-
-#define WINDOW_TITLE "Particle Engine - Splatting"
-#define OGLVER 3
-#define OGLSUBVER 3
-#define BG_COLOR 0.86f, 0.823f, 0.823f, 1.0f
-#define SCREEN_SIZE 800, 600
-
-//#define fov 60.0f
-#define fov 1.05f
-#define defaultAspect 1.0f
-#define nearPlane 0.3f
-#define	farPlane 20000.0f
-
 #include <vector>
 #include <particles/Particle.h>
 #include <particles/ElementCollection.hpp>
@@ -63,8 +48,6 @@ namespace particles
   typedef tparticle* tparticle_ptr;
   typedef std::vector<tparticle_ptr> tparticleContainer;
   typedef utils::ElementCollection<tparticle> ParticleCollection;
-
-
 
 }
 
@@ -87,5 +70,4 @@ namespace particles
   }
 
 
-// Use this to debug a single particle (surprisely not working after all)
-//#define PARTICLE_DEBUG
+#define particles_LIBRARY_BASE_PATH "@particles_LIBRARY_BASE_PATH@"

@@ -75,7 +75,7 @@ namespace particles
         META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
         virtual void SetCameraManipulator(osgGA::StandardManipulator* cam);
-        virtual void LoadProgram();
+        void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
 
         virtual void SetRenderer(ParticleRenderer* renderConfig);
 

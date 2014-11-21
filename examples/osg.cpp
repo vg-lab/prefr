@@ -5,6 +5,8 @@
  *      Author: sgalindo
  */
 
+#include <particles/config.h>
+
 #include <particles/ParticleSystem.h>
 
 #include <particles/ParticlePrototype.h>
@@ -99,16 +101,21 @@ int main(int argc, char** argv)
   ps->SetCameraManipulator((osgGA::StandardManipulator*)viewer->getCameraManipulator());
 #endif
 
+  std::string vertPath, fragPath;
+  fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
+  vertPath.append("default/OSG/shd/osg.vert");
+  fragPath.append("default/OSG/shd/osg.frag");
+  ps->ConfigureProgram(vertPath, fragPath);
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
   ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
 //  prototype->minLife = 3.0f;
 //  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0, 255, 50)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0, 1, 0.2)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(glm::vec4(0, 255, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(glm::vec4(0, 1, 0, 0.2)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0.5, 0.5, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -123,10 +130,10 @@ int main(int argc, char** argv)
 
   prototype = new ParticlePrototype(3.0f, 5.0f);
 
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(255, 255, 0, 50)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 0, 0.2)));
 //  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(glm::vec4(255, 0, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(255, 255, 255, 0)));
+  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(glm::vec4(1, 0, 0, 0.2)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 1, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);

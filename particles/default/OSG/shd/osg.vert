@@ -31,7 +31,7 @@ void main()
 //        + particlePosition.rgb, 1.0);
 //  
 
-	color = vec4(particlePosition.rgba);// particleColor;
+	color = particleColor;
 
 	uvCoord = vertexPosition.rg + vec2(0.5, 0.5);
 }

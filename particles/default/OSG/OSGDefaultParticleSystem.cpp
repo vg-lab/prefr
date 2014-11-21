@@ -90,8 +90,8 @@ namespace particles
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();
 
-
-        LoadProgram();
+        rootNode = new osg::Geode;
+        rootNode->addDrawable(this);
 
         rootNode->setCullCallback(new OSGPSNodeCallBack);
 
@@ -104,16 +104,15 @@ namespace particles
 
       OSGDefaultParticleSystem::~OSGDefaultParticleSystem()
       {
-	if ( distances ) 
-	  delete distances;
+        if ( distances )
+          delete distances;
 	// if ( renderConfig ) 
 	//   delete renderConfig;
       }
 
-      void OSGDefaultParticleSystem::LoadProgram()
+      void OSGDefaultParticleSystem::ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag)
       {
-        rootNode = new osg::Geode;
-        rootNode->addDrawable(this);
+
 
         osg::StateSet* psState = rootNode->getOrCreateStateSet();
 
@@ -125,30 +124,32 @@ namespace particles
 
         std::string fullPath;
 
+        std::cout << "Loading vertex shader:" << shaderPathVert << std::endl;
+
         // Load vertex shader
-        fullPath = osgDB::findDataFile( "../../particles/default/OSG/shd/osg.vert" );
+        fullPath = osgDB::findDataFile( shaderPathVert );
 
-        if ( !fullPath.empty() )
-          assert(vertexShader->loadShaderSourceFromFile( fullPath ));
-        else
-          std::cout << "Path vacío" << std::endl;
+        if ( fullPath.empty() )
+          PARTICLES_THROW("Vertex file not found at: " + shaderPathVert)
 
-        std::cout << "Loaded vertex shader:\n" << vertexShader->getShaderSource() << std::endl;
 
+        assert(vertexShader->loadShaderSourceFromFile( fullPath ));
+//        std::cout << "Loaded vertex shader:\n" << vertexShader->getShaderSource() << std::endl;
+
+
+        std::cout << "Loading vertex shader:" << shaderPathFrag << std::endl;
         // Load fragment shader
-        fullPath = osgDB::findDataFile( "../../particles/default/OSG/shd/osg.frag" );
+        fullPath = osgDB::findDataFile( shaderPathFrag );
 
-        if ( !fullPath.empty() )
-          assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
-        else
-          std::cout << "Path vacío" << std::endl;
+        if ( fullPath.empty() )
+          PARTICLES_THROW("Fragment shader file not found at: " + shaderPathVert)
 
-        std::cout << "Loaded fragment shader:\n" << vertexShader->getShaderSource() << std::endl;
+        assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
+
+//        std::cout << "Loaded fragment shader:\n" << vertexShader->getShaderSource() << std::endl;
 
         program->addShader( vertexShader );
         program->addShader( fragmentShader );
-
-
 
         renderConfig->uCameraUp = new osg::Uniform("cameraUp", osg::Vec3f());
         renderConfig->uCameraRight = new osg::Uniform("cameraRight", osg::Vec3f());
@@ -160,21 +161,22 @@ namespace particles
         program->addBindAttribLocation( "particlePosition", 1 );
         program->addBindAttribLocation( "particleColor", 2 );
 
-//        psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
+        psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
 //
 //
 //
 //        psState->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
 //        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 //
-//        psState->setMode(GL_BLEND, osg::StateAttribute::ON);
-//
-//        osg::BlendFunc* blendFunc = new osg::BlendFunc();
-//
-//        blendFunc->setSource(osg::BlendFunc::CONSTANT_ALPHA);
-//        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
-//
-//        psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
+        psState->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        osg::BlendFunc* blendFunc = new osg::BlendFunc();
+
+        blendFunc->setSource(osg::BlendFunc::SRC_ALPHA);
+        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+
+        psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
 
 
 
@@ -235,7 +237,7 @@ namespace particles
 //                  << renderConfig->boundingBox.zMin() << ", " << renderConfig->boundingBox.zMax()
 //                  << std::endl;
 
-        std::cout << "Update" << std::endl;
+//        std::cout << "Update" << std::endl;
       }
 
 
@@ -294,7 +296,7 @@ namespace particles
 	  PARTICLES_THROW( "renderConfig is nullptr" );
 	#endif 
 
-        std::cout << "Compute bound" << std::endl;
+//        std::cout << "Compute bound" << std::endl;
         return renderConfig->boundingBox;
 
       }
@@ -340,7 +342,7 @@ namespace particles
 
       void OSGDefaultParticleSystem::releaseGLObjects(osg::State* state) const
       {
-        delete renderConfig ;
+//        delete (renderConfig) ;
       }
 
     }
