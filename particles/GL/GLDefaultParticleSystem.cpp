@@ -15,7 +15,7 @@ namespace particles
     {
       GLDefaultParticleSystem::GLDefaultParticleSystem (unsigned int initialParticlesNumber, unsigned int _maxParticles
                                                         , bool _loop)
-      : DefaultParticleSystem( initialParticlesNumber, _maxParticles, _loop )
+      : ParticleSystem( initialParticlesNumber, _maxParticles, _loop )
       {
         distances = new distanceArray(this->maxParticles);
         renderConfig = new RenderConfig();

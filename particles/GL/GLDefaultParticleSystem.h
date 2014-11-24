@@ -8,7 +8,7 @@
 #ifndef GLDEFAULTPARTICLESYSTEM_H_
 #define GLDEFAULTPARTICLESYSTEM_H_
 
-#include "../DefaultParticleSystem.h"
+#include "../ParticleSystem.h"
 
 #include "GLDefaultParticleRenderer.h"
 #include "GLDefaultParticleSorter.h"
@@ -22,7 +22,7 @@ namespace particles
     namespace GL
     {
 
-      class GLDefaultParticleSystem : public DefaultParticleSystem
+      class GLDefaultParticleSystem : public ParticleSystem
       {
       public:
         distanceArray* distances;

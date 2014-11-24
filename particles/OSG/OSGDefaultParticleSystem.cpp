@@ -28,7 +28,7 @@ namespace particles
       }
 
       OSGDefaultParticleSystem::OSGDefaultParticleSystem()
-      : DefaultParticleSystem(0, 0, false)
+      : ParticleSystem(0, 0, false)
       , osg::Drawable()
       , cameraManipulator( nullptr )
       , rootNode( nullptr )
@@ -49,7 +49,7 @@ namespace particles
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(
 	const OSGDefaultParticleSystem& other, 
 	const osg::CopyOp& copyOp)
-      : DefaultParticleSystem(0, 0, false)
+      : ParticleSystem(0, 0, false)
       , osg::Drawable(other, copyOp)
       , cameraManipulator( nullptr )
       , rootNode( nullptr )
@@ -63,7 +63,7 @@ namespace particles
 
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(
       unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
-      : DefaultParticleSystem(initialParticlesNumber, 
+      : ParticleSystem(initialParticlesNumber,
 			      _maxParticles, 
 			      loop)
       , osg::Drawable()
@@ -167,7 +167,7 @@ namespace particles
 
       void OSGDefaultParticleSystem::Update(float deltaTime)
       {
-        DefaultParticleSystem::Update(deltaTime);
+        ParticleSystem::Update(deltaTime);
 
         assert(cameraManipulator != nullptr);
 

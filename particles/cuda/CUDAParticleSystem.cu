@@ -18,7 +18,7 @@ namespace particles
 
       CUDAParticleSystem::CUDAParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles
                            , bool _loop)
-      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _loop)
+      : ParticleSystem(initialParticlesNumber, _maxParticles, _loop)
       {
 
         distances = new distanceArray;

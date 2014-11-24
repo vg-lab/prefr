@@ -3,7 +3,7 @@
 
 #include <particles/config.h>
 #include "CUDAThrustTypes.cuh"
-#include "../../ParticleSorter.h"
+#include "../ParticleSorter.h"
 
 
 #include <thrust/sort.h>

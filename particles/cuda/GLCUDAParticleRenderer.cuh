@@ -9,7 +9,7 @@
 #define GLCUDAPARTICLERENDERER_H_
 
 #include <particles/config.h>
-#include "../../ParticleRenderer.h"
+#include "../ParticleRenderer.h"
 #include "CUDAThrustTypes.cuh"
 
 namespace particles

@@ -5,24 +5,24 @@
  *      Author: sergio
  */
 
-#include "DefaultParticleUpdater.h"
+#include "ParticleUpdater.h"
 
 namespace particles
 {
-  namespace defaultParticleSystem
-  {
 
-    DefaultParticleUpdater::DefaultParticleUpdater(ParticleCollection* particlesArray)
-    : ParticleUpdater(particlesArray)
+    ParticleUpdater::ParticleUpdater(ParticleCollection* particlesArray)
+    : particles( particlesArray )
+    , prototypes( nullptr )
+    , refPrototypes( nullptr )
     {}
 
-    DefaultParticleUpdater::~DefaultParticleUpdater()
+    ParticleUpdater::~ParticleUpdater()
     {
       delete( particles );
       delete( prototypes );
     }
 
-    int DefaultParticleUpdater::Update(float deltaTime)
+    int ParticleUpdater::Update(float deltaTime)
     {
       int aliveParticles = 0;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
@@ -35,7 +35,7 @@ namespace particles
       return aliveParticles;
     }
 
-    void DefaultParticleUpdater::Update(unsigned int i, float deltaTime)
+    void ParticleUpdater::Update(unsigned int i, float deltaTime)
     {
       tparticle_ptr current = particles->elements->at(i);
       tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
@@ -59,6 +59,5 @@ namespace particles
 
       }
     }
-  }
 
 }

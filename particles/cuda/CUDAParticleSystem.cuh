@@ -9,7 +9,7 @@
 #define CUDAPARTICLESYSTEM_H_
 
 
-#include "../DefaultParticleSystem.h"
+#include "../ParticleSystem.h"
 #include "CUDAThrustTypes.cuh"
 #include "ThrustParticleSorter.cuh"
 #include "GLCUDAParticleRenderer.cuh"
@@ -22,7 +22,7 @@ namespace particles
     namespace CUDATHRUST
     {
 
-      class CUDAParticleSystem : public DefaultParticleSystem
+      class CUDAParticleSystem : public ParticleSystem
       {
       public:
 

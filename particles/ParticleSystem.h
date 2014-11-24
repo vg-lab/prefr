@@ -91,16 +91,24 @@ namespace particles
     virtual void SetRenderer(ParticleRenderer* renderConfig);
 
 
-    virtual void Start() = 0;
+    virtual void Start();
 
     // Particle updating methods
-    virtual void Update(float deltaTime) = 0;
+    virtual void Update(float deltaTime);
+
+    virtual void UpdateUnified(float deltaTime);
+
+
+    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition) = 0;
 
     // Particle render updating method
     virtual void UpdateRender() = 0;
 
     // Render method
     virtual void Render() const = 0;
+
+
+
 
   };
 

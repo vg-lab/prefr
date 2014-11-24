@@ -10,8 +10,8 @@
 
 #include <particles/config.h>
 #include "GLTypes.h"
-#include "../../ParticleRenderer.h"
-#include "../DefaultParticleSystem.h"
+#include "../ParticleRenderer.h"
+#include "../ParticleSystem.h"
 
 
 namespace particles

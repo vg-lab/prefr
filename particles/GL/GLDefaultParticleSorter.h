@@ -5,32 +5,34 @@
  *      Author: sergio
  */
 
-#ifndef DEFAULTPARTICLESORTER_H_
-#define DEFAULTPARTICLESORTER_H_
+#ifndef OSGDEFAULTPARTICLESORTER_H_
+#define OSGDEFAULTPARTICLESORTER_H_
 
 #include <particles/config.h>
-#include "OSGTypes.h"
-#include "../DefaultParticleSystem.h"
+#include "GLTypes.h"
+#include "../ParticleSystem.h"
 
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
-    namespace OSGParticleSystem
+    namespace GL
     {
-      class OSGDefaultParticleSorter : public ParticleSorter
+      class GLDefaultParticleSorter : public ParticleSorter
       {
       public:
         distanceArray* distances;
 
-        OSGDefaultParticleSorter(ParticleCollection* particlesArray, distanceArray* distancesArray)
+        GLDefaultParticleSorter(ParticleCollection* particlesArray, distanceArray* distancesArray)
         : ParticleSorter(particlesArray)
         , distances(distancesArray)
         {}
 
-        virtual ~OSGDefaultParticleSorter()
+        virtual ~GLDefaultParticleSorter()
         {
+          delete( particles );
+          delete( distances );
         }
 
         virtual void Sort(SortOrder order = Descending);

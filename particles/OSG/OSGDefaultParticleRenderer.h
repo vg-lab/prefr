@@ -10,7 +10,7 @@
 
 #include <particles/config.h>
 #include "OSGTypes.h"
-#include "../../ParticleRenderer.h"
+#include "../ParticleRenderer.h"
 
 
 

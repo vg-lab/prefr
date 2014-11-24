@@ -9,7 +9,7 @@
 #define OSGDEFAULTPARTICLESYSTEM_H_
 
 #include "OSGTypes.h"
-#include "../DefaultParticleSystem.h"
+#include "../ParticleSystem.h"
 
 #include <osg/Array>
 #include <osg/Geometry>
@@ -46,7 +46,7 @@ namespace particles
 
       };
 
-      class OSGDefaultParticleSystem  : public DefaultParticleSystem
+      class OSGDefaultParticleSystem  : public ParticleSystem
                                       , public osg::Drawable
       {
       public:

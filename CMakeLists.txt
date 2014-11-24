@@ -175,9 +175,8 @@ INCLUDE_DIRECTORIES(BEFORE SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 FILE(GLOB particles_SOURCES 
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/*.cpp 
-${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/*.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/GL/*.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/OSG/*.cpp)
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/GL/*.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/OSG/*.cpp)
 
 
 #configure_file (
@@ -200,9 +199,9 @@ else()
   message(${CUDA_VERSION})
   CUDA_ADD_LIBRARY(${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES}
-    particles/default/cuda/ThrustParticleSorter.cu
-    particles/default/cuda/GLCUDAParticleRenderer.cu
-    particles/default/cuda/CUDAParticleSystem.cu
+    particles/cuda/ThrustParticleSorter.cu
+    particles/cuda/GLCUDAParticleRenderer.cu
+    particles/cuda/CUDAParticleSystem.cu
     OPTIONS -arch sm_20
     )
 endif()

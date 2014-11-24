@@ -11,17 +11,17 @@
 
 #include <particles/ParticlePrototype.h>
 
-#include <particles/default/DefaultParticleEmitter.h>
-#include <particles/default/DefaultParticleUpdater.h>
+#include <particles/ParticleEmitter.h>
+#include <particles/ParticleUpdater.h>
 
 #if (particles_WITH_CUDA)
-  #include <particles/default/cuda/ThrustParticleSorter.cuh>
-  #include <particles/default/cuda/CUDAParticleSystem.cuh>
-  #include <particles/default/cuda/GLCUDAParticleRenderer.cuh>
+  #include <particles/cuda/ThrustParticleSorter.cuh>
+  #include <particles/cuda/CUDAParticleSystem.cuh>
+  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
 #else
-  #include <particles/default/OSG/OSGDefaultParticleSystem.h>
-  #include <particles/default/OSG/OSGDefaultParticleSorter.h>
-  #include <particles/default/OSG/OSGDefaultParticleRenderer.h>
+  #include <particles/OSG/OSGDefaultParticleSystem.h>
+  #include <particles/OSG/OSGDefaultParticleSorter.h>
+  #include <particles/OSG/OSGDefaultParticleRenderer.h>
 #endif
 
 #include <osgViewer/Viewer>
@@ -29,7 +29,7 @@
 #include <osg/ShapeDrawable>
 #include <osg/PolygonMode>
 
-using namespace particles::defaultParticleSystem;
+using namespace particles;
 
 #if (particles_WITH_CUDA)
   using namespace particles::defaultParticleSystem::CUDATHRUST;
@@ -102,8 +102,8 @@ int main(int argc, char** argv)
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
-  vertPath.append("default/OSG/shd/osg-vert.glsl");
-  fragPath.append("default/OSG/shd/osg-frag.glsl");
+  vertPath.append("OSG/shd/osg-vert.glsl");
+  fragPath.append("OSG/shd/osg-frag.glsl");
   ps->ConfigureProgram(vertPath, fragPath);
 #endif
 
@@ -171,12 +171,12 @@ int main(int argc, char** argv)
     ps->AddEmissionNode(emissionNode);
   }
 
-  DefaultParticleEmitter* emitter = new DefaultParticleEmitter(colEmitter, 0.3f, true);
+  ParticleEmitter* emitter = new ParticleEmitter(colEmitter, 0.3f, true);
   ps->AddEmitter(emitter);
   emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater);
+  ParticleUpdater* updater = new ParticleUpdater(colUpdater);
   std::cout << "Created updater" << std::endl;
 
 #if (particles_WITH_CUDA)

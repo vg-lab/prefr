@@ -1,56 +1,84 @@
 /*
- * GLTypes.h
+ * OSGTypes.h
  *
  *  Created on: 28/10/2014
  *      Author: sgalindo
  */
 
-#ifndef GLTYPES_H_
-#define GLTYPES_H_
+#ifndef OSGTYPES_H_
+#define OSGTYPES_H_
 
 #include <GL/glew.h>
+#include <GL/gl.h>
+
+#include <particles/config.h>
 
 
-#include "../DefaultTypes.h"
-
-#include <vector>
-
-using namespace std;
+#include <osg/Array>
+#include <osg/Drawable>
 
 namespace particles
 {
   namespace defaultParticleSystem
   {
-    namespace GL
+    namespace OSGParticleSystem
     {
-      class SortUnit
-      {
-      public:
-        int idx;
-        float distance;
-
-        static bool sortDescending (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance > rhs.distance;}
-        static bool sortAscending (const SortUnit& lhs, const SortUnit& rhs){return lhs.distance < rhs.distance;}
-      };
-
-
       class DistanceUnit
       {
       public:
         int* id;
         float* distance;
 
-        DistanceUnit(void):id(nullptr), distance(nullptr){}
-        DistanceUnit(int* id, float* distance) : id(id), distance(distance){}
-        int& Id(void){return (int&)*id;}
-        float& Distance(void){return (float&)*distance;}
+        DistanceUnit(int* id = nullptr, float* distance = nullptr) 
+	  : id(id)
+	  , distance(distance)
+	{
+	}
 
-        const int& getID(void){return (const int&)*id;}
-        const float& getDistance(void){return (const float&)*distance;}
+        int& Id(void)
+	{
+	  #ifdef DEBUG
+	  if ( !id )
+	    PARTICLES_THROW( "id pointer is null");
+          #endif
+
+	  return (int&)*id;
+	}
+
+        float& Distance(void)
+	{
+	  #ifdef DEBUG
+	  if ( !distance )
+	    PARTICLES_THROW( "distance pointer is null");
+          #endif
+
+	  return (float&)*distance;
+	}
+
+        const int& getID(void)
+	{
+	  #ifdef DEBUG
+	  if ( !id )
+	    PARTICLES_THROW( "id pointer is null");
+          #endif
+
+	  return (const int&)*id;
+	}
+        
+	const float& getDistance(void)
+	{
+	  #ifdef DEBUG
+	  if ( !distance )
+	    PARTICLES_THROW( "distance pointer is null");
+          #endif
+
+	  return (const float&)*distance;
+	}
+
       };
 
       typedef DistanceUnit tdunit;
-      typedef vector<tdunit> tdcontainter;
+      typedef std::vector<tdunit> tdcontainter;
 
       class DistanceArray
       {
@@ -95,7 +123,6 @@ namespace particles
         static bool sortAscending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance < *rhs.distance;}
       };
 
-
       typedef DistanceArray distanceArray;
       typedef vector<GLfloat> glvectorf;
       typedef vector<GLchar> glvectorch;
@@ -105,19 +132,49 @@ namespace particles
       public:
 
         // Triangles vertices
-        glvectorf* billboardVertices;
+        osg::Vec3Array* billboardVertices;
+        osg::DrawElementsUByte* billboardIndices;
         glvectorf* particlePositions;
-        glvectorch* particleColors;
+        glvectorf* particleColors;
 
         // OpenGL pointers
         GLuint vao;
         GLuint vboBillboardVertex;
+        GLuint vboDrawElements;
         GLuint vboParticlesPositions;
         GLuint vboParticlesColor;
 
+        osg::Uniform* uCameraUp;
+        osg::Uniform* uCameraRight;
+
+        osg::Vec3f eye, center, up, right;
+
+        osg::BoundingBox boundingBox;
+
+        bool init;
+
+        RenderConfig()
+        : billboardVertices( nullptr )
+        , billboardIndices( nullptr )
+        , particlePositions( nullptr )
+        , particleColors( nullptr )
+        , vao( 0 )
+        , vboBillboardVertex( 0 )
+        , vboDrawElements( 0 )
+        , vboParticlesPositions( 0 )
+        , vboParticlesColor( 0 )
+        , uCameraUp( nullptr )
+        , uCameraRight( nullptr )
+        , init( false )
+        {}
+
+        ~RenderConfig()
+        {}
+
       };
+
     }
   }
 }
 
-#endif /* GLTYPES_H_ */
+#endif /* OSGTYPES_H_ */

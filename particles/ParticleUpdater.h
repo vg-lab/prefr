@@ -23,33 +23,26 @@ namespace particles
   class ParticleUpdater
   {
 public:
+
     ParticleCollection* particles;
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
 
-    ParticleUpdater(ParticleCollection* particlesArray)
-    : particles( particlesArray )
-    , prototypes( nullptr )
-    , refPrototypes( nullptr )
-    {}
+    ParticleUpdater(ParticleCollection* particlesArray);
 
-    virtual ~ParticleUpdater()
-    {
-      delete (particles);
-      delete (prototypes);
-    }
+    virtual ~ParticleUpdater();
 
     //! Updates collection particles with the given deltaTime value.
     /*!
      *
      */
-    virtual int Update(float deltaTime) = 0;
+    virtual int Update(float deltaTime);
 
     //! Update a single particle by the given particle collection index
     /*!
      *
      */
-    virtual void Update(unsigned int i, float deltaTime) = 0;
+    virtual void Update(unsigned int i, float deltaTime);
 
   };
 }
