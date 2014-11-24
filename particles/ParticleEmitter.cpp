@@ -87,7 +87,7 @@ namespace particles
 
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
       {
-        emissionNodeParticlesPerCycle[i] = std::max(1.0f, particlesPerCycle * emissionNodes->at(i)->particles->size * normalizationFactor);
+        emissionNodeParticlesPerCycle[i] = std::max(1, int (particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
       }
 
       int* nodeParticlesPerCycle;
@@ -114,7 +114,7 @@ namespace particles
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
       {
 
-        emissionNodeParticlesPerCycle[i] = std::max(1.0f, particlesPerCycle * emissionNodes->at(i)->particles->size * normalizationFactor);
+        emissionNodeParticlesPerCycle[i] = std::max(1, int(particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
 //        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
       }
     }
