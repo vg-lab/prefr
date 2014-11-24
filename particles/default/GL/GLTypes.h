@@ -9,10 +9,7 @@
 #define GLTYPES_H_
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-//#include <FreeImage.h>
+
 
 #include "../DefaultTypes.h"
 

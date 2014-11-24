@@ -16,9 +16,9 @@ namespace particles
     namespace CUDATHRUST
     {
 
-      CUDAParticleSystem::CUDAParticleSystem(int initialParticlesNumber, int _maxParticles, float _emissionRate
+      CUDAParticleSystem::CUDAParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles
                            , bool _loop)
-      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _emissionRate, _loop)
+      : DefaultParticleSystem(initialParticlesNumber, _maxParticles, _loop)
       {
 
         distances = new distanceArray;

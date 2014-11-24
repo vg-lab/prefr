@@ -16,7 +16,10 @@ using namespace utils;
 
 namespace particles
 {
-  // This class updates the particles through the particle life cycle
+  //! This class updates the particles through the particle life cycle.
+  /*!
+   *
+   */
   class ParticleUpdater
   {
 public:
@@ -36,10 +39,16 @@ public:
       delete (prototypes);
     }
 
-    // Updates collection particles
+    //! Updates collection particles with the given deltaTime value.
+    /*!
+     *
+     */
     virtual int Update(float deltaTime) = 0;
 
-    // Update a single particle by the given particle collection index
+    //! Update a single particle by the given particle collection index
+    /*!
+     *
+     */
     virtual void Update(unsigned int i, float deltaTime) = 0;
 
   };

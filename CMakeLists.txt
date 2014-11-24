@@ -180,14 +180,14 @@ ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/GL/*.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}/default/OSG/*.cpp)
 
 
-configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.vert"
-  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.vert"
-)
-configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.frag"
-  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.frag"
-)
+#configure_file (
+#  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.vert"
+#  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.vert"
+#)
+#configure_file (
+#  "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/default/GL/shd/GL.frag"
+#  "${CMAKE_CURRENT_BINARY_DIR}/examples/GL.frag"
+#)
 
 
 SET( CUDA_PROPAGATE_HOST_FLAGS OFF ) 

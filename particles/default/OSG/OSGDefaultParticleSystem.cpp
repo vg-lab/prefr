@@ -16,19 +16,6 @@ namespace particles
     namespace OSGParticleSystem
     {
 
-//      void OSGPSNodeCallBack::update(osg::NodeVisitor* nv, osg::Drawable* node)
-//      {
-//        osg::ref_ptr<OSGDefaultParticleSystem> osgps =
-//            static_cast<OSGDefaultParticleSystem*>( node );
-//
-//        if (osgps)
-//        {
-//          osgps->Update(0.1f);
-//        }
-//
-////          traverse(node, nv);
-//      }
-
       void OSGPSNodeCallBack::operator()(osg::Node* node, osg::NodeVisitor* nv)
       {
         osg::ref_ptr<OSGDefaultParticleSystem> osgps =
@@ -41,7 +28,7 @@ namespace particles
       }
 
       OSGDefaultParticleSystem::OSGDefaultParticleSystem()
-      : DefaultParticleSystem(0, 0, 0, false)
+      : DefaultParticleSystem(0, 0, false)
       , osg::Drawable()
       , cameraManipulator( nullptr )
       , rootNode( nullptr )
@@ -62,7 +49,7 @@ namespace particles
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(
 	const OSGDefaultParticleSystem& other, 
 	const osg::CopyOp& copyOp)
-      : DefaultParticleSystem(0, 0, 0, false)
+      : DefaultParticleSystem(0, 0, false)
       , osg::Drawable(other, copyOp)
       , cameraManipulator( nullptr )
       , rootNode( nullptr )
@@ -75,15 +62,12 @@ namespace particles
       }
 
       OSGDefaultParticleSystem::OSGDefaultParticleSystem(
-	int initialParticlesNumber, int _maxParticles,
-	float _emissionRate, bool _loop, 
-	osgGA::StandardManipulator* cam)
+      unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
       : DefaultParticleSystem(initialParticlesNumber, 
 			      _maxParticles, 
-			      _emissionRate, 
 			      loop)
       , osg::Drawable()
-      , cameraManipulator( cam )
+      , cameraManipulator( nullptr )
       , rootNode( nullptr )
       {
 
@@ -95,8 +79,6 @@ namespace particles
 
         rootNode->setCullCallback(new OSGPSNodeCallBack);
 
-         //TODO Render bins, etc
-
          setUseDisplayList(false);
          setUseVertexBufferObjects(true);
 
@@ -104,15 +86,13 @@ namespace particles
 
       OSGDefaultParticleSystem::~OSGDefaultParticleSystem()
       {
-        if ( distances )
-          delete distances;
-	// if ( renderConfig ) 
-	//   delete renderConfig;
+        delete( distances );
+
+        delete( renderConfig );
       }
 
       void OSGDefaultParticleSystem::ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag)
       {
-
 
         osg::StateSet* psState = rootNode->getOrCreateStateSet();
 
@@ -132,12 +112,10 @@ namespace particles
         if ( fullPath.empty() )
           PARTICLES_THROW("Vertex file not found at: " + shaderPathVert)
 
-
         assert(vertexShader->loadShaderSourceFromFile( fullPath ));
-//        std::cout << "Loaded vertex shader:\n" << vertexShader->getShaderSource() << std::endl;
-
 
         std::cout << "Loading vertex shader:" << shaderPathFrag << std::endl;
+
         // Load fragment shader
         fullPath = osgDB::findDataFile( shaderPathFrag );
 
@@ -145,8 +123,6 @@ namespace particles
           PARTICLES_THROW("Fragment shader file not found at: " + shaderPathVert)
 
         assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
-
-//        std::cout << "Loaded fragment shader:\n" << vertexShader->getShaderSource() << std::endl;
 
         program->addShader( vertexShader );
         program->addShader( fragmentShader );
@@ -162,28 +138,17 @@ namespace particles
         program->addBindAttribLocation( "particleColor", 2 );
 
         psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
-//
-//
-//
-//        psState->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
-//        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+
+        psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 //
         psState->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         osg::BlendFunc* blendFunc = new osg::BlendFunc();
-
         blendFunc->setSource(osg::BlendFunc::SRC_ALPHA);
         blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+//        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
 
         psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
-
-
-
-
-
-
-
 
         psState->setAttributeAndModes(program, osg::StateAttribute::ON);
 
@@ -206,10 +171,6 @@ namespace particles
 
         assert(cameraManipulator != nullptr);
 
-//        if (!cameraManipulator)
-//          std::cout << "No hay manipulador de cámara." << std::endl;
-
-
         // Get camera position to calculate distances
         osg::Vec3d eye, center, up;
         cameraManipulator->getTransformation(eye, center, up);
@@ -220,8 +181,6 @@ namespace particles
 
         UpdateCameraDistances(glm::vec3(renderConfig->eye.x(), renderConfig->eye.y(), renderConfig->eye.z()));
 
-//        std::cout << eye.x() << ", " << eye.y() << ", " << eye.z() << ", " << std::endl;
-
         osg::Vec3f forward = (renderConfig->center - renderConfig->eye);
         forward.normalize();
         renderConfig->right = renderConfig->up ^ forward;
@@ -231,13 +190,6 @@ namespace particles
         renderConfig->uCameraRight->set( renderConfig->right );
 
         UpdateRender();
-
-//        std::cout << renderConfig->boundingBox.xMin() << ", " << renderConfig->boundingBox.xMax() << " "
-//                  << renderConfig->boundingBox.yMin() << ", " << renderConfig->boundingBox.yMax() << " "
-//                  << renderConfig->boundingBox.zMin() << ", " << renderConfig->boundingBox.zMax()
-//                  << std::endl;
-
-//        std::cout << "Update" << std::endl;
       }
 
 
@@ -276,7 +228,6 @@ namespace particles
         static_cast<OSGDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
 
         dirtyBound();
-//        dirtyDisplayList();
       }
 
       void OSGDefaultParticleSystem::Render() const
@@ -296,7 +247,6 @@ namespace particles
 	  PARTICLES_THROW( "renderConfig is nullptr" );
 	#endif 
 
-//        std::cout << "Compute bound" << std::endl;
         return renderConfig->boundingBox;
 
       }
@@ -317,9 +267,6 @@ namespace particles
         osg::State* state = renderInfo.getState();
         state->setUseVertexAttributeAliasing(true);
 
-//        state->dirtyVertexAttribPointer(renderConfig->vboParticlesPositions);
-//        state->dirtyVertexAttribPointer(renderConfig->vboParticlesColor);
-
         Render();
       }
 
@@ -332,17 +279,19 @@ namespace particles
 
         if (!renderConfig->billboardVertices || !renderConfig->billboardIndices)
         {
-          std::cout << "Accept error" << std::endl;
           return;
         }
         functor.setVertexArray(renderConfig->billboardVertices->size(), static_cast<const osg::Vec3*>(renderConfig->billboardVertices->getDataPointer()));
         renderConfig->billboardIndices->accept(functor);
-        std::cout << "Accept" << std::endl;
       }
 
       void OSGDefaultParticleSystem::releaseGLObjects(osg::State* state) const
       {
-//        delete (renderConfig) ;
+        glDeleteBuffers(1, &renderConfig->vboBillboardVertex);
+        glDeleteBuffers(1, &renderConfig->vboDrawElements);
+        glDeleteBuffers(1, &renderConfig->vboParticlesPositions);
+        glDeleteBuffers(1, &renderConfig->vboParticlesColor);
+        glDeleteVertexArrays(1, &renderConfig->vao);
       }
 
     }

@@ -101,15 +101,11 @@ namespace utils
 
        while (time > times[i+1])
        {
-//          std::cout << time << " > " << i+1 << " " << times[i+1] << std::endl;
          i++;
        }
 
-       float relTime = (time - times[i]) * invIntervals[i];// / (times[i+1] - times[i]);
+       float relTime = (time - times[i]) * invIntervals[i];
 
-//        std::cout << time << " -> times[" << i << "] = " << times[i]
-//                          << " -> times[" << i+1 << "] = " << times[i+1]
-//                          << " = " << relTime << std::endl;
        T res = ((1.0f - relTime) * values[i] + relTime * values[i+1]);
 
        return res;
@@ -141,8 +137,6 @@ namespace utils
       precision = precision > 0 ? str.length() - precision - 1 : 0;
       precision = pow(10.f, precision);
 
-//      std::cout << newTime << " -> " << str << " -> " << precision << std::endl;
-
       if (precision > quickReference.size())
         quickReference.resize(precision);
 
@@ -150,26 +144,18 @@ namespace utils
 
       invIntervals.resize(times.size(), 1.0f);
 
-//      std::cout << "Intervals: " << invIntervals.size() << std::endl;
       if (times.size() > 1)
         for (unsigned int i = 0; i < times.size()-1; i++)
         {
-
           invIntervals[i] = 1.0f / (times[i+1] - times[i]);
-//          std::cout << times[i+1] << " - " << times[i] << " = "  << invIntervals[i] << std::endl;
         }
-//      std::cout << std::endl;
 
       vector<int> limits(times.size());
 
-//      std::cout << "Limits: " << limits.size() << std::endl;
       for (unsigned int i = 0; i < limits.size()-1; i++)
       {
         limits[i] = int(floor(times[i+1] * quickReference.size()));
-//        std::cout << limits[i] << " ";
-
       }
-//      std::cout << std::endl;
 
       limits[limits.size()-1] = quickReference.size();
 
@@ -179,10 +165,7 @@ namespace utils
         if (i >= limits[pos])
           pos++;
         quickReference[i] = pos;
-
-//        std::cout << quickReference[i] << " ";
       }
-//      std::cout << std::endl;
     }
   };
 

@@ -51,11 +51,29 @@ namespace particles
 
         //glGenBuffers(1, &vboParticlesPositions);
         glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_DYNAMIC_DRAW);
 
         //glGenBuffers(1, &vboParticlesColor);
         glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_DYNAMIC_DRAW);
+
+        // Bind vertices
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void *) 0);
+
+
+        glVertexAttribDivisor(0, 0);
+        glVertexAttribDivisor(1, 1);
+        glVertexAttribDivisor(2, 1);
 
       }
 
@@ -88,12 +106,12 @@ namespace particles
 
         // Update positions buffer
         glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_STREAM_DRAW);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_STREAM_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &renderConfig->particlePositions->front());
 
         // Update colors buffer
         glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_STREAM_DRAW);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(GLbyte) * renderConfig->particleColors->size(), NULL, GL_STREAM_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLbyte) * aliveParticles * 4, &renderConfig->particleColors->front());
 
 
@@ -101,29 +119,11 @@ namespace particles
 
       void GLCUDAParticleRenderer::Paint(unsigned int aliveParticles) const
       {
-        // Bind vertices
-          glEnableVertexAttribArray(0);
-          glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glBindVertexArray(renderConfig->vao);
 
-          glEnableVertexAttribArray(1);
-          glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-          glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, aliveParticles);
 
-          glEnableVertexAttribArray(2);
-          glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-          glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void *) 0);
-
-
-          glVertexAttribDivisor(0, 0);
-          glVertexAttribDivisor(1, 1);
-          glVertexAttribDivisor(2, 1);
-
-          glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, aliveParticles);
-
-          glDisableVertexAttribArray(0);
-          glDisableVertexAttribArray(1);
-          glDisableVertexAttribArray(2);
+        glBindVertexArray(0);
       }
 
 

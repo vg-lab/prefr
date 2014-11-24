@@ -31,7 +31,6 @@ namespace particles
 
         virtual ~OSGDefaultParticleSorter()
         {
-          delete( distances );
         }
 
         virtual void Sort(SortOrder order = Descending);
