@@ -17,6 +17,10 @@
 
 #include <particles/default/GL/CShader.h>
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
+
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 #define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )
 
@@ -83,8 +87,8 @@ void initShaders()
 {
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string( particles_LIBRARY_BASE_PATH );
-  vertPath.append("default/GL/shd/GL.vert");
-  fragPath.append("default/GL/shd/GL.frag");
+  vertPath.append("default/GL/shd/GL-vert.glsl");
+  fragPath.append("default/GL/shd/GL-frag.glsl");
   particlesShader = new CShader(false, false,
                                  vertPath.c_str() ,
                                  fragPath.c_str()

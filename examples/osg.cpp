@@ -102,8 +102,8 @@ int main(int argc, char** argv)
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
-  vertPath.append("default/OSG/shd/osg.vert");
-  fragPath.append("default/OSG/shd/osg.frag");
+  vertPath.append("default/OSG/shd/osg-vert.glsl");
+  fragPath.append("default/OSG/shd/osg-frag.glsl");
   ps->ConfigureProgram(vertPath, fragPath);
 #endif
 
