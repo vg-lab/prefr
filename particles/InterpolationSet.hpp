@@ -75,10 +75,9 @@ namespace utils
       {
         assert(time >= 0 && time <= 1.0f);
 
-        int ref = quickReference[floor(time * quickReference.size())];
-        float relTime = glm::clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
+        int ref = quickReference[floor(time * (quickReference.size()-1))];
 
-//        std::cout << size << ", " << quickReference.size() << " time " << time << " step " << invIntervals[ref] << " -> " << i  << " times " << times[ref] << " - " << times[ref+1] << " reltime " << relTime << std::endl;
+        float relTime = glm::clamp((time - times[ref]) * invIntervals[ref], 0.f, 1.f);
 
         T res = ((1.0f - relTime) * values[ref] + relTime * values[ref+1]);
 
