@@ -235,9 +235,8 @@ int main(int argc, char** argv)
 
 
   osg::Group* groupNode = new osg::Group;
-#if (!particles_WITH_CUDA)
+
   groupNode->addChild(ps->rootNode);
-#endif
   groupNode->addChild(sdg);
 
 //  osg::Geode* geode = new osg::Geode;

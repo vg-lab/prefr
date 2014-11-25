@@ -28,8 +28,6 @@ namespace particles
         virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
         virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
 
-      protected:
-
         virtual void InitDistanceArray();
       };
 

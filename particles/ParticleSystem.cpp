@@ -124,6 +124,7 @@ namespace particles
   void ParticleSystem::SetSorter(ParticleSorter* _sorter)
   {
     this->sorter = _sorter;
+    this->sorter->InitDistanceArray();
   }
   void ParticleSystem::SetRenderer(ParticleRenderer* _renderer)
   {

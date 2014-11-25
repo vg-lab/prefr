@@ -12,9 +12,7 @@ namespace particles
   ParticleSorter::ParticleSorter( ParticleCollection* particlesArray  )
   : particles( particlesArray )
   , distances( nullptr )
-  {
-    InitDistanceArray();
-  }
+  {}
 
   ParticleSorter::~ParticleSorter()
   {
