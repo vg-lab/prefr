@@ -6,6 +6,7 @@
  */
 
 #include "ParticleSystem.h"
+#include "log.h"
 
 namespace particles
 {
@@ -120,13 +121,16 @@ namespace particles
     updater->refPrototypes = &this->particlePrototype;
 
   }
-  void ParticleSystem::SetSorter(ParticleSorter* sorter)
+  void ParticleSystem::SetSorter(ParticleSorter* _sorter)
   {
-    this->sorter = sorter;
+    this->sorter = _sorter;
   }
-  void ParticleSystem::SetRenderer(ParticleRenderer* renderConfig)
+  void ParticleSystem::SetRenderer(ParticleRenderer* _renderer)
   {
-    this->renderer = renderConfig;
+    this->renderer = _renderer;
+
+    PREFR_DEBUG_CHECK( this->sorter->distances, "distances is null" );
+    this->renderer->distances = this->sorter->distances;
   }
 
   void ParticleSystem::Start()
@@ -182,6 +186,29 @@ namespace particles
 
     this->aliveParticles = accumulator;
   }
+
+  void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
+  {
+    unsigned int i = 0;
+    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    {
+     i = ((tparticle_ptr) *it)->id;
+     this->sorter->UpdateCameraDistance(i, cameraPosition);
+    }
+  }
+
+  void ParticleSystem::UpdateRender()
+  {
+   this->sorter->Sort();
+
+   this->renderer->SetupRender(this->aliveParticles);
+  }
+
+  void ParticleSystem::Render() const
+  {
+   this->renderer->Paint(aliveParticles);
+  }
+
 }
 
 

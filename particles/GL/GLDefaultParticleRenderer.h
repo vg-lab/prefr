@@ -9,36 +9,25 @@
 #define DEFAULTPARTICLERENDERCONFIG_H_
 
 #include <particles/config.h>
-#include "GLTypes.h"
 #include "../ParticleRenderer.h"
-#include "../ParticleSystem.h"
-
 
 namespace particles
 {
-  namespace defaultParticleSystem
+
+  class GLDefaultParticleRenderer : public ParticleRenderer
   {
-    namespace GL
-    {
-      class GLDefaultParticleRenderer : public ParticleRenderer
-      {
-      public:
-        distanceArray* distances;
+  public:
 
-        RenderConfig* renderConfig;
+    GLDefaultParticleRenderer(ParticleCollection* particlesArray);
 
-        GLDefaultParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
-                                    , RenderConfig* renderConfiguration);
+    virtual ~GLDefaultParticleRenderer();
 
-        virtual ~GLDefaultParticleRenderer();
+    virtual void SetupRender(unsigned int aliveParticles = 0);
 
-        virtual void SetupRender(unsigned int aliveParticles = 0);
+    virtual void Paint(unsigned int aliveParticles = 0) const;
 
-        virtual void Paint(unsigned int aliveParticles = 0) const;
+  };
 
-      };
-    }
-  }
 
 }
 

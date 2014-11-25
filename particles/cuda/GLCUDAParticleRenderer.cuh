@@ -18,24 +18,19 @@ namespace particles
   {
     namespace CUDATHRUST
     {
-      class GLCUDAParticleRenderer : public ParticleRenderer
-      {
-      public:
-
-        distanceArray* distances;
-
-        RenderConfig* renderConfig;
-
-        GLCUDAParticleRenderer(ParticleCollection* particlesArray, distanceArray* distancesArray
-                               , RenderConfig* renderConfiguration);
-
-        virtual ~GLCUDAParticleRenderer();
-
-        virtual void SetupRender(unsigned int aliveParticles = 0);
-
-        virtual void Paint(unsigned int aliveParticles = 0) const;
-
-      };
+//      class GLCUDAParticleRenderer : public ParticleRenderer
+//      {
+//      public:
+//
+//        GLCUDAParticleRenderer(ParticleCollection* particlesArray);
+//
+//        virtual ~GLCUDAParticleRenderer();
+//
+//        virtual void SetupRender(unsigned int aliveParticles = 0);
+//
+//        virtual void Paint(unsigned int aliveParticles = 0) const;
+//
+//      };
     }
   }
 

@@ -9,38 +9,26 @@
 #define DEFAULTPARTICLESORTER_H_
 
 #include <particles/config.h>
-#include "OSGTypes.h"
-#include "../ParticleSystem.h"
+#include "../ParticleSorter.h"
 
 
 namespace particles
 {
-  namespace defaultParticleSystem
-  {
-    namespace OSGParticleSystem
-    {
-      class OSGDefaultParticleSorter : public ParticleSorter
-      {
-      public:
-        distanceArray* distances;
-
-        OSGDefaultParticleSorter(ParticleCollection* particlesArray, distanceArray* distancesArray)
-        : ParticleSorter(particlesArray)
-        , distances(distancesArray)
-        {}
-
-        virtual ~OSGDefaultParticleSorter()
-        {
-        }
-
-        virtual void Sort(SortOrder order = Descending);
-
-        virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
-        virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
-
-      };
-    }
-  }
+//  class OSGDefaultParticleSorter : public ParticleSorter
+//  {
+//  public:
+//
+//    OSGDefaultParticleSorter(ParticleCollection* particlesArray);
+//
+//    virtual ~OSGDefaultParticleSorter();
+//
+//
+//    virtual void Sort(SortOrder order = Descending);
+//
+//    virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
+//    virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
+//
+//  };
 }
 
 

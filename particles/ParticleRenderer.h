@@ -10,6 +10,8 @@
 
 #include <particles/config.h>
 #include "ElementCollection.hpp"
+#include "DistanceArray.hpp"
+#include "RenderConfig.h"
 
 using namespace utils;
 
@@ -22,14 +24,22 @@ namespace particles
 
     ParticleCollection* particles;
 
+    DistanceArray* distances;
+    RenderConfig* renderConfig;
+
     ParticleRenderer(ParticleCollection* particlesArray)
     : particles(particlesArray)
+    , distances( nullptr )
+    , renderConfig( nullptr )
     {}
 
 
     virtual ~ParticleRenderer()
     {
       delete( particles );
+
+      if (renderConfig)
+        delete( renderConfig );
     }
 
     virtual void SetupRender(unsigned int aliveParticles = 0) = 0;

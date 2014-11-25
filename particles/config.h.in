@@ -7,6 +7,7 @@
 
 #pragma once
 
+
 #define GLM_FORCE_RADIANS
 
 #ifdef WIN32
@@ -50,24 +51,5 @@ namespace particles
   typedef utils::ElementCollection<tparticle> ParticleCollection;
 
 }
-
-
-#ifdef DEBUG
-  #define PARTICLES_LOG( msg )                                   \
-    std::cerr << "particles "                                    \
-              << __FILE__ << "("                                 \
-              << __LINE__ << "): "                               \
-              << msg << std::endl;
-#else
-  #define PARTICLES_LOG( msg ) 
-#endif
-
-
-#define PARTICLES_THROW( msg )                                    \
-  {                                                               \
-    PARTICLES_LOG( msg );          				  \
-    throw std::runtime_error( msg );				  \
-  }
-
 
 #define particles_LIBRARY_BASE_PATH "@particles_LIBRARY_BASE_PATH@"

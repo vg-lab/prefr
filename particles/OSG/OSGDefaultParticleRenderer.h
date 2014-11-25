@@ -9,41 +9,31 @@
 #define OSGDEFAULTPARTICLERENDERCONFIG_H_
 
 #include <particles/config.h>
-#include "OSGTypes.h"
 #include "../ParticleRenderer.h"
-
-
+#include "OSGRenderConfig.h"
+#include <GL/glew.h>
 
 namespace particles
 {
-  namespace defaultParticleSystem
+
+  class OSGDefaultParticleRenderer : public ParticleRenderer
   {
-    namespace OSGParticleSystem
-    {
-      class OSGDefaultParticleRenderer : public ParticleRenderer
-      {
-      public:
-        distanceArray* distances;
+  public:
 
-        RenderConfig* renderConfig;
+    int currentAliveParticles;
 
-        int currentAliveParticles;
+    OSGDefaultParticleRenderer(ParticleCollection* particlesArray);
 
-        OSGDefaultParticleRenderer(ParticleCollection* particlesArray, 
-				   distanceArray* distancesArray,
-				   RenderConfig* renderConfiguration);
+    virtual ~OSGDefaultParticleRenderer();
 
-        virtual ~OSGDefaultParticleRenderer();
+    void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
 
-        void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
+    virtual void SetupRender(unsigned int aliveParticles = 0);
 
-        virtual void SetupRender(unsigned int aliveParticles = 0);
+    virtual void Paint(unsigned int aliveParticles = 0) const;
 
-        virtual void Paint(unsigned int aliveParticles = 0) const;
+  };
 
-      };
-    }
-  }
 
 }
 

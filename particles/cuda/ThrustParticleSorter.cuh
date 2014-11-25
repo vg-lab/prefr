@@ -2,9 +2,9 @@
 #define THRUSTPARTICLESORTER_H_
 
 #include <particles/config.h>
-#include "CUDAThrustTypes.cuh"
 #include "../ParticleSorter.h"
 
+#include "CUDADistanceArray.cuh"
 
 #include <thrust/sort.h>
 #include <thrust/copy.h>
@@ -21,15 +21,16 @@ namespace particles
       {
       public:
 
-        distanceArray* distances;
-
-        ThrustParticleSorter(ParticleCollection* arrayParticles, distanceArray* distanceArray);
+        ThrustParticleSorter(ParticleCollection* arrayParticles);
 
         void Sort(SortOrder order);
 
         virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
         virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
 
+      protected:
+
+        virtual void InitDistanceArray();
       };
 
     }

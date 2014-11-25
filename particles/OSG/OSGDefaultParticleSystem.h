@@ -30,11 +30,6 @@
 
 namespace particles
 {
-  namespace defaultParticleSystem
-  {
-
-    namespace OSGParticleSystem
-    {
 
       #define ATRIB_ARRAY_POSITIONS 1
 
@@ -53,10 +48,6 @@ namespace particles
 
         osgGA::StandardManipulator* cameraManipulator;
 
-        distanceArray* distances;
-
-        RenderConfig* renderConfig;
-
         osg::Geode* rootNode;
 
         OSGDefaultParticleSystem();
@@ -73,8 +64,6 @@ namespace particles
         virtual void SetCameraManipulator(osgGA::StandardManipulator* cam);
         void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
 
-        virtual void SetRenderer(ParticleRenderer* renderConfig);
-
         virtual void Update(float deltaTime);
         virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
@@ -84,12 +73,9 @@ namespace particles
         virtual osg::BoundingBox computeBound() const;
         virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
         virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
-        virtual void accept(osg::PrimitiveFunctor& functor) const;
         virtual void releaseGLObjects(osg::State* state) const;
       };
-    }
 
-  }
 }
 
 

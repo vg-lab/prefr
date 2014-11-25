@@ -14,14 +14,19 @@
 #include <particles/ParticleEmitter.h>
 #include <particles/ParticleUpdater.h>
 
+#include <particles/OSG/OSGDefaultParticleSystem.h>
+#include <particles/OSG/OSGDefaultParticleRenderer.h>
+
+#include <particles/ParticleSorter.h>
+
 #if (particles_WITH_CUDA)
   #include <particles/cuda/ThrustParticleSorter.cuh>
-  #include <particles/cuda/CUDAParticleSystem.cuh>
-  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
+//  #include <particles/cuda/CUDAParticleSystem.cuh>
+//  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
 #else
-  #include <particles/OSG/OSGDefaultParticleSystem.h>
-  #include <particles/OSG/OSGDefaultParticleSorter.h>
-  #include <particles/OSG/OSGDefaultParticleRenderer.h>
+//  #include <particles/OSG/OSGDefaultParticleSystem.h>
+//  #include <particles/OSG/OSGDefaultParticleSorter.h>
+//  #include <particles/OSG/OSGDefaultParticleRenderer.h>
 #endif
 
 #include <osgViewer/Viewer>
@@ -31,17 +36,21 @@
 
 using namespace particles;
 
+//using namespace particles::defaultParticleSystem::OSGParticleSystem;
+
 #if (particles_WITH_CUDA)
   using namespace particles::defaultParticleSystem::CUDATHRUST;
 #else
-  using namespace particles::defaultParticleSystem::OSGParticleSystem;
+
 #endif
 
-#if (particles_WITH_CUDA)
-  CUDAParticleSystem* ps;
-#else
+//#if (particles_WITH_CUDA)
+//  CUDAParticleSystem* ps;
+//#else
+//  OSGDefaultParticleSystem* ps;
+//#endif
+
   OSGDefaultParticleSystem* ps;
-#endif
 
 void initOpenGL(osg::GraphicsContext* context, GLint& maxNumUniforms, GLint& maxUniformBlockSize)
 {
@@ -88,10 +97,13 @@ int main(int argc, char** argv)
     maxEmitters = atoi(argv[2]);
 
 
-#if (particles_WITH_CUDA == 1)
-  ps = new CUDAParticleSystem(10, maxParticles, true);
-#else
+//#if (particles_WITH_CUDA == 1)
+//  ps = new CUDAParticleSystem(10, maxParticles, true);
+//#else
+//  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
+
   ps = new OSGDefaultParticleSystem(10, maxParticles, true);
+
   if (!viewer->getCameraManipulator())
     viewer->setCameraManipulator(new osgGA::TrackballManipulator, true);
 
@@ -100,12 +112,7 @@ int main(int argc, char** argv)
 
   ps->SetCameraManipulator((osgGA::StandardManipulator*)viewer->getCameraManipulator());
 
-  std::string vertPath, fragPath;
-  fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
-  vertPath.append("OSG/shd/osg-vert.glsl");
-  fragPath.append("OSG/shd/osg-frag.glsl");
-  ps->ConfigureProgram(vertPath, fragPath);
-#endif
+
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
@@ -179,20 +186,24 @@ int main(int argc, char** argv)
   ParticleUpdater* updater = new ParticleUpdater(colUpdater);
   std::cout << "Created updater" << std::endl;
 
+  ParticleSorter* sorter;
+
 #if (particles_WITH_CUDA)
-  ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
+  sorter = new ThrustParticleSorter(colSorter);
 #else
-  OSGDefaultParticleSorter* sorter = new OSGDefaultParticleSorter(colSorter, ps->distances);
+  sorter = new ParticleSorter(colSorter);
 #endif
 
 
   std::cout << "Created sorter" << std::endl;
 
-#if (particles_WITH_CUDA)
-  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-#else
-  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-#endif
+//#if (particles_WITH_CUDA)
+//  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+//#else
+//  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+//#endif
+
+  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(colRenderer);
 
   std::cout << "Created systems" << std::endl;
 
@@ -201,6 +212,12 @@ int main(int argc, char** argv)
   ps->AddUpdater(updater);
   ps->SetSorter(sorter);
   ps->SetRenderer(renderer);
+
+  std::string vertPath, fragPath;
+  fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
+  vertPath.append("OSG/shd/osg-vert.glsl");
+  fragPath.append("OSG/shd/osg-frag.glsl");
+  ps->ConfigureProgram(vertPath, fragPath);
 
   ps->Start();
 

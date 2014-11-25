@@ -22,19 +22,19 @@ namespace particles
     namespace GL
     {
 
-      class GLDefaultParticleSystem : public ParticleSystem
-      {
-      public:
-        distanceArray* distances;
-
-        RenderConfig* renderConfig;
-
-        GLDefaultParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
-
-        virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
-        virtual void UpdateRender();
-        virtual void Render() const;
-      };
+//      class GLDefaultParticleSystem : public ParticleSystem
+//      {
+//      public:
+//        distanceArray* distances;
+//
+//        RenderConfig* renderConfig;
+//
+//        GLDefaultParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
+//
+//        virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
+//        virtual void UpdateRender();
+//        virtual void Render() const;
+//      };
 
     }
   }

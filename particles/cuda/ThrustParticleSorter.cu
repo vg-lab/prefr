@@ -9,45 +9,38 @@ namespace particles
     namespace CUDATHRUST
     {
     
-      ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles, distanceArray* distanceArray)
+      ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles)
       : ParticleSorter(arrayParticles)
-      , distances(distanceArray)
       {}
+
+      void ThrustParticleSorter::InitDistanceArray()
+      {
+        distances = new CUDADistanceArray( particles->size );
+
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+
+        cda->deviceID.resize( particles->size );
+        cda->deviceDistances.resize( particles->size );
+      }
+
 
       void ThrustParticleSorter::Sort(SortOrder order)
       {
-        //        thrust::host_vector<int> hostID(distances->ids->begin(), distances->ids->end());//at(distances->ids->size()-1));
-        //        thrust::device_vector<int> devID = hostID;
-        //
-        //        thrust::host_vector<float> hostDistance(distances->distances->begin(), distances->distances->end());//at(distances->distances->size()-1));
-        //        thrust::device_vector<float> devDistance = hostDistance;
-        //
-        //        thrust::sort_by_key(devDistance.begin(), devDistance.end(), devID.begin(), thrust::greater<float>());
-        //
-        //        thrust::copy(devID.begin(), devID.end(), hostID.begin());
-        //        //thrust::copy(devDistance.begin(), devDistance.end(), hostDistance.begin());
-        //
-        ////        std::cout << "sorting..." << std::endl;
-        //        for (int i = 0; i < distances->ids->size(); i++)
-        //        {
-        //          //std::cout << distances->ids->at(i) << ":" << distances->distances->at(i) << " " << hostID[i] << ":" << hostDistance[i] << std::endl;
-        //          distances->ids->at(i) = hostID[i];
-        //          distances->elements->at(i).id = &distances->ids->at(i);
-        //          //distances->distances->at(i) = hostDistance[i];
-        //          distances->elements->at(i).distance = &distances->distances->at(i);
-        //        }
 
-        //***************************************************
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
 
 
+        thrust::copy(cda->ids->begin(), cda->ids->end(), cda->deviceID.begin());
+        thrust::copy(cda->distances->begin(), cda->distances->end(), cda->deviceDistances.begin());
 
-        thrust::copy(distances->hostID.begin(), distances->hostID.end(), distances->deviceID.begin());
-        thrust::copy(distances->hostDistances.begin(), distances->hostDistances.end(), distances->deviceDistances.begin());
+        if (order == SortOrder::Ascending)
+          thrust::sort_by_key(cda->deviceDistances.begin(), cda->deviceDistances.end()
+                              , cda->deviceID.begin(), thrust::less<float>());
+        else
+          thrust::sort_by_key(cda->deviceDistances.begin(), cda->deviceDistances.end()
+                              , cda->deviceID.begin(), thrust::greater<float>());
 
-        thrust::sort_by_key(distances->deviceDistances.begin(), distances->deviceDistances.end()
-                            , distances->deviceID.begin(), thrust::greater<float>());
-
-        thrust::copy(distances->deviceID.begin(), distances->deviceID.end(), distances->hostID.begin());
+        thrust::copy(cda->deviceID.begin(), cda->deviceID.end(), cda->ids->begin());
 
       }
 
@@ -60,16 +53,10 @@ namespace particles
       }
       void ThrustParticleSorter::UpdateCameraDistance(unsigned int i,  const glm::vec3& cameraPosition)
       {
-//        tparticleptr current = particles->elements->at(i);
-//        distances->ids->at(i) = current->id;
-//        distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
-
-        //************************
-
 
         tparticle_ptr current = particles->elements->at(i);
-        distances->hostID[i] = current->id;
-        distances->hostDistances[i] = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
+        distances->ids->at(i) = current->id;
+        distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
 
       }
 

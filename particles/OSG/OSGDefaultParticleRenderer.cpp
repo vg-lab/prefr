@@ -9,159 +9,161 @@
 
 namespace particles
 {
-  namespace defaultParticleSystem
+
+  OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(ParticleCollection* particlesArray)
+  : ParticleRenderer( particlesArray )
+  , currentAliveParticles( 0 )
   {
-    namespace OSGParticleSystem
+
+    renderConfig = new OSGRenderConfig( particlesArray->size );
+
+    GLfloat b[] = {-0.5f, -0.5f, 0.0f,
+                   0.5f,  -0.5f, 0.0f,
+                   -0.5f, 0.5f, 0.0f,
+                   0.5f, 0.5f, 0.0f};
+
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
+
+    osgrc->billboardVertices = new vector<GLfloat>;
+    osgrc->billboardIndices = new osg::DrawElementsUByte(GL_TRIANGLE_STRIP);
+    osgrc->particlePositions = new vector<GLfloat>(particles->size * 4);
+    osgrc->particleColors = new vector<GLfloat>(particles->size * 4);
+
+    for (unsigned int i = 0; i < 12; i++)
     {
+//          osgrc->billboardVertices->push_back(osg::Vec3( b[i*3],
+//                                                                b[i*3 + 1],
+//                                                                b[i*3 + 2] ));
 
+      osgrc->billboardVertices->push_back(b[i]);
 
-      OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(ParticleCollection* particlesArray, 
-							     distanceArray* distancesArray,
-                                                             RenderConfig* renderConfiguration)
-      : ParticleRenderer( particlesArray )
-      , distances( distancesArray)
-      , renderConfig( renderConfiguration)
-      , currentAliveParticles( 0 )
-      {
-
-        GLfloat b[] = {-0.5f, -0.5f, 0.0f, 
-                       0.5f,  -0.5f, 0.0f,
-                       -0.5f, 0.5f, 0.0f,
-                       0.5f, 0.5f, 0.0f};
-
-        renderConfig->billboardVertices = new osg::Vec3Array();
-        renderConfig->billboardIndices = new osg::DrawElementsUByte(GL_TRIANGLE_STRIP);
-        renderConfig->particlePositions = new vector<GLfloat>(particles->size * 4);
-        renderConfig->particleColors = new vector<GLfloat>(particles->size * 4);
-
-        for (unsigned int i = 0; i < 4; i++)
-        {
-          renderConfig->billboardVertices->push_back(osg::Vec3( b[i*3],
-                                                                b[i*3 + 1],
-                                                                b[i*3 + 2] ));
-          renderConfig->billboardIndices->push_back(i);
-        }
-
-
-      }
-
-      OSGDefaultParticleRenderer::~OSGDefaultParticleRenderer()
-      {
-        delete( distances );
-      }
-
-      void OSGDefaultParticleRenderer::osgCompileGLObjects(osg::RenderInfo& renderInfo) const
-      {
-          glGenVertexArrays(1, &renderConfig->vao);
-
-
-          GLuint buffersGL[4];
-          glGenBuffers(4, buffersGL);
-
-          renderConfig->vboBillboardVertex = buffersGL[0];
-          renderConfig->vboParticlesPositions = buffersGL[1];
-          renderConfig->vboParticlesColor = buffersGL[2];
-          renderConfig->vboDrawElements = buffersGL[3];
-
-          renderConfig->init = true;
-
-
-
-        // Assign billboard vertices
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
-        glBufferData(GL_ARRAY_BUFFER, renderConfig->billboardVertices->getTotalDataSize()
-                     , renderConfig->billboardVertices->getDataPointer(), GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particlePositions->size(), NULL, GL_DYNAMIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * renderConfig->particleColors->size(), NULL, GL_DYNAMIC_DRAW);
-
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderConfig->vboDrawElements);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderConfig->billboardIndices->getTotalDataSize(), renderConfig->billboardIndices->getDataPointer(), GL_STATIC_DRAW);
-
-        glBindVertexArray(renderConfig->vao);
-
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0);
-
-//        glVertexAttribDivisor(0, 0);
-        glVertexAttribDivisor(1, 1);
-        glVertexAttribDivisor(2, 1);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderConfig->vboDrawElements);
-
-        glBindVertexArray(0);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-      }
-
-      void OSGDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
-      {
-        tparticle_ptr currentParticle;
-        int idx;
-
-        renderConfig->boundingBox.init();
-
-        for (unsigned int i = 0; i < aliveParticles; i++)
-        {
-          currentParticle = particles->elements->at(distances->at(i).Id());
-
-          idx = i * 4;
-
-          renderConfig->particlePositions->at(idx) = currentParticle->position.x;
-          renderConfig->particlePositions->at(idx+1) = currentParticle->position.y;
-          renderConfig->particlePositions->at(idx+2) = currentParticle->position.z;
-          renderConfig->particlePositions->at(idx+3) = currentParticle->size;
-
-          renderConfig->boundingBox.expandBy(osg::Vec3(  currentParticle->position.x
-                                , currentParticle->position.y
-                                , currentParticle->position.z));
-
-          renderConfig->particleColors->at(idx) = currentParticle->color.x;
-          renderConfig->particleColors->at(idx+1) = currentParticle->color.y;
-          renderConfig->particleColors->at(idx+2) = currentParticle->color.z;
-          renderConfig->particleColors->at(idx+3) = currentParticle->color.w;
-        }
-
-        currentAliveParticles = aliveParticles;
-
-        renderConfig->billboardIndices->setNumInstances(aliveParticles);
-      }
-
-
-
-      void OSGDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
-      {
-
-        glBindVertexArray(renderConfig->vao);
-
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &renderConfig->particlePositions->front());
-
-        glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColor);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &renderConfig->particleColors->front());
-
-        glDrawElementsInstanced(renderConfig->billboardIndices->getMode()
-                                , renderConfig->billboardIndices->getNumIndices()
-                                , GL_UNSIGNED_BYTE, NULL
-                                , renderConfig->billboardIndices->getNumInstances());
-        glBindVertexArray(0);
-      }
+      if (i % 3 == 0)
+        osgrc->billboardIndices->push_back(i / 3);
 
     }
+
+
   }
+
+  OSGDefaultParticleRenderer::~OSGDefaultParticleRenderer()
+  {
+    delete( distances );
+  }
+
+  void OSGDefaultParticleRenderer::osgCompileGLObjects(osg::RenderInfo& renderInfo) const
+  {
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
+
+    glGenVertexArrays(1, &osgrc->vao);
+
+
+    GLuint buffersGL[4];
+    glGenBuffers(4, buffersGL);
+
+    osgrc->vboBillboardVertex = buffersGL[0];
+    osgrc->vboParticlesPositions = buffersGL[1];
+    osgrc->vboParticlesColors = buffersGL[2];
+    osgrc->vboDrawElements = buffersGL[3];
+
+    osgrc->init = true;
+
+    // Assign billboard vertices
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboBillboardVertex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * osgrc->billboardVertices->size()
+                 , &osgrc->billboardVertices->front(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * osgrc->particlePositions->size(), NULL, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * osgrc->particleColors->size(), NULL, GL_DYNAMIC_DRAW);
+
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, osgrc->billboardIndices->getTotalDataSize(), osgrc->billboardIndices->getDataPointer(), GL_STATIC_DRAW);
+
+    glBindVertexArray(osgrc->vao);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboBillboardVertex);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0);
+
+//        glVertexAttribDivisor(0, 0);
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements);
+
+    glBindVertexArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  }
+
+  void OSGDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
+  {
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
+
+    tparticle_ptr currentParticle;
+    int idx;
+
+    osgrc->boundingBox.init();
+
+    for (unsigned int i = 0; i < aliveParticles; i++)
+    {
+      currentParticle = particles->elements->at(distances->getID(i));
+
+      idx = i * 4;
+
+      osgrc->particlePositions->at(idx) = currentParticle->position.x;
+      osgrc->particlePositions->at(idx+1) = currentParticle->position.y;
+      osgrc->particlePositions->at(idx+2) = currentParticle->position.z;
+      osgrc->particlePositions->at(idx+3) = currentParticle->size;
+
+      osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle->position.x
+                            , currentParticle->position.y
+                            , currentParticle->position.z));
+
+      osgrc->particleColors->at(idx) = currentParticle->color.x;
+      osgrc->particleColors->at(idx+1) = currentParticle->color.y;
+      osgrc->particleColors->at(idx+2) = currentParticle->color.z;
+      osgrc->particleColors->at(idx+3) = currentParticle->color.w;
+    }
+
+    currentAliveParticles = aliveParticles;
+
+    osgrc->billboardIndices->setNumInstances(aliveParticles);
+  }
+
+
+
+  void OSGDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
+  {
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
+
+    glBindVertexArray(osgrc->vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particlePositions->front());
+
+    glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particleColors->front());
+
+    glDrawElementsInstanced(osgrc->billboardIndices->getMode()
+                            , osgrc->billboardIndices->getNumIndices()
+                            , GL_UNSIGNED_BYTE, NULL
+                            , osgrc->billboardIndices->getNumInstances());
+    glBindVertexArray(0);
+  }
+
+
 }

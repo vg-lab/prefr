@@ -10,6 +10,7 @@
 
 #include <particles/config.h>
 #include "ElementCollection.hpp"
+#include "DistanceArray.hpp"
 
 using namespace utils;
 
@@ -17,7 +18,7 @@ namespace particles
 {
   class ParticleSorter
   {
-public:
+  public:
 
     enum SortOrder
     {
@@ -27,16 +28,20 @@ public:
 
     ParticleCollection* particles;
 
-    ParticleSorter(ParticleCollection* particlesArray)
-    : particles(particlesArray)
-    {}
+    DistanceArray* distances;
 
-    virtual ~ParticleSorter()
-    {
-      delete( particles );
-    }
+    ParticleSorter(ParticleCollection* particlesArray);
 
-    virtual void Sort(SortOrder order = Descending) = 0;
+    virtual ~ParticleSorter();
+
+    virtual void Sort(SortOrder order = Descending);
+
+    virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
+    virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
+
+  protected:
+
+    virtual void InitDistanceArray();
   };
 }
 
