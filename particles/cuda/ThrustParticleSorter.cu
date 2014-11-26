@@ -3,11 +3,6 @@
 
 namespace particles
 {
-  namespace defaultParticleSystem
-  {
-
-    namespace CUDATHRUST
-    {
     
       ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles)
       : ParticleSorter(arrayParticles)
@@ -59,9 +54,5 @@ namespace particles
         distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
 
       }
-
-    }
-
-  }
 
 }

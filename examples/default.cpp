@@ -20,7 +20,7 @@
 //  #include <particles/GL/GLDefaultParticleRenderer.h>
 #endif
 
-#include <particles/GL/CShader.h>
+#include "CShader.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -42,12 +42,6 @@
 #define farPlane 20000.0f
 
 using namespace particles;
-
-#if (particles_WITH_CUDA)
-  using namespace particles::defaultParticleSystem::CUDATHRUST;
-#else
-  using namespace particles::defaultParticleSystem::GL;
-#endif
 
 using namespace glm;
 

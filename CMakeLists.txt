@@ -199,9 +199,7 @@ else()
   message(${CUDA_VERSION})
   CUDA_ADD_LIBRARY(${PROJECT_NAME} ${LINK_MODE}
     ${particles_SOURCES}
-    particles/cuda/ThrustParticleSorter.cu
-    particles/cuda/GLCUDAParticleRenderer.cu
-    particles/cuda/CUDAParticleSystem.cu
+    particles/cuda/ThrustParticleSorter.cu    
     OPTIONS -arch sm_20
     )
 endif()

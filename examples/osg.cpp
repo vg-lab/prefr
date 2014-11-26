@@ -36,14 +36,6 @@
 
 using namespace particles;
 
-//using namespace particles::defaultParticleSystem::OSGParticleSystem;
-
-#if (particles_WITH_CUDA)
-  using namespace particles::defaultParticleSystem::CUDATHRUST;
-#else
-
-#endif
-
 //#if (particles_WITH_CUDA)
 //  CUDAParticleSystem* ps;
 //#else

@@ -8,7 +8,6 @@
 #ifndef OSGDEFAULTPARTICLESYSTEM_H_
 #define OSGDEFAULTPARTICLESYSTEM_H_
 
-#include "OSGTypes.h"
 #include "../ParticleSystem.h"
 
 #include <osg/Array>
@@ -25,7 +24,6 @@
 #include <osg/GL>
 #include <osg/BlendFunc>
 
-#include "OSGDefaultParticleSorter.h"
 #include "OSGDefaultParticleRenderer.h"
 
 namespace particles

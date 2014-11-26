@@ -11,28 +11,20 @@
 
 namespace particles
 {
-  namespace defaultParticleSystem
+
+  class ThrustParticleSorter : public ParticleSorter
   {
+  public:
 
-    namespace CUDATHRUST
-    {
+    ThrustParticleSorter(ParticleCollection* arrayParticles);
 
-      class ThrustParticleSorter : public ParticleSorter
-      {
-      public:
+    void Sort(SortOrder order);
 
-        ThrustParticleSorter(ParticleCollection* arrayParticles);
+    virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
+    virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
 
-        void Sort(SortOrder order);
-
-        virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
-        virtual void UpdateCameraDistance(unsigned int i, const glm::vec3& cameraPosition);
-
-        virtual void InitDistanceArray();
-      };
-
-    }
-  }
+    virtual void InitDistanceArray();
+  };
 
 }
 
