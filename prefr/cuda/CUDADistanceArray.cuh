@@ -13,7 +13,7 @@
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 
-namespace particles
+namespace prefr
 {
 
   class CUDADistanceArray : public DistanceArray

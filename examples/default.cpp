@@ -8,7 +8,7 @@
 #include <prefr/ParticleSorter.h>
 #include <prefr/GL/GLDefaultParticleRenderer.h>
 
-#if (particles_WITH_CUDA)
+#if (PREFR_WITH_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
 #endif
 
@@ -425,7 +425,7 @@ int main(int argc, char** argv)
 
   ParticleSorter* sorter;
 
-#if (particles_WITH_CUDA)
+#if (PREFR_WITH_CUDA)
   sorter = new ThrustParticleSorter(colSorter);
 #else
   sorter = new ParticleSorter(colSorter);

@@ -1,7 +1,8 @@
+
 #include "ThrustParticleSorter.cuh"
 
 
-namespace particles
+namespace prefr
 {
     
       ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles)

@@ -8,6 +8,12 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
+#include <prefr/defines.h>
+#if (PREFR_WITH_CUDA == 1)
+  #include <cuda.h>
+#endif
+
+
 #include "Particle.h"
 #include "ElementCollection.hpp"
 
@@ -23,9 +29,6 @@
 
 #include <algorithm>
 
-#if (PREFR_WITH_CUDA == 1)
-  #include <cuda.h>
-#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

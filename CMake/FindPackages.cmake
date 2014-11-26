@@ -7,6 +7,7 @@ find_package(PkgConfig)
 # FIND NVIDIA OPENGL
 #########################################################
 
+# This tries to fix problems when linking in Linux with nVidia OpenGL
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   find_package(nvidiaOpenGL)
   if ( NVIDIA_OPENGL_gl_LIBRARY )
@@ -91,17 +92,17 @@ include_directories(${GLM_INCLUDE_DIRS})
 #########################################################
 
 if (WITH_CUDA)
-  find_package(CUDA REQUIRED)
+  find_package(CUDA 6.5 REQUIRED)
   include_directories(${CUDA_INCLUDE_DIRS})
-  message(${CUDA_INCLUDE_DIRS})
   link_directories(${CUDA_LIBRARY_DIRS})
   add_definitions(${CUDA_DEFINITIONS})
   if(NOT CUDA_FOUND)
     message(ERROR " CUDA not found!")
   endif(NOT CUDA_FOUND)
 
+  set( CUDA_PROPAGATE_HOST_FLAGS OFF )
   set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
-    -O3 -gencode arch=compute_20,code=sm_20 -std=c++11)
+    -O3 -gencode arch=compute_20,code=sm_20 -Xcompiler "-std=c++11" ) #-std=c++11)
 
 endif()
 
@@ -110,12 +111,33 @@ endif()
 #########################################################
 if (WITH_CUDA)
   find_package(CUDAThrust REQUIRED)
-  include_directories(${CUDATHRUST_INCLUDE_DIRS})
-  link_directories(${CUDATHRUST_LIBRARY_DIRS})
-  add_definitions(${CUDATHRUST_DEFINITIONS})
-  if(NOT CUDATHRUST_FOUND)
-    message(ERROR " CUDATHRUST not found!")
-  endif(NOT CUDATHRUST_FOUND)
+  if(CUDATHRUST_FOUND)
+    set(CUDAThrust_name LIBCUDATHRUST)
+    set(CUDAThrust_FOUND TRUE)
+  elseif(CUDAThrust_FOUND)
+    set(CUDAThrust_name LIBCUDATHRUST)
+    set(CUDAThrust_FOUND TRUE)
+  endif()
+  if(CUDAThrust_name)
+    list(APPEND PREFR_DEPENDENT_LIBRARIES CUDATHRUST)
+    list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_CUDATHRUST)
+    list(APPEND PREFR_LINK_LIBRARIES ${CUDATHRUST_LIBRARIES})
+    set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} CUDAThrust")
+    if(NOT "${${libCUDAThrust_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+      include_directories(BEFORE SYSTEM
+        ${${libCUDAThrust_name}_INCLUDE_DIRS})
+      add_definitions(${CUDAThrust_DEFINITIONS})
+    endif()
+  endif()
+
+
+
+  # include_directories(${CUDATHRUST_INCLUDE_DIRS})
+  # link_directories(${CUDATHRUST_LIBRARY_DIRS})
+  # add_definitions(${CUDATHRUST_DEFINITIONS})
+  # if(NOT CUDATHRUST_FOUND)
+  #   message(ERROR " CUDATHRUST not found!")
+  # endif(NOT CUDATHRUST_FOUND)
 
   list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_CUDA)
 
@@ -124,25 +146,27 @@ endif()
 #########################################################
 # FIND OpenSceneGraph
 #########################################################
-FIND_PACKAGE(OpenSceneGraph
-  COMPONENTS osgViewer osgGA osgDB osgUtil REQUIRED)
-include(Findosg_functions)
-if(OPENSCENEGRAPH_FOUND)
-  set(OpenSceneGraph_name LIBOPENSCENEGRAPH)
-  set(OpenSceneGraph_FOUND TRUE)
-elseif(OpenSceneGraph_FOUND)
-  set(OpenSceneGraph_name LIBOPENSCENEGRAPH)
-  set(OpenSceneGraph_FOUND TRUE)
-endif()
-if(OpenSceneGraph_name)
-  list(APPEND PREFR_DEPENDENT_LIBRARIES OPENSCENEGRAPH)
-  list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_OPENSCENEGRAPH)
-  list(APPEND PREFR_LINK_LIBRARIES ${OPENSCENEGRAPH_LIBRARIES})
-  set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} OpenSceneGraph")
-  if(NOT "${${libOpenSceneGraph_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
-    include_directories(BEFORE SYSTEM
-      ${${libOpenSceneGraph_name}_INCLUDE_DIRS})
-    add_definitions(${OpenSceneGraph_DEFINITIONS})
+if (WITH_OPENSCENEGRAPH)
+  FIND_PACKAGE(OpenSceneGraph
+    COMPONENTS osgViewer osgGA osgDB osgUtil)
+  include(Findosg_functions)
+  if(OPENSCENEGRAPH_FOUND)
+    set(OpenSceneGraph_name LIBOPENSCENEGRAPH)
+    set(OpenSceneGraph_FOUND TRUE)
+  elseif(OpenSceneGraph_FOUND)
+    set(OpenSceneGraph_name LIBOPENSCENEGRAPH)
+    set(OpenSceneGraph_FOUND TRUE)
+  endif()
+  if(OpenSceneGraph_name)
+    list(APPEND PREFR_DEPENDENT_LIBRARIES OPENSCENEGRAPH)
+    list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_OPENSCENEGRAPH)
+    list(APPEND PREFR_LINK_LIBRARIES ${OPENSCENEGRAPH_LIBRARIES})
+    set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} OpenSceneGraph")
+    if(NOT "${${libOpenSceneGraph_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
+      include_directories(BEFORE SYSTEM
+        ${${libOpenSceneGraph_name}_INCLUDE_DIRS})
+      add_definitions(${OpenSceneGraph_DEFINITIONS})
+    endif()
   endif()
 endif()
 

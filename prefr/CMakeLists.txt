@@ -23,17 +23,20 @@ ParticleSystem.h
 set(PREFR_HEADERS )
 
 set(PREFR_SOURCES ${COMMON_SOURCES}
-./ParticleEmitter.cpp
-./ParticleSorter.cpp
-./ParticleUpdater.cpp
-./OSG/OSGDefaultParticleRenderer.cpp
-./OSG/OSGDefaultParticleSystem.cpp
-./ParticleSystem.cpp
-./cuda/ThrustParticleSorter.cuh
-./cuda/CUDADistanceArray.cuh
-./cuda/ThrustParticleSorter.cu
-./ParticlePrototype.cpp
-./GL/GLDefaultParticleRenderer.cpp
+ParticleEmitter.cpp
+ParticleSorter.cpp
+ParticleUpdater.cpp
+OSG/OSGDefaultParticleRenderer.cpp
+OSG/OSGDefaultParticleSystem.cpp
+ParticleSystem.cpp
+cuda/ThrustParticleSorter.cu
+ParticlePrototype.cpp
+GL/GLDefaultParticleRenderer.cpp
 )
+
+
+if (WITH_CUDA)
+  set(PREFR_CUDA_LIBRARY 1)
+endif()
 
 common_library(prefr)
