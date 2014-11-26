@@ -239,7 +239,7 @@ void rescaleFunc (GLsizei w, GLsizei h)
 
 void sceneRender (void)
 {
-  ps->Update(deltaTime);
+  ps->UpdateUnified(deltaTime);
   ps->UpdateCameraDistances(position);
   ps->UpdateRender();
 

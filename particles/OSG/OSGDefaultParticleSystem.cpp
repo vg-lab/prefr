@@ -21,7 +21,7 @@ namespace particles
 
     if (osgps)
     {
-      osgps->Update(0.1f);
+      osgps->UpdateUnified(0.1f);
     }
   }
 
@@ -147,10 +147,8 @@ const osg::CopyOp& copyOp)
     cameraManipulator = cam;
   }
 
-  void OSGDefaultParticleSystem::Update(float deltaTime)
+  void OSGDefaultParticleSystem::UpdateUniformVariables(float deltaTime)
   {
-    ParticleSystem::Update(deltaTime);
-
     assert(cameraManipulator != nullptr);
 
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderer->renderConfig);
@@ -172,6 +170,22 @@ const osg::CopyOp& copyOp)
     osgrc->uCameraUp->set( osgrc->up );
 
     osgrc->uCameraRight->set( osgrc->right );
+  }
+
+  void OSGDefaultParticleSystem::Update(float deltaTime)
+  {
+    ParticleSystem::Update(deltaTime);
+
+    UpdateUniformVariables(deltaTime);
+
+    UpdateRender();
+  }
+
+  void OSGDefaultParticleSystem::UpdateUnified(float deltaTime)
+  {
+    ParticleSystem::UpdateUnified(deltaTime);
+
+    UpdateUniformVariables(deltaTime);
 
     UpdateRender();
   }
