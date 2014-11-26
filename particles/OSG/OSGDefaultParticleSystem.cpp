@@ -142,9 +142,25 @@ const osg::CopyOp& copyOp)
 
   }
 
-  void OSGDefaultParticleSystem::SetCameraManipulator(osgGA::StandardManipulator* cam)
+  void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::Viewer* _viewer, unsigned int contextNumber)
   {
-    cameraManipulator = cam;
+    cameraManipulator = static_cast<osgGA::StandardManipulator*>(_viewer->getCameraManipulator());
+
+    osgViewer::ViewerBase::Contexts contexts;
+    _viewer->getContexts(contexts, true);
+
+    AcquireGraphicsContext(contexts[contextNumber]);
+  }
+
+  void OSGDefaultParticleSystem::AcquireGraphicsContext(osg::GraphicsContext* context)
+  {
+    context->realize();
+    context->makeCurrent();
+
+    // init glew
+    glewInit();
+
+    context->releaseContext();
   }
 
   void OSGDefaultParticleSystem::UpdateUniformVariables(float deltaTime)

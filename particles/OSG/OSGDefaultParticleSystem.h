@@ -20,6 +20,7 @@
 
 #include <osgDB/FileUtils>
 
+#include <osgViewer/Viewer>
 #include <osg/State>
 #include <osg/GL>
 #include <osg/BlendFunc>
@@ -59,7 +60,7 @@ namespace particles
 
     META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
-    virtual void SetCameraManipulator(osgGA::StandardManipulator* cam);
+    virtual void SetCameraManipulator(osgViewer::Viewer* _viewer, unsigned int contextNumber = 0);
     void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
 
     virtual void Update(float deltaTime);
@@ -77,6 +78,8 @@ namespace particles
   protected:
 
     virtual void UpdateUniformVariables(float deltaTime);
+    virtual void AcquireGraphicsContext(osg::GraphicsContext* context);
+
   };
 
 }
