@@ -1,30 +1,27 @@
-#include <particles/config.h>
+#include <prefr/ParticleSystem.h>
 
-#include <particles/ParticleSystem.h>
+#include <prefr/ParticlePrototype.h>
 
-#include <particles/ParticlePrototype.h>
+#include <prefr/ParticleEmitter.h>
+#include <prefr/ParticleUpdater.h>
 
-#include <particles/ParticleEmitter.h>
-#include <particles/ParticleUpdater.h>
-
-#include <particles/ParticleSorter.h>
-#include <particles/GL/GLDefaultParticleRenderer.h>
+#include <prefr/ParticleSorter.h>
+#include <prefr/GL/GLDefaultParticleRenderer.h>
 
 #if (particles_WITH_CUDA)
-  #include <particles/cuda/ThrustParticleSorter.cuh>
-//  #include <particles/cuda/CUDAParticleSystem.cuh>
-//  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
-#else
-//  #include <particles/GL/GLDefaultParticleSystem.h>
-//  #include <particles/GL/GLDefaultParticleSorter.h>
-//  #include <particles/GL/GLDefaultParticleRenderer.h>
+#include <prefr/cuda/ThrustParticleSorter.cuh>
 #endif
 
 #include "CShader.h"
 
+#include <shaderPath.h>
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
+
+#include <iostream>
+
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 #define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )
@@ -35,28 +32,26 @@
 #define BG_COLOR 0.86f, 0.823f, 0.823f, 1.0f
 #define SCREEN_SIZE 800, 600
 
-//#define fov 60.0f
 #define fov 1.05f
-#define defaultAspect 1.0f
+#define DEFAULT_ASPECT 1.0f
 #define nearPlane 0.3f
 #define farPlane 20000.0f
 
-using namespace particles;
+using namespace prefr;
 
-using namespace glm;
+glm::mat4 projectionM;
+glm::mat4 viewM;
+glm::mat4 modelViewProjM;
 
-mat4 projectionM;
-mat4 viewM;
-mat4 modelViewProjM;
+glm::vec3 position = glm::vec3(0.0f, 4.0f, 10.0f);
+glm::vec3 vforward = glm::vec3(0.0f,0.0f,-1.0f);
+glm::vec3 vup = glm::vec3(0.0f,1.0f,0.0f);
 
-vec3 position = vec3(0.0f, 4.0f, 10.0f);
-vec3 vforward = vec3(0.0f,0.0f,-1.0f);
-vec3 up = vec3(0.0f,1.0f,0.0f);
-
-vec3 worldUp = vec3(0.0f,1.0f,0.0f);
+glm::vec3 worldUp = glm::vec3(0.0f,1.0f,0.0f);
 
 int resolution[] = {SCREEN_SIZE};
-float aspect=defaultAspect;
+
+float aspectRatio=DEFAULT_ASPECT;
 
 float deltaTime = 0.1f;
 
@@ -74,11 +69,6 @@ float mouseYThreshold;
 
 CShader* particlesShader;
 
-//#if (particles_WITH_CUDA)
-//  CUDAParticleSystem* ps;
-//#else
-//  GLDefaultParticleSystem* ps;
-//#endif
 
 ParticleSystem* ps;
 
@@ -87,13 +77,13 @@ bool emit = true;
 void initShaders()
 {
   std::string vertPath, fragPath;
-  fragPath = vertPath = std::string( particles_LIBRARY_BASE_PATH );
+  fragPath = vertPath = std::string( PREFR_LIBRARY_BASE_PATH );
   vertPath.append("GL/shd/GL-vert.glsl");
   fragPath.append("GL/shd/GL-frag.glsl");
   particlesShader = new CShader(false, false,
-                                 vertPath.c_str() ,
-                                 fragPath.c_str()
-                                );
+                                vertPath.c_str() ,
+                                fragPath.c_str()
+    );
 }
 
 // Camera Movement
@@ -108,34 +98,35 @@ void MoveLeft() {position -= glm::cross(vforward, worldUp);}
 void MouseTurnLeft ()
 {
   glm::quat q=glm::angleAxis((float)(-mouseSensitivity*deltaTime),worldUp);
-  vforward = normalize(vforward*q);
+  vforward = glm::normalize(vforward*q);
 }
 
 void MouseTurnRight ()
 {
   glm::quat q=glm::angleAxis((float)(mouseSensitivity*deltaTime),worldUp);
-  vforward= normalize(vforward*q);
+  vforward= glm::normalize(vforward*q);
 }
 
 void MouseTurnDown()
 {
   glm::vec3 right=glm::cross(vforward,worldUp);
   glm::quat q=glm::angleAxis((float)(-mouseSensitivity*deltaTime),right);
-  vforward=normalize(vforward*q);
-  up=normalize(up*q);
+  vforward=glm::normalize(vforward*q);
+  vup=glm::normalize(vup*q);
 }
 
 void MouseTurnUp()
 {
   glm::vec3 right=glm::cross(vforward,worldUp);
   glm::quat q=glm::angleAxis((float)(mouseSensitivity*deltaTime),right);
-  vforward=normalize(vforward*q);
-  up=normalize(up*q);
+  vforward=glm::normalize(vforward*q);
+  vup=glm::normalize(vup*q);
 }
 
 
-void makeProjectionMatrix(){
-  projectionM=glm::perspective(fov,aspect,nearPlane,farPlane);
+void makeProjectionMatrix( void )
+{
+  projectionM = glm::perspective(fov,aspectRatio,nearPlane,farPlane);
 }
 
 void makeModelViewProj(){
@@ -146,9 +137,12 @@ void makeModelViewProj(){
 
 
 
-void mouseFunc (int button, int state, int x, int y){}
+void mouseFunc (int /* button */, int /* state */,
+                int  /* x */, int /* y */ )
+{
+}
 
-void keyboardFunc(unsigned char key, int x, int y)
+void keyboardFunc(unsigned char key, int /* x */, int /* y */)
 {
   switch (key)
   {
@@ -173,19 +167,24 @@ void keyboardFunc(unsigned char key, int x, int y)
     break;
 
   case ' ':
-    position = vec3(0.0f, 4.0f, 10.0f);
-    vforward = vec3(0.0f,0.0f,-1.0f);
-    up = vec3(0.0f,1.0f,0.0f);
+    position = glm::vec3(0.0f, 4.0f, 10.0f);
+    vforward = glm::vec3(0.0f,0.0f,-1.0f);
+    vup = glm::vec3(0.0f,1.0f,0.0f);
     break;
   }
 
 }
 
-void processSpecialKeys (int key,int x, int y){
-  if(key == GLUT_KEY_UP)  MoveForward();
-  else if(key== GLUT_KEY_DOWN) MoveBackwards();
-  else if(key== GLUT_KEY_RIGHT) MoveRight();
-  else if(key== GLUT_KEY_LEFT) MoveLeft();
+void processSpecialKeys (int key, int /* x */, int /* y */)
+{
+  if(key == GLUT_KEY_UP)
+    MoveForward();
+  else if(key== GLUT_KEY_DOWN)
+    MoveBackwards();
+  else if(key== GLUT_KEY_RIGHT)
+    MoveRight();
+  else if(key== GLUT_KEY_LEFT)
+    MoveLeft();
 }
 
 void motionFunc (int x, int y)
@@ -213,7 +212,7 @@ void motionFunc (int x, int y)
   mouseY = y;
 }
 
-void ResolveMouseThreshold(int value)
+void ResolveMouseThreshold(int /* value */ )
 {
   if (mouseX < mouseXThreshold)
     MouseTurnLeft();
@@ -234,7 +233,7 @@ void idleFunc (){
 void rescaleFunc (GLsizei w, GLsizei h)
 {
   glViewport (0, 0, w, h);
-  aspect=(float)w/h;
+  aspectRatio=(float)w/h;
 }
 
 void sceneRender (void)
@@ -324,6 +323,7 @@ int main(int argc, char** argv)
   mouseYThreshold = mouseThreshold * resolution[1];
 
   makeProjectionMatrix();
+//  float aspect=DEFAULT_ASPECT;
 
   unsigned int maxParticles = 10;
   unsigned int maxEmitters = 1;
@@ -400,10 +400,18 @@ int main(int argc, char** argv)
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
-    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+    colEmissionNode =
+      new ParticleCollection(ps->particles,
+                             i * particlesPerEmitter,
+                             i * particlesPerEmitter + particlesPerEmitter);
 
-    emissionNode = new PointEmissionNode(colEmissionNode, vec3(i * 10, 0, 0));
+    std::cout << "Creating emission node " << i << " from "
+              << i * particlesPerEmitter << " to "
+              << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+
+    emissionNode =
+      new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
+
     ps->AddEmissionNode(emissionNode);
   }
 
@@ -426,17 +434,10 @@ int main(int argc, char** argv)
 
   std::cout << "Created sorter" << std::endl;
 
-//#if (particles_WITH_CUDA)
-//  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-//#else
-//  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-//#endif
-
-  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer);
+  GLDefaultParticleRenderer* renderer =
+    new GLDefaultParticleRenderer(colRenderer);
 
   std::cout << "Created systems" << std::endl;
-
-
 
   ps->AddUpdater(updater);
   ps->SetSorter(sorter);

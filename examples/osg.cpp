@@ -5,28 +5,25 @@
  *      Author: sgalindo
  */
 
-#include <particles/config.h>
 
-#include <particles/ParticleSystem.h>
+#include <shaderPath.h>
 
-#include <particles/ParticlePrototype.h>
+#include <prefr/ParticleSystem.h>
+#include <prefr/ParticlePrototype.h>
+#include <prefr/ParticleEmitter.h>
+#include <prefr/ParticleUpdater.h>
+#include <prefr/OSG/OSGDefaultParticleSystem.h>
+#include <prefr/OSG/OSGDefaultParticleRenderer.h>
+#include <prefr/ParticleSorter.h>
 
-#include <particles/ParticleEmitter.h>
-#include <particles/ParticleUpdater.h>
-
-#include <particles/OSG/OSGDefaultParticleSystem.h>
-#include <particles/OSG/OSGDefaultParticleRenderer.h>
-
-#include <particles/ParticleSorter.h>
-
-#if (particles_WITH_CUDA)
-  #include <particles/cuda/ThrustParticleSorter.cuh>
-//  #include <particles/cuda/CUDAParticleSystem.cuh>
-//  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
+#if (PREFR_WITH_CUDA)
+#include <prefr/cuda/ThrustParticleSorter.cuh>
+//  #include <prefr/cuda/CUDAParticleSystem.cuh>
+//  #include <prefr/cuda/GLCUDAParticleRenderer.cuh>
 #else
-//  #include <particles/OSG/OSGDefaultParticleSystem.h>
-//  #include <particles/OSG/OSGDefaultParticleSorter.h>
-//  #include <particles/OSG/OSGDefaultParticleRenderer.h>
+//  #include <prefr/OSG/OSGDefaultParticleSystem.h>
+//  #include <prefr/OSG/OSGDefaultParticleSorter.h>
+//  #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #endif
 
 #include <osgViewer/Viewer>
@@ -34,7 +31,7 @@
 #include <osg/ShapeDrawable>
 #include <osg/PolygonMode>
 
-using namespace particles;
+using namespace prefr;
 
 //#if (particles_WITH_CUDA)
 //  CUDAParticleSystem* ps;
@@ -42,9 +39,11 @@ using namespace particles;
 //  OSGDefaultParticleSystem* ps;
 //#endif
 
-  OSGDefaultParticleSystem* ps;
+OSGDefaultParticleSystem* ps;
 
-void initOpenGL(osg::GraphicsContext* context, GLint& maxNumUniforms, GLint& maxUniformBlockSize)
+void initOpenGL(osg::GraphicsContext* context,
+                GLint& maxNumUniforms,
+                GLint& maxUniformBlockSize)
 {
 
   context->realize();
@@ -99,7 +98,7 @@ int main(int argc, char** argv)
   if (!viewer->getCameraManipulator())
     viewer->setCameraManipulator(new osgGA::TrackballManipulator, true);
 
-    std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
+  std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
 
 
   ps->SetCameraManipulator((osgGA::StandardManipulator*)viewer->getCameraManipulator());
@@ -206,7 +205,7 @@ int main(int argc, char** argv)
   ps->SetRenderer(renderer);
 
   std::string vertPath, fragPath;
-  fragPath = vertPath = std::string(particles_LIBRARY_BASE_PATH);
+  fragPath = vertPath = std::string(PREFR_LIBRARY_BASE_PATH);
   vertPath.append("OSG/shd/osg-vert.glsl");
   fragPath.append("OSG/shd/osg-frag.glsl");
   ps->ConfigureProgram(vertPath, fragPath);
@@ -221,8 +220,8 @@ int main(int argc, char** argv)
   osg::StateSet* ss = sdg->getOrCreateStateSet();
   ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
   ss->setAttributeAndModes(
-      new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
-                           osg::PolygonMode::LINE));
+    new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
+                         osg::PolygonMode::LINE));
 
 
 
@@ -234,7 +233,7 @@ int main(int argc, char** argv)
 //  osg::Geode* geode = new osg::Geode;
 //  geode->addDrawable(ps);
 
-#define PRINT_VEC3F( VEC ) \
+#define PRINT_VEC3F( VEC )                                              \
   std::cout << "(" <<  VEC.x() << "," << VEC.y() << "," << VEC.z() << ")" << std::endl;
 
   viewer->setSceneData(groupNode);
