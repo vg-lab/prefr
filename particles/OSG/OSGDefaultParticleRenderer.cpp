@@ -47,7 +47,7 @@ namespace particles
 
   OSGDefaultParticleRenderer::~OSGDefaultParticleRenderer()
   {
-    delete( distances );
+
   }
 
   void OSGDefaultParticleRenderer::osgCompileGLObjects(osg::RenderInfo& renderInfo) const
