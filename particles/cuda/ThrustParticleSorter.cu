@@ -25,7 +25,8 @@ namespace particles
         CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
 
 
-        thrust::copy(cda->ids->begin(), cda->ids->end(), cda->deviceID.begin());
+//        thrust::copy(cda->ids->begin(), cda->ids->end(), cda->deviceID.begin());
+        thrust::sequence(cda->deviceID.begin(), cda->deviceID.end());
         thrust::copy(cda->distances->begin(), cda->distances->end(), cda->deviceDistances.begin());
 
         if (order == SortOrder::Ascending)
@@ -50,7 +51,7 @@ namespace particles
       {
 
         tparticle_ptr current = particles->elements->at(i);
-        distances->ids->at(i) = current->id;
+//        distances->ids->at(i) = current->id;
         distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
 
       }
