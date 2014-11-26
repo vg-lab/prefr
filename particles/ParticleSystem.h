@@ -11,6 +11,8 @@
 #include <particles/config.h>
 
 #include "ElementCollection.hpp"
+#include "DistanceArray.hpp"
+#include "RenderConfig.h"
 
 #include "ParticleEmitter.h"
 #include "ParticleUpdater.h"
@@ -87,20 +89,29 @@ namespace particles
     virtual void AddPrototype(ParticlePrototype* prototype);
     virtual void AddEmitter(ParticleEmitter* emitter);
     virtual void AddUpdater(ParticleUpdater* updater);
-    virtual void SetSorter(ParticleSorter* sorter);
-    virtual void SetRenderer(ParticleRenderer* renderConfig);
+    virtual void SetSorter(ParticleSorter* _sorter);
+    virtual void SetRenderer(ParticleRenderer* _renderConfig);
 
 
-    virtual void Start() = 0;
+    virtual void Start();
 
     // Particle updating methods
-    virtual void Update(float deltaTime) = 0;
+    virtual void Update(float deltaTime);
+
+
+    virtual void UpdateUnified(float deltaTime);
+
+
+    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
     // Particle render updating method
-    virtual void UpdateRender() = 0;
+    virtual void UpdateRender();
 
     // Render method
-    virtual void Render() const = 0;
+    virtual void Render() const;
+
+
+
 
   };
 

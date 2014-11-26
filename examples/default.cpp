@@ -1,21 +1,26 @@
+#include <particles/config.h>
+
 #include <particles/ParticleSystem.h>
 
 #include <particles/ParticlePrototype.h>
 
-#include <particles/default/DefaultParticleEmitter.h>
-#include <particles/default/DefaultParticleUpdater.h>
+#include <particles/ParticleEmitter.h>
+#include <particles/ParticleUpdater.h>
+
+#include <particles/ParticleSorter.h>
+#include <particles/GL/GLDefaultParticleRenderer.h>
 
 #if (particles_WITH_CUDA)
-  #include <particles/default/cuda/ThrustParticleSorter.cuh>
-  #include <particles/default/cuda/CUDAParticleSystem.cuh>
-  #include <particles/default/cuda/GLCUDAParticleRenderer.cuh>
+  #include <particles/cuda/ThrustParticleSorter.cuh>
+//  #include <particles/cuda/CUDAParticleSystem.cuh>
+//  #include <particles/cuda/GLCUDAParticleRenderer.cuh>
 #else
-  #include <particles/default/GL/GLDefaultParticleSystem.h>
-  #include <particles/default/GL/GLDefaultParticleSorter.h>
-  #include <particles/default/GL/GLDefaultParticleRenderer.h>
+//  #include <particles/GL/GLDefaultParticleSystem.h>
+//  #include <particles/GL/GLDefaultParticleSorter.h>
+//  #include <particles/GL/GLDefaultParticleRenderer.h>
 #endif
 
-#include <particles/default/GL/CShader.h>
+#include "CShader.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -36,13 +41,7 @@
 #define nearPlane 0.3f
 #define farPlane 20000.0f
 
-using namespace particles::defaultParticleSystem;
-
-#if (particles_WITH_CUDA)
-  using namespace particles::defaultParticleSystem::CUDATHRUST;
-#else
-  using namespace particles::defaultParticleSystem::GL;
-#endif
+using namespace particles;
 
 using namespace glm;
 
@@ -75,11 +74,13 @@ float mouseYThreshold;
 
 CShader* particlesShader;
 
-#if (particles_WITH_CUDA)
-  CUDAParticleSystem* ps;
-#else
-  GLDefaultParticleSystem* ps;
-#endif
+//#if (particles_WITH_CUDA)
+//  CUDAParticleSystem* ps;
+//#else
+//  GLDefaultParticleSystem* ps;
+//#endif
+
+ParticleSystem* ps;
 
 bool emit = true;
 
@@ -87,8 +88,8 @@ void initShaders()
 {
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string( particles_LIBRARY_BASE_PATH );
-  vertPath.append("default/GL/shd/GL-vert.glsl");
-  fragPath.append("default/GL/shd/GL-frag.glsl");
+  vertPath.append("GL/shd/GL-vert.glsl");
+  fragPath.append("GL/shd/GL-frag.glsl");
   particlesShader = new CShader(false, false,
                                  vertPath.c_str() ,
                                  fragPath.c_str()
@@ -324,7 +325,7 @@ int main(int argc, char** argv)
 
   makeProjectionMatrix();
 
-  int maxParticles = 10;
+  unsigned int maxParticles = 10;
   unsigned int maxEmitters = 1;
 
   if (argc >= 2)
@@ -334,21 +335,23 @@ int main(int argc, char** argv)
     maxEmitters = atoi(argv[2]);
 
 
-#if (particles_WITH_CUDA == 1)
-  ps = new CUDAParticleSystem(10, maxParticles, true);
-#else
-  ps = new GLDefaultParticleSystem(10, maxParticles, true);
-#endif
+//#if (particles_WITH_CUDA == 1)
+//  ps = new CUDAParticleSystem(10, maxParticles, true);
+//#else
+//  ps = new GLDefaultParticleSystem(10, maxParticles, true);
+//#endif
+
+  ps = new ParticleSystem(10, maxParticles, true);
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
   ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
 //  prototype->minLife = 3.0f;
 //  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(0, 0, 255, 50)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(vec4(0, 255, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0, 1, 0.2)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(glm::vec4(0, 1, 0, 0.2)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0.5, 0.5, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -363,10 +366,10 @@ int main(int argc, char** argv)
 
   prototype = new ParticlePrototype(3.0f, 5.0f);
 
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(vec4(255, 255, 0, 50)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(vec4(255, 0, 0, 50)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(vec4(255, 255, 255, 0)));
+  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 0, 0.2)));
+//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
+  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(glm::vec4(1, 0, 0, 0.2)));
+  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 1, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -376,24 +379,6 @@ int main(int argc, char** argv)
   prototype->particles = colProto;
 
   ps->AddPrototype(prototype);
-
-//  for (int i = 0; i < prototype->color.size; i++)
-//  {
-//    glm::vec4 c = prototype->color.values[i];
-//    std::cout << prototype->color.times[i] << " "  << c.x << " " << c.y << " " << c.z << " " << c.w << std::endl;
-//  }
-
-//  for (unsigned int i = 0; i < ps->particlePrototype.size(); i++)
-//  {
-//    ParticlePrototype* current = ps->prototypes->at(ps->particlePrototype[i]);
-//    vec4 color = current->color.values[0];
-//    std::cout << i << " "<< ps->particlePrototype[i] << " color: " <<
-//                                                          color.x << " " <<
-//                                                          color.y << " " <<
-//                                                          color.z << " " <<
-//                                                          color.w << " " <<
-//                                                          std::endl;
-//  }
 
   std::cout << "Created prototype." << std::endl;
 
@@ -422,28 +407,32 @@ int main(int argc, char** argv)
     ps->AddEmissionNode(emissionNode);
   }
 
-  DefaultParticleEmitter* emitter = new DefaultParticleEmitter(colEmitter, 0.3f, true);
+  ParticleEmitter* emitter = new ParticleEmitter(colEmitter, 0.3f, true);
   ps->AddEmitter(emitter);
   emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  DefaultParticleUpdater* updater = new DefaultParticleUpdater(colUpdater);
+  ParticleUpdater* updater = new ParticleUpdater(colUpdater);
   std::cout << "Created updater" << std::endl;
 
+  ParticleSorter* sorter;
+
 #if (particles_WITH_CUDA)
-  ThrustParticleSorter* sorter = new ThrustParticleSorter(colSorter, ps->distances);
+  sorter = new ThrustParticleSorter(colSorter);
 #else
-  GLDefaultParticleSorter* sorter = new GLDefaultParticleSorter(colSorter, ps->distances);
+  sorter = new ParticleSorter(colSorter);
 #endif
 
 
   std::cout << "Created sorter" << std::endl;
 
-#if (particles_WITH_CUDA)
-  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-#else
-  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-#endif
+//#if (particles_WITH_CUDA)
+//  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+//#else
+//  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
+//#endif
+
+  GLDefaultParticleRenderer* renderer = new GLDefaultParticleRenderer(colRenderer);
 
   std::cout << "Created systems" << std::endl;
 

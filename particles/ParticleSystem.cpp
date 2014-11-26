@@ -6,6 +6,7 @@
  */
 
 #include "ParticleSystem.h"
+#include "log.h"
 
 namespace particles
 {
@@ -120,18 +121,94 @@ namespace particles
     updater->refPrototypes = &this->particlePrototype;
 
   }
-  void ParticleSystem::SetSorter(ParticleSorter* sorter)
+  void ParticleSystem::SetSorter(ParticleSorter* _sorter)
   {
-    this->sorter = sorter;
+    this->sorter = _sorter;
+    this->sorter->InitDistanceArray();
   }
-  void ParticleSystem::SetRenderer(ParticleRenderer* renderConfig)
+  void ParticleSystem::SetRenderer(ParticleRenderer* _renderer)
   {
-    this->renderer = renderConfig;
+    this->renderer = _renderer;
+
+    PREFR_DEBUG_CHECK( this->sorter->distances, "distances is null" );
+    this->renderer->distances = this->sorter->distances;
   }
 
+  void ParticleSystem::Start()
+  {
+    for (unsigned int i = 0; i < aliveParticles; i++)
+    {
+      emitters->at(particleEmitter[i])->EmitFunction(i, true);
+    }
+
+  }
+
+  void ParticleSystem::Update(float deltaTime)
+  {
+    for (unsigned int i = 0; i < emitters->size(); i++)
+    {
+      emitters->at(i)->EmitAll(deltaTime);
+    }
+
+    int accumulator = 0;
+    for (unsigned int i = 0; i < updaters->size(); i++)
+    {
+      accumulator += updaters->at(i)->Update(deltaTime);
+    }
+
+    this->aliveParticles = accumulator;
+
+  }
+
+  void ParticleSystem::UpdateUnified(float deltaTime)
+  {
+    unsigned int i = 0;
 
 
+    // Set emitter delta time to calculate the number of particles to emit this frame
+    for (i = 0; i < emitters->size(); i++)
+    {
+      emitters->at(i)->StartEmission(deltaTime);
+    }
 
+    int accumulator = 0;
+    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    {
+      i = ((tparticle_ptr) *it)->id;
+
+      // Emit each particle with its own emitter
+      emitters->at(particleEmitter[i])->EmitSingle(i);
+
+      // Update each particle with its own updater
+      updaters->at(particleUpdater[i])->Update(i, deltaTime);
+
+      accumulator += (*it)->Alive();
+    }
+
+    this->aliveParticles = accumulator;
+  }
+
+  void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
+  {
+    unsigned int i = 0;
+    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    {
+     i = ((tparticle_ptr) *it)->id;
+     this->sorter->UpdateCameraDistance(i, cameraPosition);
+    }
+  }
+
+  void ParticleSystem::UpdateRender()
+  {
+   this->sorter->Sort();
+
+   this->renderer->SetupRender(this->aliveParticles);
+  }
+
+  void ParticleSystem::Render() const
+  {
+   this->renderer->Paint(aliveParticles);
+  }
 
 }
 
