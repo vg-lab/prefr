@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   viewer->getContexts(contexts);
   GLint maxNumUniforms = 0;
   GLint maxUniformBlockSize = 0;
-  initOpenGL(contexts[0], maxNumUniforms, maxUniformBlockSize);
+//  initOpenGL(contexts[0], maxNumUniforms, maxUniformBlockSize);
 
 
   int maxParticles = 10;
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
   std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
 
 
-  ps->SetCameraManipulator((osgGA::StandardManipulator*)viewer->getCameraManipulator());
+  ps->SetCameraManipulator(viewer);
 
 
 

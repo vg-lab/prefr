@@ -21,7 +21,7 @@ namespace prefr
 
     if (osgps)
     {
-      osgps->Update(0.1f);
+      osgps->UpdateUnified(0.1f);
     }
   }
 
@@ -138,15 +138,35 @@ const osg::CopyOp& copyOp)
 
   }
 
-  void OSGDefaultParticleSystem::SetCameraManipulator(osgGA::StandardManipulator* cam)
+  void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber, unsigned int viewNumber)
   {
-    cameraManipulator = cam;
+    osgViewer::ViewerBase::Contexts contexts;
+    osgViewer::View* view = static_cast<osgViewer::View*>(_viewer);
+
+    if (!view)
+      view = static_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
+
+    cameraManipulator = static_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+
+
+    _viewer->getContexts(contexts, true);
+
+    AcquireGraphicsContext(contexts[contextNumber]);
   }
 
-  void OSGDefaultParticleSystem::Update(float deltaTime)
+  void OSGDefaultParticleSystem::AcquireGraphicsContext(osg::GraphicsContext* context)
   {
-    ParticleSystem::Update(deltaTime);
+    context->realize();
+    context->makeCurrent();
 
+    // init glew
+    glewInit();
+
+    context->releaseContext();
+  }
+
+  void OSGDefaultParticleSystem::UpdateUniformVariables(float deltaTime)
+  {
     assert(cameraManipulator != nullptr);
 
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderer->renderConfig);
@@ -168,6 +188,22 @@ const osg::CopyOp& copyOp)
     osgrc->uCameraUp->set( osgrc->up );
 
     osgrc->uCameraRight->set( osgrc->right );
+  }
+
+  void OSGDefaultParticleSystem::Update(float deltaTime)
+  {
+    ParticleSystem::Update(deltaTime);
+
+    UpdateUniformVariables(deltaTime);
+
+    UpdateRender();
+  }
+
+  void OSGDefaultParticleSystem::UpdateUnified(float deltaTime)
+  {
+    ParticleSystem::UpdateUnified(deltaTime);
+
+    UpdateUniformVariables(deltaTime);
 
     UpdateRender();
   }
