@@ -142,11 +142,17 @@ const osg::CopyOp& copyOp)
 
   }
 
-  void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::Viewer* _viewer, unsigned int contextNumber)
+  void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber, unsigned int viewNumber)
   {
-    cameraManipulator = static_cast<osgGA::StandardManipulator*>(_viewer->getCameraManipulator());
-
     osgViewer::ViewerBase::Contexts contexts;
+    osgViewer::View* view = static_cast<osgViewer::View*>(_viewer);
+
+    if (!view)
+      view = static_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
+
+    cameraManipulator = static_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+
+
     _viewer->getContexts(contexts, true);
 
     AcquireGraphicsContext(contexts[contextNumber]);
