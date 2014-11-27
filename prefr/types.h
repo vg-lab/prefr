@@ -11,11 +11,6 @@
 // GLEW is included before any other GL file
 #include <GL/glew.h>
 
-// GL includes
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-
 // CUDA include
 #include <prefr/defines.h>
 #if (PREFR_WITH_CUDA == 1)

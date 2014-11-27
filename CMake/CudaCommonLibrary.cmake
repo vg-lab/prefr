@@ -9,8 +9,8 @@
 # * NAME_PUBLIC_HEADERS for public, installed header files
 # * NAME_LINK_LIBRARIES for dependencies of name
 # * NAME_LIBRARY_TYPE or COMMON_LIBRARY_TYPE for SHARED or STATIC library, with
-# * NAME_CUDA_LIBRARY_OPTIONS options to be passed to cuda_add_library
 #   COMMON_LIBRARY_TYPE being an option stored in the CMakeCache.
+# * NAME_CUDA_LIBRARY_OPTIONS options to be passed to cuda_add_library
 # * PROJECT_INCLUDE_NAME for the include directory and project include header
 # * VERSION for the API version
 # * VERSION_ABI for the ABI version
