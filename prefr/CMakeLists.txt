@@ -37,9 +37,8 @@ set(PREFR_SOURCES ${COMMON_SOURCES}
   GL/GLDefaultParticleRenderer.cpp
 )
 
-
-if (PREFER_WITH_CUDA)
-  common_library(prefr)
-else()
+if (WITH_CUDA)
   cuda_common_library(prefr)
+else()
+  common_library(prefr)
 endif()

@@ -90,23 +90,27 @@ include_directories(BEFORE SYSTEM ${GLM_INCLUDE_DIRS})
 #########################################################
 # FIND CUDA
 #########################################################
-
 if (WITH_CUDA)
-
-  include( CudaCommonLibrary )
-
   find_package(CUDA 6.5 REQUIRED)
   include_directories(BEFORE SYSTEM ${CUDA_INCLUDE_DIRS})
   link_directories(${CUDA_LIBRARY_DIRS})
   add_definitions(${CUDA_DEFINITIONS})
+  list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_CUDA)
   if(NOT CUDA_FOUND)
     message(ERROR " CUDA not found!")
   endif(NOT CUDA_FOUND)
 
+  include( CudaCommonLibrary )
   set( CUDA_PROPAGATE_HOST_FLAGS OFF )
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
-    -O3 -gencode arch=compute_20,code=sm_20 -std=c++11)
 
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
+    -gencode arch=compute_20,code=sm_20 -std=c++11)
+  if (CMAKE_BUILD_TYPE MATCHES "Release")
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
+  else()
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O0 -g)
+  endif()
+  set(PREFR_CUDA_LIBRARY_OPTIONS -arch sm_20)
 endif()
 
 #########################################################
