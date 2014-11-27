@@ -141,7 +141,7 @@ const osg::CopyOp& copyOp)
   void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber, unsigned int viewNumber)
   {
     osgViewer::ViewerBase::Contexts contexts;
-    osgViewer::View* view = static_cast<osgViewer::View*>(_viewer);
+    osgViewer::View* view = static_cast<osgViewer::Viewer*>(_viewer);
 
     if (!view)
       view = static_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
@@ -165,7 +165,7 @@ const osg::CopyOp& copyOp)
     context->releaseContext();
   }
 
-  void OSGDefaultParticleSystem::UpdateUniformVariables(float deltaTime)
+  void OSGDefaultParticleSystem::UpdateUniformVariables(float /*deltaTime*/)
   {
     assert(cameraManipulator != nullptr);
 

@@ -2,7 +2,9 @@
 #include <prefr/prefr.h>
 #include <shaderPath.h>
 
-
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/freeglut.h>
 
 #include "CShader.h"
 

@@ -62,8 +62,8 @@ namespace prefr
 
     META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
-    virtual void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber = 0, unsigned int viewNumber = 0);
-    void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
+    virtual void SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber = 0, unsigned int viewNumber = 0);
+    virtual void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
 
     virtual void Update(float deltaTime);
     virtual void UpdateUnified(float deltaTime);

@@ -73,8 +73,8 @@ int main(int argc, char** argv)
   // get context to determine max number of uniforms in vertex shader
   osgViewer::ViewerBase::Contexts contexts;
   viewer->getContexts(contexts);
-  GLint maxNumUniforms = 0;
-  GLint maxUniformBlockSize = 0;
+//  GLint maxNumUniforms = 0;
+//  GLint maxUniformBlockSize = 0;
 //  initOpenGL(contexts[0], maxNumUniforms, maxUniformBlockSize);
 
 
