@@ -35,8 +35,8 @@ GL/GLDefaultParticleRenderer.cpp
 )
 
 
-if (WITH_CUDA)
-  set(PREFR_CUDA_LIBRARY 1)
+if (PREFER_WITH_CUDA)
+  common_library(prefr)
+else()
+  cuda_common_library(prefr)
 endif()
-
-common_library(prefr)

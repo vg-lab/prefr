@@ -76,7 +76,7 @@ if(GLUT_name)
   list(APPEND PREFR_LINK_LIBRARIES ${GLUT_LIBRARIES})
   set(FIND_PACKAGES_FOUND "${FIND_PACKAGES_FOUND} GLUT")
   if(NOT "${${libGLUT_name}_INCLUDE_DIRS}" MATCHES "-NOTFOUND")
-    include_directories(${${libGLUT_name}_INCLUDE_DIRS})
+    include_directories(BEFORE SYSTEM ${${libGLUT_name}_INCLUDE_DIRS})
     add_definitions(${GLUT_DEFINITIONS})
   endif()
 endif()
@@ -85,15 +85,18 @@ endif()
 #########################################################
 # FIND GLM
 #########################################################
-include_directories(${GLM_INCLUDE_DIRS})
+include_directories(BEFORE SYSTEM ${GLM_INCLUDE_DIRS})
 
 #########################################################
 # FIND CUDA
 #########################################################
 
 if (WITH_CUDA)
+
+  include( CudaCommonLibrary )
+
   find_package(CUDA 6.5 REQUIRED)
-  include_directories(${CUDA_INCLUDE_DIRS})
+  include_directories(BEFORE SYSTEM ${CUDA_INCLUDE_DIRS})
   link_directories(${CUDA_LIBRARY_DIRS})
   add_definitions(${CUDA_DEFINITIONS})
   if(NOT CUDA_FOUND)
@@ -102,7 +105,7 @@ if (WITH_CUDA)
 
   set( CUDA_PROPAGATE_HOST_FLAGS OFF )
   set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
-    -O3 -gencode arch=compute_20,code=sm_20 -Xcompiler "-std=c++11" ) #-std=c++11)
+    -O3 -gencode arch=compute_20,code=sm_20 -std=c++11)
 
 endif()
 
@@ -129,15 +132,6 @@ if (WITH_CUDA)
       add_definitions(${CUDAThrust_DEFINITIONS})
     endif()
   endif()
-
-
-
-  # include_directories(${CUDATHRUST_INCLUDE_DIRS})
-  # link_directories(${CUDATHRUST_LIBRARY_DIRS})
-  # add_definitions(${CUDATHRUST_DEFINITIONS})
-  # if(NOT CUDATHRUST_FOUND)
-  #   message(ERROR " CUDATHRUST not found!")
-  # endif(NOT CUDATHRUST_FOUND)
 
   list(APPEND FIND_PACKAGES_DEFINES PREFR_WITH_CUDA)
 
