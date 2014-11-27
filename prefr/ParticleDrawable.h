@@ -8,6 +8,7 @@
 #ifndef PARTICLEDRAWABLE_H_
 #define PARTICLEDRAWABLE_H_
 
+#include <osg/Drawable>
 
 namespace prefr
 {

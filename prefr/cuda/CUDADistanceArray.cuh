@@ -10,8 +10,10 @@
 
 #include "../DistanceArray.hpp"
 
+#ifdef PREFR_WITH_CUDA
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
+#endif
 
 namespace prefr
 {
@@ -19,8 +21,11 @@ namespace prefr
   class CUDADistanceArray : public DistanceArray
   {
   public:
+
+#ifdef PREFR_WITH_CUDA
     thrust::device_vector<int> deviceID;
     thrust::device_vector<float> deviceDistances;
+#endif
 
     CUDADistanceArray ( unsigned int size)
     : DistanceArray( size )

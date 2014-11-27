@@ -6,9 +6,6 @@
 
 #include "CUDADistanceArray.cuh"
 
-#include <thrust/sort.h>
-#include <thrust/copy.h>
-
 namespace prefr
 {
 
@@ -27,6 +24,7 @@ namespace prefr
     virtual void InitDistanceArray();
   };
 
-}
+} // namespace prefer
+
 
 #endif

@@ -1,27 +1,12 @@
-#include <prefr/ParticleSystem.h>
+// PREFR includes
+#include <prefr/prefr.h>
+#include <shaderPath.h>
 
-#include <prefr/ParticlePrototype.h>
 
-#include <prefr/ParticleEmitter.h>
-#include <prefr/ParticleUpdater.h>
-
-#include <prefr/ParticleSorter.h>
-#include <prefr/GL/GLDefaultParticleRenderer.h>
-
-#if (PREFR_WITH_CUDA)
-#include <prefr/cuda/ThrustParticleSorter.cuh>
-#endif
 
 #include "CShader.h"
 
-#include <shaderPath.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-
 #include <iostream>
-
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 #define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )

@@ -1,10 +1,12 @@
 
 #include "ThrustParticleSorter.cuh"
 
+#include <thrust/sort.h>
+#include <thrust/copy.h>
 
 namespace prefr
 {
-    
+
       ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles)
       : ParticleSorter(arrayParticles)
       {}
