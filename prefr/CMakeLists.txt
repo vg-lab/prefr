@@ -5,6 +5,9 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
   # should be the first file included by the library
   types.h
   #
+  ElementCollection.hpp
+  InterpolationSet.hpp
+  DistanceArray.hpp
   ParticlePrototype.h
   ParticleDrawable.h
   OSG/OSGRenderConfig.h

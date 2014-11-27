@@ -267,6 +267,7 @@ const osg::CopyOp& copyOp)
   {
     osg::State* state = renderInfo.getState();
     state->setUseVertexAttributeAliasing(true);
+    state->setUseModelViewAndProjectionUniforms(true);
 
     Render();
   }
