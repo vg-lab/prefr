@@ -13,3 +13,6 @@ target_link_libraries(default ${PREFR_LINK_LIBRARIES} prefr)
 
 add_executable(defaultosg osg.cpp)
 target_link_libraries(defaultosg ${PREFR_LINK_LIBRARIES} prefr)
+
+add_executable(compositeosg compositeosg.cpp)
+target_link_libraries(compositeosg ${PREFR_LINK_LIBRARIES} prefr)

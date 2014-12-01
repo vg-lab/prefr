@@ -141,13 +141,21 @@ const osg::CopyOp& copyOp)
   void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber, unsigned int viewNumber)
   {
     osgViewer::ViewerBase::Contexts contexts;
-    osgViewer::View* view = static_cast<osgViewer::Viewer*>(_viewer);
+    osgViewer::View* view;
+    osgViewer::Viewer* viewer= dynamic_cast<osgViewer::Viewer*>(_viewer);
+
+    view = dynamic_cast<osgViewer::View*>(viewer);
+
+
 
     if (!view)
-      view = static_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
+      view = dynamic_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
 
-    cameraManipulator = static_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+    PREFR_DEBUG_CHECK(view, "View is nullptr");
 
+    cameraManipulator = dynamic_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+
+    PREFR_DEBUG_CHECK(cameraManipulator, "camera manipulator is nullptr");
 
     _viewer->getContexts(contexts, true);
 
