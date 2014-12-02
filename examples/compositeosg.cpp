@@ -35,6 +35,11 @@
 
 #include <osgGA/StateSetManipulator>
 
+#include <osgViewer/ViewerEventHandlers>
+
+#include <osgDB/ReadFile>
+#include <osgDB/FileUtils>
+
 using namespace prefr;
 
 //#if (particles_WITH_CUDA)
@@ -108,7 +113,7 @@ osgViewer::CompositeViewer* createCompositeViewer()
       viewer->addView(view);
 
       view->getCamera()->setName("Cam one");
-      view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width/2, traits->height/2));
+      view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width, traits->height));
       view->getCamera()->setGraphicsContext(gc.get());
       view->setCameraManipulator(new osgGA::TrackballManipulator);
 
@@ -118,10 +123,10 @@ osgViewer::CompositeViewer* createCompositeViewer()
 
       view->addEventHandler( statesetManipulator.get() );
 
-//      view->addEventHandler( new osgViewer::StatsHandler );
+      view->addEventHandler( new osgViewer::StatsHandler );
 //      view->addEventHandler( new osgViewer::HelpHandler );
 //      view->addEventHandler( new osgViewer::WindowSizeHandler );
-//      view->addEventHandler( new osgViewer::ThreadingHandler );
+      view->addEventHandler( new osgViewer::ThreadingHandler );
 //      view->addEventHandler( new osgViewer::RecordCameraPathHandler );
   }
 
@@ -296,6 +301,36 @@ int main(int argc, char** argv)
   groupNode->addChild(ps->rootNode);
   groupNode->addChild(sdg);
 
+  if (argc >= 4)
+  {
+    std::string filespath = std::string(argv[3]);
+    osgDB::DirectoryContents files = osgDB::getDirectoryContents(filespath);
+
+    osg::Group* meshes = new osg::Group;
+    osg::Node* node;
+
+    for (unsigned int i = 2; i < 10 /*files.size()/2*/; i++)
+    {
+      node = osgDB::readNodeFile(osgDB::findFileInDirectory(files[i], filespath));
+
+      std::cout << files[i] << std::endl;
+      if (!node)
+        std::cout << "null node" << std::endl;
+      else
+        meshes->addChild(node);
+    }
+
+    ss = meshes->getOrCreateStateSet();
+    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    ss->setAttributeAndModes(
+      new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
+                           osg::PolygonMode::LINE));
+
+    groupNode->addChild(meshes);
+  }
+
+    std::cout << "Finished loading." << std::endl;
+
 //  osg::Geode* geode = new osg::Geode;
 //  geode->addDrawable(ps);
 
@@ -308,6 +343,8 @@ int main(int argc, char** argv)
 
   view->getCameraManipulator()->setAutoComputeHomePosition(true);
   view->getCameraManipulator()->home(0.0);
+
+//  viewer->setThreadingModel( osgViewer::Viewer::ThreadPerContext );
 
 //  osg::State* cameraState = view->getCamera()->getGraphicsContext()->getState();
 //  cameraState->setUseModelViewAndProjectionUniforms(true);

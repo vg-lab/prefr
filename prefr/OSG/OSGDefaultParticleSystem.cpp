@@ -293,4 +293,17 @@ const osg::CopyOp& copyOp)
     glDeleteVertexArrays(1, &osgrc->vao);
   }
 
+  void OSGDefaultParticleSystem::accept(osg::PrimitiveFunctor& functor) const
+  {
+    OSGRenderConfig* osgrc =
+          static_cast<OSGRenderConfig*>(renderer->renderConfig);
+
+    if (!osgrc->vertexArray|| !osgrc->billboardIndices)
+      return;
+
+    // add drawable to the stats
+    functor.setVertexArray(osgrc->vertexArray->size(), static_cast<const osg::Vec3*>(osgrc->vertexArray->getDataPointer()));
+    osgrc->billboardIndices->accept(functor);
+  }
+
 }

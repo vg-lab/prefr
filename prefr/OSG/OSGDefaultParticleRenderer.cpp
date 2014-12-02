@@ -26,17 +26,20 @@ namespace prefr
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
 
     osgrc->billboardVertices = new vector<GLfloat>;
+    osgrc->vertexArray = new osg::Vec3Array;
     osgrc->billboardIndices = new osg::DrawElementsUByte(GL_TRIANGLE_STRIP);
     osgrc->particlePositions = new vector<GLfloat>(particles->size * 4);
     osgrc->particleColors = new vector<GLfloat>(particles->size * 4);
 
     for (unsigned int i = 0; i < 12; i++)
     {
-//          osgrc->billboardVertices->push_back(osg::Vec3( b[i*3],
-//                                                                b[i*3 + 1],
-//                                                                b[i*3 + 2] ));
+      osgrc->vertexArray->push_back(osg::Vec3( b[i*3],
+                                               b[i*3 + 1],
+                                               b[i*3 + 2] ));
 
       osgrc->billboardVertices->push_back(b[i]);
+
+
 
       if (i % 3 == 0)
         osgrc->billboardIndices->push_back(i / 3);
@@ -160,6 +163,8 @@ namespace prefr
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particleColors->front());
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glDrawElementsInstanced(osgrc->billboardIndices->getMode()
                             , osgrc->billboardIndices->getNumIndices()

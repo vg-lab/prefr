@@ -20,34 +20,36 @@ namespace prefr
   public:
     // Triangles vertices
 
-     osg::DrawElementsUByte* billboardIndices;
+    osg::Vec3Array* vertexArray;
+    osg::DrawElementsUByte* billboardIndices;
 
-     // OpenGL pointers
-     GLuint vboDrawElements;
+    // OpenGL pointers
+    GLuint vboDrawElements;
 
-     osg::Uniform* uCameraUp;
-     osg::Uniform* uCameraRight;
+    osg::Uniform* uCameraUp;
+    osg::Uniform* uCameraRight;
 
-     osg::Vec3f eye, center, up, right;
+    osg::Vec3f eye, center, up, right;
 
-     osg::BoundingBox boundingBox;
+    osg::BoundingBox boundingBox;
 
-     bool init;
+    bool init;
 
-     OSGRenderConfig(unsigned int size)
-     : RenderConfig(size)
-     , billboardIndices( nullptr )
-     , vboDrawElements( 0 )
-     , uCameraUp( nullptr )
-     , uCameraRight( nullptr )
-     , init( false )
-     {}
+    OSGRenderConfig(unsigned int size)
+    : RenderConfig(size)
+    , vertexArray( nullptr )
+    , billboardIndices( nullptr )
+    , vboDrawElements( 0 )
+    , uCameraUp( nullptr )
+    , uCameraRight( nullptr )
+    , init( false )
+    {}
 
-     virtual ~OSGRenderConfig()
-     {
-       vboDrawElements = 0;
-       init = false;
-     }
+    virtual ~OSGRenderConfig()
+    {
+     vboDrawElements = 0;
+     init = false;
+    }
 
   };
 

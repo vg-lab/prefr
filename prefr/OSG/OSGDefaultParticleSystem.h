@@ -76,6 +76,7 @@ namespace prefr
     virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
     virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
     virtual void releaseGLObjects(osg::State* state) const;
+    virtual void accept(osg::PrimitiveFunctor& functor) const;
 
   protected:
 

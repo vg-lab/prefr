@@ -26,10 +26,15 @@
 //  #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #endif
 
+#include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/Viewer>
 #include <osgGA/TrackballManipulator>
 #include <osg/ShapeDrawable>
 #include <osg/PolygonMode>
+
+#include <osgDB/ReadFile>
+#include <osgDB/FileUtils>
+
 
 using namespace prefr;
 
@@ -165,7 +170,7 @@ int main(int argc, char** argv)
     colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
-    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
+    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3());//glm::vec3(547.492980957, 863.448974609, 45.6893997192));
     ps->AddEmissionNode(emissionNode);
   }
 
@@ -187,6 +192,7 @@ int main(int argc, char** argv)
 
 
   std::cout << "Created sorter" << std::endl;
+
 
 //#if (particles_WITH_CUDA)
 //  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
@@ -212,7 +218,7 @@ int main(int argc, char** argv)
 
   ps->Start();
 
-  osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 1));
+  osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 100));
   osg::Geode* sdg = new osg::Geode;
   sdg->addDrawable(sd);
   sd->setColor(osg::Vec4(1,1,1,1));
@@ -230,6 +236,35 @@ int main(int argc, char** argv)
   groupNode->addChild(ps->rootNode);
   groupNode->addChild(sdg);
 
+  if (argc >= 4)
+  {
+    std::string filespath = std::string(argv[3]);
+    osgDB::DirectoryContents files = osgDB::getDirectoryContents(filespath);
+
+    osg::Group* meshes = new osg::Group;
+    osg::Node* node;
+
+    for (unsigned int i = 2; i < 10 /*files.size()/2*/; i++)
+    {
+      node = osgDB::readNodeFile(osgDB::findFileInDirectory(files[i], filespath));
+
+      std::cout << files[i] << std::endl;
+      if (!node)
+        std::cout << "null node" << std::endl;
+      else
+        meshes->addChild(node);
+    }
+
+    ss = meshes->getOrCreateStateSet();
+    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    ss->setAttributeAndModes(
+      new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
+                           osg::PolygonMode::LINE));
+
+    groupNode->addChild(meshes);
+  }
+
+  std::cout << "Finished loading." << std::endl;
 //  osg::Geode* geode = new osg::Geode;
 //  geode->addDrawable(ps);
 
@@ -240,6 +275,8 @@ int main(int argc, char** argv)
 
   viewer->getCameraManipulator()->setAutoComputeHomePosition(true);
   viewer->getCameraManipulator()->home(0.0);
+
+  viewer->addEventHandler( new osgViewer::StatsHandler );
 
   osg::State* cameraState = viewer->getCamera()->getGraphicsContext()->getState();
   cameraState->setUseModelViewAndProjectionUniforms(true);
