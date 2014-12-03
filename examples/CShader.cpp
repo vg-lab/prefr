@@ -2,27 +2,27 @@
 //* CShader.cpp
 //* -----------
 //*
-//* Este fichero incluye las definiciones de los métodos de 
+//* Este fichero incluye las definiciones de los métodos de
 //* la clase CShader y la implementación de funciones auxiliares.
 //*
-//* Algunos de los métodos que aquí se presentan deberán ser 
-//* completados por el alumno de forma obligatoria. Otros podrán 
+//* Algunos de los métodos que aquí se presentan deberán ser
+//* completados por el alumno de forma obligatoria. Otros podrán
 //* modificarse para dar  soporte a partes opcionales.
 //*
 //* --------------------------------------------------------------
 //* Descargo de responsabilidad.
 //*
-//* El códigos se proporciona únicamente a modo de ilustración. 
-//* El ejemplo no se ha verificado a fondo bajo todas las 
-//* condiciones. No se puede garantizar ni dar por supuesta la 
-//* fiabilidad, la posibilidad de servicio, ni del funcionamiento 
+//* El códigos se proporciona únicamente a modo de ilustración.
+//* El ejemplo no se ha verificado a fondo bajo todas las
+//* condiciones. No se puede garantizar ni dar por supuesta la
+//* fiabilidad, la posibilidad de servicio, ni del funcionamiento
 //* programa.
 //*
 //* Este fichero se distribuye bajo una licencia no exclusiva
-//* de derechos de autor para pudiendo utilizar el código para 
+//* de derechos de autor para pudiendo utilizar el código para
 //* generar funciones similares que se ajusten a sus necesidades.
 //*
-//* El código que aquí se incluyen se ofrecen "TAL CUAL" sin  
+//* El código que aquí se incluyen se ofrecen "TAL CUAL" sin
 //* garantías de ningún tipo.
 //*
 //* Copyright (C) 2012 by Marcos García Lorenzo (GMRV - URJC)
@@ -31,8 +31,8 @@
 
 /*******************************************************************
 
-Modificado para la práctica de Rendering Avanzado por Sergio Galindo 
-y Luis Hijarrubia. 2014 
+Modificado para la práctica de Rendering Avanzado por Sergio Galindo
+y Luis Hijarrubia. 2014
 
 Las mayores modificaciones son para pasar el código a openGL 3.3
 Y se pueda elegir si se van a pasar "in"s de vértices, normales y coordenadas
@@ -41,87 +41,91 @@ Y se pueda elegir si se van a pasar "in"s de vértices, normales y coordenadas
 
 #include "CShader.h"
 #include <iostream>
+#include <string.h>
 
 //Funciones auxiliar.
-char *readShaderFile(const char *fileName); 
-unsigned int compileShader(const char* source, GLenum type); 
-unsigned int loadShader (const char *fileName, GLenum type); 
+char *readShaderFile(const char *fileName);
+unsigned int compileShader(const char* source, GLenum type);
+unsigned int loadShader (const char *fileName, GLenum type);
 
 //Esta función permite inicializar el shader
 //geometrico y se ejecuta antes de hacer el
 //link del shader. Como parámetro recibe el
 //identificador del programa.
-CShader::CShader(bool conNormales,bool conTextura,const char *vShaderFile,const char *fShaderFile,const char *gShaderFile,void (*gShaderInit)(unsigned int)){
-	vshader = loadShader(vShaderFile,GL_VERTEX_SHADER);
-	fshader = loadShader(fShaderFile,GL_FRAGMENT_SHADER);
-	if (gShaderFile!=NULL)
-		gshader = loadShader(gShaderFile,GL_GEOMETRY_SHADER);
+CShader::CShader(bool conNormales,bool conTextura,
+                 const char *vShaderFile,const char *fShaderFile,
+                 const char *gShaderFile,void (*gShaderInit)(unsigned int))
+{
+  vshader = loadShader(vShaderFile,GL_VERTEX_SHADER);
+  fshader = loadShader(fShaderFile,GL_FRAGMENT_SHADER);
+  if (gShaderFile!=NULL)
+    gshader = loadShader(gShaderFile,GL_GEOMETRY_SHADER);
 
-	program= glCreateProgram();
-	glAttachShader(program, vshader);
-	glAttachShader(program, fshader);
-	if (gShaderFile!=NULL)
-		glAttachShader(program, gshader);
-	if (gShaderInit !=NULL)
-		gShaderInit(program);
+  program= glCreateProgram();
+  glAttachShader(program, vshader);
+  glAttachShader(program, fshader);
+  if (gShaderFile!=NULL)
+    glAttachShader(program, gshader);
+  if (gShaderInit !=NULL)
+    gShaderInit(program);
 
-	glBindAttribLocation(program, 0, "inVertex");
-	inVertex=0;
-	if (conNormales){
-		glBindAttribLocation(program, 1, "inNormal");
-		inNormal=1;
-	}
-	if (conTextura){
-		glBindAttribLocation(program, 2, "inTexCoord");
-		inTexCoord=2;
-	}
+  glBindAttribLocation(program, 0, "inVertex");
+  inVertex=0;
+  if (conNormales){
+    glBindAttribLocation(program, 1, "inNormal");
+    inNormal=1;
+  }
+  if (conTextura){
+    glBindAttribLocation(program, 2, "inTexCoord");
+    inTexCoord=2;
+  }
 
-	glLinkProgram(program);
+  glLinkProgram(program);
 
-	int linked;
-	glGetProgramiv(program, GL_LINK_STATUS, &linked);
-	if (!linked){
-		GLint logLen;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
-		char *logString= new char[logLen];
-		glGetProgramInfoLog(program, logLen, NULL,logString);
-		std::cout << "Error: " << logString <<std::endl;
-		delete logString;
-		glDeleteProgram(program);
-		program=0;
-		exit(-1);
-	}
+  int linked;
+  glGetProgramiv(program, GL_LINK_STATUS, &linked);
+  if (!linked){
+    GLint logLen;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
+    char *logString= new char[logLen];
+    glGetProgramInfoLog(program, logLen, NULL,logString);
+    std::cout << "Error: " << logString <<std::endl;
+    delete logString;
+    glDeleteProgram(program);
+    program=0;
+    exit(-1);
+  }
 
-	//inVertex = glGetAttribLocation(program,"inVertex");
-	//if (conNormales)
-	//	inNormal = glGetAttribLocation(program,"inNormal");
-	//if (conTextura)
-	//	inTexCoord = glGetAttribLocation(program,"inTexCoord");
-		
+//inVertex = glGetAttribLocation(program,"inVertex");
+//if (conNormales)
+//inNormal = glGetAttribLocation(program,"inNormal");
+//if (conTextura)
+//inTexCoord = glGetAttribLocation(program,"inTexCoord");
+
 }
 
 CShader::~CShader(void){
-	glDetachShader(program, vshader);
-	glDetachShader(program, fshader);
-	glDetachShader(program, gshader);
-	glDeleteShader(vshader);
-	glDeleteShader(fshader);
-	glDeleteShader(gshader);
-	glDeleteProgram(program);
+  glDetachShader(program, vshader);
+  glDetachShader(program, fshader);
+  glDetachShader(program, gshader);
+  glDeleteShader(vshader);
+  glDeleteShader(fshader);
+  glDeleteShader(gshader);
+  glDeleteProgram(program);
 }
 
 
 
 void CShader::activate(){
-	glUseProgram(program);
+  glUseProgram(program);
 }
 
 void CShader::deactivate(){
-	glUseProgram(0);
+  glUseProgram(0);
 }
 
 unsigned int CShader::getID(){
-	return program;
+  return program;
 }
 
 unsigned int CShader::getInVertex(){return inVertex;}
@@ -129,46 +133,46 @@ unsigned int CShader::getInNormal(){return inNormal;}
 unsigned int CShader::getInTexCoord(){return inTexCoord;}
 
 unsigned int compileShader(const char* source, GLenum type){
-	GLuint shader;
-	GLint fileLen=strlen(source);
+  GLuint shader;
+  GLint fileLen=strlen(source);
 
-	shader = glCreateShader(type);
-	glShaderSource (shader, 1,(const GLchar **) &source, (const GLint *)&fileLen);
-	
-	glCompileShader(shader);
-	
-	GLint compiled;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-	if(!compiled){
-		GLint logLen;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
-		char *logString= new char[logLen];
-		glGetShaderInfoLog(shader, logLen, NULL,logString);
-		std::cout << "Error: " << logString <<std::endl;
-		delete logString;
-		glDeleteShader(shader);
-		exit(-1);
-	}
-	return shader;
+  shader = glCreateShader(type);
+  glShaderSource (shader, 1,(const GLchar **) &source, (const GLint *)&fileLen);
+
+  glCompileShader(shader);
+
+  GLint compiled;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+  if(!compiled){
+    GLint logLen;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
+    char *logString= new char[logLen];
+    glGetShaderInfoLog(shader, logLen, NULL,logString);
+    std::cout << "Error: " << logString <<std::endl;
+    delete logString;
+    glDeleteShader(shader);
+    exit(-1);
+  }
+  return shader;
 }
 
 
 unsigned int loadShader (const char *fileName, GLenum type)
 {
-	std::cout << std::endl;
-	std::cout << "________________________________________________________________" << std::endl;
-	std::cout << "Cargando Shader: " << fileName << std::endl;
-	std::cout << "________________________________________________________________" << std::endl;
-	
-	char *source;
-	source = readShaderFile(fileName);
-	if (source == NULL){
-		std::cerr << "Error leyedo el fichero: " << fileName << std::endl;
-		exit(-1);
-	}
-	GLuint shader = compileShader(source, type);
-	delete source;
-	return shader;
+  std::cout << std::endl;
+  std::cout << "________________________________________________________________" << std::endl;
+  std::cout << "Cargando Shader: " << fileName << std::endl;
+  std::cout << "________________________________________________________________" << std::endl;
+
+  char *source;
+  source = readShaderFile(fileName);
+  if (source == NULL){
+    std::cerr << "Error leyedo el fichero: " << fileName << std::endl;
+    exit(-1);
+  }
+  GLuint shader = compileShader(source, type);
+  delete source;
+  return shader;
 }
 
 
@@ -185,28 +189,28 @@ unsigned int loadShader (const char *fileName, GLenum type)
 
 char *readShaderFile(const char *fileName)
 {
-	 //Se carga el fichero
-     std::ifstream file;
-     file.open(fileName, std::ios::in); 
-     if(!file) return 0;
-     
-     //Se calcula la longitud del fichero
-     file.seekg(0,std::ios::end);
-     unsigned int fileLen = file.tellg();
-     file.seekg(std::ios::beg);
-             
-     //Se lee el fichero
-     char *source = new char[fileLen+1];
-     
-	 int i=0;
-	 while(file.good())
-	 {
-		 source[i]=file.get();
-		 if (!file.eof()) i++;
-		 else fileLen=i;
-	 }
-	 source[fileLen]= '\0';
-	 file.close();
+  //Se carga el fichero
+  std::ifstream file;
+  file.open(fileName, std::ios::in);
+  if(!file) return 0;
 
-	 return source;
+  //Se calcula la longitud del fichero
+  file.seekg(0,std::ios::end);
+  unsigned int fileLen = file.tellg();
+  file.seekg(std::ios::beg);
+
+  //Se lee el fichero
+  char *source = new char[fileLen+1];
+
+  int i=0;
+  while(file.good())
+  {
+    source[i]=file.get();
+    if (!file.eof()) i++;
+    else fileLen=i;
+  }
+  source[fileLen]= '\0';
+  file.close();
+
+  return source;
 }

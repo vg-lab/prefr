@@ -26,15 +26,19 @@
 //  #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #endif
 
-#include <osgViewer/ViewerEventHandlers>
+#include <osgViewer/View>
 #include <osgViewer/Viewer>
+#include <osgViewer/CompositeViewer>
 #include <osgGA/TrackballManipulator>
 #include <osg/ShapeDrawable>
 #include <osg/PolygonMode>
 
+#include <osgGA/StateSetManipulator>
+
+#include <osgViewer/ViewerEventHandlers>
+
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
-
 
 using namespace prefr;
 
@@ -64,11 +68,76 @@ void initOpenGL(osg::GraphicsContext* context,
 
 }
 
+osgViewer::CompositeViewer* createCompositeViewer()
+{
+  osgViewer::CompositeViewer* viewer = new osgViewer::CompositeViewer;
+
+  osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
+  if (!wsi)
+  {
+      osg::notify(osg::NOTICE)<<"Error, no WindowSystemInterface available, cannot create windows."<<std::endl;
+      return nullptr;
+  }
+
+  unsigned int width, height;
+  wsi->getScreenResolution(osg::GraphicsContext::ScreenIdentifier(0), width, height);
+
+  osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+  traits->x = 100;
+  traits->y = 100;
+  traits->width = 1000;
+  traits->height = 800;
+  traits->windowDecoration = true;
+  traits->doubleBuffer = true;
+  traits->sharedContext = 0;
+
+  osg::ref_ptr<osg::GraphicsContext> gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+  if (gc.valid())
+  {
+      osg::notify(osg::INFO)<<"  GraphicsWindow has been created successfully."<<std::endl;
+
+      // need to ensure that the window is cleared make sure that the complete window is set the correct colour
+      // rather than just the parts of the window that are under the camera's viewports
+      gc->setClearColor(osg::Vec4f(0.2f,0.2f,0.6f,1.0f));
+      gc->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+  else
+  {
+      osg::notify(osg::NOTICE)<<"  GraphicsWindow has not been created successfully."<<std::endl;
+  }
+
+  // view one
+  {
+      osgViewer::View* view = new osgViewer::View;
+      view->setName("View one");
+      viewer->addView(view);
+
+      view->getCamera()->setName("Cam one");
+      view->getCamera()->setViewport(new osg::Viewport(0,0, traits->width, traits->height));
+      view->getCamera()->setGraphicsContext(gc.get());
+      view->setCameraManipulator(new osgGA::TrackballManipulator);
+
+      // add the state manipulator
+      osg::ref_ptr<osgGA::StateSetManipulator> statesetManipulator = new osgGA::StateSetManipulator;
+      statesetManipulator->setStateSet(view->getCamera()->getOrCreateStateSet());
+
+      view->addEventHandler( statesetManipulator.get() );
+
+      view->addEventHandler( new osgViewer::StatsHandler );
+//      view->addEventHandler( new osgViewer::HelpHandler );
+//      view->addEventHandler( new osgViewer::WindowSizeHandler );
+      view->addEventHandler( new osgViewer::ThreadingHandler );
+//      view->addEventHandler( new osgViewer::RecordCameraPathHandler );
+  }
+
+  return viewer;
+
+}
+
+
 int main(int argc, char** argv)
 {
-  osg::ref_ptr<osgViewer::Viewer> viewer = new osgViewer::Viewer;
-
-  viewer->setUpViewInWindow(100, 100, 800, 600);
+  osg::ref_ptr<osgViewer::CompositeViewer> viewer = createCompositeViewer();
 
   // get window and set name
   osgViewer::ViewerBase::Windows windows;
@@ -99,9 +168,6 @@ int main(int argc, char** argv)
 //  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
 
   ps = new OSGDefaultParticleSystem(10, maxParticles, true);
-
-  if (!viewer->getCameraManipulator())
-    viewer->setCameraManipulator(new osgGA::TrackballManipulator, true);
 
   std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
 
@@ -170,7 +236,7 @@ int main(int argc, char** argv)
     colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
-    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3());//glm::vec3(547.492980957, 863.448974609, 45.6893997192));
+    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
     ps->AddEmissionNode(emissionNode);
   }
 
@@ -192,7 +258,6 @@ int main(int argc, char** argv)
 
 
   std::cout << "Created sorter" << std::endl;
-
 
 //#if (particles_WITH_CUDA)
 //  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
@@ -218,7 +283,7 @@ int main(int argc, char** argv)
 
   ps->Start();
 
-  osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 100));
+  osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 1));
   osg::Geode* sdg = new osg::Geode;
   sdg->addDrawable(sd);
   sd->setColor(osg::Vec4(1,1,1,1));
@@ -264,22 +329,25 @@ int main(int argc, char** argv)
     groupNode->addChild(meshes);
   }
 
-  std::cout << "Finished loading." << std::endl;
+    std::cout << "Finished loading." << std::endl;
+
 //  osg::Geode* geode = new osg::Geode;
 //  geode->addDrawable(ps);
 
 #define PRINT_VEC3F( VEC )                                              \
   std::cout << "(" <<  VEC.x() << "," << VEC.y() << "," << VEC.z() << ")" << std::endl;
 
-  viewer->setSceneData(groupNode);
+  osgViewer::View* view = viewer->getView(0);
 
-  viewer->getCameraManipulator()->setAutoComputeHomePosition(true);
-  viewer->getCameraManipulator()->home(0.0);
+  view->setSceneData(groupNode);
 
-  viewer->addEventHandler( new osgViewer::StatsHandler );
+  view->getCameraManipulator()->setAutoComputeHomePosition(true);
+  view->getCameraManipulator()->home(0.0);
 
-  osg::State* cameraState = viewer->getCamera()->getGraphicsContext()->getState();
-  cameraState->setUseModelViewAndProjectionUniforms(true);
+//  viewer->setThreadingModel( osgViewer::Viewer::ThreadPerContext );
+
+//  osg::State* cameraState = view->getCamera()->getGraphicsContext()->getState();
+//  cameraState->setUseModelViewAndProjectionUniforms(true);
 //  cameraState->setUseVertexAttributeAliasing(true);
 
   return viewer->run();
