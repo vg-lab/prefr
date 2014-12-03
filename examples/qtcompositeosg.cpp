@@ -157,19 +157,22 @@ int main( int argc, char** argv )
   w.setWindowTitle("main window");
   w.show( );
 
-  QtViewerWidget* viewWidget = new QtViewerWidget(threadingModel);
-  viewWidget->setGeometry( 100, 100, 800, 600 );
+  //QtViewerWidget* viewWidget = new QtViewerWidget(threadingModel);
+  QtViewerWidget viewWidget(threadingModel);
+
+  viewWidget.setGeometry( 100, 100, 800, 600 );
   //viewWidget->show();
 
-  QtViewerWidget* viewWidget2 = new QtViewerWidget(threadingModel, &w);
-  viewWidget2->setGeometry( 100, 100, 800, 600 );
+  //QtViewerWidget* viewWidget2 = new QtViewerWidget(threadingModel, &w);
+  QtViewerWidget viewWidget2(threadingModel);
+  viewWidget2.setGeometry( 100, 100, 800, 600 );
   //viewWidget2->show();
   //w.setCentralWidget( viewWidget2 );
 
   QHBoxLayout *layout = new QHBoxLayout;
 
-  layout->addWidget( viewWidget );
-  layout->addWidget( viewWidget2 );
+  layout->addWidget( &viewWidget );
+  layout->addWidget( &viewWidget2 );
 
   w.setCentralWidget(new QWidget);
   w.centralWidget()->setLayout(layout);
@@ -181,7 +184,7 @@ int main( int argc, char** argv )
   OSGDefaultParticleSystem* ps;
   ps = new OSGDefaultParticleSystem(10, maxParticles, true);
 
-  ps->SetCameraManipulator(viewWidget);
+  ps->SetCameraManipulator(&viewWidget);
 
   ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
 
@@ -304,7 +307,7 @@ int main( int argc, char** argv )
 
 
 
-  osg::Group* groupNode = new osg::Group;
+  osg::Group* groupNode = viewWidget.rootNode; //new osg::Group;
 
 
   groupNode->addChild(sdg);
@@ -350,9 +353,10 @@ int main( int argc, char** argv )
   groupNode->addChild(ps->rootNode);
 
 
-  osgViewer::View* view = viewWidget->getView(0);
+  osgViewer::View* view = viewWidget.getView(0);
 
-    view->setSceneData(groupNode);
+//    view->setSceneData(groupNode);
+  //viewWidget.rootNode->addChild( groupNode );
 
     view->getCameraManipulator()->setAutoComputeHomePosition(true);
     view->getCameraManipulator()->home(0.0);

@@ -8,8 +8,8 @@ ${CMAKE_CURRENT_BINARY_DIR}/shaderPath.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(default ${examples_SOURCES} default.cpp)
-target_link_libraries(default ${PREFR_LINK_LIBRARIES} prefr)
+add_executable(defaultgl ${examples_SOURCES} gl.cpp)
+target_link_libraries(defaultgl ${PREFR_LINK_LIBRARIES} prefr)
 
 add_executable(defaultosg osg.cpp)
 target_link_libraries(defaultosg ${PREFR_LINK_LIBRARIES} prefr)
@@ -18,8 +18,7 @@ add_executable(compositeosg compositeosg.cpp)
 target_link_libraries(compositeosg ${PREFR_LINK_LIBRARIES} prefr)
 
 
-IF (QT_FOUND)
-  MESSAGE( "Qt found!!!")
-  add_executable(qtosg prefrExample.cpp)
+IF (QT_FOUND)  
+  add_executable(qtosg qtcompositeosg.cpp)
   target_link_libraries(qtosg ${PREFR_LINK_LIBRARIES} ${QT_LIBRARIES} prefr)
 ENDIF()
