@@ -164,14 +164,18 @@ namespace prefr
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particleColors->front());
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
     glDrawElementsInstanced(osgrc->billboardIndices->getMode()
                             , osgrc->billboardIndices->getNumIndices()
                             , GL_UNSIGNED_BYTE, NULL
                             , osgrc->billboardIndices->getNumInstances());
     glBindVertexArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
+
 
 
 }

@@ -16,3 +16,10 @@ target_link_libraries(defaultosg ${PREFR_LINK_LIBRARIES} prefr)
 
 add_executable(compositeosg compositeosg.cpp)
 target_link_libraries(compositeosg ${PREFR_LINK_LIBRARIES} prefr)
+
+
+IF (QT_FOUND)
+  MESSAGE( "Qt found!!!")
+  add_executable(qtosg prefrExample.cpp)
+  target_link_libraries(qtosg ${PREFR_LINK_LIBRARIES} ${QT_LIBRARIES} prefr)
+ENDIF()

@@ -158,7 +158,7 @@ endif()
 #########################################################
 if (WITH_OPENSCENEGRAPH)
   FIND_PACKAGE(OpenSceneGraph
-    COMPONENTS osgViewer osgGA osgDB osgUtil)
+    COMPONENTS osgViewer osgGA osgDB osgUtil osgQt)
   include(Findosg_functions)
   if(OPENSCENEGRAPH_FOUND)
     set(OpenSceneGraph_name OPENSCENEGRAPH)
@@ -180,6 +180,16 @@ if (WITH_OPENSCENEGRAPH)
   endif()
 endif()
 
+
+
+FIND_PACKAGE(Qt4)
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} 
+${CMAKE_CURRENT_SOURCE_DIR} 
+${INCDIR})
+SET(QT_USE_QTOPENGL TRUE)
+INCLUDE (${QT_USE_FILE})
 
 
 ##########################################################
