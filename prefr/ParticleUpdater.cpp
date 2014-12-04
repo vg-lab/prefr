@@ -14,6 +14,8 @@ namespace prefr
     : particles( new ParticleCollection( particlesArray ) )
     , prototypes( nullptr )
     , refPrototypes( nullptr )
+    , emissionNodes( nullptr )
+    , refEmissionNodes( nullptr )
     {}
 
     ParticleUpdater::~ParticleUpdater()

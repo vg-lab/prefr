@@ -103,6 +103,8 @@ namespace prefr
     emitter->prototypes = this->prototypes;
     emitter->refPrototypes = &this->particlePrototype;
 
+    emitter->UpdateConfiguration();
+
   }
   void ParticleSystem::AddUpdater(ParticleUpdater* updater)
   {
@@ -119,6 +121,9 @@ namespace prefr
 
     updater->prototypes = this->prototypes;
     updater->refPrototypes = &this->particlePrototype;
+
+    updater->emissionNodes = this->emissionNodes;
+    updater->refEmissionNodes = &this->particleEmissionNodes;
 
   }
   void ParticleSystem::SetSorter(ParticleSorter* _sorter)

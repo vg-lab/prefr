@@ -24,8 +24,12 @@ namespace prefr
 public:
 
     ParticleCollection* particles;
+
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
+
+    vector<EmissionNode*>* emissionNodes;
+    vector<int>* refEmissionNodes;
 
     ParticleUpdater(const ParticleCollection& particlesArray);
 
