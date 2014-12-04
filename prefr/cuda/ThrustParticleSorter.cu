@@ -7,7 +7,7 @@
 namespace prefr
 {
 
-      ThrustParticleSorter::ThrustParticleSorter(ParticleCollection* arrayParticles)
+      ThrustParticleSorter::ThrustParticleSorter( const ParticleCollection& arrayParticles)
       : ParticleSorter(arrayParticles)
       {}
 

@@ -310,7 +310,6 @@ int main(int argc, char** argv)
   mouseYThreshold = mouseThreshold * resolution[1];
 
   makeProjectionMatrix();
-//  float aspect=DEFAULT_ASPECT;
 
   unsigned int maxParticles = 10;
   unsigned int maxEmitters = 1;
@@ -321,63 +320,34 @@ int main(int argc, char** argv)
   if (argc >= 3)
     maxEmitters = atoi(argv[2]);
 
-
-//#if (particles_WITH_CUDA == 1)
-//  ps = new CUDAParticleSystem(10, maxParticles, true);
-//#else
-//  ps = new GLDefaultParticleSystem(10, maxParticles, true);
-//#endif
-
   ps = new ParticleSystem(10, maxParticles, true);
 
-  ParticleCollection* colProto = new ParticleCollection(ps->particles, 0, maxParticles / 2);
-
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f);
-//  prototype->minLife = 3.0f;
-//  prototype->maxLife = 5.0f;
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0, 1, 0.2)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.65f, /*particles::RGBToHSV*/(glm::vec4(0, 1, 0, 0.2)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(0, 0.5, 0.5, 0)));
+  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
+  prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
+  prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
+  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
-
-  prototype->particles = colProto;
 
   ps->AddPrototype(prototype);
 
-  colProto = new ParticleCollection(ps->particles, maxParticles / 2, maxParticles);
+  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, maxParticles / 2, maxParticles));
 
-  prototype = new ParticlePrototype(3.0f, 5.0f);
-
-  prototype->color.Insert(0.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 0, 0.2)));
-//  prototype->color.Insert(0.4f, particles::RGBToHSV(glm::vec4(0, 127, 127, 0)));
-  prototype->color.Insert(0.75f, /*particles::RGBToHSV*/(glm::vec4(1, 0, 0, 0.2)));
-  prototype->color.Insert(1.0f, /*particles::RGBToHSV*/(glm::vec4(1, 1, 1, 0)));
+  prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
+  prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
+  prototype->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
-
-  prototype->particles = colProto;
 
   ps->AddPrototype(prototype);
 
   std::cout << "Created prototype." << std::endl;
-
-  ParticleCollection* colEmissionNode;
-
-  ParticleCollection* colEmitter = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colUpdater = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colSorter = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colRenderer = new ParticleCollection(ps->particles, 0, maxParticles);
-
-  std::cout << "Created collections" << std::endl;
-
 
   PointEmissionNode* emissionNode;
 
@@ -387,42 +357,37 @@ int main(int argc, char** argv)
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    colEmissionNode =
-      new ParticleCollection(ps->particles,
-                             i * particlesPerEmitter,
-                             i * particlesPerEmitter + particlesPerEmitter);
-
-    std::cout << "Creating emission node " << i << " from "
-              << i * particlesPerEmitter << " to "
-              << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-      new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
+        new PointEmissionNode(ParticleCollection(ps->particles,
+                                                 i * particlesPerEmitter,
+                                                 i * particlesPerEmitter + particlesPerEmitter),
+                              glm::vec3());
 
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter(colEmitter, 0.3f, true);
+  ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
   emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(colUpdater);
+  ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
   std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
-#if (PREFR_WITH_CUDA)
-  sorter = new ThrustParticleSorter(colSorter);
+#if (particles_WITH_CUDA)
+  sorter = new ThrustParticleSorter(*ps->particles);
 #else
-  sorter = new ParticleSorter(colSorter);
+  sorter = new ParticleSorter(*ps->particles);
 #endif
-
 
   std::cout << "Created sorter" << std::endl;
 
   GLDefaultParticleRenderer* renderer =
-    new GLDefaultParticleRenderer(colRenderer);
+    new GLDefaultParticleRenderer(*ps->particles);
 
   std::cout << "Created systems" << std::endl;
 

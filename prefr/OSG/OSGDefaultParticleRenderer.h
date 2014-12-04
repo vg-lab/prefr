@@ -21,7 +21,7 @@ namespace prefr
 
     int currentAliveParticles;
 
-    OSGDefaultParticleRenderer(ParticleCollection* particlesArray);
+    OSGDefaultParticleRenderer( const ParticleCollection& particlesArray);
 
     virtual ~OSGDefaultParticleRenderer();
 

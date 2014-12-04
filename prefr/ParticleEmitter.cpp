@@ -23,7 +23,7 @@ namespace prefr
     }
 
 
-    PointEmissionNode::PointEmissionNode(ParticleCollection* arrayParticles, glm::vec3 _position)
+    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
     : EmissionNode( arrayParticles )
     ,position( _position )
     {}
@@ -50,9 +50,9 @@ namespace prefr
     //**********************************************************
 
 
-    ParticleEmitter::ParticleEmitter (ParticleCollection* particlesArray
-                                                    , float _emissionRate, bool _loop)
-    : particles( particlesArray )
+    ParticleEmitter::ParticleEmitter ( const ParticleCollection& particlesArray,
+                                      float _emissionRate, bool _loop)
+    : particles( new ParticleCollection( particlesArray ) )
     , emissionNodes( nullptr )
     , refEmissionNodes( nullptr )
     , prototypes( nullptr )
@@ -61,7 +61,7 @@ namespace prefr
     , emissionRate( _emissionRate )
     , loop( _loop )
     {
-      maxParticles = particlesArray->size;
+      maxParticles = particles->size;
 
       normalizationFactor = 1.0f/particles->size;
 

@@ -30,7 +30,7 @@ namespace prefr
 
     DistanceArray* distances;
 
-    ParticleSorter(ParticleCollection* particlesArray);
+    ParticleSorter( const ParticleCollection& particlesArray );
 
     virtual ~ParticleSorter();
 

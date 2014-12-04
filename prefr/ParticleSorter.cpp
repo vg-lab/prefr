@@ -9,8 +9,8 @@
 
 namespace prefr
 {
-  ParticleSorter::ParticleSorter( ParticleCollection* particlesArray  )
-  : particles( particlesArray )
+  ParticleSorter::ParticleSorter( const ParticleCollection& particlesArray  )
+  : particles( new ParticleCollection( particlesArray ) )
   , distances( nullptr )
   {}
 

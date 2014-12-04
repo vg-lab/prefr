@@ -18,7 +18,7 @@ namespace prefr
   {
   public:
 
-    GLDefaultParticleRenderer(ParticleCollection* particlesArray);
+    GLDefaultParticleRenderer( const ParticleCollection&particlesArray);
 
     virtual ~GLDefaultParticleRenderer();
 

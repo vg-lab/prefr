@@ -10,8 +10,8 @@
 namespace prefr
 {
 
-    ParticleUpdater::ParticleUpdater(ParticleCollection* particlesArray)
-    : particles( particlesArray )
+    ParticleUpdater::ParticleUpdater(const ParticleCollection& particlesArray)
+    : particles( new ParticleCollection( particlesArray ) )
     , prototypes( nullptr )
     , refPrototypes( nullptr )
     {}
