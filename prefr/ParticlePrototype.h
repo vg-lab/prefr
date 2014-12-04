@@ -40,7 +40,7 @@ namespace prefr
     ParticleCollection* particles;
 
     ParticlePrototype(void);
-    ParticlePrototype(float min, float max);
+    ParticlePrototype(float min, float max, const ParticleCollection& particlesArray);
 
     void SetLife(float min, float max);
 

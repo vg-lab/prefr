@@ -28,8 +28,8 @@ namespace prefr
     DistanceArray* distances;
     RenderConfig* renderConfig;
 
-    ParticleRenderer(ParticleCollection* particlesArray)
-    : particles(particlesArray)
+    ParticleRenderer( const ParticleCollection& particlesArray)
+    : particles( new ParticleCollection( particlesArray ) )
     , distances( nullptr )
     , renderConfig( nullptr )
     {}

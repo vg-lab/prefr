@@ -13,7 +13,7 @@ namespace prefr
   {
   public:
 
-    ThrustParticleSorter(ParticleCollection* arrayParticles);
+    ThrustParticleSorter( const ParticleCollection& arrayParticles );
 
     void Sort(SortOrder order);
 

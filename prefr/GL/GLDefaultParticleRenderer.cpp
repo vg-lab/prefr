@@ -10,11 +10,11 @@
 namespace prefr
 {
 
-  GLDefaultParticleRenderer::GLDefaultParticleRenderer(ParticleCollection* particlesArray)
+  GLDefaultParticleRenderer::GLDefaultParticleRenderer( const ParticleCollection& particlesArray)
   : ParticleRenderer( particlesArray )
   {
 
-    renderConfig = new RenderConfig( particlesArray->size );
+    renderConfig = new RenderConfig( particles->size );
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f};
 

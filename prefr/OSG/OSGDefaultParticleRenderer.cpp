@@ -11,12 +11,12 @@ namespace prefr
 {
 
   OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(
-    ParticleCollection* particlesArray)
+      const ParticleCollection& particlesArray)
   : ParticleRenderer( particlesArray )
   , currentAliveParticles( 0 )
   {
 
-    renderConfig = new OSGRenderConfig( particlesArray->size );
+    renderConfig = new OSGRenderConfig( particles->size );
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f,
                    0.5f,  -0.5f, 0.0f,

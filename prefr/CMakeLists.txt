@@ -9,7 +9,6 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
   InterpolationSet.hpp
   DistanceArray.hpp
   ParticlePrototype.h
-  ParticleDrawable.h
   OSG/OSGRenderConfig.h
   OSG/OSGDefaultParticleSystem.h
   OSG/OSGDefaultParticleRenderer.h

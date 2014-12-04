@@ -36,6 +36,22 @@ namespace utils
       this->size = _end - _start;
     }
 
+    ElementCollection(const ElementCollection& other)
+    {
+      this->elements = other.elements;
+      this->start = other.start;
+      this->end = other.end;
+      this->size = this->end - this->start;
+    }
+
+    ElementCollection(const ElementCollection* other)
+    {
+      this->elements = other->elements;
+      this->start = other->start;
+      this->end = other->end;
+      this->size = this->end - this->start;
+    }
+
     ElementCollection(ElementCollection* other, unsigned int _start, unsigned int _end)
     {
       this->elements = other->elements;

@@ -10,15 +10,18 @@
 namespace prefr
 {
   ParticlePrototype::ParticlePrototype()
-  : maxLife  ( 0.0f )
-  , lifeInterval  ( 0.0f )
-  , lifeNormalization  ( 1.0f )
-  , dispersion  ( 0.0f )
+  : minLife( 0.0f )
+  , maxLife( 0.0f )
+  , lifeInterval( 0.0f )
+  , lifeNormalization( 1.0f )
+  , dispersion( 0.0f )
   , particles( nullptr )
   {
   }
 
-  ParticlePrototype::ParticlePrototype(float min, float max)
+  ParticlePrototype::ParticlePrototype(float min, float max, const ParticleCollection& particlesArray)
+  : dispersion( 0.0f )
+  , particles( new ParticleCollection( particlesArray ) )
   {
     SetLife(min, max);
   }

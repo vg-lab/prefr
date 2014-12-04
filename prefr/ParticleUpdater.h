@@ -27,7 +27,7 @@ public:
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
 
-    ParticleUpdater(ParticleCollection* particlesArray);
+    ParticleUpdater(const ParticleCollection& particlesArray);
 
     virtual ~ParticleUpdater();
 

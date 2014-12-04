@@ -22,8 +22,8 @@ namespace prefr
   public:
     ParticleCollection* particles;
 
-    EmissionNode(ParticleCollection* arrayParticles)
-      : particles(arrayParticles)
+    EmissionNode( const ParticleCollection& arrayParticles )
+    : particles( new ParticleCollection( arrayParticles ) )
     {
     }
 
@@ -41,7 +41,7 @@ namespace prefr
 
     glm::vec3 position;
 
-    PointEmissionNode(ParticleCollection* arrayParticles, glm::vec3 _position);
+    PointEmissionNode(  const ParticleCollection& arrayParticles, glm::vec3 _position);
     virtual ~PointEmissionNode();
 
     virtual glm::vec3 GetEmissionPosition();
@@ -76,7 +76,7 @@ namespace prefr
 
   public:
 
-    ParticleEmitter(ParticleCollection* particlesArray, float _emissionRate, bool _loop);
+    ParticleEmitter( const ParticleCollection& particlesArray, float _emissionRate, bool _loop);
 
     virtual ~ParticleEmitter();
 
