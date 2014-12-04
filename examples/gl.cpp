@@ -363,7 +363,7 @@ int main(int argc, char** argv)
         new PointEmissionNode(ParticleCollection(ps->particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
-                              glm::vec3());
+                              glm::vec3(i * 10, 0, 0));
 
     ps->AddEmissionNode(emissionNode);
   }

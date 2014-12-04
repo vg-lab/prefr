@@ -203,15 +203,6 @@ int main(int argc, char** argv)
 
   std::cout << "Created prototype." << std::endl;
 
-  ParticleCollection* colEmissionNode;
-
-  ParticleCollection* colEmitter = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colUpdater = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colSorter = new ParticleCollection(ps->particles, 0, maxParticles);
-  ParticleCollection* colRenderer = new ParticleCollection(ps->particles, 0, maxParticles);
-
-  std::cout << "Created collections" << std::endl;
-
 
   PointEmissionNode* emissionNode;
 
@@ -221,43 +212,38 @@ int main(int argc, char** argv)
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    colEmissionNode = new ParticleCollection(ps->particles, i * particlesPerEmitter, i * particlesPerEmitter + particlesPerEmitter);
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
-    emissionNode = new PointEmissionNode(colEmissionNode, glm::vec3(i * 10, 0, 0));
+    emissionNode =
+        new PointEmissionNode(ParticleCollection(ps->particles,
+                                                 i * particlesPerEmitter,
+                                                 i * particlesPerEmitter + particlesPerEmitter),
+                              glm::vec3(i * 10, 0, 0));
+
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter(colEmitter, 0.3f, true);
+  ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
   emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(colUpdater);
+  ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
   std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
 #if (particles_WITH_CUDA)
-  sorter = new ThrustParticleSorter(colSorter);
+  sorter = new ThrustParticleSorter(*ps->particles);
 #else
-  sorter = new ParticleSorter(colSorter);
+  sorter = new ParticleSorter(*ps->particles);
 #endif
-
 
   std::cout << "Created sorter" << std::endl;
 
-//#if (particles_WITH_CUDA)
-//  GLCUDAParticleRenderer* renderer = new GLCUDAParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-//#else
-//  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(colRenderer, ps->distances, ps->renderConfig);
-//#endif
-
-  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(colRenderer);
+  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(*ps->particles);
 
   std::cout << "Created systems" << std::endl;
-
-
 
   ps->AddUpdater(updater);
   ps->SetSorter(sorter);
