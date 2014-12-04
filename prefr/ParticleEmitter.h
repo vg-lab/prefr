@@ -20,10 +20,13 @@ namespace prefr
   class EmissionNode
   {
   public:
+
     ParticleCollection* particles;
+    bool emit;
 
     EmissionNode( const ParticleCollection& arrayParticles )
     : particles( new ParticleCollection( arrayParticles ) )
+    , emit( true )
     {
     }
 
@@ -69,6 +72,7 @@ namespace prefr
     int particlesPerCycle;
     float emissionRate;
     bool loop;
+    bool emit;
 
   private:
 

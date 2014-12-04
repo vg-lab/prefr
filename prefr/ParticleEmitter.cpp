@@ -60,6 +60,7 @@ namespace prefr
     , particlesPerCycle( 0 )
     , emissionRate( _emissionRate )
     , loop( _loop )
+    , emit( true )
     {
       maxParticles = particles->size;
 
@@ -83,6 +84,9 @@ namespace prefr
     void ParticleEmitter::EmitAll(float deltaTime)
     {
 
+      if (!emit)
+        return;
+
       this->particlesPerCycle = emissionRate * deltaTime * maxParticles;
 
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
@@ -91,12 +95,18 @@ namespace prefr
       }
 
       int* nodeParticlesPerCycle;
+      int emissionNodeID;
       tparticle_ptr current;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
         current = (*it);
 
-        nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( current->id )];
+        emissionNodeID = refEmissionNodes->at( current->id );
+
+        if (!emissionNodes->at(emissionNodeID)->emit)
+          continue;
+
+        nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[emissionNodeID];
         if (*nodeParticlesPerCycle && !current->Alive())
         {
           this->EmitFunction(current->id);
@@ -121,8 +131,12 @@ namespace prefr
 
     int ParticleEmitter::EmitSingle(unsigned int i)
     {
-      int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( i )];
-      if (*nodeParticlesPerCycle && !particles->elements->at( i )->Alive())
+      if (!emit)
+        return 0;
+
+      int nodeID = refEmissionNodes->at( i );
+      int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[nodeID];
+      if (*nodeParticlesPerCycle && emissionNodes->at(nodeID)->emit && !particles->elements->at( i )->Alive())
       {
         this->EmitFunction(i);
         (*nodeParticlesPerCycle)--;
