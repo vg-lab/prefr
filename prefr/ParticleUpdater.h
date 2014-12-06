@@ -45,7 +45,7 @@ public:
     /*!
      *
      */
-    virtual void Update(unsigned int i, float deltaTime);
+    virtual void Update(const tparticle_ptr current, float deltaTime);
 
   };
 }

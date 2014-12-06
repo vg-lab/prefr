@@ -85,11 +85,11 @@ namespace prefr
     virtual ~ParticleEmitter();
 
     virtual void StartEmission(float deltaTime);
-    virtual int EmitSingle(unsigned int i);
+    virtual int EmitSingle(const tparticle_ptr i);
 
     virtual void EmitAll(float deltaTime);
 
-    virtual void EmitFunction(unsigned int i, bool override = false);
+    virtual void EmitFunction(const tparticle_ptr current, bool override = false);
 
     virtual void UpdateConfiguration();
 

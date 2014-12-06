@@ -30,6 +30,7 @@ namespace prefr
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
+  , blendFunction( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -42,6 +43,7 @@ const osg::CopyOp& copyOp)
   , osg::Drawable(other, copyOp)
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
+  , blendFunction( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -49,13 +51,15 @@ const osg::CopyOp& copyOp)
 
   OSGDefaultParticleSystem::OSGDefaultParticleSystem(
     unsigned int initialParticlesNumber,
-    unsigned int _maxParticles, bool /* _loop */ )
+    unsigned int _maxParticles, bool /* _loop */,
+    osg::BlendFunc::BlendFuncMode blendFunc )
   : ParticleSystem(initialParticlesNumber,
         _maxParticles,
         loop)
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
+  , blendFunction( blendFunc )
   {
 
     rootNode = new osg::Geode;
@@ -129,7 +133,7 @@ const osg::CopyOp& copyOp)
 
     osg::BlendFunc* blendFunc = new osg::BlendFunc();
     blendFunc->setSource(osg::BlendFunc::SRC_ALPHA);
-    blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+    blendFunc->setDestination(blendFunction);
 //        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
 
     psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
@@ -217,20 +221,20 @@ const osg::CopyOp& copyOp)
   }
 
 
-  void OSGDefaultParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
-  {
-
-    unsigned int i = 0;
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-    {
-      PREFR_DEBUG_CHECK( *it , "null pointer access" );
-
-     i = ((tparticle_ptr) *it)->id;
-
-     sorter->UpdateCameraDistance(i, cameraPosition);
-    }
-
-  }
+//  void OSGDefaultParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
+//  {
+//
+//    unsigned int i = 0;
+//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+//    {
+//      PREFR_DEBUG_CHECK( *it , "null pointer access" );
+//
+//     i = ((tparticle_ptr) *it)->id;
+//
+//     sorter->UpdateCameraDistance(i, cameraPosition);
+//    }
+//
+//  }
 
   void OSGDefaultParticleSystem::UpdateRender()
   {
@@ -245,7 +249,7 @@ const osg::CopyOp& copyOp)
 
   void OSGDefaultParticleSystem::Render() const
   {
-    PREFR_DEBUG_CHECK( static_cast<OSGDefaultParticleRenderer*>(this->renderer),  "casting failed" );
+    PREFR_DEBUG_CHECK( static_cast<OSGDefaultParticleRenderer*>(this->renderer), "casting failed" );
 
     static_cast<OSGDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
   }
@@ -304,6 +308,20 @@ const osg::CopyOp& copyOp)
     // add drawable to the stats
     functor.setVertexArray(osgrc->vertexArray->size(), static_cast<const osg::Vec3*>(osgrc->vertexArray->getDataPointer()));
     osgrc->billboardIndices->accept(functor);
+  }
+
+  void OSGDefaultParticleSystem::SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode blendFunc)
+  {
+    blendFunction = blendFunc;
+
+    osg::StateSet* psState = rootNode->getOrCreateStateSet();
+
+    osg::BlendFunc* bf = new osg::BlendFunc();
+    bf->setSource(osg::BlendFunc::SRC_ALPHA);
+    bf->setDestination(blendFunction);
+
+    psState->setAttributeAndModes(bf, osg::StateAttribute::ON);
+
   }
 
 }

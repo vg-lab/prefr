@@ -109,7 +109,7 @@ namespace prefr
         nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[emissionNodeID];
         if (*nodeParticlesPerCycle && !current->Alive())
         {
-          this->EmitFunction(current->id);
+          this->EmitFunction(current);
           (*nodeParticlesPerCycle)--;
         }
 
@@ -129,16 +129,16 @@ namespace prefr
       }
     }
 
-    int ParticleEmitter::EmitSingle(unsigned int i)
+    int ParticleEmitter::EmitSingle(const tparticle_ptr current)
     {
       if (!active)
         return 0;
 
-      int nodeID = refEmissionNodes->at( i );
+      int nodeID = refEmissionNodes->at( current->id );
       int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[nodeID];
-      if (*nodeParticlesPerCycle && emissionNodes->at(nodeID)->active && !particles->elements->at( i )->Alive())
+      if (*nodeParticlesPerCycle && emissionNodes->at(nodeID)->active && !current->Alive())
       {
-        this->EmitFunction(i);
+        this->EmitFunction(current);
         (*nodeParticlesPerCycle)--;
       }
 
@@ -146,27 +146,27 @@ namespace prefr
       return (*nodeParticlesPerCycle);
     }
 
-    void ParticleEmitter::EmitFunction(unsigned int i, bool override)
+    void ParticleEmitter::EmitFunction(const tparticle_ptr current, bool override)
+    {
+       tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(current->id));
+       EmissionNode* node = emissionNodes->at(refEmissionNodes->at(current->id));
+
+       if (currentPrototype && (!current->Alive() || override))
        {
+         current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) *
+             currentPrototype->lifeInterval + currentPrototype->minLife;
 
-           tparticle_ptr current = particles->elements->at(i);
-           tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
+         current->velocity = node->GetEmissionVelocityDirection();
+         current->position = node->GetEmissionPosition();
 
-           if (currentPrototype && (!current->Alive() || override))
-           {
-             current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+         current->velocityModule = currentPrototype->velocity.GetFirstValue();
+         current->color = currentPrototype->color.GetFirstValue();
+         current->size = currentPrototype->size.GetFirstValue();
 
-             current->velocity = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionVelocityDirection();
-             current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();
-   //          current->position = this->position;// + 3.0f * current->velocity;
+         current->newborn = true;
 
-
-             current->velocityModule = currentPrototype->velocity.GetFirstValue();
-             current->color = currentPrototype->color.GetFirstValue();
-             current->size = currentPrototype->size.GetFirstValue();
-
-         }
-       }
+     }
+    }
 
 
 }

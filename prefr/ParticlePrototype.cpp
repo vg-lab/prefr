@@ -26,6 +26,11 @@ namespace prefr
     SetLife(min, max);
   }
 
+  ParticlePrototype::~ParticlePrototype()
+  {
+    delete( particles );
+  }
+
   void ParticlePrototype::SetLife(float min, float max)
   {
     minLife = min;

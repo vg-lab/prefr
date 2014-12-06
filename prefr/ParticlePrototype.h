@@ -42,6 +42,8 @@ namespace prefr
     ParticlePrototype(void);
     ParticlePrototype(float min, float max, const ParticleCollection& particlesArray);
 
+    virtual ~ParticlePrototype();
+
     void SetLife(float min, float max);
 
   };

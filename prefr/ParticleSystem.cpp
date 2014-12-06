@@ -143,7 +143,8 @@ namespace prefr
   {
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      emitters->at(particleEmitter[i])->EmitFunction(i, true);
+      tparticle_ptr current = particles->elements->at(i);
+      emitters->at(particleEmitter[i])->EmitFunction(current, true);
     }
 
   }
@@ -169,7 +170,6 @@ namespace prefr
   {
     unsigned int i = 0;
 
-
     // Set emitter delta time to calculate the number of particles to emit this frame
     for (i = 0; i < emitters->size(); i++)
     {
@@ -182,10 +182,10 @@ namespace prefr
       i = ((tparticle_ptr) *it)->id;
 
       // Emit each particle with its own emitter
-      emitters->at(particleEmitter[i])->EmitSingle(i);
+      emitters->at(particleEmitter[i])->EmitSingle(*it);
 
       // Update each particle with its own updater
-      updaters->at(particleUpdater[i])->Update(i, deltaTime);
+      updaters->at(particleUpdater[i])->Update(*it, deltaTime);
 
       accumulator += (*it)->Alive();
     }
@@ -195,11 +195,11 @@ namespace prefr
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
   {
-    unsigned int i = 0;
+//    unsigned int i = 0;
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-     i = ((tparticle_ptr) *it)->id;
-     this->sorter->UpdateCameraDistance(i, cameraPosition);
+//     i = ((tparticle_ptr) *it)->id;
+     this->sorter->UpdateCameraDistance(*it, cameraPosition);
     }
   }
 
