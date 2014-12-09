@@ -62,8 +62,8 @@ namespace prefr
     , distance(-1)
     {}
 
-    bool Alive(){return this->alive;}
-    bool Newborn(){return this->newborn;}
+    inline bool Alive(){return this->alive;}
+    inline bool Newborn(){return this->newborn;}
 
   };
 

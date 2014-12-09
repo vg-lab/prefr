@@ -38,7 +38,7 @@ namespace prefr
 
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-      particles->elements->at(counter) = new tparticle(counter, counter < initialParticlesNumber);
+      (*particles->elements)[counter] = new tparticle(counter, counter < initialParticlesNumber);
       counter++;
     }
 
@@ -143,8 +143,8 @@ namespace prefr
   {
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      tparticle_ptr current = particles->elements->at(i);
-      emitters->at(particleEmitter[i])->EmitFunction(current, true);
+      tparticle_ptr current = particles->GetElement(i);
+      (*emitters)[particleEmitter[i]]->EmitFunction(current, true);
     }
 
   }
@@ -153,13 +153,13 @@ namespace prefr
   {
     for (unsigned int i = 0; i < emitters->size(); i++)
     {
-      emitters->at(i)->EmitAll(deltaTime);
+      (*emitters)[i]->EmitAll(deltaTime);
     }
 
     int accumulator = 0;
     for (unsigned int i = 0; i < updaters->size(); i++)
     {
-      accumulator += updaters->at(i)->Update(deltaTime);
+      accumulator += (*updaters)[i]->Update(deltaTime);
     }
 
     this->aliveParticles = accumulator;
@@ -173,7 +173,7 @@ namespace prefr
     // Set emitter delta time to calculate the number of particles to emit this frame
     for (i = 0; i < emitters->size(); i++)
     {
-      emitters->at(i)->StartEmission(deltaTime);
+      (*emitters)[i]->StartEmission(deltaTime);
     }
 
     int accumulator = 0;
@@ -182,10 +182,10 @@ namespace prefr
       i = ((tparticle_ptr) *it)->id;
 
       // Emit each particle with its own emitter
-      emitters->at(particleEmitter[i])->EmitSingle(*it);
+      (*emitters)[particleEmitter[i]]->EmitSingle(*it);
 
       // Update each particle with its own updater
-      updaters->at(particleUpdater[i])->Update(*it, deltaTime);
+      (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
 
       accumulator += (*it)->Alive();
     }

@@ -39,7 +39,7 @@ namespace prefr
 
     void ParticleUpdater::Update(const tparticle_ptr current, float deltaTime)
     {
-      tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(current->id));
+      tprototype_ptr currentPrototype = (*prototypes)[(*refPrototypes)[current->id]];
       float refLife;
 
       current->life = std::max(0.0f, current->life - deltaTime);

@@ -12,10 +12,17 @@
 #include "ElementCollection.hpp"
 #include "DistanceArray.hpp"
 
+#include <iostream>
+
 using namespace utils;
 
 namespace prefr
 {
+  static inline float length2(const glm::vec3& elem)
+  {
+    return (elem.x * elem.x + elem.y * elem.y + elem.z * elem.z);
+  }
+
   class ParticleSorter
   {
   public:

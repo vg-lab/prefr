@@ -127,23 +127,23 @@ namespace prefr
 
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      currentParticle = particles->elements->at(distances->getID(i));
+      currentParticle = particles->GetElement(distances->getID(i));
 
       idx = i * 4;
 
-      osgrc->particlePositions->at(idx) = currentParticle->position.x;
-      osgrc->particlePositions->at(idx+1) = currentParticle->position.y;
-      osgrc->particlePositions->at(idx+2) = currentParticle->position.z;
-      osgrc->particlePositions->at(idx+3) = currentParticle->size;
+      (*renderConfig->particlePositions)[idx] = currentParticle->position.x;
+      (*renderConfig->particlePositions)[idx+1] = currentParticle->position.y;
+      (*renderConfig->particlePositions)[idx+2] = currentParticle->position.z;
+      (*renderConfig->particlePositions)[idx+3] = currentParticle->size;
 
       osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle->position.x
                             , currentParticle->position.y
                             , currentParticle->position.z));
 
-      osgrc->particleColors->at(idx) = currentParticle->color.x;
-      osgrc->particleColors->at(idx+1) = currentParticle->color.y;
-      osgrc->particleColors->at(idx+2) = currentParticle->color.z;
-      osgrc->particleColors->at(idx+3) = currentParticle->color.w;
+      (*renderConfig->particleColors)[idx] = currentParticle->color.x;
+      (*renderConfig->particleColors)[idx+1] = currentParticle->color.y;
+      (*renderConfig->particleColors)[idx+2] = currentParticle->color.z;
+      (*renderConfig->particleColors)[idx+3] = currentParticle->color.w;
     }
 
     if (osgrc->boundingBox.radius() == 0)
@@ -167,8 +167,6 @@ namespace prefr
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particleColors->front());
-
-
 
     glDrawElementsInstanced(osgrc->billboardIndices->getMode()
                             , osgrc->billboardIndices->getNumIndices()

@@ -68,14 +68,14 @@ namespace utils
       this->size = _end - _start;
     }
 
-    ELEM* GetElementLocal (unsigned int i)
+    inline ELEM* GetElementLocal (unsigned int i)
     {
-      return this->elements->at(this->start + i);
+      return (*this->elements)[this->start + i];
     }
 
-    ELEM* GetElement( unsigned int i)
+    inline ELEM* GetElement( unsigned int i)
     {
-      return this->elements->at(i);
+      return (*this->elements)[i];
     }
 
   };

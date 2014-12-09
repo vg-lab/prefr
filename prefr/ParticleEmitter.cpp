@@ -91,7 +91,8 @@ namespace prefr
 
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
       {
-        emissionNodeParticlesPerCycle[i] = std::max(1, int (particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
+        emissionNodeParticlesPerCycle[i] =
+            std::max(1, int (particlesPerCycle * ((*emissionNodes)[i]->particles->size * normalizationFactor)));
       }
 
       int* nodeParticlesPerCycle;
@@ -101,9 +102,9 @@ namespace prefr
       {
         current = (*it);
 
-        emissionNodeID = refEmissionNodes->at( current->id );
+        emissionNodeID = (*refEmissionNodes)[ current->id ];
 
-        if (!emissionNodes->at(emissionNodeID)->active)
+        if (!(*emissionNodes)[emissionNodeID]->active)
           continue;
 
         nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[emissionNodeID];
@@ -124,7 +125,8 @@ namespace prefr
       for (unsigned int i = 0; i < emissionNodes->size(); i ++)
       {
 
-        emissionNodeParticlesPerCycle[i] = std::max(1, int(particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
+        emissionNodeParticlesPerCycle[i] =
+            std::max(1, int (particlesPerCycle * ((*emissionNodes)[i]->particles->size * normalizationFactor)));
 //        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
       }
     }
@@ -134,9 +136,9 @@ namespace prefr
       if (!active)
         return 0;
 
-      int nodeID = refEmissionNodes->at( current->id );
+      int nodeID = (*refEmissionNodes)[ current->id ];
       int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[nodeID];
-      if (*nodeParticlesPerCycle && emissionNodes->at(nodeID)->active && !current->Alive())
+      if (*nodeParticlesPerCycle && (*emissionNodes)[nodeID]->active && !current->Alive())
       {
         this->EmitFunction(current);
         (*nodeParticlesPerCycle)--;
@@ -148,8 +150,8 @@ namespace prefr
 
     void ParticleEmitter::EmitFunction(const tparticle_ptr current, bool override)
     {
-       tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(current->id));
-       EmissionNode* node = emissionNodes->at(refEmissionNodes->at(current->id));
+       tprototype_ptr currentPrototype = (*prototypes)[ (*refPrototypes)[ current->id ] ];
+       EmissionNode* node = (*emissionNodes)[ (*refEmissionNodes)[ current->id ] ];
 
        if (currentPrototype && (!current->Alive() || override))
        {

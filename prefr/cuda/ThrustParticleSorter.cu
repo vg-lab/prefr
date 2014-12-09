@@ -53,7 +53,7 @@ namespace prefr
       void ThrustParticleSorter::UpdateCameraDistance(const tparticle_ptr current,  const glm::vec3& cameraPosition)
       {
 //        distances->ids->at(i) = current->id;
-        distances->distances->at(current->id) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
+        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
       }
 

@@ -42,11 +42,11 @@ namespace prefr
 
   void ParticleSorter::UpdateCameraDistance(const tparticle_ptr current, const glm::vec3& cameraPosition)
   {
-    DistanceUnit& dist = distances->elements->at(current->id);
+    DistanceUnit& dist = distances->at(current->id);
 
     dist.Id() = current->id;
 
-    dist.Distance() = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
+    dist.Distance() = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
   }
 
