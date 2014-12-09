@@ -124,6 +124,7 @@ namespace prefr
 
     osgrc->boundingBox.init();
 
+
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
       currentParticle = particles->elements->at(distances->getID(i));
@@ -144,6 +145,9 @@ namespace prefr
       osgrc->particleColors->at(idx+2) = currentParticle->color.z;
       osgrc->particleColors->at(idx+3) = currentParticle->color.w;
     }
+
+    if (osgrc->boundingBox.radius() == 0)
+      osgrc->boundingBox.expandBy(osg::Vec3(1,1,1));
 
     currentAliveParticles = aliveParticles;
 
