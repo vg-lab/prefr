@@ -51,7 +51,7 @@ namespace prefr
 
     osg::Geode* rootNode;
 
-    osg::BlendFunc::BlendFuncMode blendFunction;
+    osg::BlendFunc::BlendFuncMode blendFunctionSrc, blendFunctionDst;
 
     OSGDefaultParticleSystem();
     ~OSGDefaultParticleSystem();
@@ -61,7 +61,8 @@ namespace prefr
 
     OSGDefaultParticleSystem(unsigned int initialParticlesNumber,
                              unsigned int _maxParticles, bool _loop = true,
-                             osg::BlendFunc::BlendFuncMode blendFunc = osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA);
+                             osg::BlendFunc::BlendFuncMode blendFuncSrc = osg::BlendFunc::BlendFuncMode::SRC_ALPHA,
+                             osg::BlendFunc::BlendFuncMode blendFuncDst = osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA);
 
     META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
@@ -81,7 +82,7 @@ namespace prefr
     virtual void releaseGLObjects(osg::State* state) const;
     virtual void accept(osg::PrimitiveFunctor& functor) const;
 
-    virtual void SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode blendFunc);
+    virtual void SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst);
 
   protected:
 

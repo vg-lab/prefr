@@ -30,7 +30,8 @@ namespace prefr
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunction( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::BlendFuncMode::SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -43,7 +44,8 @@ const osg::CopyOp& copyOp)
   , osg::Drawable(other, copyOp)
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunction( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::BlendFuncMode::SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -51,15 +53,17 @@ const osg::CopyOp& copyOp)
 
   OSGDefaultParticleSystem::OSGDefaultParticleSystem(
     unsigned int initialParticlesNumber,
-    unsigned int _maxParticles, bool /* _loop */,
-    osg::BlendFunc::BlendFuncMode blendFunc )
+    unsigned int _maxParticles, bool  _loop,
+    osg::BlendFunc::BlendFuncMode blendFuncSrc,
+    osg::BlendFunc::BlendFuncMode blendFuncDst)
   : ParticleSystem(initialParticlesNumber,
         _maxParticles,
-        loop)
+        _loop)
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunction( blendFunc )
+  , blendFunctionSrc( blendFuncSrc )
+  , blendFunctionDst( blendFuncDst )
   {
 
     rootNode = new osg::Geode;
@@ -132,8 +136,8 @@ const osg::CopyOp& copyOp)
     psState->setMode(GL_BLEND, osg::StateAttribute::ON);
 
     osg::BlendFunc* blendFunc = new osg::BlendFunc();
-    blendFunc->setSource(osg::BlendFunc::SRC_ALPHA);
-    blendFunc->setDestination(blendFunction);
+    blendFunc->setSource(blendFunctionSrc);
+    blendFunc->setDestination(blendFunctionDst);
 //        blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
 
     psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
@@ -310,15 +314,15 @@ const osg::CopyOp& copyOp)
     osgrc->billboardIndices->accept(functor);
   }
 
-  void OSGDefaultParticleSystem::SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode blendFunc)
+  void OSGDefaultParticleSystem::SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst)
   {
-    blendFunction = blendFunc;
-
+    blendFunctionSrc = src;
+    blendFunctionDst = dst;
     osg::StateSet* psState = rootNode->getOrCreateStateSet();
 
     osg::BlendFunc* bf = new osg::BlendFunc();
-    bf->setSource(osg::BlendFunc::SRC_ALPHA);
-    bf->setDestination(blendFunction);
+    bf->setSource(blendFunctionSrc);
+    bf->setDestination(blendFunctionDst);
 
     psState->setAttributeAndModes(bf, osg::StateAttribute::ON);
 
