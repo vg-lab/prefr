@@ -66,7 +66,7 @@ namespace utils
     }
 
 
-    inline T GetFirstValue()
+    inline const T& GetFirstValue()
     {
       return values[0];
     }
