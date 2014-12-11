@@ -11,47 +11,13 @@
 #include "InterpolationSet.hpp"
 #include "ElementCollection.hpp"
 #include "ParticlePrototype.h"
+#include "ParticleEmissionNode.h"
+
 
 using namespace utils;
 
 namespace prefr
 {
-
-  class EmissionNode
-  {
-  public:
-
-    ParticleCollection* particles;
-    bool active;
-
-    EmissionNode( const ParticleCollection& arrayParticles )
-    : particles( new ParticleCollection( arrayParticles ) )
-    , active( true )
-    {
-    }
-
-    virtual ~EmissionNode(void) {delete particles;}
-
-    virtual glm::vec3 GetEmissionPosition() = 0;
-    virtual glm::vec3 GetEmissionVelocityDirection() = 0;
-  };
-
-  typedef vector<EmissionNode*> EmissionNodesArray;
-
-  class PointEmissionNode : public EmissionNode
-  {
-  public:
-
-    glm::vec3 position;
-
-    PointEmissionNode(  const ParticleCollection& arrayParticles, glm::vec3 _position);
-    virtual ~PointEmissionNode();
-
-    virtual glm::vec3 GetEmissionPosition();
-    virtual glm::vec3 GetEmissionVelocityDirection();
-  };
-
-
 
   class ParticleEmitter
   {

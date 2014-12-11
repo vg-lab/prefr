@@ -23,6 +23,7 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
   Particle.h
   log.h
   ParticleSystem.h
+  ParticleEmissionNode.h
 )
 
 set(PREFR_HEADERS )
@@ -37,6 +38,7 @@ set(PREFR_SOURCES ${COMMON_SOURCES}
   cuda/ThrustParticleSorter.cu
   ParticlePrototype.cpp
   GL/GLDefaultParticleRenderer.cpp
+  ParticleEmissionNode.cpp
 )
 
 if (WITH_CUDA)
