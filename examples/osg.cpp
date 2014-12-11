@@ -159,7 +159,6 @@ int main(int argc, char** argv)
 
   ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
-  emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
   ParticleUpdater* updater = new ParticleUpdater(*ps->particles);

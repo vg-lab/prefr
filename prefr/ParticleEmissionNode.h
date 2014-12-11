@@ -19,10 +19,14 @@ namespace prefr
   public:
 
     ParticleCollection* particles;
+    float emissionAcc;
+    int particlesBudget;
     bool active;
 
     EmissionNode( const ParticleCollection& arrayParticles )
     : particles( new ParticleCollection( arrayParticles ) )
+    , emissionAcc( 0 )
+    , particlesBudget( 0 )
     , active( true )
     {
     }

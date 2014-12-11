@@ -103,8 +103,6 @@ namespace prefr
     emitter->prototypes = this->prototypes;
     emitter->refPrototypes = &this->particlePrototype;
 
-    emitter->UpdateConfiguration();
-
   }
   void ParticleSystem::AddUpdater(ParticleUpdater* updater)
   {

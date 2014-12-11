@@ -32,10 +32,8 @@ namespace prefr
     PrototypesArray* prototypes;
     vector<int>* refPrototypes;
 
-    vector<int> emissionNodeParticlesPerCycle;
-
     int maxParticles;
-    int particlesPerCycle;
+    float particlesBudget;
     float emissionRate;
     bool loop;
     bool active;
@@ -56,8 +54,6 @@ namespace prefr
     virtual void EmitAll(float deltaTime);
 
     virtual void EmitFunction(const tparticle_ptr current, bool override = false);
-
-    virtual void UpdateConfiguration();
 
   };
 
