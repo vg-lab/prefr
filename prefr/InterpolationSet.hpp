@@ -40,7 +40,7 @@ namespace utils
 
   public:
 
-    void Insert(float time, T value)
+    inline void Insert(float time, T value)
     {
       assert(time >= 0 && time <= 1.0f);
 
@@ -66,13 +66,13 @@ namespace utils
     }
 
 
-    T GetFirstValue()
+    inline const T& GetFirstValue()
     {
       return values[0];
     }
 
     // Implementation exportable to kernel due to avoiding loops
-    T GetValue(float time)
+    inline T GetValueKernel(float time)
     {
       if (size > 1 && time > 0.0f)
       {
@@ -95,7 +95,7 @@ namespace utils
     }
 
     // Faster implementation for CPU interpolation.
-    T GetValueQuick(float time)
+    inline T GetValue(float time)
     {
       assert(time >= 0 && time <= 1.0f);
 

@@ -159,7 +159,6 @@ int main(int argc, char** argv)
 
   ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
-  emitter->UpdateConfiguration();
 
   std::cout << "Created emitter" << std::endl;
   ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
@@ -167,7 +166,7 @@ int main(int argc, char** argv)
 
   ParticleSorter* sorter;
 
-#if (particles_WITH_CUDA)
+#if (PREFR_WITH_CUDA)
   sorter = new ThrustParticleSorter(*ps->particles);
 #else
   sorter = new ParticleSorter(*ps->particles);

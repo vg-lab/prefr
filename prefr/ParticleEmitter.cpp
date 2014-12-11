@@ -11,40 +11,6 @@ namespace prefr
 
     static float invRandMax = 1.0f / RAND_MAX;
 
-    glm::vec3 GetRandomDirection()
-    {
-      float theta, phi, vxz;
-
-      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
-      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;
-      vxz = sinf(theta);
-
-      return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
-    }
-
-
-    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
-    : EmissionNode( arrayParticles )
-    ,position( _position )
-    {}
-
-    PointEmissionNode::~PointEmissionNode()
-    {
-      delete ( particles );
-    }
-
-    glm::vec3 PointEmissionNode::GetEmissionPosition()
-    {
-      return position;
-    }
-
-    glm::vec3 PointEmissionNode::GetEmissionVelocityDirection()
-    {
-      return GetRandomDirection();
-    }
-
-
-
     //**********************************************************
     // Default Emitter
     //**********************************************************
@@ -57,15 +23,14 @@ namespace prefr
     , refEmissionNodes( nullptr )
     , prototypes( nullptr )
     , refPrototypes( nullptr )
-    , particlesPerCycle( 0 )
+    , particlesBudget( 0 )
     , emissionRate( _emissionRate )
     , loop( _loop )
+    , active( true )
     {
       maxParticles = particles->size;
 
       normalizationFactor = 1.0f/particles->size;
-
-      UpdateConfiguration();
     }
 
     ParticleEmitter::~ParticleEmitter()
@@ -74,33 +39,31 @@ namespace prefr
       delete( prototypes );
     }
 
-    void ParticleEmitter::UpdateConfiguration()
-    {
-      if (emissionNodes)
-        emissionNodeParticlesPerCycle.resize(emissionNodes->size());
-    }
-
     void ParticleEmitter::EmitAll(float deltaTime)
     {
 
-      this->particlesPerCycle = emissionRate * deltaTime * maxParticles;
+      if (!active)
+        return;
 
-      for (unsigned int i = 0; i < emissionNodes->size(); i ++)
-      {
-        emissionNodeParticlesPerCycle[i] = std::max(1, int (particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
-      }
+      StartEmission(deltaTime);
 
-      int* nodeParticlesPerCycle;
+//      int* nodeParticlesPerCycle;
+//      int emissionNodeID;
+      EmissionNode* node;
       tparticle_ptr current;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
         current = (*it);
 
-        nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( current->id )];
-        if (*nodeParticlesPerCycle && !current->Alive())
+        node = (*emissionNodes)[ (*refEmissionNodes)[ current->id ] ];
+
+        if (!node->active)
+          continue;
+
+        if (node->particlesBudget && !current->Alive())
         {
-          this->EmitFunction(current->id);
-          (*nodeParticlesPerCycle)--;
+          this->EmitFunction(current);
+          node->particlesBudget--;
         }
 
       }
@@ -109,50 +72,59 @@ namespace prefr
 
     void ParticleEmitter::StartEmission(float deltaTime)
     {
-      particlesPerCycle = emissionRate * maxParticles * deltaTime;
+      particlesBudget = emissionRate * maxParticles * deltaTime;
 
-      for (unsigned int i = 0; i < emissionNodes->size(); i ++)
+      EmissionNode* node;
+      for (EmissionNodesArray::iterator it = emissionNodes->begin();
+           it != emissionNodes->end(); it++)
       {
+        node = *it;
+        node->emissionAcc +=
+            particlesBudget * (node->particles->size * normalizationFactor);
 
-        emissionNodeParticlesPerCycle[i] = std::max(1, int(particlesPerCycle * (emissionNodes->at(i)->particles->size * normalizationFactor)));
+        node->particlesBudget = int(floor(node->emissionAcc));
+        node->emissionAcc -= node->particlesBudget;
 //        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
       }
     }
 
-    int ParticleEmitter::EmitSingle(unsigned int i)
+    int ParticleEmitter::EmitSingle(const tparticle_ptr current)
     {
-      int* nodeParticlesPerCycle = &emissionNodeParticlesPerCycle[refEmissionNodes->at( i )];
-      if (*nodeParticlesPerCycle && !particles->elements->at( i )->Alive())
+      if (!active)
+        return 0;
+
+      EmissionNode* node = (*emissionNodes)[ (*refEmissionNodes)[ current->id ] ];
+      if (node->particlesBudget && !current->Alive() && node->active)
       {
-        this->EmitFunction(i);
-        (*nodeParticlesPerCycle)--;
+        this->EmitFunction(current);
+        node->particlesBudget--;
       }
 
       // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
-      return (*nodeParticlesPerCycle);
+      return node->particlesBudget;
     }
 
-    void ParticleEmitter::EmitFunction(unsigned int i, bool override)
+    void ParticleEmitter::EmitFunction(const tparticle_ptr current, bool override)
+    {
+       tprototype_ptr currentPrototype = (*prototypes)[ (*refPrototypes)[ current->id ] ];
+       EmissionNode* node = (*emissionNodes)[ (*refEmissionNodes)[ current->id ] ];
+
+       if (currentPrototype && (!current->Alive() || override))
        {
+         current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) *
+             currentPrototype->lifeInterval + currentPrototype->minLife;
 
-           tparticle_ptr current = particles->elements->at(i);
-           tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
+         current->velocity = node->GetEmissionVelocityDirection();
+         current->position = node->GetEmissionPosition();
 
-           if (currentPrototype && (!current->Alive() || override))
-           {
-             current->life = glm::clamp(rand() * invRandMax, 0.0f, 1.0f) * currentPrototype->lifeInterval + currentPrototype->minLife;
+         current->velocityModule = currentPrototype->velocity.GetFirstValue();
+         current->color = currentPrototype->color.GetFirstValue();
+         current->size = currentPrototype->size.GetFirstValue();
 
-             current->velocity = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionVelocityDirection();
-             current->position = emissionNodes->at(refEmissionNodes->at(i))->GetEmissionPosition();
-   //          current->position = this->position;// + 3.0f * current->velocity;
+         current->newborn = true;
 
-
-             current->velocityModule = currentPrototype->velocity.GetFirstValue();
-             current->color = currentPrototype->color.GetFirstValue();
-             current->size = currentPrototype->size.GetFirstValue();
-
-         }
-       }
+     }
+    }
 
 
 }

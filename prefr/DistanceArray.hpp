@@ -19,13 +19,13 @@ namespace prefr
     int idx;
     float distance;
 
-    static bool sortDescending (const SortUnit& lhs,
+    inline static bool sortDescending (const SortUnit& lhs,
                                 const SortUnit& rhs)
     {
       return lhs.distance > rhs.distance;
     }
 
-    static bool sortAscending (const SortUnit& lhs,
+    inline static bool sortAscending (const SortUnit& lhs,
                                const SortUnit& rhs)
     {
       return lhs.distance < rhs.distance;
@@ -46,12 +46,12 @@ namespace prefr
     {
     }
 
-    int& Id(void){return (int&)*id;}
+    inline int& Id(void){return (int&)*id;}
 
-    float& Distance(void){return (float&)*distance;}
+    inline float& Distance(void){return (float&)*distance;}
 
-    const int& getID(void){return (const int&)*id;}
-    const float& getDistance(void){return (const float&)*distance;}
+    inline const int& getID(void){return (const int&)*id;}
+    inline const float& getDistance(void){return (const float&)*distance;}
   };
 
   typedef DistanceUnit tdunit;
@@ -72,7 +72,7 @@ namespace prefr
 
       for (unsigned int i = 0; i < size; i++)
       {
-        elements->at(i) = tdunit(&ids->at(i), &distances->at(i));
+        (*elements)[i] = tdunit(&(*ids)[i], &(*distances)[i]);
       }
     }
 
@@ -93,28 +93,28 @@ namespace prefr
       return elements->end();
     }
 
-    DistanceUnit& at(unsigned int i)
+    inline DistanceUnit& at(unsigned int i)
     {
-      return elements->at(i);
+      return (*elements)[i];
     }
 
-    DistanceUnit& operator[](unsigned int i)
+    inline DistanceUnit& operator[](unsigned int i)
     {
-      return elements->at(i);
+      return (*elements)[i];
     }
 
-    virtual int& getID(unsigned int i)
+    virtual inline int& getID(unsigned int i)
     {
-      return elements->at(i).Id();
+      return (*elements)[i].Id();
     }
 
-    virtual float& getDistance(unsigned int i)
+    virtual inline float& getDistance(unsigned int i)
     {
-      return elements->at(i).Distance();
+      return (*elements)[i].Distance();
     }
 
-    static bool sortDescending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance > *rhs.distance;}
-    static bool sortAscending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance < *rhs.distance;}
+    inline static bool sortDescending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance > *rhs.distance;}
+    inline static bool sortAscending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance < *rhs.distance;}
   };
 
 

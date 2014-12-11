@@ -14,6 +14,7 @@
 #include "RenderConfig.h"
 
 #include "ParticleEmitter.h"
+#include "ParticleEmissionNode.h"
 #include "ParticleUpdater.h"
 #include "ParticleSorter.h"
 #include "ParticleRenderer.h"

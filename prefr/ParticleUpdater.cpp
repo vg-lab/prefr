@@ -14,6 +14,8 @@ namespace prefr
     : particles( new ParticleCollection( particlesArray ) )
     , prototypes( nullptr )
     , refPrototypes( nullptr )
+    , emissionNodes( nullptr )
+    , refEmissionNodes( nullptr )
     {}
 
     ParticleUpdater::~ParticleUpdater()
@@ -27,7 +29,7 @@ namespace prefr
       int aliveParticles = 0;
       for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
       {
-        Update((*it)->id, deltaTime);
+        Update((*it), deltaTime);
 
         aliveParticles += (*it)->Alive();
       }
@@ -35,22 +37,20 @@ namespace prefr
       return aliveParticles;
     }
 
-    void ParticleUpdater::Update(unsigned int i, float deltaTime)
+    void ParticleUpdater::Update(const tparticle_ptr current, float deltaTime)
     {
-      tparticle_ptr current = particles->elements->at(i);
-      tprototype_ptr currentPrototype = prototypes->at(refPrototypes->at(i));
+      tprototype_ptr currentPrototype = (*prototypes)[(*refPrototypes)[current->id]];
       float refLife;
-
 
       current->life = std::max(0.0f, current->life - deltaTime);
       current->alive = current->life > 0;
 
-      if (current->Alive() && currentPrototype)
+      if (current->Alive() && currentPrototype && !current->Newborn())
       {
 
-        refLife = 1.0f - glm::clamp((current->life) / (currentPrototype->maxLife), 0.0f, 1.0f);
+        refLife = 1.0f - glm::clamp((current->life) * (currentPrototype->lifeNormalization), 0.0f, 1.0f);
 
-        current->color = /*HSVToRGB*/(currentPrototype->color.GetValue(refLife));
+        current->color = (currentPrototype->color.GetValue(refLife));
 
         current->size = currentPrototype->size.GetValue(refLife);
         current->velocityModule = currentPrototype->velocity.GetValue(refLife);
@@ -58,6 +58,9 @@ namespace prefr
         current->position += current->velocity * current->velocityModule * deltaTime;
 
       }
+
+      current->newborn = false;
+
     }
 
 }

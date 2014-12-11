@@ -38,7 +38,7 @@ namespace prefr
 
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-      particles->elements->at(counter) = new tparticle(counter, counter < initialParticlesNumber);
+      (*particles->elements)[counter] = new tparticle(counter, counter < initialParticlesNumber);
       counter++;
     }
 
@@ -120,6 +120,9 @@ namespace prefr
     updater->prototypes = this->prototypes;
     updater->refPrototypes = &this->particlePrototype;
 
+    updater->emissionNodes = this->emissionNodes;
+    updater->refEmissionNodes = &this->particleEmissionNodes;
+
   }
   void ParticleSystem::SetSorter(ParticleSorter* _sorter)
   {
@@ -138,7 +141,8 @@ namespace prefr
   {
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      emitters->at(particleEmitter[i])->EmitFunction(i, true);
+      tparticle_ptr current = particles->GetElement(i);
+      (*emitters)[particleEmitter[i]]->EmitFunction(current, true);
     }
 
   }
@@ -147,13 +151,13 @@ namespace prefr
   {
     for (unsigned int i = 0; i < emitters->size(); i++)
     {
-      emitters->at(i)->EmitAll(deltaTime);
+      (*emitters)[i]->EmitAll(deltaTime);
     }
 
     int accumulator = 0;
     for (unsigned int i = 0; i < updaters->size(); i++)
     {
-      accumulator += updaters->at(i)->Update(deltaTime);
+      accumulator += (*updaters)[i]->Update(deltaTime);
     }
 
     this->aliveParticles = accumulator;
@@ -164,11 +168,10 @@ namespace prefr
   {
     unsigned int i = 0;
 
-
     // Set emitter delta time to calculate the number of particles to emit this frame
     for (i = 0; i < emitters->size(); i++)
     {
-      emitters->at(i)->StartEmission(deltaTime);
+      (*emitters)[i]->StartEmission(deltaTime);
     }
 
     int accumulator = 0;
@@ -177,10 +180,10 @@ namespace prefr
       i = ((tparticle_ptr) *it)->id;
 
       // Emit each particle with its own emitter
-      emitters->at(particleEmitter[i])->EmitSingle(i);
+      (*emitters)[particleEmitter[i]]->EmitSingle(*it);
 
       // Update each particle with its own updater
-      updaters->at(particleUpdater[i])->Update(i, deltaTime);
+      (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
 
       accumulator += (*it)->Alive();
     }
@@ -190,11 +193,11 @@ namespace prefr
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
   {
-    unsigned int i = 0;
+//    unsigned int i = 0;
     for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
     {
-     i = ((tparticle_ptr) *it)->id;
-     this->sorter->UpdateCameraDistance(i, cameraPosition);
+//     i = ((tparticle_ptr) *it)->id;
+     this->sorter->UpdateCameraDistance(*it, cameraPosition);
     }
   }
 

@@ -20,6 +20,7 @@ namespace prefr
 
     // Life properties
     bool alive;
+    bool newborn;
     float life;
     float size;
 
@@ -35,8 +36,9 @@ namespace prefr
     float distance;
 
     Particle(int _id, bool _alive = true)
-    : id(_id)
-    , alive(_alive)
+    : id( _id )
+    , alive( _alive )
+    , newborn( true )
     , life(0)
     , size(1)
     , velocityModule(0.f)
@@ -49,7 +51,8 @@ namespace prefr
     Particle (int _id, glm::vec3 _pos, glm::vec3 _vel, glm::vec3 /* _dir */,
               glm::vec4 _color, float _life, float _size)
     : id(_id)
-    , alive(true)
+    , alive( true )
+    , newborn( true )
     , life(_life)
     , size(_size)
     , velocityModule(0.f)
@@ -59,7 +62,8 @@ namespace prefr
     , distance(-1)
     {}
 
-    bool Alive(){return this->alive;}
+    inline bool Alive(){return this->alive;}
+    inline bool Newborn(){return this->newborn;}
 
   };
 

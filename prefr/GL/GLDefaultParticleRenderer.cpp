@@ -84,19 +84,19 @@ namespace prefr
 
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      currentParticle = particles->elements->at(distances->getID(i));
+      currentParticle = particles->GetElement(distances->getID(i));
 
       idx = i * 4;
 
-      renderConfig->particlePositions->at(idx) = currentParticle->position.x;
-      renderConfig->particlePositions->at(idx+1) = currentParticle->position.y;
-      renderConfig->particlePositions->at(idx+2) = currentParticle->position.z;
-      renderConfig->particlePositions->at(idx+3) = currentParticle->size;
+      (*renderConfig->particlePositions)[idx] = currentParticle->position.x;
+      (*renderConfig->particlePositions)[idx+1] = currentParticle->position.y;
+      (*renderConfig->particlePositions)[idx+2] = currentParticle->position.z;
+      (*renderConfig->particlePositions)[idx+3] = currentParticle->size;
 
-      renderConfig->particleColors->at(idx) = currentParticle->color.x;
-      renderConfig->particleColors->at(idx+1) = currentParticle->color.y;
-      renderConfig->particleColors->at(idx+2) = currentParticle->color.z;
-      renderConfig->particleColors->at(idx+3) = currentParticle->color.w;
+      (*renderConfig->particleColors)[idx] = currentParticle->color.x;
+      (*renderConfig->particleColors)[idx+1] = currentParticle->color.y;
+      (*renderConfig->particleColors)[idx+2] = currentParticle->color.z;
+      (*renderConfig->particleColors)[idx+3] = currentParticle->color.w;
     }
 
     glBindVertexArray(renderConfig->vao);

@@ -51,6 +51,8 @@ namespace prefr
 
     osg::Geode* rootNode;
 
+    osg::BlendFunc::BlendFuncMode blendFunctionSrc, blendFunctionDst;
+
     OSGDefaultParticleSystem();
     ~OSGDefaultParticleSystem();
 
@@ -58,7 +60,9 @@ namespace prefr
                              const osg::CopyOp& copyOp);
 
     OSGDefaultParticleSystem(unsigned int initialParticlesNumber,
-                             unsigned int _maxParticles, bool _loop = true);
+                             unsigned int _maxParticles, bool _loop = true,
+                             osg::BlendFunc::BlendFuncMode blendFuncSrc = osg::BlendFunc::BlendFuncMode::SRC_ALPHA,
+                             osg::BlendFunc::BlendFuncMode blendFuncDst = osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA);
 
     META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
@@ -67,7 +71,7 @@ namespace prefr
 
     virtual void Update(float deltaTime);
     virtual void UpdateUnified(float deltaTime);
-    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
+//    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
     virtual void UpdateRender();
     virtual void Render() const;
@@ -77,6 +81,8 @@ namespace prefr
     virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
     virtual void releaseGLObjects(osg::State* state) const;
     virtual void accept(osg::PrimitiveFunctor& functor) const;
+
+    virtual void SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst);
 
   protected:
 

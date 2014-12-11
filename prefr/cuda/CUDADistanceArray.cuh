@@ -31,14 +31,14 @@ namespace prefr
     : DistanceArray( size )
     {}
 
-    virtual int& getID(unsigned int i)
+    virtual inline int& getID(unsigned int i)
     {
-      return ids->at(i);
+      return (*ids)[i];
     }
 
-    virtual float& getDistance(unsigned int i)
+    virtual inline float& getDistance(unsigned int i)
     {
-      return distances->at(i);
+      return (*distances)[i];
     }
 
   };

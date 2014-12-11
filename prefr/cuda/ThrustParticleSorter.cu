@@ -47,15 +47,13 @@ namespace prefr
       {
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
         {
-          UpdateCameraDistance((*it)->id, cameraPosition);
+          UpdateCameraDistance((*it), cameraPosition);
         }
       }
-      void ThrustParticleSorter::UpdateCameraDistance(unsigned int i,  const glm::vec3& cameraPosition)
+      void ThrustParticleSorter::UpdateCameraDistance(const tparticle_ptr current,  const glm::vec3& cameraPosition)
       {
-
-        tparticle_ptr current = particles->elements->at(i);
 //        distances->ids->at(i) = current->id;
-        distances->distances->at(i) = current->Alive() ?  glm::length(current->position - cameraPosition) : -1;
+        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
       }
 
