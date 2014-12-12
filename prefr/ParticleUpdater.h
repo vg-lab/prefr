@@ -31,6 +31,22 @@ public:
     vector<EmissionNode*>* emissionNodes;
     vector<int>* refEmissionNodes;
 
+protected:
+
+    int lastParticleNodeID;
+    int lastParticlePrototypeID;
+
+    int currentNodeID;
+    int currentPrototypeID;
+
+    EmissionNode* currentNode;
+    tprototype_ptr currentPrototype;
+
+    EmissionNode* GetCurrentNode( const int& particleID );
+    tprototype_ptr GetCurrentPrototype( const int& particleID );
+
+public:
+
     ParticleUpdater(const ParticleCollection& particlesArray);
 
     virtual ~ParticleUpdater();
