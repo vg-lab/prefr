@@ -16,12 +16,55 @@ namespace prefr
     , refPrototypes( nullptr )
     , emissionNodes( nullptr )
     , refEmissionNodes( nullptr )
+    , lastParticleNodeID( -1 )
+    , lastParticlePrototypeID( -1 )
+    , currentNodeID( -1 )
+    , currentPrototypeID( -1 )
+    , currentNode( nullptr )
+    , currentPrototype( nullptr )
     {}
 
     ParticleUpdater::~ParticleUpdater()
     {
       delete( particles );
       delete( prototypes );
+    }
+
+    EmissionNode* ParticleUpdater::GetCurrentNode( const int& particleID )
+    {
+      if (particleID == lastParticleNodeID)
+        return currentNode;
+
+      int nodeID = (*refEmissionNodes)[ particleID ];
+
+      if (nodeID < 0)
+        currentNode = nullptr;
+      else if (nodeID != currentNodeID)
+        currentNode = (*emissionNodes)[ nodeID ];
+
+      currentNodeID = nodeID;
+      lastParticleNodeID = particleID;
+
+      return currentNode;
+    }
+
+
+    tprototype_ptr ParticleUpdater::GetCurrentPrototype( const int& particleID )
+    {
+      if (particleID == lastParticlePrototypeID)
+        return currentPrototype;
+
+      int prototypeID = (*refPrototypes)[particleID];
+
+      if (prototypeID < 0)
+        currentPrototype = nullptr;
+      else if (prototypeID != currentPrototypeID)
+        currentPrototype = (*prototypes)[ prototypeID ];
+
+      currentPrototypeID = prototypeID;
+      lastParticlePrototypeID = particleID;
+
+      return currentPrototype;
     }
 
     int ParticleUpdater::Update(float deltaTime)
@@ -39,8 +82,11 @@ namespace prefr
 
     void ParticleUpdater::Update(const tparticle_ptr current, float deltaTime)
     {
-      tprototype_ptr currentPrototype = (*prototypes)[(*refPrototypes)[current->id]];
-      float refLife;
+      currentNode = GetCurrentNode( current->id );
+      currentPrototype = GetCurrentPrototype( current->id );
+
+      if (!currentNode || !currentPrototype)
+        return;
 
       current->life = std::max(0.0f, current->life - deltaTime);
       current->alive = current->life > 0;
@@ -48,7 +94,7 @@ namespace prefr
       if (current->Alive() && currentPrototype && !current->Newborn())
       {
 
-        refLife = 1.0f - glm::clamp((current->life) * (currentPrototype->lifeNormalization), 0.0f, 1.0f);
+        float refLife = 1.0f - glm::clamp((current->life) * (currentPrototype->lifeNormalization), 0.0f, 1.0f);
 
         current->color = (currentPrototype->color.GetValue(refLife));
 

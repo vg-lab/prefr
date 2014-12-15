@@ -42,6 +42,22 @@ namespace prefr
 
     float normalizationFactor;
 
+    // Private variables to take profit from spatial proximity cache
+
+  protected:
+
+    int lastParticleNodeID;
+    int lastParticlePrototypeID;
+
+    int currentNodeID;
+    int currentPrototypeID;
+
+    EmissionNode* currentNode;
+    tprototype_ptr currentPrototype;
+
+    EmissionNode* GetCurrentNode( const int& particleID );
+    tprototype_ptr GetCurrentPrototype( const int& particleID );
+
   public:
 
     ParticleEmitter( const ParticleCollection& particlesArray, float _emissionRate, bool _loop);
