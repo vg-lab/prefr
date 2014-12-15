@@ -65,6 +65,7 @@ namespace prefr
     virtual ~ParticleEmitter();
 
     virtual void StartEmission(float deltaTime);
+    virtual void EndEmission();
     virtual int EmitSingle(const tparticle_ptr i);
 
     virtual void EmitAll(float deltaTime);

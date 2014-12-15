@@ -24,8 +24,96 @@ namespace prefr
     }
 
 
-    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
+    //***********************************************************
+    // EMISSION NODE
+    //***********************************************************
+
+    EmissionNode::EmissionNode( const ParticleCollection& arrayParticles )
+    : particles( new ParticleCollection( arrayParticles ) )
+    , emissionAcc( 0 )
+    , particlesBudget( 0 )
+    , active( true )
+    , timed( false )
+    {}
+
+    bool EmissionNode::Active()
+    {
+      return active;
+    }
+
+    bool EmissionNode::Emits()
+    {
+      return active && particlesBudget;
+    }
+
+    const int& EmissionNode::GetBudget()
+    {
+      return particlesBudget;
+    }
+
+    void EmissionNode::StartFrame( const float& rawBudget,
+                                           const float& /*deltaTime */)
+    {
+      emissionAcc += rawBudget;
+      particlesBudget = int(floor(emissionAcc));
+      emissionAcc -= particlesBudget;
+    }
+
+    void EmissionNode::ReduceBudgetBy(const unsigned int& decrement)
+    {
+      particlesBudget -= decrement;
+    }
+
+
+    void EmissionNode::CloseFrame()
+    {
+      particlesBudget = 0;
+    }
+
+    //***********************************************************
+    // TIMED EMISSION NODE
+    //***********************************************************
+
+    TimedEmissionNode::TimedEmissionNode( const ParticleCollection& arrayParticles )
     : EmissionNode( arrayParticles )
+    , SingleFrameTimer( 0, 0, 0 )
+    {}
+
+    TimedEmissionNode::TimedEmissionNode( const ParticleCollection& arrayParticles,
+                            float period,
+                            float offset,
+                            float duration)
+    : EmissionNode( arrayParticles )
+    , SingleFrameTimer( period, offset, duration )
+    {}
+
+    bool TimedEmissionNode::Emits()
+    {
+      return InTime() && EmissionNode::Emits();
+    }
+
+    void TimedEmissionNode::StartFrame( const float& rawBudget,
+                                   const float& deltaTime )
+    {
+      EmissionNode::StartFrame(rawBudget, deltaTime);
+
+      UpdateTimer(deltaTime);
+    }
+
+    void TimedEmissionNode::CloseFrame()
+    {
+      EmissionNode::CloseFrame();
+
+      RestoreTimer();
+    }
+
+    //***********************************************************
+    // POINT EMISSION NODE
+    //***********************************************************
+
+
+    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
+    : TimedEmissionNode( arrayParticles )
     ,position( _position )
     {}
 

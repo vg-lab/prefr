@@ -188,6 +188,11 @@ namespace prefr
       accumulator += (*it)->Alive();
     }
 
+    for (i = 0; i < emitters->size(); i++)
+    {
+      (*emitters)[i]->EndEmission();
+    }
+
     this->aliveParticles = accumulator;
   }
 
