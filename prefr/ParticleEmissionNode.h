@@ -70,11 +70,32 @@ namespace prefr
 
     glm::vec3 position;
 
-    PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position );
+    PointEmissionNode( const ParticleCollection& arrayParticles,
+                       glm::vec3 _position );
+
     virtual ~PointEmissionNode();
 
     virtual glm::vec3 GetEmissionPosition();
     virtual glm::vec3 GetEmissionVelocityDirection();
+  };
+
+  class SphereEmissionNode : public PointEmissionNode
+  {
+  public:
+
+    float radius;
+    float angle;
+
+    glm::vec3 velocity;
+
+    SphereEmissionNode( const ParticleCollection& arrayParticles,
+                       glm::vec3 _position, float radius_ = 0, float angle_ = 360 );
+
+    virtual ~SphereEmissionNode();
+
+    virtual glm::vec3 GetEmissionPosition();
+    virtual glm::vec3 GetEmissionVelocityDirection();
+
   };
 
 

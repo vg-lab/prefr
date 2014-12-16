@@ -20,6 +20,9 @@ target_link_libraries(compositeosg ${PREFR_LINK_LIBRARIES} prefr)
 add_executable(animation animation.cpp)
 target_link_libraries(animation ${PREFR_LINK_LIBRARIES} prefr)
 
+add_executable(electric electric.cpp)
+target_link_libraries(electric ${PREFR_LINK_LIBRARIES} prefr)
+
 IF (QT_FOUND)  
   add_executable(qtosg qtcompositeosg.cpp)
   target_link_libraries(qtosg ${PREFR_LINK_LIBRARIES} ${QT_LIBRARIES} prefr)

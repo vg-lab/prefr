@@ -11,13 +11,14 @@ namespace prefr
 {
 
     static float invRandMax = 1.0f / RAND_MAX;
+    static float pi2 = 2.0f * M_PI;
 
-    glm::vec3 GetRandomDirection()
+    glm::vec3 GetRandomDirection(float thetaAngle = pi2)
     {
       float theta, phi, vxz;
 
-      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
-      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * 2.0f * M_PI;
+      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * thetaAngle;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
+      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * pi2;
       vxz = sinf(theta);
 
       return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
@@ -118,9 +119,7 @@ namespace prefr
     {}
 
     PointEmissionNode::~PointEmissionNode()
-    {
-      delete ( particles );
-    }
+    {}
 
     glm::vec3 PointEmissionNode::GetEmissionPosition()
     {
@@ -130,6 +129,29 @@ namespace prefr
     glm::vec3 PointEmissionNode::GetEmissionVelocityDirection()
     {
       return GetRandomDirection();
+    }
+
+
+
+    SphereEmissionNode::SphereEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position, float radius_, float angle_)
+    : PointEmissionNode( arrayParticles, _position )
+    , radius( radius_ )
+    , angle( glm::radians(angle_) )
+    {}
+
+    SphereEmissionNode::~SphereEmissionNode()
+    {}
+
+    glm::vec3 SphereEmissionNode::GetEmissionPosition()
+    {
+      velocity = GetRandomDirection();
+
+      return position + (radius * velocity);
+    }
+
+    glm::vec3 SphereEmissionNode::GetEmissionVelocityDirection()
+    {
+      return velocity;
     }
 
 }
