@@ -112,6 +112,12 @@ namespace prefr
           timer -= (frame.duration + frame.period);
       }
 
+      inline void UpdateTimer(float deltaTime)
+      {
+        if (frame.period > 0)
+          timer += deltaTime;
+      }
+
     };
 
 //    class MultiFrameTimer : public Timer

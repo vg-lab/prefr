@@ -177,15 +177,15 @@ int main(int argc, char** argv)
 
 
   ParticlePrototype* prototype = new ParticlePrototype(7.0f, 9.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
-  prototype->color.Insert(0.0f, (glm::vec4(0.5, 0.5, 1, 0.5)));
-//  prototype->color.Insert(0.65f, (glm::vec4(0, 0, 0.5, 0.2)));
+  prototype->color.Insert(0.0f, (glm::vec4(0.5, 0.5, 1, 0.7)));
+  prototype->color.Insert(0.55f, (glm::vec4(0, 0, 0.5, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0, 1, 0.2)));
 
 //  prototype->velocity.Insert(0.0f, 1.0f);
   prototype->velocity.Insert(1.0f, 0.0f);
 
   prototype->size.Insert(0.0f, 15.0f);
-  prototype->size.Insert(1.0f, 1.f);
+  prototype->size.Insert(1.0f, 5.f);
 
   ps->AddPrototype(prototype);
 
@@ -220,11 +220,13 @@ int main(int argc, char** argv)
         new SphereEmissionNode(ParticleCollection(ps->particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
-                              glm::vec3(i * 5, 0, 0), 3);
+                              glm::vec3(i * 10, abs(int(i % 20) - 10) * 5, 0), 3);
+
+    std::cout << i << " " << abs(int(i % 20) - 10) << std::endl;
     float period = 5.f;
     float step = 0.05;
     float offset = (1 + i) * step;
-    emissionNode->SetFrame(period, offset, 1);
+    emissionNode->SetFrame(period, offset, 2);
 //    std::cout << offset << std::endl;
     ps->AddEmissionNode(emissionNode);
   }
@@ -273,10 +275,11 @@ int main(int argc, char** argv)
     new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
                          osg::PolygonMode::LINE));
 
-//  groupNode->addChild(sdg);
+
 
   osg::Group* groupNode = new osg::Group;
 
+  groupNode->addChild(sdg);
   groupNode->addChild(ps->rootNode);
 
 
