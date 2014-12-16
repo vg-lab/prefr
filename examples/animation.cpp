@@ -192,12 +192,13 @@ int main(int argc, char** argv)
 
   prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
   prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
+  prototype->color.Insert(1.0f, (glm::vec4(0, 0, 0, 0)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
+//  prototype->velocity.Insert(1.0f, 5.0f);
 
   prototype->size.Insert(0.0f, 1.0f);
+  prototype->size.Insert(1.0f, 5.0f);
 
   ps->AddPrototype(prototype);
 
