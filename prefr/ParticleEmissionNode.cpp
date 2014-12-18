@@ -34,7 +34,7 @@ namespace prefr
     , emissionAcc( 0 )
     , particlesBudget( 0 )
     , active( true )
-    , timed( false )
+    , killParticlesIfInactive( false )
     {}
 
     bool EmissionNode::Active()

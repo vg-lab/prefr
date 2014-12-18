@@ -51,14 +51,13 @@ namespace prefr
     protected:
 
       virtual inline void UpdateTimer(float deltaTime){timer += deltaTime;}
-      virtual inline void ResetTimer(){timer = 0;}
 
       virtual inline void RestoreTimer() = 0;
 
     public:
 
       virtual inline bool InTime() const = 0;
-
+      virtual inline void ResetTimer(){timer = 0;}
 
 
     };

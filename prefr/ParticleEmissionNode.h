@@ -24,7 +24,7 @@ namespace prefr
     int particlesBudget;
     bool active;
 
-    bool timed;
+    bool killParticlesIfInactive;
 
     EmissionNode( const ParticleCollection& arrayParticles );
 

@@ -176,14 +176,15 @@ int main(int argc, char** argv)
 
 
 
-  ParticlePrototype* prototype = new ParticlePrototype(7.0f, 9.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
+  ParticlePrototype* prototype = new ParticlePrototype(5.0f, 7.0f, ParticleCollection(ps->particles, 0, maxParticles));
   prototype->color.Insert(0.0f, (glm::vec4(0.5, 0.5, 1, 0.7)));
-  prototype->color.Insert(0.55f, (glm::vec4(0, 0, 0.5, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0, 1, 0.2)));
+  prototype->color.Insert(0.75f, (glm::vec4(0, 0, 0.5, 0.2)));
+  prototype->color.Insert(1.0f, (glm::vec4(0, 0, 1, 0)));
 
 //  prototype->velocity.Insert(0.0f, 1.0f);
   prototype->velocity.Insert(1.0f, 0.0f);
 
+  prototype->size.Insert(0.0f, 12.0f);
   prototype->size.Insert(0.0f, 15.0f);
   prototype->size.Insert(1.0f, 5.f);
 
