@@ -8,6 +8,7 @@
 #ifndef OSGDEFAULTPARTICLERENDERCONFIG_H_
 #define OSGDEFAULTPARTICLERENDERCONFIG_H_
 
+#include <prefr/api.h>
 #include "../ParticleRenderer.h"
 #include "OSGRenderConfig.h"
 #include <GL/glew.h>
@@ -21,15 +22,15 @@ namespace prefr
 
     int currentAliveParticles;
 
-    OSGDefaultParticleRenderer( const ParticleCollection& particlesArray);
+    PREFR_API OSGDefaultParticleRenderer( const ParticleCollection& particlesArray);
 
-    virtual ~OSGDefaultParticleRenderer();
+    PREFR_API virtual ~OSGDefaultParticleRenderer();
 
-    void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
+    PREFR_API void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
 
-    virtual void SetupRender(unsigned int aliveParticles = 0);
+    PREFR_API virtual void SetupRender(unsigned int aliveParticles = 0);
 
-    virtual void Paint(unsigned int aliveParticles = 0) const;
+    PREFR_API virtual void Paint(unsigned int aliveParticles = 0) const;
 
   };
 

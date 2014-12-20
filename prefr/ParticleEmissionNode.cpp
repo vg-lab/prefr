@@ -6,12 +6,13 @@
  */
 
 #include "ParticleEmissionNode.h"
+#include "types.h"
 
 namespace prefr
 {
 
     static float invRandMax = 1.0f / RAND_MAX;
-    static float pi2 = 2.0f * M_PI;
+    static float pi2 = 2.0f * float(M_PI);
 
     glm::vec3 GetRandomDirection(float thetaAngle = pi2)
     {

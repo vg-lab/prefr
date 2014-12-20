@@ -30,8 +30,8 @@ namespace prefr
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunctionSrc( osg::BlendFunc::BlendFuncMode::SRC_ALPHA )
-  , blendFunctionDst( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::/*BlendFuncMode::*/SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::/*BlendFuncMode::*/ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -44,8 +44,8 @@ const osg::CopyOp& copyOp)
   , osg::Drawable(other, copyOp)
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunctionSrc( osg::BlendFunc::BlendFuncMode::SRC_ALPHA )
-  , blendFunctionDst( osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::/*BlendFuncMode::*/SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::/*BlendFuncMode::*/ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -129,7 +129,7 @@ const osg::CopyOp& copyOp)
     program->addBindAttribLocation( "particlePosition", 1 );
     program->addBindAttribLocation( "particleColor", 2 );
 
-    psState->setRenderingHint(osg::StateSet::RenderingHint::TRANSPARENT_BIN);
+    psState->setRenderingHint(osg::StateSet::/*RenderingHint::*/TRANSPARENT_BIN);
 
     psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 //

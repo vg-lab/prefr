@@ -25,7 +25,11 @@ namespace prefr
       : period(period_), offset(offset_), duration(duration_){}
 
       TimeFrame( const TimeFrame& other )
-      :TimeFrame( other.period, other.offset, other.duration )
+	: period(other.period)
+	, offset(other.offset)
+	, duration(other.duration)
+	  //@sgalingo: this is not supported in VS 10 
+	  // : TimeFrame( other.period, other.offset, other.duration )
       {}
 
       inline bool check(const float& time) const

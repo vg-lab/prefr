@@ -134,7 +134,7 @@ unsigned int CShader::getInTexCoord(){return inTexCoord;}
 
 unsigned int compileShader(const char* source, GLenum type){
   GLuint shader;
-  GLint fileLen=strlen(source);
+  GLint fileLen=GLint(strlen(source));
 
   shader = glCreateShader(type);
   glShaderSource (shader, 1,(const GLchar **) &source, (const GLint *)&fileLen);

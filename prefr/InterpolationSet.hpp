@@ -46,13 +46,13 @@ namespace utils
 
       int i = 0;
 
-      while (i < size-1 && size > 0)
+      while (i < int(size-1) && size > 0)
       {
         if (time < times[i])
         {
-          times.emplace(times.begin() + std::max(i-1,0), time);
-          values.emplace(values.begin() + std::max(i-1,0), value);
-          size = times.size();
+          times.emplace(times.begin() + (std::max)(i-1,0), time);
+	  values.emplace(values.begin() + (std::max)(i-1,0), value);
+          size = (unsigned int) times.size();
           return;
         }
         i++;
@@ -60,7 +60,7 @@ namespace utils
 
       times.push_back(time);
       values.push_back(value);
-      size = times.size();
+      size = (unsigned int) times.size();
 
       UpdateQuickReference(time);
     }
@@ -128,7 +128,8 @@ namespace utils
       int precision = 0;
       string str = std::to_string( (long double) (newTime));
 
-      unsigned int pos = str.length()-1;
+      //@sgalindo: this may yield to an underflow value
+      unsigned int pos = (unsigned int) str.length()-1;
       while (pos > 0)
       {
         if (str[pos] != '0')
@@ -137,8 +138,8 @@ namespace utils
       }
       str = str.substr(0, pos+1);
 
-      precision = str.rfind('.');
-      precision = precision > 0 ? str.length() - precision - 1 : 0;
+      precision = int(str.rfind('.'));
+      precision = precision > 0 ? int(str.length()) - precision - 1 : 0;
       precision = pow(10.f, precision);
 
       if (precision > quickReference.size())
@@ -161,12 +162,12 @@ namespace utils
         limits[i] = int(floor(times[i+1] * quickReference.size()));
       }
 
-      limits[limits.size()-1] = quickReference.size();
+      limits[limits.size()-1] = int(quickReference.size());
 
       pos = 0;
       for (unsigned int i = 0; i < quickReference.size(); i++)
       {
-        if (i >= limits[pos])
+        if (i >= (unsigned int )limits[pos])
           pos++;
         quickReference[i] = pos;
       }
