@@ -1,5 +1,6 @@
 FILE(GLOB examples_SOURCES
 CShader.cpp
+FPS.cpp
 )
 
 set(PREFR_LIBRARY_BASE_PATH ${CMAKE_SOURCE_DIR}/prefr)
@@ -22,6 +23,9 @@ target_link_libraries(animation ${PREFR_LINK_LIBRARIES} prefr)
 
 add_executable(electric electric.cpp)
 target_link_libraries(electric ${PREFR_LINK_LIBRARIES} prefr)
+
+add_executable(profile ${examples_SOURCES} profile.cpp)
+target_link_libraries(profile ${PREFR_LINK_LIBRARIES} prefr)
 
 IF (QT_FOUND)  
   add_executable(qtosg qtcompositeosg.cpp)

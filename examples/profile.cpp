@@ -11,6 +11,11 @@
 #include "FPS.h"
 
 #include <iostream>
+#include <sstream>
+#include <string>
+
+// gettimeofday
+#include <sys/time.h>
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 #define radiansToDegrees( radians ) ( ( radians ) * ( 180.0 / M_PI ) )
@@ -32,7 +37,7 @@ glm::mat4 projectionM;
 glm::mat4 viewM;
 glm::mat4 modelViewProjM;
 
-glm::vec3 position = glm::vec3(0.0f, 4.0f, 10.0f);
+glm::vec3 position = glm::vec3(0.0f, 4.0f, 50.0f);
 glm::vec3 vforward = glm::vec3(0.0f,0.0f,-1.0f);
 glm::vec3 vup = glm::vec3(0.0f,1.0f,0.0f);
 
@@ -61,9 +66,16 @@ CShader* particlesShader;
 
 ParticleSystem* ps;
 
+unsigned int maxParticles = 10;
+unsigned int maxEmitters = 1;
+
 bool emit = true;
 
 FPS fps;
+
+unsigned int frameLimit, frameCounter;
+
+float frameAcc;
 
 void initShaders()
 {
@@ -126,11 +138,15 @@ void makeModelViewProj(){
   modelViewProjM = projectionM * viewM;
 }
 
+bool allowRotation;
 
-
-void mouseFunc (int /* button */, int /* state */,
+void mouseFunc (int  button , int  state ,
                 int  /* x */, int /* y */ )
 {
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    allowRotation = true;
+  else
+    allowRotation = false;
 }
 
 void keyboardFunc(unsigned char key, int /* x */, int /* y */)
@@ -189,6 +205,11 @@ void processSpecialKeys (int key, int /* x */, int /* y */)
 
 void motionFunc (int x, int y)
 {
+  if (!allowRotation)
+    mouseX = x;
+    mouseY = y;
+    return;
+
   if (mouseX > x)
   {
     MouseTurnLeft();
@@ -214,6 +235,13 @@ void motionFunc (int x, int y)
 
 void ResolveMouseThreshold(int /* value */ )
 {
+  if (!allowRotation)
+    return;
+
+  if (mouseX < 0 || mouseX >= resolution[0] ||
+      mouseY < 0 || mouseY >= resolution[1])
+    return;
+
   if (mouseX < mouseXThreshold)
     MouseTurnLeft();
   else if (mouseX > (resolution[0] - mouseXThreshold))
@@ -236,11 +264,48 @@ void rescaleFunc (GLsizei w, GLsizei h)
   aspectRatio=(float)w/h;
 }
 
+long double times[5];
+
 void sceneRender (void)
 {
+  struct timeval startTime, endTime;
+  long double totalTime;
+
+  gettimeofday(&startTime, NULL);
   ps->UpdateUnified(deltaTime);
+  gettimeofday(&endTime, NULL);
+
+  totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
+  totalTime += (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+  times[0] += totalTime;
+
+  gettimeofday(&startTime, NULL);
   ps->UpdateCameraDistances(position);
-  ps->UpdateRender();
+  gettimeofday(&endTime, NULL);
+
+  totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
+  totalTime += (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+  times[1] += totalTime;
+
+//  ps->UpdateRender();
+
+  gettimeofday(&startTime, NULL);
+  ps->sorter->Sort();
+  gettimeofday(&endTime, NULL);
+
+  totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
+  totalTime += (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+  times[2] += totalTime;
+
+  gettimeofday(&startTime, NULL);
+  ps->renderer->SetupRender(ps->aliveParticles);
+  gettimeofday(&endTime, NULL);
+
+  totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
+  totalTime += (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+  times[3] += totalTime;
+
+
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
@@ -272,14 +337,54 @@ void sceneRender (void)
   glUniform3f(cameraUp, viewM[0][1], viewM[1][1], viewM[2][1]);
   glUniform3f(cameraRight, viewM[0][0], viewM[1][0], viewM[2][0]);
 
-
+  gettimeofday(&startTime, NULL);
   ps->Render();
+  gettimeofday(&endTime, NULL);
+
+  totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
+  totalTime += (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+  times[4] += totalTime;
 
   ResolveMouseThreshold(0);
 
-  fps.updateAndPrint();
+//  fps.updateAndPrint();
 
   glutSwapBuffers();
+
+  if (frameLimit > 0)
+  {
+    frameCounter++;
+
+//    frameAcc += fps.fps;
+
+    if (frameCounter >= frameLimit)
+    {
+//        std::cout << maxParticles << "," << maxEmitters << "," << frameLimit << "," << frameAcc / frameLimit << std::endl;
+
+        totalTime = 0;
+        for ( int i = 0; i < 5 ; i++ )
+          totalTime += times[i];
+        std::cout << totalTime;
+        for ( int i = 0; i < 5 ; i++ )
+          std::cout << "," << times[i];
+        for ( int i = 0; i < 5 ; i++ )
+          std::cout << "," << 100 * times[i] / totalTime;
+
+        std::cout << endl;
+
+        exit(0);
+    }
+
+
+
+//    std::stringstream ss;
+//    ss << " " << std::to_string(frameCounter) << " out of " << std::to_string(frameLimit);
+//
+//    std::string title (WINDOW_TITLE);
+//    title.append(ss.str());
+//    glutSetWindowTitle(title.c_str());
+  }
+
 }
 
 void initGlut(int *argcp, char **argv)
@@ -313,9 +418,11 @@ void initGlew()
   }
 }
 
-
 int main(int argc, char** argv)
 {
+
+  for ( int i = 0; i < 5 ; i++ )
+    times[i] = 0.0f;
 
   initGlut(&argc, argv);
   initGlew();
@@ -326,14 +433,19 @@ int main(int argc, char** argv)
 
   makeProjectionMatrix();
 
-  unsigned int maxParticles = 10;
-  unsigned int maxEmitters = 1;
+  frameCounter = 0;
+  frameLimit = 1000;
 
   if (argc >= 2)
     maxParticles = atoi(argv[1]);
 
   if (argc >= 3)
     maxEmitters = atoi(argv[2]);
+
+  if (argc >= 4)
+    frameLimit = atoi(argv[3]);
+  else
+    frameLimit = 0;
 
   ps = new ParticleSystem(10, maxParticles, true);
 
@@ -362,17 +474,17 @@ int main(int argc, char** argv)
 
   ps->AddPrototype(prototype);
 
-  std::cout << "Created prototype." << std::endl;
+//  std::cout << "Created prototype." << std::endl;
 
   PointEmissionNode* emissionNode;
 
   int particlesPerEmitter = maxParticles / maxEmitters;
 
-  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
+//  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+//    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
         new PointEmissionNode(ParticleCollection(ps->particles,
@@ -386,9 +498,9 @@ int main(int argc, char** argv)
   ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
 
-  std::cout << "Created emitter" << std::endl;
+//  std::cout << "Created emitter" << std::endl;
   ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
-  std::cout << "Created updater" << std::endl;
+//  std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
@@ -398,12 +510,12 @@ int main(int argc, char** argv)
   sorter = new ParticleSorter(*ps->particles);
 #endif
 
-  std::cout << "Created sorter" << std::endl;
+//  std::cout << "Created sorter" << std::endl;
 
   GLDefaultParticleRenderer* renderer =
     new GLDefaultParticleRenderer(*ps->particles);
 
-  std::cout << "Created systems" << std::endl;
+//  std::cout << "Created systems" << std::endl;
 
   ps->AddUpdater(updater);
   ps->SetSorter(sorter);
@@ -412,6 +524,9 @@ int main(int argc, char** argv)
   ps->Start();
 
   glutMainLoop();
+
+
+
 
   return 0;
 

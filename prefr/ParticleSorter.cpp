@@ -30,6 +30,12 @@ namespace prefr
   void ParticleSorter::Sort(SortOrder order)
   {
     std::sort(distances->begin(), distances->end(), order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
+//    std::vector<DistanceUnit>::iterator it;
+//    for (it = distances->begin(); it != distances->end(); it++)
+//    {
+//      *it->id = rand() % particles->size;
+//      *it->distance = rand() % 4;
+//    }
   }
 
   void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)

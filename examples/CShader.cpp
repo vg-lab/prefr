@@ -2,40 +2,40 @@
 //* CShader.cpp
 //* -----------
 //*
-//* Este fichero incluye las definiciones de los métodos de
-//* la clase CShader y la implementación de funciones auxiliares.
+//* Este fichero incluye las definiciones de los mï¿½todos de
+//* la clase CShader y la implementaciï¿½n de funciones auxiliares.
 //*
-//* Algunos de los métodos que aquí se presentan deberán ser
-//* completados por el alumno de forma obligatoria. Otros podrán
+//* Algunos de los mï¿½todos que aquï¿½ se presentan deberï¿½n ser
+//* completados por el alumno de forma obligatoria. Otros podrï¿½n
 //* modificarse para dar  soporte a partes opcionales.
 //*
 //* --------------------------------------------------------------
 //* Descargo de responsabilidad.
 //*
-//* El códigos se proporciona únicamente a modo de ilustración.
+//* El cï¿½digos se proporciona ï¿½nicamente a modo de ilustraciï¿½n.
 //* El ejemplo no se ha verificado a fondo bajo todas las
 //* condiciones. No se puede garantizar ni dar por supuesta la
 //* fiabilidad, la posibilidad de servicio, ni del funcionamiento
 //* programa.
 //*
 //* Este fichero se distribuye bajo una licencia no exclusiva
-//* de derechos de autor para pudiendo utilizar el código para
+//* de derechos de autor para pudiendo utilizar el cï¿½digo para
 //* generar funciones similares que se ajusten a sus necesidades.
 //*
-//* El código que aquí se incluyen se ofrecen "TAL CUAL" sin
-//* garantías de ningún tipo.
+//* El cï¿½digo que aquï¿½ se incluyen se ofrecen "TAL CUAL" sin
+//* garantï¿½as de ningï¿½n tipo.
 //*
-//* Copyright (C) 2012 by Marcos García Lorenzo (GMRV - URJC)
+//* Copyright (C) 2012 by Marcos Garcï¿½a Lorenzo (GMRV - URJC)
 //* http://www.gmrv.es/
 //*****************************************************************
 
 /*******************************************************************
 
-Modificado para la práctica de Rendering Avanzado por Sergio Galindo
+Modificado para la prï¿½ctica de Rendering Avanzado por Sergio Galindo
 y Luis Hijarrubia. 2014
 
-Las mayores modificaciones son para pasar el código a openGL 3.3
-Y se pueda elegir si se van a pasar "in"s de vértices, normales y coordenadas
+Las mayores modificaciones son para pasar el cï¿½digo a openGL 3.3
+Y se pueda elegir si se van a pasar "in"s de vï¿½rtices, normales y coordenadas
 
 *********************************************************************/
 
@@ -48,9 +48,9 @@ char *readShaderFile(const char *fileName);
 unsigned int compileShader(const char* source, GLenum type);
 unsigned int loadShader (const char *fileName, GLenum type);
 
-//Esta función permite inicializar el shader
+//Esta funciï¿½n permite inicializar el shader
 //geometrico y se ejecuta antes de hacer el
-//link del shader. Como parámetro recibe el
+//link del shader. Como parï¿½metro recibe el
 //identificador del programa.
 CShader::CShader(bool conNormales,bool conTextura,
                  const char *vShaderFile,const char *fShaderFile,
@@ -159,10 +159,10 @@ unsigned int compileShader(const char* source, GLenum type){
 
 unsigned int loadShader (const char *fileName, GLenum type)
 {
-  std::cout << std::endl;
-  std::cout << "________________________________________________________________" << std::endl;
-  std::cout << "Cargando Shader: " << fileName << std::endl;
-  std::cout << "________________________________________________________________" << std::endl;
+//  std::cout << std::endl;
+//  std::cout << "________________________________________________________________" << std::endl;
+//  std::cout << "Cargando Shader: " << fileName << std::endl;
+//  std::cout << "________________________________________________________________" << std::endl;
 
   char *source;
   source = readShaderFile(fileName);
@@ -182,7 +182,7 @@ unsigned int loadShader (const char *fileName, GLenum type)
 //* ------------------------------------------
 //*
 //* Las funciones, variables y metdos descritos a continuacion
-//* NO REQUERIRÁN MODIFICACIÓN ALGUNA.
+//* NO REQUERIRï¿½N MODIFICACIï¿½N ALGUNA.
 //*
 //*****************************************************************
 #include <fstream>
