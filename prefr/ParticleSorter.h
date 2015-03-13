@@ -8,6 +8,7 @@
 #ifndef PARTICLESORTER_H_
 #define PARTICLESORTER_H_
 
+#include <prefr/api.h>
 #include "types.h"
 #include "ElementCollection.hpp"
 #include "DistanceArray.hpp"
@@ -37,17 +38,17 @@ namespace prefr
 
     DistanceArray* distances;
 
-    ParticleSorter( const ParticleCollection& particlesArray );
+    PREFR_API ParticleSorter( const ParticleCollection& particlesArray );
 
-    virtual ~ParticleSorter();
+    PREFR_API virtual ~ParticleSorter();
 
-    virtual void Sort(SortOrder order = Descending);
+    PREFR_API virtual void Sort(SortOrder order = Descending);
 
-    virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
-    virtual void UpdateCameraDistance(const tparticle_ptr current,
+    PREFR_API virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
+    PREFR_API virtual void UpdateCameraDistance(const tparticle_ptr current,
                                       const glm::vec3& cameraPosition);
 
-    virtual void InitDistanceArray();
+    PREFR_API virtual void InitDistanceArray();
   };
 }
 

@@ -9,6 +9,7 @@
 #define PARTICLESYSTEM_H_
 
 
+#include <prefr/api.h>
 #include "ElementCollection.hpp"
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
@@ -81,33 +82,44 @@ namespace prefr
 
     bool loop;
 
+    PREFR_API
     ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
 
+    PREFR_API
     virtual ~ParticleSystem();
 
+    PREFR_API
     virtual void AddEmissionNode(EmissionNode* node);
+    PREFR_API
     virtual void AddPrototype(ParticlePrototype* prototype);
+    PREFR_API
     virtual void AddEmitter(ParticleEmitter* emitter);
+    PREFR_API
     virtual void AddUpdater(ParticleUpdater* updater);
+    PREFR_API
     virtual void SetSorter(ParticleSorter* _sorter);
+    PREFR_API
     virtual void SetRenderer(ParticleRenderer* _renderConfig);
 
-
+    PREFR_API
     virtual void Start();
 
     // Particle updating methods
+    PREFR_API
     virtual void Update(float deltaTime);
 
-
+    PREFR_API
     virtual void UpdateUnified(float deltaTime);
 
-
+    PREFR_API
     virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
     // Particle render updating method
+    PREFR_API
     virtual void UpdateRender();
 
     // Render method
+    PREFR_API
     virtual void Render() const;
 
 

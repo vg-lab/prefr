@@ -8,6 +8,7 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
   ElementCollection.hpp
   InterpolationSet.hpp
   DistanceArray.hpp
+  Timer.hpp
   ParticlePrototype.h
   OSG/OSGRenderConfig.h
   OSG/OSGDefaultParticleSystem.h

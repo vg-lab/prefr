@@ -103,7 +103,7 @@ namespace prefr
         if (!currentNode)
           continue;
 
-        if (currentNode->particlesBudget && !current->Alive() && currentNode->active)
+        if (currentNode->Emits() && !current->Alive())
         {
           this->EmitFunction(current);
           currentNode->particlesBudget--;
@@ -112,23 +112,31 @@ namespace prefr
 //        previousNodeID = emissionNodeID;
       }
 
+      EndEmission();
+
     }
 
     void ParticleEmitter::StartEmission(float deltaTime)
     {
       particlesBudget = emissionRate * maxParticles * deltaTime;
 
-      EmissionNode* node;
       for (EmissionNodesArray::iterator it = emissionNodes->begin();
            it != emissionNodes->end(); it++)
       {
-        node = *it;
-        node->emissionAcc +=
-            particlesBudget * (node->particles->size * normalizationFactor);
+        (*it)->StartFrame(particlesBudget *
+                         ((*it)->particles->size * normalizationFactor)
+                         , deltaTime);
 
-        node->particlesBudget = int(floor(node->emissionAcc));
-        node->emissionAcc -= node->particlesBudget;
 //        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
+      }
+    }
+
+    void ParticleEmitter::EndEmission()
+    {
+      for (EmissionNodesArray::iterator it = emissionNodes->begin();
+                 it != emissionNodes->end(); it++)
+      {
+        (*it)->CloseFrame();
       }
     }
 
@@ -142,7 +150,7 @@ namespace prefr
       if (!currentNode)
         return 0;
 
-      if (currentNode->particlesBudget && !current->Alive() && currentNode->active)
+      if (currentNode->Emits() && !current->Alive())
       {
         this->EmitFunction(current);
         currentNode->particlesBudget--;

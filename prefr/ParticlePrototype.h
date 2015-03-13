@@ -8,6 +8,7 @@
 #ifndef PARTICLEPROTOTYPE_H_
 #define PARTICLEPROTOTYPE_H_
 
+#include <prefr/api.h>
 #include "ElementCollection.hpp"
 #include "InterpolationSet.hpp"
 
@@ -39,12 +40,12 @@ namespace prefr
 
     ParticleCollection* particles;
 
-    ParticlePrototype(void);
-    ParticlePrototype(float min, float max, const ParticleCollection& particlesArray);
+    PREFR_API ParticlePrototype(void);
+    PREFR_API ParticlePrototype(float min, float max, const ParticleCollection& particlesArray);
 
-    virtual ~ParticlePrototype();
+    PREFR_API virtual ~ParticlePrototype();
 
-    void SetLife(float min, float max);
+    PREFR_API void SetLife(float min, float max);
 
   };
 

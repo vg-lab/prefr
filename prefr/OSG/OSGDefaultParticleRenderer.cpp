@@ -31,18 +31,17 @@ namespace prefr
     osgrc->particlePositions = new vector<GLfloat>(particles->size * 4);
     osgrc->particleColors = new vector<GLfloat>(particles->size * 4);
 
-    for (unsigned int i = 0; i < 12; i++)
+    for (unsigned int i = 0; i < 4; i++)
     {
       osgrc->vertexArray->push_back(osg::Vec3( b[i*3],
                                                b[i*3 + 1],
                                                b[i*3 + 2] ));
 
-      osgrc->billboardVertices->push_back(b[i]);
+      osgrc->billboardVertices->push_back(b[i*3]);
+      osgrc->billboardVertices->push_back(b[i*3 + 1]);
+      osgrc->billboardVertices->push_back(b[i*3 + 2]);
 
-
-
-      if (i % 3 == 0)
-        osgrc->billboardIndices->push_back(i / 3);
+      osgrc->billboardIndices->push_back( i );
 
     }
 

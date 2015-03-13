@@ -89,7 +89,8 @@ namespace prefr
         return;
 
       current->life = std::max(0.0f, current->life - deltaTime);
-      current->alive = current->life > 0;
+      current->alive = (current->life > 0) &&
+          (!(currentNode->killParticlesIfInactive && !currentNode->active));
 
       if (current->Alive() && currentPrototype && !current->Newborn())
       {

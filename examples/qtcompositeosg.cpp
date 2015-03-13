@@ -147,7 +147,8 @@ int main( int argc, char** argv )
 #endif
 
 
-  osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::ViewerBase::ThreadingModel::ThreadPerContext; //SingleThreaded;
+  osgViewer::ViewerBase::ThreadingModel threadingModel = 
+    osgViewer::ViewerBase::/*ThreadingModel::*/ThreadPerContext; //SingleThreaded;
 
 
 
