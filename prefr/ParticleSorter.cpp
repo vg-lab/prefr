@@ -34,7 +34,7 @@ namespace prefr
 	      order == /*SortOrder::*/Descending ? 
 	      DistanceArray::sortDescending : 
 	      DistanceArray::sortAscending);
-    }
+
   }
 
   void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
