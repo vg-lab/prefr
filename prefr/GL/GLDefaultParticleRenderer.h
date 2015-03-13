@@ -8,7 +8,7 @@
 #ifndef DEFAULTPARTICLERENDERCONFIG_H_
 #define DEFAULTPARTICLERENDERCONFIG_H_
 
-// #include <particles/config.h>
+#include <prefr/api.h>
 #include "../ParticleRenderer.h"
 
 namespace prefr
@@ -18,12 +18,16 @@ namespace prefr
   {
   public:
 
+    PREFR_API
     GLDefaultParticleRenderer( const ParticleCollection&particlesArray);
-
+    
+    PREFR_API
     virtual ~GLDefaultParticleRenderer();
 
+    PREFR_API
     virtual void SetupRender(unsigned int aliveParticles = 0);
 
+    PREFR_API
     virtual void Paint(unsigned int aliveParticles = 0) const;
 
   };

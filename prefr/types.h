@@ -28,6 +28,10 @@
 #include <cmath>
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 // GLM includes
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>

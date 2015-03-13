@@ -60,7 +60,7 @@ namespace prefr
   {
     this->emissionNodes->push_back(node);
 
-    int size = this->emissionNodes->size();
+    int size = int(this->emissionNodes->size());
     int start = node->particles->start - this->particles->start;
     int end = node->particles->end - this->particles->start;
 
@@ -74,7 +74,7 @@ namespace prefr
   {
     this->prototypes->push_back(prototype);
 
-    int size = this->prototypes->size();
+    int size = int(this->prototypes->size());
     int start = prototype->particles->start - this->particles->start;
     int end = prototype->particles->end - this->particles->start;
 
@@ -88,7 +88,7 @@ namespace prefr
   {
     this->emitters->push_back(emitter);
 
-    int size = this->emitters->size();
+    int size = int(this->emitters->size());
     int start = emitter->particles->start - this->particles->start;
     int end = emitter->particles->end - this->particles->start;
 
@@ -108,7 +108,7 @@ namespace prefr
   {
     this->updaters->push_back(updater);
 
-    int size = this->updaters->size();
+    int size = int(this->updaters->size());
     int start = updater->particles->start - this->particles->start;
     int end = updater->particles->end - this->particles->start;
 

@@ -29,7 +29,11 @@ namespace prefr
 
   void ParticleSorter::Sort(SortOrder order)
   {
-    std::sort(distances->begin(), distances->end(), order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
+    std::sort(distances->begin(), 
+	      distances->end(), 
+	      order == /*SortOrder::*/Descending ? 
+	      DistanceArray::sortDescending : 
+	      DistanceArray::sortAscending);
   }
 
   void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)

@@ -8,6 +8,7 @@
 #ifndef PARTICLEEMITTER_H_
 #define PARTICLEEMITTER_H_
 
+#include <prefr/api.h>
 #include "InterpolationSet.hpp"
 #include "ElementCollection.hpp"
 #include "ParticlePrototype.h"
@@ -60,17 +61,17 @@ namespace prefr
 
   public:
 
-    ParticleEmitter( const ParticleCollection& particlesArray, float _emissionRate, bool _loop);
+    PREFR_API ParticleEmitter( const ParticleCollection& particlesArray, float _emissionRate, bool _loop);
 
-    virtual ~ParticleEmitter();
+    PREFR_API virtual ~ParticleEmitter();
 
-    virtual void StartEmission(float deltaTime);
-    virtual void EndEmission();
-    virtual int EmitSingle(const tparticle_ptr i);
+    PREFR_API virtual void StartEmission(float deltaTime);
+    PREFR_API virtual void EndEmission();
+    PREFR_API virtual int EmitSingle(const tparticle_ptr i);
 
-    virtual void EmitAll(float deltaTime);
+    PREFR_API virtual void EmitAll(float deltaTime);
 
-    virtual void EmitFunction(const tparticle_ptr current, bool override = false);
+    PREFR_API virtual void EmitFunction(const tparticle_ptr current, bool override = false);
 
   };
 

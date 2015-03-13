@@ -8,6 +8,7 @@
 #ifndef PARTICLEUPDATER_H_
 #define PARTICLEUPDATER_H_
 
+#include <prefr/api.h>
 #include "ElementCollection.hpp"
 #include "ParticleEmitter.h"
 
@@ -47,21 +48,21 @@ protected:
 
 public:
 
-    ParticleUpdater(const ParticleCollection& particlesArray);
+    PREFR_API ParticleUpdater(const ParticleCollection& particlesArray);
 
-    virtual ~ParticleUpdater();
+    PREFR_API virtual ~ParticleUpdater();
 
     //! Updates collection particles with the given deltaTime value.
     /*!
      *
      */
-    virtual int Update(float deltaTime);
+    PREFR_API virtual int Update(float deltaTime);
 
     //! Update a single particle by the given particle collection index
     /*!
      *
      */
-    virtual void Update(const tparticle_ptr current, float deltaTime);
+    PREFR_API virtual void Update(const tparticle_ptr current, float deltaTime);
 
   };
 }

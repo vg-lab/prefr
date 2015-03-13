@@ -8,6 +8,7 @@
 #ifndef __ParticleEmissionNode__
 #define __ParticleEmissionNode__
 
+#include <prefr/api.h>
 #include "types.h"
 #include "ElementCollection.hpp"
 #include "Timer.hpp"
@@ -26,22 +27,24 @@ namespace prefr
 
     bool killParticlesIfInactive;
 
+    PREFR_API
     EmissionNode( const ParticleCollection& arrayParticles );
 
+    PREFR_API
     virtual ~EmissionNode(void) {delete particles;}
 
-    virtual bool Active();
-    virtual bool Emits();
+    PREFR_API virtual bool Active();
+    PREFR_API virtual bool Emits();
 
-    virtual const int& GetBudget();
-    virtual void StartFrame(const float& rawBudget, const float& deltaTime);
-    virtual void CloseFrame();
+    PREFR_API virtual const int& GetBudget();
+    PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
+    PREFR_API virtual void CloseFrame();
 
-    virtual void ReduceBudgetBy(const unsigned int& decrement = 1);
+    PREFR_API virtual void ReduceBudgetBy(const unsigned int& decrement = 1);
 
 
-    virtual glm::vec3 GetEmissionPosition() = 0;
-    virtual glm::vec3 GetEmissionVelocityDirection() = 0;
+    PREFR_API virtual glm::vec3 GetEmissionPosition() = 0;
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection() = 0;
   };
 
   typedef vector<EmissionNode*> EmissionNodesArray;
@@ -50,15 +53,15 @@ namespace prefr
   {
   public:
 
-    TimedEmissionNode( const ParticleCollection& arrayParticles );
-    TimedEmissionNode( const ParticleCollection& arrayParticles,
-                       float period,
-                       float offset,
-                       float duration);
-    virtual bool Emits();
+    PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles );
+    PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles,
+				 float period,
+				 float offset,
+				 float duration);
+    PREFR_API virtual bool Emits();
 
-    virtual void StartFrame(const float& rawBudget, const float& deltaTime);
-    virtual void CloseFrame();
+    PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
+    PREFR_API virtual void CloseFrame();
 
   };
 
@@ -70,13 +73,13 @@ namespace prefr
 
     glm::vec3 position;
 
-    PointEmissionNode( const ParticleCollection& arrayParticles,
-                       glm::vec3 _position );
+    PREFR_API PointEmissionNode( const ParticleCollection& arrayParticles,
+				 glm::vec3 _position );
 
-    virtual ~PointEmissionNode();
+    PREFR_API virtual ~PointEmissionNode();
 
-    virtual glm::vec3 GetEmissionPosition();
-    virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual glm::vec3 GetEmissionPosition();
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
   };
 
   class SphereEmissionNode : public PointEmissionNode
@@ -88,13 +91,13 @@ namespace prefr
 
     glm::vec3 velocity;
 
-    SphereEmissionNode( const ParticleCollection& arrayParticles,
-                       glm::vec3 _position, float radius_ = 0, float angle_ = 360 );
+    PREFR_API SphereEmissionNode( const ParticleCollection& arrayParticles,
+				  glm::vec3 _position, float radius_ = 0, float angle_ = 360 );
 
-    virtual ~SphereEmissionNode();
+    PREFR_API virtual ~SphereEmissionNode();
 
-    virtual glm::vec3 GetEmissionPosition();
-    virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual glm::vec3 GetEmissionPosition();
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
 
   };
 

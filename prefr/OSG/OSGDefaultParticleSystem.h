@@ -8,6 +8,7 @@
 #ifndef OSGDEFAULTPARTICLESYSTEM_H_
 #define OSGDEFAULTPARTICLESYSTEM_H_
 
+#include <prefr/api.h>
 #include "../ParticleSystem.h"
 
 #include <osg/Array>
@@ -38,7 +39,7 @@ namespace prefr
   {
   public:
 
-    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+    PREFR_API virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
   };
 
@@ -53,41 +54,41 @@ namespace prefr
 
     osg::BlendFunc::BlendFuncMode blendFunctionSrc, blendFunctionDst;
 
-    OSGDefaultParticleSystem();
-    ~OSGDefaultParticleSystem();
+    PREFR_API OSGDefaultParticleSystem();
+    PREFR_API ~OSGDefaultParticleSystem();
 
-    OSGDefaultParticleSystem(const OSGDefaultParticleSystem& other,
-                             const osg::CopyOp& copyOp);
+    PREFR_API OSGDefaultParticleSystem(const OSGDefaultParticleSystem& other,
+				       const osg::CopyOp& copyOp);
 
-    OSGDefaultParticleSystem(unsigned int initialParticlesNumber,
-                             unsigned int _maxParticles, bool _loop = true,
-                             osg::BlendFunc::BlendFuncMode blendFuncSrc = osg::BlendFunc::BlendFuncMode::SRC_ALPHA,
-                             osg::BlendFunc::BlendFuncMode blendFuncDst = osg::BlendFunc::BlendFuncMode::ONE_MINUS_CONSTANT_ALPHA);
+    PREFR_API OSGDefaultParticleSystem(unsigned int initialParticlesNumber,
+				       unsigned int _maxParticles, bool _loop = true,
+				       osg::BlendFunc::BlendFuncMode blendFuncSrc = osg::BlendFunc::/*BlendFuncMode::*/SRC_ALPHA,
+				       osg::BlendFunc::BlendFuncMode blendFuncDst = osg::BlendFunc::/*BlendFuncMode::*/ONE_MINUS_CONSTANT_ALPHA);
 
     META_Object(particles::defaultParticleSystem::OSGParticleSystem, OSGDefaultParticleSystem)
 
-    virtual void SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber = 0, unsigned int viewNumber = 0);
-    virtual void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
+    PREFR_API virtual void SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber = 0, unsigned int viewNumber = 0);
+    PREFR_API virtual void ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag);
 
-    virtual void Update(float deltaTime);
-    virtual void UpdateUnified(float deltaTime);
+    PREFR_API virtual void Update(float deltaTime);
+    PREFR_API virtual void UpdateUnified(float deltaTime);
 //    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
-    virtual void UpdateRender();
-    virtual void Render() const;
+    PREFR_API virtual void UpdateRender();
+    PREFR_API virtual void Render() const;
 
-    virtual osg::BoundingBox computeBound() const;
-    virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
-    virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
-    virtual void releaseGLObjects(osg::State* state) const;
-    virtual void accept(osg::PrimitiveFunctor& functor) const;
+    PREFR_API virtual osg::BoundingBox computeBound() const;
+    PREFR_API virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
+    PREFR_API virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
+    PREFR_API virtual void releaseGLObjects(osg::State* state) const;
+    PREFR_API virtual void accept(osg::PrimitiveFunctor& functor) const;
 
-    virtual void SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst);
+    PREFR_API virtual void SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst);
 
   protected:
 
-    virtual void UpdateUniformVariables(float deltaTime);
-    virtual void AcquireGraphicsContext(osg::GraphicsContext* context);
+    PREFR_API virtual void UpdateUniformVariables(float deltaTime);
+    PREFR_API virtual void AcquireGraphicsContext(osg::GraphicsContext* context);
 
   };
 
