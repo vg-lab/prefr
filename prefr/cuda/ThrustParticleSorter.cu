@@ -37,9 +37,9 @@ namespace prefr
         thrust::device_vector<float>::iterator devicedistend = devicedistbegin + aliveParticles;
 
 
-        thrust::copy(cda->ids->begin(), hostidend, deviceidbegin);
-//        thrust::sequence(cda->deviceID.begin(), cda->deviceID.end());
-        thrust::copy(cda->distances->begin(), hostdistend, devicedistbegin);
+    //    thrust::copy(cda->ids->begin(), hostidend, deviceidbegin);
+        thrust::sequence(deviceidbegin, deviceidend);
+        thrust::copy(hostdistbegin, hostdistend, devicedistbegin);
 
         if (order == SortOrder::Ascending)
           thrust::sort_by_key(devicedistbegin, devicedistend
@@ -56,6 +56,15 @@ namespace prefr
       {
         aliveParticles = 0;
         distances->ResetCounter();
+
+    #ifdef DEBUG
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+        for (auto it = cda->translatedIDs.begin(); it != cda->translatedIDs.end(); it++)
+        {
+          (*it) = -1;
+        }
+    #endif
+
         for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
         {
           if ((*it)->Alive())
@@ -68,9 +77,11 @@ namespace prefr
       void ThrustParticleSorter::UpdateCameraDistance(const tparticle_ptr current,  const glm::vec3& cameraPosition)
       {
         DistanceUnit& dist = distances->next();
-        (*distances->ids)[*dist.id] = current->id;
-        (*distances->distances)[*dist.id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
-//        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+        cda->translatedIDs[distances->current] = current->id;
+
+        (*distances->distances)[distances->current] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
+    //        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
       }
 

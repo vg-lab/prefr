@@ -63,7 +63,7 @@ namespace prefr
     std::vector<int>* ids;
     std::vector<float>* distances;
     tdcontainter* elements;
-    unsigned int current;
+    int current;
 
     DistanceArray(unsigned int size)
     {
@@ -116,13 +116,13 @@ namespace prefr
       return (*elements)[i].Distance();
     }
 
-    inline void ResetCounter(){current=0;}
+    inline void ResetCounter(){current=-1;}
 
     inline DistanceUnit& next()
     {
       current++;
-      if (current >= elements->size())
-        current = elements->size() - 1;
+//      if (current >= int(elements->size()))
+//        current = elements->size() - 1;
       return (*elements)[current];
     }
 
