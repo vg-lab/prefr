@@ -29,7 +29,17 @@ namespace prefr
 
   void ParticleSorter::Sort(SortOrder order)
   {
-    std::sort(distances->begin(), distances->end(), order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
+    std::sort(distances->begin(),
+              distances->end(),
+              order == SortOrder::Descending ?
+              DistanceArray::sortDescending : DistanceArray::sortAscending);
+
+// #include <parallel/algorithm>
+// __gnu_parallel::sort(distances->begin(),
+//               distances->end() ,
+//               order == SortOrder::Descending ?
+//               DistanceArray::sortDescending : DistanceArray::sortAscending );
+
 //    std::vector<DistanceUnit>::iterator it;
 //    for (it = distances->begin(); it != distances->end(); it++)
 //    {

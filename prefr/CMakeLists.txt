@@ -25,6 +25,8 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
   log.h
   ParticleSystem.h
   ParticleEmissionNode.h
+  GL/shd/GL-frag.glsl
+  GL/shd/GL-vert.glsl
 )
 
 set(PREFR_HEADERS )
