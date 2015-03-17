@@ -148,7 +148,10 @@ namespace prefr
       currentNode = GetCurrentNode(current->id);
 
       if (!currentNode)
+      {
+        current->life = 0;
         return 0;
+      }
 
       if (currentNode->Emits() && !current->Alive())
       {
