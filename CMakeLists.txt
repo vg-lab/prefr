@@ -41,6 +41,7 @@ set(COMMON_PROJECT_DOMAIN gmrv.es)
 # options for prefr building
 option(WITH_OPENSCENEGRAPH "WITH_OPENSCENEGRAPH" ON)
 option(WITH_CUDA "WITH_CUDA" OFF)
+option(GPU_ARCH "GPU_ARCH" 20)
 option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)

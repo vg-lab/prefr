@@ -117,13 +117,13 @@ if (WITH_CUDA)
       set( CUDA_PROPAGATE_HOST_FLAGS OFF )
       
       set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};
-	-gencode arch=compute_20,code=sm_20 -std=c++11)
+	-gencode arch=compute_${GPU_ARCH},code=sm_${GPU_ARCH} -std=c++11)
       if (CMAKE_BUILD_TYPE MATCHES "Release")
 	set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3)
       else()
 	set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O0 -g)
       endif()
-      set(PREFR_CUDA_LIBRARY_OPTIONS -arch sm_20)      
+      set(PREFR_CUDA_LIBRARY_OPTIONS -arch sm_${GPU_ARCH})      
       
     endif()
   endif()
