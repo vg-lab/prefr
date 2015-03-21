@@ -198,12 +198,14 @@ namespace prefr
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
   {
+
+    this->sorter->UpdateCameraDistance(cameraPosition);
 //    unsigned int i = 0;
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-    {
-//     i = ((tparticle_ptr) *it)->id;
-     this->sorter->UpdateCameraDistance(*it, cameraPosition);
-    }
+//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+//    {
+////     i = ((tparticle_ptr) *it)->id;
+//     this->sorter->UpdateCameraDistance(*it, cameraPosition);
+//    }
   }
 
   void ParticleSystem::UpdateRender()

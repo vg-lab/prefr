@@ -63,16 +63,19 @@ namespace prefr
     std::vector<int>* ids;
     std::vector<float>* distances;
     tdcontainter* elements;
+    int current;
 
     DistanceArray(unsigned int size)
     {
       ids = new std::vector<int>(size);
       distances = new std::vector<float>(size);
       elements = new tdcontainter(size);
+      current = 0;
 
       for (unsigned int i = 0; i < size; i++)
       {
         (*elements)[i] = tdunit(&(*ids)[i], &(*distances)[i]);
+        (*ids)[i] = i;
       }
     }
 
@@ -111,6 +114,16 @@ namespace prefr
     virtual inline float& getDistance(unsigned int i)
     {
       return (*elements)[i].Distance();
+    }
+
+    inline void ResetCounter(){current=-1;}
+
+    inline DistanceUnit& next()
+    {
+      current++;
+//      if (current >= int(elements->size()))
+//        current = elements->size() - 1;
+      return (*elements)[current];
     }
 
     inline static bool sortDescending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance > *rhs.distance;}

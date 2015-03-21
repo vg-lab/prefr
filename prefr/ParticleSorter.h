@@ -38,6 +38,8 @@ namespace prefr
 
     DistanceArray* distances;
 
+    unsigned int aliveParticles;
+
     PREFR_API ParticleSorter( const ParticleCollection& particlesArray );
 
     PREFR_API virtual ~ParticleSorter();

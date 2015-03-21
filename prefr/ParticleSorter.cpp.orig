@@ -30,7 +30,16 @@ namespace prefr
 
   void ParticleSorter::Sort(SortOrder order)
   {
-
+<<<<<<< Updated upstream
+    std::sort(distances->begin(), 
+	      distances->end(), 
+	      order == /*SortOrder::*/Descending ? 
+	      DistanceArray::sortDescending : 
+	      DistanceArray::sortAscending);
+<<<<<<< Updated upstream
+    }
+=======
+=======
     tdcontainter::iterator end = distances->begin() + aliveParticles;
 
     std::sort(distances->begin(), end, order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
@@ -40,20 +49,8 @@ namespace prefr
 //      *it->id = rand() % particles->size;
 //      *it->distance = rand() % 4;
 //    }
-
-// #include <parallel/algorithm>
-// __gnu_parallel::sort(distances->begin(),
-//               distances->end() ,
-//               order == SortOrder::Descending ?
-//               DistanceArray::sortDescending : DistanceArray::sortAscending );
-
-//    std::vector<DistanceUnit>::iterator it;
-//    for (it = distances->begin(); it != distances->end(); it++)
-//    {
-//      *it->id = rand() % particles->size;
-//      *it->distance = rand() % 4;
-//    }
-
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   }
 
   void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
