@@ -36,6 +36,9 @@ namespace prefr
     , particlesBudget( 0 )
     , active( true )
     , killParticlesIfInactive( false )
+    , emittedParticles( 0 )
+    , maxEmissionCycles( 0 )
+    , currentCycle( 0 )
     {}
 
     bool EmissionNode::Active()
@@ -45,7 +48,17 @@ namespace prefr
 
     bool EmissionNode::Emits()
     {
-      return active && particlesBudget;
+      return active && particlesBudget && Continue();
+    }
+
+    bool EmissionNode::Continue()
+    {
+      return continueEmission;
+    }
+
+    bool EmissionNode::Finished()
+    {
+      return finished;
     }
 
     const int& EmissionNode::GetBudget()
@@ -59,18 +72,44 @@ namespace prefr
       emissionAcc += rawBudget;
       particlesBudget = int(floor(emissionAcc));
       emissionAcc -= particlesBudget;
+
+      lastFrameAliveParticles = 0;
     }
+
+    void EmissionNode::IncreaseAlive()
+    {
+      lastFrameAliveParticles++;
+    }
+
+    void EmissionNode::CheckEmissionEnd()
+    {
+      if (emittedParticles >= particles->size)
+      {
+       currentCycle++;
+       emittedParticles -= particles->size;
+      }
+
+      this->continueEmission = !(maxEmissionCycles > 0
+                                 && currentCycle >= maxEmissionCycles);
+    }
+
 
     void EmissionNode::ReduceBudgetBy(const unsigned int& decrement)
     {
       particlesBudget -= decrement;
+      emittedParticles += decrement;
     }
 
 
     void EmissionNode::CloseFrame()
     {
       particlesBudget = 0;
+
+      CheckEmissionEnd();
+
+      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
     }
+
 
     //***********************************************************
     // TIMED EMISSION NODE
@@ -94,6 +133,23 @@ namespace prefr
       return InTime() && EmissionNode::Emits();
     }
 
+    void TimedEmissionNode::CheckEmissionEnd()
+    {
+      if (emittedParticles >= particles->size)
+      {
+        currentCycle++;
+        emittedParticles -= particles->size;
+      }
+      else if (AfterTime())
+      {
+        currentCycle++;
+        emittedParticles = 0;
+      }
+
+      this->continueEmission = !(maxEmissionCycles > 0
+                                      && currentCycle >= maxEmissionCycles);
+    }
+
     void TimedEmissionNode::StartFrame( const float& rawBudget,
                                    const float& deltaTime )
     {
@@ -107,6 +163,8 @@ namespace prefr
       EmissionNode::CloseFrame();
 
       RestoreTimer();
+
+      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
     }
 
     //***********************************************************
