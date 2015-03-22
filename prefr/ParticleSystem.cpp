@@ -128,6 +128,7 @@ namespace prefr
   {
     this->sorter = _sorter;
     this->sorter->InitDistanceArray();
+    this->sorter->emissionNodes = this->emissionNodes;
   }
   void ParticleSystem::SetRenderer(ParticleRenderer* _renderer)
   {
@@ -175,17 +176,33 @@ namespace prefr
     }
 
     int accumulator = 0;
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+
+    EmissionNodesArray::iterator nodit;
+    for (nodit = emissionNodes->begin();
+         nodit != emissionNodes->end();
+         nodit++)
     {
-      i = ((tparticle_ptr) *it)->id;
 
-      // Emit each particle with its own emitter
-      (*emitters)[particleEmitter[i]]->EmitSingle(*it);
+      if (!(*nodit) || !(*nodit)->Active())
+        continue;
 
-      // Update each particle with its own updater
-      (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
+      EmissionNode* currentNode = (*nodit);
 
-      accumulator += (*it)->Alive();
+      for (tparticleContainer::iterator it = currentNode->particles->start;
+          it != currentNode->particles->end;
+          it++)
+      {
+        i = ((tparticle_ptr) *it)->id;
+
+        // Emit each particle with its own emitter
+        (*emitters)[particleEmitter[i]]->EmitSingle(*it);
+
+        // Update each particle with its own updater
+        (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
+
+        accumulator += (*it)->Alive();
+      }
+
     }
 
     for (i = 0; i < emitters->size(); i++)

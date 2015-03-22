@@ -12,6 +12,7 @@
 #include "types.h"
 #include "ElementCollection.hpp"
 #include "DistanceArray.hpp"
+#include "ParticleEmissionNode.h"
 
 #include <iostream>
 
@@ -35,6 +36,8 @@ namespace prefr
     };
 
     ParticleCollection* particles;
+
+    EmissionNodesArray* emissionNodes;
 
     DistanceArray* distances;
 

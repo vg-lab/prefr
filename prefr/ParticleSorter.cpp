@@ -11,6 +11,7 @@ namespace prefr
 {
   ParticleSorter::ParticleSorter( const ParticleCollection& particlesArray  )
   : particles( new ParticleCollection( particlesArray ) )
+  , emissionNodes( nullptr )
   , distances( nullptr )
   , aliveParticles( 0 )
   {}
@@ -60,12 +61,22 @@ namespace prefr
   {
     aliveParticles = 0;
     distances->ResetCounter();
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    for (EmissionNodesArray::iterator nodit = emissionNodes->begin();
+         nodit != emissionNodes->end();
+         nodit++)
     {
-      if ((*it)->Alive())
+      if (!(*nodit) || !(*nodit)->Active())
+        continue;
+
+      for (tparticleContainer::iterator it = (*nodit)->particles->start;
+           it != (*nodit)->particles->end;
+           it++)
       {
-        UpdateCameraDistance((*it), cameraPosition);
-        aliveParticles++;
+        if ((*it)->Alive())
+        {
+          UpdateCameraDistance((*it), cameraPosition);
+          aliveParticles++;
+        }
       }
     }
   }
