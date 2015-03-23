@@ -27,6 +27,8 @@ namespace prefr
     bool continueEmission;
     bool finished;
 
+    bool autoDeactivateWhenFinished;
+
     bool killParticlesIfInactive;
 
     int lastFrameAliveParticles;
@@ -43,15 +45,16 @@ namespace prefr
 
     PREFR_API virtual bool Active();
     PREFR_API virtual bool Emits();
-    PREFR_API inline virtual bool Continue();
-    PREFR_API inline virtual bool Finished();
+    PREFR_API virtual bool Continue();
+    PREFR_API virtual bool Finished();
+    PREFR_API virtual void Restart();
 
     PREFR_API virtual const int& GetBudget();
     PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
     PREFR_API virtual void CloseFrame();
 
     PREFR_API virtual void IncreaseAlive();
-    PREFR_API inline virtual void CheckEmissionEnd();
+    PREFR_API virtual void CheckEmissionEnd();
 
     PREFR_API virtual void ReduceBudgetBy(const unsigned int& decrement = 1);
 
@@ -70,12 +73,12 @@ namespace prefr
 				 float period,
 				 float offset,
 				 float duration);
-    PREFR_API inline virtual bool Emits();
+    PREFR_API virtual bool Emits();
 
-    PREFR_API inline virtual void CheckEmissionEnd();
+    PREFR_API virtual void CheckEmissionEnd();
 
-    PREFR_API inline virtual void StartFrame(const float& rawBudget, const float& deltaTime);
-    PREFR_API inline virtual void CloseFrame();
+    PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
+    PREFR_API virtual void CloseFrame();
 
   };
 
@@ -92,8 +95,10 @@ namespace prefr
 
     PREFR_API virtual ~PointEmissionNode();
 
-    PREFR_API inline virtual glm::vec3 GetEmissionPosition();
-    PREFR_API inline virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual void SetEmissionPosition(float x, float y, float z);
+
+    PREFR_API virtual glm::vec3 GetEmissionPosition();
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
   };
 
   class SphereEmissionNode : public PointEmissionNode
@@ -110,8 +115,8 @@ namespace prefr
 
     PREFR_API virtual ~SphereEmissionNode();
 
-    PREFR_API inline virtual glm::vec3 GetEmissionPosition();
-    PREFR_API inline virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual glm::vec3 GetEmissionPosition();
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
 
   };
 

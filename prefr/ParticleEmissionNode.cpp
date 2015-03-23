@@ -35,6 +35,7 @@ namespace prefr
     , emissionAcc( 0 )
     , particlesBudget( 0 )
     , active( true )
+    , autoDeactivateWhenFinished( true )
     , killParticlesIfInactive( false )
     , emittedParticles( 0 )
     , maxEmissionCycles( 0 )
@@ -64,6 +65,13 @@ namespace prefr
     const int& EmissionNode::GetBudget()
     {
       return particlesBudget;
+    }
+
+    void EmissionNode::Restart()
+    {
+      currentCycle = 0;
+      emittedParticles = 0;
+      continueEmission = 0;
     }
 
     void EmissionNode::StartFrame( const float& rawBudget,
@@ -108,6 +116,9 @@ namespace prefr
       CheckEmissionEnd();
 
       this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+
+      if (finished && autoDeactivateWhenFinished)
+        this->active = false;
     }
 
 
@@ -164,7 +175,8 @@ namespace prefr
 
       RestoreTimer();
 
-      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+//      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+
     }
 
     //***********************************************************
@@ -179,6 +191,11 @@ namespace prefr
 
     PointEmissionNode::~PointEmissionNode()
     {}
+
+    void SetEmissionPosition(float x, float y, float z)
+    {
+      position = glm::vec3(x, y, z);
+    }
 
     glm::vec3 PointEmissionNode::GetEmissionPosition()
     {
