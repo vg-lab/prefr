@@ -192,7 +192,7 @@ namespace prefr
     PointEmissionNode::~PointEmissionNode()
     {}
 
-    void SetEmissionPosition(float x, float y, float z)
+    void PointEmissionNode::SetEmissionPosition(float x, float y, float z)
     {
       position = glm::vec3(x, y, z);
     }
