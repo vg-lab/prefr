@@ -35,8 +35,11 @@ namespace prefr
     , emissionAcc( 0 )
     , particlesBudget( 0 )
     , active( true )
+    , continueEmission( true )
+    , finished( false )
     , autoDeactivateWhenFinished( true )
     , killParticlesIfInactive( false )
+    , lastFrameAliveParticles( 0 )
     , emittedParticles( 0 )
     , maxEmissionCycles( 0 )
     , currentCycle( 0 )
@@ -71,7 +74,7 @@ namespace prefr
     {
       currentCycle = 0;
       emittedParticles = 0;
-      continueEmission = 0;
+      continueEmission = true;
     }
 
     void EmissionNode::StartFrame( const float& rawBudget,
@@ -91,14 +94,18 @@ namespace prefr
 
     void EmissionNode::CheckEmissionEnd()
     {
-      if (emittedParticles >= particles->size)
+      if (maxEmissionCycles > 0)
       {
-       currentCycle++;
-       emittedParticles -= particles->size;
-      }
 
-      this->continueEmission = !(maxEmissionCycles > 0
-                                 && currentCycle >= maxEmissionCycles);
+        if (emittedParticles >= particles->size)
+        {
+         currentCycle++;
+         emittedParticles -= particles->size;
+        }
+
+        this->continueEmission = !(currentCycle >= maxEmissionCycles);
+
+      }
     }
 
 
@@ -146,19 +153,23 @@ namespace prefr
 
     void TimedEmissionNode::CheckEmissionEnd()
     {
-      if (emittedParticles >= particles->size)
+      if (maxEmissionCycles > 0)
       {
-        currentCycle++;
-        emittedParticles -= particles->size;
-      }
-      else if (AfterTime())
-      {
-        currentCycle++;
-        emittedParticles = 0;
-      }
 
-      this->continueEmission = !(maxEmissionCycles > 0
-                                      && currentCycle >= maxEmissionCycles);
+        if (emittedParticles >= particles->size)
+        {
+          currentCycle++;
+          emittedParticles -= particles->size;
+        }
+        else if (AfterTime())
+        {
+          currentCycle++;
+          emittedParticles = 0;
+        }
+
+        this->continueEmission = !(currentCycle >= maxEmissionCycles);
+
+      }
     }
 
     void TimedEmissionNode::StartFrame( const float& rawBudget,
