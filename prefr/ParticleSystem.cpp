@@ -200,7 +200,11 @@ namespace prefr
         // Update each particle with its own updater
         (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
 
-        accumulator += (*it)->Alive();
+        if ((*it)->Alive())
+        {
+        currentNode->IncreaseAlive();
+        accumulator++;// += (*it)->Alive();
+        }
       }
 
     }

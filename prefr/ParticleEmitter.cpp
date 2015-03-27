@@ -106,7 +106,6 @@ namespace prefr
         if (currentNode->Emits() && !current->Alive())
         {
           this->EmitFunction(current);
-          currentNode->particlesBudget--;
         }
 
 //        previousNodeID = emissionNodeID;
@@ -123,11 +122,17 @@ namespace prefr
       for (EmissionNodesArray::iterator it = emissionNodes->begin();
            it != emissionNodes->end(); it++)
       {
-        (*it)->StartFrame(particlesBudget *
-                         ((*it)->particles->size * normalizationFactor)
-                         , deltaTime);
+        if (*it)
+        {
 
-//        std::cout << particlesPerCycle << " " << emissionNodes->at(i)->particles->size << " "  << emissionNodeParticlesPerCycle[i] << std::endl;
+          (*it)->StartFrame(particlesBudget *
+                           ((*it)->particles->size * normalizationFactor)
+                           , deltaTime);
+
+//          std::cout << particlesPerCycle << " "
+//              << emissionNodes->at(i)->particles->size << " "
+//              << emissionNodeParticlesPerCycle[i] << std::endl;
+        }
       }
     }
 
@@ -136,6 +141,7 @@ namespace prefr
       for (EmissionNodesArray::iterator it = emissionNodes->begin();
                  it != emissionNodes->end(); it++)
       {
+        if (*it && (*it)->Active())
         (*it)->CloseFrame();
       }
     }
@@ -147,7 +153,8 @@ namespace prefr
 
       currentNode = GetCurrentNode(current->id);
 
-      if (!currentNode)
+      if (!currentNode ||
+          (currentNode->killParticlesIfInactive && !currentNode->Active()))
       {
         current->life = 0;
         return 0;
@@ -156,7 +163,7 @@ namespace prefr
       if (currentNode->Emits() && !current->Alive())
       {
         this->EmitFunction(current);
-        currentNode->particlesBudget--;
+
       }
 
       // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
@@ -185,6 +192,7 @@ namespace prefr
 
        current->newborn = true;
 
+       currentNode->ReduceBudgetBy(1);
      }
     }
 
