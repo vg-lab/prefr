@@ -133,6 +133,31 @@ void mouseFunc (int /* button */, int /* state */,
 {
 }
 
+void printPrototypeColor(unsigned int num)
+{
+  std::cout << "Prototype " << num << std::endl;
+  ParticlePrototype* prot = ps->prototypes->at(num);
+
+  for (unsigned int i = 0; i < prot->color.size; i++)
+  {
+    std::cout << prot->color.times[i] << ": ";
+    glm::vec4 color = prot->color.values.at(i);
+    std::cout << color.x << ", "
+              << color.y << ", "
+              << color.z << ", "
+              << color.w << ", "
+              << std::endl;
+  }
+
+  for (unsigned int i = 0; i < prot->color.quickReference.size(); i++)
+  {
+    std::cout << prot->color.quickReference[i] <<  ", ";
+  }
+
+  std::cout << std::endl;
+}
+
+
 void keyboardFunc(unsigned char key, int /* x */, int /* y */)
 {
   switch (key)
@@ -169,11 +194,30 @@ void keyboardFunc(unsigned char key, int /* x */, int /* y */)
 
     break;
 
+  default:
+
+    if (key >= '0' && key <= '9')
+    {
+      unsigned int val = key - '0';
+
+      std::cout << "Deleting value " << val << std::endl;
+
+      ParticlePrototype* prot = ps->prototypes->at(0);
+      prot->color.Remove(val);
+
+      printPrototypeColor(0);
+    }
+
+    break;
+
+
 
   }
 
 
 }
+
+
 
 void processSpecialKeys (int key, int /* x */, int /* y */)
 {
@@ -338,9 +382,14 @@ int main(int argc, char** argv)
   ps = new ParticleSystem(10, maxParticles, true);
 
   ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
+
   prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
-  prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
+  prototype->color.Insert(0.65f, (glm::vec4(1, 1, 0, 0.2)));
+  prototype->color.Insert(0.35f, (glm::vec4(0, 1, 0, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+  prototype->color.Remove(3);
+  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, .5)));
 
   prototype->velocity.Insert(0.0f, 3.0f);
   prototype->velocity.Insert(1.0f, 5.0f);
@@ -363,6 +412,9 @@ int main(int argc, char** argv)
   ps->AddPrototype(prototype);
 
   std::cout << "Created prototype." << std::endl;
+
+  printPrototypeColor(0);
+  printPrototypeColor(1);
 
   PointEmissionNode* emissionNode;
 

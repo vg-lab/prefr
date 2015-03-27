@@ -17,6 +17,8 @@
 
 #include <algorithm>
 
+#include <iostream>
+
 using namespace std;
 
 namespace utils
@@ -28,6 +30,8 @@ namespace utils
 
     vector<float> times;
     vector<T> values;
+
+    vector<unsigned int> precisionValues;
 
     vector<int> quickReference;
     vector<float> invIntervals;
@@ -44,31 +48,79 @@ namespace utils
     {
       assert(time >= 0 && time <= 1.0f);
 
-      int i = 0;
+      unsigned int i = 0;
+      unsigned int precision;
 
-      while (i < int(size-1) && size > 0)
+      // Iterate over time values till the last minus one
+      while (i < size && size > 0)
       {
-        if (time < times[i])
+        // Overwrite value
+        if (time == times[i])
         {
-          times.emplace(times.begin() + (std::max)(i-1,0), time);
-	  values.emplace(values.begin() + (std::max)(i-1,0), value);
+          values[i] = value;
+          return;
+        }
+        // New intermediate value
+        else if (time < times[i])
+        {
+          times.emplace(times.begin() + i, time);
+          values.emplace(values.begin() + i, value);
+
+          precision = GetPrecision(time);
+          precisionValues.emplace(precisionValues.begin() + i,
+                                  precision);
+
           size = (unsigned int) times.size();
+          UpdateQuickReference(precision);
           return;
         }
         i++;
       }
 
+      // New highest value
       times.push_back(time);
       values.push_back(value);
+
+      precision = GetPrecision(time);
+      precisionValues.push_back(precision);
+
       size = (unsigned int) times.size();
 
-      UpdateQuickReference(time);
+      UpdateQuickReference(precision);
     }
 
+    inline void Clear()
+    {
+      times.clear();
+      values.clear();
+      precisionValues.clear();
+      quickReference.clear();
+      invIntervals.clear();
+      step = 0;
+      size = 0;
+
+    }
+
+    inline void Remove(unsigned int i)
+    {
+      if (i >= size || size == 1)
+        return;
+
+      times.erase(times.begin()+i);
+      values.erase(values.begin()+i);
+      precisionValues.erase(precisionValues.begin()+i);
+      size = times.size();
+
+      UpdateQuickReference(GetMaxPrecision());
+
+    }
 
     inline const T& GetFirstValue()
     {
-      return values[0];
+//      if (!values.empty())
+        return values[0];
+
+//      return defaultValue;
     }
 
     // Implementation exportable to kernel due to avoiding loops
@@ -123,10 +175,23 @@ namespace utils
 
   private:
 
-    void UpdateQuickReference(float newTime)
+    unsigned int GetMaxPrecision()
+    {
+      unsigned int maxPrecision = 0;
+      std::vector<unsigned int>::const_iterator it;
+      for (it = precisionValues.begin(); it != precisionValues.end(); it++)
+      {
+        if (*it > maxPrecision)
+          maxPrecision = *it;
+      }
+      return maxPrecision;
+    }
+
+    int GetPrecision(float time)
     {
       int precision = 0;
-      string str = std::to_string( (long double) (newTime));
+
+      string str = std::to_string( (long double) (time));
 
       //@sgalindo: this may yield to an underflow value
       unsigned int pos = (unsigned int) str.length()-1;
@@ -142,8 +207,24 @@ namespace utils
       precision = precision > 0 ? int(str.length()) - precision - 1 : 0;
       precision = pow(10.f, precision);
 
-      if (precision > quickReference.size())
-        quickReference.resize(precision);
+      return precision;
+    }
+
+    void UpdateQuickReference(unsigned int newSize)
+    {
+      if (newSize == 0)
+      {
+        std::cerr << "Error: Given quick reference size cannot be zero."
+                  << std::endl;
+        return;
+      }
+      else if (newSize != quickReference.size())
+      {
+        quickReference.resize(newSize);
+      }
+
+      quickReference.clear();
+      invIntervals.clear();
 
       step = 1.0f / quickReference.size();
 
@@ -164,7 +245,7 @@ namespace utils
 
       limits[limits.size()-1] = int(quickReference.size());
 
-      pos = 0;
+      unsigned int pos = 0;
       for (unsigned int i = 0; i < quickReference.size(); i++)
       {
         if (i >= (unsigned int )limits[pos])
@@ -172,6 +253,9 @@ namespace utils
         quickReference[i] = pos;
       }
     }
+
+    T defaultValue;
+
   };
 
 
