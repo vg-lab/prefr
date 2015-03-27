@@ -108,10 +108,16 @@ namespace prefr
           return frame.check(timer);
       }
 
+      inline bool AfterTime() const
+      {
+        return (frame.period > 0) &&
+              (timer >= (frame.offset + frame.duration));
+      }
+
     protected:
       inline void RestoreTimer()
       {
-        if (timer >= frame.offset + frame.duration)
+        if (AfterTime())
           timer -= (frame.duration + frame.period);
       }
 

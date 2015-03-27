@@ -35,7 +35,14 @@ namespace prefr
     , emissionAcc( 0 )
     , particlesBudget( 0 )
     , active( true )
+    , continueEmission( true )
+    , finished( false )
+    , autoDeactivateWhenFinished( true )
     , killParticlesIfInactive( false )
+    , lastFrameAliveParticles( 0 )
+    , emittedParticles( 0 )
+    , maxEmissionCycles( 0 )
+    , currentCycle( 0 )
     {}
 
     bool EmissionNode::Active()
@@ -45,12 +52,29 @@ namespace prefr
 
     bool EmissionNode::Emits()
     {
-      return active && particlesBudget;
+      return active && particlesBudget && Continue();
+    }
+
+    bool EmissionNode::Continue()
+    {
+      return continueEmission;
+    }
+
+    bool EmissionNode::Finished()
+    {
+      return finished;
     }
 
     const int& EmissionNode::GetBudget()
     {
       return particlesBudget;
+    }
+
+    void EmissionNode::Restart()
+    {
+      currentCycle = 0;
+      emittedParticles = 0;
+      continueEmission = true;
     }
 
     void EmissionNode::StartFrame( const float& rawBudget,
@@ -59,18 +83,51 @@ namespace prefr
       emissionAcc += rawBudget;
       particlesBudget = int(floor(emissionAcc));
       emissionAcc -= particlesBudget;
+
+      lastFrameAliveParticles = 0;
     }
+
+    void EmissionNode::IncreaseAlive()
+    {
+      lastFrameAliveParticles++;
+    }
+
+    void EmissionNode::CheckEmissionEnd()
+    {
+      if (maxEmissionCycles > 0)
+      {
+
+        if (emittedParticles >= particles->size)
+        {
+         currentCycle++;
+         emittedParticles -= particles->size;
+        }
+
+        this->continueEmission = !(currentCycle >= maxEmissionCycles);
+
+      }
+    }
+
 
     void EmissionNode::ReduceBudgetBy(const unsigned int& decrement)
     {
       particlesBudget -= decrement;
+      emittedParticles += decrement;
     }
 
 
     void EmissionNode::CloseFrame()
     {
       particlesBudget = 0;
+
+      CheckEmissionEnd();
+
+      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+
+      if (finished && autoDeactivateWhenFinished)
+        this->active = false;
     }
+
 
     //***********************************************************
     // TIMED EMISSION NODE
@@ -94,6 +151,27 @@ namespace prefr
       return InTime() && EmissionNode::Emits();
     }
 
+    void TimedEmissionNode::CheckEmissionEnd()
+    {
+      if (maxEmissionCycles > 0)
+      {
+
+        if (emittedParticles >= particles->size)
+        {
+          currentCycle++;
+          emittedParticles -= particles->size;
+        }
+        else if (AfterTime())
+        {
+          currentCycle++;
+          emittedParticles = 0;
+        }
+
+        this->continueEmission = !(currentCycle >= maxEmissionCycles);
+
+      }
+    }
+
     void TimedEmissionNode::StartFrame( const float& rawBudget,
                                    const float& deltaTime )
     {
@@ -107,6 +185,9 @@ namespace prefr
       EmissionNode::CloseFrame();
 
       RestoreTimer();
+
+//      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+
     }
 
     //***********************************************************
@@ -121,6 +202,11 @@ namespace prefr
 
     PointEmissionNode::~PointEmissionNode()
     {}
+
+    void PointEmissionNode::SetEmissionPosition(float x, float y, float z)
+    {
+      position = glm::vec3(x, y, z);
+    }
 
     glm::vec3 PointEmissionNode::GetEmissionPosition()
     {
