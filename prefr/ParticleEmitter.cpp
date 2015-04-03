@@ -122,7 +122,7 @@ namespace prefr
       for (EmissionNodesArray::iterator it = emissionNodes->begin();
            it != emissionNodes->end(); it++)
       {
-        if (*it)
+        if (*it && (*it)->Active())
         {
 
           (*it)->StartFrame(particlesBudget *

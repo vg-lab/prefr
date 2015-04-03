@@ -231,13 +231,12 @@ namespace prefr
 
     glm::vec3 SphereEmissionNode::GetEmissionPosition()
     {
-      velocity = GetRandomDirection();
-
       return position + (radius * velocity);
     }
 
     glm::vec3 SphereEmissionNode::GetEmissionVelocityDirection()
     {
+      velocity = GetRandomDirection();
       return velocity;
     }
 
