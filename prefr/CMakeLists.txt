@@ -1,6 +1,6 @@
 source_group(\\ FILES CMakeLists.txt)
 
-set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
+set(PREFR_PUBLIC_HEADERS
   # To ensure that Glew is included before GL this
   # should be the first file included by the library
   types.h
@@ -31,7 +31,7 @@ set(PREFR_PUBLIC_HEADERS ${COMMON_INCLUDES}
 
 set(PREFR_HEADERS )
 
-set(PREFR_SOURCES ${COMMON_SOURCES}
+set(PREFR_SOURCES
   ParticleEmitter.cpp
   ParticleSorter.cpp
   ParticleUpdater.cpp
@@ -43,6 +43,16 @@ set(PREFR_SOURCES ${COMMON_SOURCES}
   GL/GLDefaultParticleRenderer.cpp
   ParticleEmissionNode.cpp
 )
+
+set(NEUROLOTS_LINK_LIBRARIES
+  ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARIES}
+  ${GLUT_LIBRARIES}
+)
+
+if (OPENSCENEGRAPH_FOUND)
+  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} PUBLIC ${OPENSCENEGRAPH_LIBRARIES})
+endif()
 
 if (WITH_CUDA)
   cuda_common_library(prefr)

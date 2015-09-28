@@ -5,4 +5,3 @@ set(CPACK_PACKAGE_LICENSE "Proprietary")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 
 include(CommonCPack)
-include(GNUModules)
