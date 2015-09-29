@@ -9,6 +9,8 @@
 
 #include "../log.h"
 
+#ifdef PREFR_WITH_OPENSCENEGRAPH
+
 namespace prefr
 {
 
@@ -329,3 +331,4 @@ const osg::CopyOp& copyOp)
   }
 
 }
+#endif

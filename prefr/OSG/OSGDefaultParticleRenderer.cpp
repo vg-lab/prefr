@@ -7,6 +7,8 @@
 
 #include "OSGDefaultParticleRenderer.h"
 
+#ifdef PREFR_WITH_OPENSCENEGRAPH
+
 namespace prefr
 {
 
@@ -180,3 +182,4 @@ namespace prefr
 
 
 }
+#endif

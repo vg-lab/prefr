@@ -13,6 +13,8 @@
 #include "OSGRenderConfig.h"
 #include <GL/glew.h>
 
+#ifdef PREFR_WITH_OPENSCENEGRAPH
+
 namespace prefr
 {
 
@@ -37,7 +39,7 @@ namespace prefr
 
 }
 
-
+#endif
 
 
 #endif /* DEFAULTPARTICLERENDERCONFIG_H_ */
