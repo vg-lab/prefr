@@ -54,7 +54,7 @@ if (OPENSCENEGRAPH_FOUND)
   set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} PUBLIC ${OPENSCENEGRAPH_LIBRARIES})
 endif()
 
-if (WITH_CUDA)
+if (CUDA_FOUND)
   cuda_common_library(prefr)
 else()
   common_library(prefr)

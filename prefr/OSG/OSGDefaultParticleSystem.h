@@ -11,7 +11,7 @@
 #include <prefr/api.h>
 #include "../ParticleSystem.h"
 
-#ifdef PREFR_WITH_OPENSCENEGRAPH
+#ifdef PREFR_USE_OPENSCENEGRAPH
 
 #include <osg/Array>
 #include <osg/Geometry>

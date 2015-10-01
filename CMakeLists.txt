@@ -63,7 +63,9 @@ if ( WITH_OPENSCENEGRAPH )
 endif()
 
 if ( WITH_CUDA )
-	common_package( CUDA 6.5 )
+	set(CUDA_SEPARABLE_COMPILATION ON)
+	include(CudaCommonLibrary)
+	common_package( CUDA )
 	if ( CUDA_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
 

@@ -13,7 +13,7 @@
 
 // CUDA include
 #include <prefr/defines.h>
-#if (PREFR_WITH_CUDA == 1)
+#if (PREFR_USE_CUDA)
   #include <cuda.h>
 #endif
 

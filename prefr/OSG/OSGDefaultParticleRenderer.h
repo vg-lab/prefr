@@ -13,7 +13,7 @@
 #include "OSGRenderConfig.h"
 #include <GL/glew.h>
 
-#ifdef PREFR_WITH_OPENSCENEGRAPH
+#ifdef PREFR_USE_OPENSCENEGRAPH
 
 namespace prefr
 {
