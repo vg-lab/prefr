@@ -55,6 +55,12 @@ if (OPENSCENEGRAPH_FOUND)
 endif()
 
 if (CUDA_FOUND)
+  if (MODERN_GPU_ARCH)
+    list(APPEND CUDA_NVCC_FLAGS -arch=sm_20)
+  else()
+    list(APPEND CUDA_NVCC_FLAGS -arch=sm_11)
+  endif()
+  
   cuda_common_library(prefr)
 else()
   common_library(prefr)

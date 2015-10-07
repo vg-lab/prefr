@@ -16,7 +16,7 @@
 #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #include <prefr/ParticleSorter.h>
 
-#if (PREFR_WITH_CUDA)
+#if (PREFR_USE_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
 //  #include <prefr/cuda/CUDAParticleSystem.cuh>
 //  #include <prefr/cuda/GLCUDAParticleRenderer.cuh>
@@ -242,7 +242,7 @@ int main( int argc, char** argv )
 
   ParticleSorter* sorter;
 
-#if (PREFR_WITH_CUDA)
+#if (PREFR_USE_CUDA)
   sorter = new ThrustParticleSorter(*ps->particles);
 #else
   sorter = new ParticleSorter(*ps->particles);
