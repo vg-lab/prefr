@@ -39,13 +39,44 @@ set(PREFR_DESCRIPTION "PREFR - Particle Framework")
 set(COMMON_PROJECT_DOMAIN gmrv.es)
 
 # options for prefr building
-option(WITH_OPENSCENEGRAPH "WITH_OPENSCENEGRAPH" ON)
+option(WITH_OPENSCENEGRAPH "WITH_OPENSCENEGRAPH" OFF)
 option(WITH_CUDA "WITH_CUDA" OFF)
-option(GPU_ARCH "GPU_ARCH" 20)
+option(MODERN_GPU_ARCH "GPU_ARCH" ON)
 option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)
-include(FindPackages)
+# include(FindPackages)
+	
+common_package( OpenGL REQUIRED SYSTEM)
+common_package( GLEW REQUIRED SYSTEM)
+common_package( GLUT REQUIRED SYSTEM)
+# common_package( glm REQUIRED)
+
+list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
+# list( APPEND PREFR_DEPENDENT_LIBRARIES glm )
+
+if ( WITH_OPENSCENEGRAPH )
+	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt)
+	if ( OPENSCENEGRAPH_FOUND )
+		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )
+	endif()
+endif()
+
+if ( WITH_CUDA )
+	set(CUDA_SEPARABLE_COMPILATION ON)
+	include(CudaCommonLibrary)
+	common_package( CUDA )
+	if ( CUDA_FOUND )
+		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
+
+		common_package( CUDAThrust )
+		if ( CUDAThrust_FOUND )
+			list( APPEND PREFR_DEPENDENT_LIBRARIES CUDAThrust )
+		endif()
+	endif()
+endif()
+
+common_package_post()
 
 # library subdirectory
 add_subdirectory(prefr)

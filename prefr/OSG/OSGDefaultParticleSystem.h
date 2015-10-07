@@ -11,6 +11,8 @@
 #include <prefr/api.h>
 #include "../ParticleSystem.h"
 
+#ifdef PREFR_USE_OPENSCENEGRAPH
+
 #include <osg/Array>
 #include <osg/Geometry>
 
@@ -93,6 +95,6 @@ namespace prefr
   };
 
 }
-
+#endif
 
 #endif /* OSGDEFAULTPARTICLESYSTEM_H_ */

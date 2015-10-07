@@ -21,6 +21,10 @@ namespace prefr
         cda->deviceDistances.resize( particles->size );
       }
 
+      ThrustParticleSorter::~ThrustParticleSorter()
+      {
+
+      }
 
       void ThrustParticleSorter::Sort(SortOrder order)
       {

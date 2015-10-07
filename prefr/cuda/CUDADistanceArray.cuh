@@ -10,7 +10,7 @@
 
 #include "../DistanceArray.hpp"
 
-#ifdef PREFR_WITH_CUDA
+#ifdef PREFR_USE_CUDA
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 #endif
@@ -22,7 +22,7 @@ namespace prefr
   {
   public:
 
-#ifdef PREFR_WITH_CUDA
+#ifdef PREFR_USE_CUDA
     thrust::device_vector<int> deviceID;
     thrust::device_vector<float> deviceDistances;
 

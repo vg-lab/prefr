@@ -10,6 +10,8 @@
 
 #include "../RenderConfig.h"
 
+#ifdef PREFR_USE_OPENSCENEGRAPH
+
 #include <osg/Array>
 #include <osg/Drawable>
 
@@ -55,5 +57,7 @@ namespace prefr
 
 
 }
+
+#endif
 
 #endif /* OSGRENDERCONFIG_H_ */

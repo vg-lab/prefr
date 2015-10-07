@@ -14,6 +14,7 @@ namespace prefr
   public:
 
     ThrustParticleSorter( const ParticleCollection& arrayParticles );
+    virtual ~ThrustParticleSorter();
 
     void Sort(SortOrder order);
 
