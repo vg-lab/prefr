@@ -9,7 +9,9 @@
 
 // types.h should be the first file included to ensure
 // GLEW is included before any other GL file
+#ifndef PREFR_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
+#endif
 
 // CUDA include
 #include <prefr/defines.h>
