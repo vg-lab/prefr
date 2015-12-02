@@ -27,6 +27,7 @@ set(PREFR_PUBLIC_HEADERS
   ParticleEmissionNode.h
   GL/shd/GL-frag.glsl
   GL/shd/GL-vert.glsl
+  Config.h
 )
 
 set(PREFR_HEADERS )
@@ -42,6 +43,7 @@ set(PREFR_SOURCES
   ParticlePrototype.cpp
   GL/GLDefaultParticleRenderer.cpp
   ParticleEmissionNode.cpp
+  Config.cpp
 )
 
 set(NEUROLOTS_LINK_LIBRARIES

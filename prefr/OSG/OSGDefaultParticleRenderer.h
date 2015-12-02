@@ -11,7 +11,9 @@
 #include <prefr/api.h>
 #include "../ParticleRenderer.h"
 #include "OSGRenderConfig.h"
+#ifndef PREFR_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
+#endif
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
 

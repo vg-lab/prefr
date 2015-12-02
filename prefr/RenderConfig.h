@@ -8,7 +8,9 @@
 #ifndef RENDERCONFIG_H_
 #define RENDERCONFIG_H_
 
+#ifndef PREFR_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
+#endif
 
 #include <vector>
 
