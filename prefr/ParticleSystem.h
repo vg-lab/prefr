@@ -81,6 +81,7 @@ namespace prefr
     unsigned int maxParticles;
 
     bool loop;
+    bool renderDeadParticles;
 
     PREFR_API
     ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);

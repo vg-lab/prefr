@@ -16,6 +16,7 @@ namespace prefr
   , renderer( nullptr )
   , maxParticles (_maxParticles)
   , loop(_loop)
+  , renderDeadParticles( false )
   {
     tparticleContainer* p = new tparticleContainer(maxParticles);
     particles = new ParticleCollection(p, p->begin(), p->end());
@@ -220,7 +221,7 @@ namespace prefr
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
   {
 
-    this->sorter->UpdateCameraDistance(cameraPosition);
+    this->sorter->UpdateCameraDistance( cameraPosition, renderDeadParticles );
 //    unsigned int i = 0;
 //    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
 //    {
