@@ -56,7 +56,7 @@ list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
 # list( APPEND PREFR_DEPENDENT_LIBRARIES glm )
 
 if ( WITH_OPENSCENEGRAPH )
-	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt)
+	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)
 	if ( OPENSCENEGRAPH_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )
 	endif()

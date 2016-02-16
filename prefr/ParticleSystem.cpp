@@ -17,6 +17,7 @@ namespace prefr
   , maxParticles (_maxParticles)
   , loop(_loop)
   , renderDeadParticles( false )
+  , run( false )
   {
     tparticleContainer* p = new tparticleContainer(maxParticles);
     particles = new ParticleCollection(p, p->begin(), p->end());
@@ -147,10 +148,15 @@ namespace prefr
       (*emitters)[particleEmitter[i]]->EmitFunction(current, true);
     }
 
+    run = true;
+
   }
 
   void ParticleSystem::Update(float deltaTime)
   {
+    if( !run )
+      return;
+
     for (unsigned int i = 0; i < emitters->size(); i++)
     {
       (*emitters)[i]->EmitAll(deltaTime);
@@ -168,6 +174,9 @@ namespace prefr
 
   void ParticleSystem::UpdateUnified(float deltaTime)
   {
+    if( !run )
+      return;
+
     unsigned int i = 0;
 
     // Set emitter delta time to calculate the number of particles to emit this frame
@@ -240,6 +249,16 @@ namespace prefr
   void ParticleSystem::Render() const
   {
    this->renderer->Paint(aliveParticles);
+  }
+
+  void ParticleSystem::Run( bool run_ )
+  {
+    run = run_;
+  }
+
+  bool ParticleSystem::Run( void )
+  {
+    return run;
   }
 
 }
