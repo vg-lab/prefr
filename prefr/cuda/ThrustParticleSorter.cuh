@@ -18,9 +18,12 @@ namespace prefr
 
     void Sort(SortOrder order);
 
-    virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
-    virtual void UpdateCameraDistance(const tparticle_ptr current,
-                                      const glm::vec3& cameraPosition);
+    virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
+                                       bool discardDeadParticles = true );
+
+    virtual void UpdateCameraDistance( const tparticle_ptr current,
+                                       const glm::vec3& cameraPosition,
+                                       bool discardDeadParticles = true );
 
     virtual void InitDistanceArray();
   };
