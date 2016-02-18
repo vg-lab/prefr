@@ -1,4 +1,4 @@
-#version 150 compatibility
+#version 330
 
 in vec4 color;
 in vec2 uvCoord;

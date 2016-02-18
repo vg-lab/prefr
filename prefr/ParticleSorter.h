@@ -12,9 +12,8 @@
 #include "types.h"
 #include "ElementCollection.hpp"
 #include "DistanceArray.hpp"
-#include "ParticleEmissionNode.h"
-
 #include <iostream>
+#include "ParticleEmissionNode.h"
 
 using namespace utils;
 
@@ -35,14 +34,6 @@ namespace prefr
       Ascending = 1,
     };
 
-    ParticleCollection* particles;
-
-    EmissionNodesArray* emissionNodes;
-
-    DistanceArray* distances;
-
-    unsigned int aliveParticles;
-
     PREFR_API ParticleSorter( const ParticleCollection& particlesArray );
 
     PREFR_API virtual ~ParticleSorter();
@@ -54,6 +45,18 @@ namespace prefr
                                       const glm::vec3& cameraPosition);
 
     PREFR_API virtual void InitDistanceArray();
+
+#ifdef SERIALIZE_BEFORE_SORT
+    virtual void SerializeAttributes( );
+#endif
+
+    ParticleCollection* particles;
+
+    EmissionNodesArray* emissionNodes;
+
+    DistanceArray* distances;
+
+    unsigned int aliveParticles;
   };
 }
 

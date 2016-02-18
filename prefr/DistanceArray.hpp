@@ -10,6 +10,10 @@
 
 #include <vector>
 
+#include "types.h"
+
+#define SERIALIZE_BEFORE_SORT 1
+
 namespace prefr
 {
 
@@ -60,10 +64,6 @@ namespace prefr
   class DistanceArray
   {
   public:
-    std::vector<int>* ids;
-    std::vector<float>* distances;
-    tdcontainter* elements;
-    int current;
 
     DistanceArray(unsigned int size)
     {
@@ -77,6 +77,14 @@ namespace prefr
         (*elements)[i] = tdunit(&(*ids)[i], &(*distances)[i]);
         (*ids)[i] = i;
       }
+
+#ifdef SERIALIZE_BEFORE_SORT
+      positions = new std::vector< glm::vec3 >( size );
+      sizes = new std::vector< float >( size );
+      colors = new std::vector< glm::vec4 >( size );
+#endif
+
+
     }
 
     virtual ~DistanceArray()
@@ -128,8 +136,19 @@ namespace prefr
 
     inline static bool sortDescending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance > *rhs.distance;}
     inline static bool sortAscending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance < *rhs.distance;}
-  };
 
+    std::vector< int >* ids;
+    std::vector< float >* distances;
+
+    tdcontainter* elements;
+    int current;
+
+#ifdef SERIALIZE_BEFORE_SORT
+    std::vector< glm::vec3 >* positions;
+    std::vector< float >* sizes;
+    std::vector< glm::vec4 >* colors;
+  };
+#endif
 
 }
 #endif /* DISTANCEARRAY_HPP_ */

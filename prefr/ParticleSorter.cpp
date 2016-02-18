@@ -29,6 +29,28 @@ namespace prefr
     distances = new DistanceArray( particles->size );
   }
 
+#ifdef SERIALIZE_BEFORE_SORT
+  void ParticleSorter::SerializeAttributes( )
+  {
+    auto posIt = distances->positions->begin( );
+    auto sizeIt = distances->sizes->begin( );
+    auto colorIt = distances->colors->begin( );
+
+    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    {
+
+      *posIt = ( *it )->position;
+      *sizeIt = ( *it )->size;
+      *colorIt = ( *it )->color;
+
+      posIt++;
+      sizeIt++;
+      colorIt++;
+    }
+
+  }
+#endif
+
   void ParticleSorter::Sort(SortOrder order)
   {
 
@@ -57,6 +79,8 @@ namespace prefr
 
   }
 
+
+
   void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
   {
     aliveParticles = 0;
@@ -79,6 +103,9 @@ namespace prefr
         }
       }
     }
+
+
+    SerializeAttributes( );
   }
 
   void ParticleSorter::UpdateCameraDistance(const tparticle_ptr current, const glm::vec3& cameraPosition)

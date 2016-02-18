@@ -56,20 +56,24 @@ list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
 # list( APPEND PREFR_DEPENDENT_LIBRARIES glm )
 
 if ( WITH_OPENSCENEGRAPH )
-	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt)
+	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)
 	if ( OPENSCENEGRAPH_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )
 	endif()
 endif()
 
 if ( WITH_CUDA )
-	set(CUDA_SEPARABLE_COMPILATION ON)
+
+	#set(CUDA_SEPARABLE_COMPILATION ON)
+	
 	include(CudaCommonLibrary)
-	common_package( CUDA )
+	
+	common_package( CUDA SYSTEM )
+		
 	if ( CUDA_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
 
-		common_package( CUDAThrust )
+		common_package( CUDAThrust SYSTEM )
 		if ( CUDAThrust_FOUND )
 			list( APPEND PREFR_DEPENDENT_LIBRARIES CUDAThrust )
 		endif()

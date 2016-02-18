@@ -1,4 +1,5 @@
-#version 150 compatibility
+#version 330
+#extension GL_ARB_separate_shader_objects: enable
 
 uniform mat4 osg_ModelViewProjectionMatrix;
 
