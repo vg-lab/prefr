@@ -46,14 +46,14 @@ option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)
 # include(FindPackages)
-	
-common_package( OpenGL REQUIRED SYSTEM)
-common_package( GLEW REQUIRED SYSTEM)
-common_package( GLUT REQUIRED SYSTEM)
-# common_package( glm REQUIRED)
+
+common_package( OpenGL REQUIRED SYSTEM )
+common_package( GLEW REQUIRED SYSTEM )
+common_package( GLUT REQUIRED SYSTEM )
+common_package( GLM REQUIRED )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
-# list( APPEND PREFR_DEPENDENT_LIBRARIES glm )
+list( APPEND PREFR_DEPENDENT_LIBRARIES GLM )
 
 if ( WITH_OPENSCENEGRAPH )
 	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)

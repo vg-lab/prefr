@@ -40,9 +40,12 @@ namespace prefr
 
     PREFR_API virtual void Sort(SortOrder order = Descending);
 
-    PREFR_API virtual void UpdateCameraDistance(const glm::vec3& cameraPosition);
-    PREFR_API virtual void UpdateCameraDistance(const tparticle_ptr current,
-                                      const glm::vec3& cameraPosition);
+    PREFR_API virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
+                                                 bool renderDeadParticles = false );
+
+    PREFR_API virtual void UpdateCameraDistance( const tparticle_ptr current,
+                                                 const glm::vec3& cameraPosition,
+                                                 bool renderDeadParticles = false );
 
     PREFR_API virtual void InitDistanceArray();
 

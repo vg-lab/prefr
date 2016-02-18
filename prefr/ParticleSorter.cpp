@@ -79,9 +79,8 @@ namespace prefr
 
   }
 
-
-
-  void ParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
+  void ParticleSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
+                                             bool renderDeadParticles )
   {
     aliveParticles = 0;
     distances->ResetCounter();
@@ -98,7 +97,7 @@ namespace prefr
       {
         if ((*it)->Alive())
         {
-          UpdateCameraDistance((*it), cameraPosition);
+          UpdateCameraDistance((*it), cameraPosition, renderDeadParticles );
           aliveParticles++;
         }
       }
@@ -108,14 +107,18 @@ namespace prefr
     SerializeAttributes( );
   }
 
-  void ParticleSorter::UpdateCameraDistance(const tparticle_ptr current, const glm::vec3& cameraPosition)
+  void ParticleSorter::UpdateCameraDistance( const tparticle_ptr current,
+                                             const glm::vec3& cameraPosition,
+                                             bool renderDeadParticles )
   {
 //    DistanceUnit& dist = distances->at(current->id);
     DistanceUnit& dist = distances->next();
 
     dist.Id() = current->id;
 
-    dist.Distance() = current->Alive() ?  length2(current->position - cameraPosition) : -1;
+    dist.Distance() = current->Alive() || renderDeadParticles ?
+                      length2(current->position - cameraPosition) :
+                      -1;
 
   }
 

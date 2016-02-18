@@ -56,7 +56,8 @@ namespace prefr
 
       }
 
-      void ThrustParticleSorter::UpdateCameraDistance(const glm::vec3& cameraPosition)
+      void ThrustParticleSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
+                                                       bool renderDeadParticles )
       {
         SerializeAttributes( );
 
@@ -84,7 +85,7 @@ namespace prefr
           {
             if ((*it)->Alive())
             {
-              UpdateCameraDistance((*it), cameraPosition);
+              UpdateCameraDistance((*it), cameraPosition, renderDeadParticles );
               aliveParticles++;
             }
           }
@@ -92,13 +93,17 @@ namespace prefr
 
 
       }
-      void ThrustParticleSorter::UpdateCameraDistance(const tparticle_ptr current,  const glm::vec3& cameraPosition)
+      void ThrustParticleSorter::UpdateCameraDistance( const tparticle_ptr current, 
+                                                       const glm::vec3& cameraPosition,
+                                                       bool renderDeadParticles )
       {
         DistanceUnit& dist = distances->next();
         CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
         cda->translatedIDs[distances->current] = current->id;
 
-        (*distances->distances)[distances->current] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
+        (*distances->distances)[distances->current] =
+            current->Alive()  || renderDeadParticles ?
+            length2(current->position - cameraPosition) : -1;
     //        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
       }

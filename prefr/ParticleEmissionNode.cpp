@@ -52,7 +52,7 @@ namespace prefr
 
     bool EmissionNode::Emits()
     {
-      return active && particlesBudget && Continue();
+      return active && particlesBudget > 0 && Continue();
     }
 
     bool EmissionNode::Continue()
