@@ -59,6 +59,8 @@ namespace prefr
       void ThrustParticleSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                                        bool renderDeadParticles )
       {
+        SerializeAttributes( );
+
         aliveParticles = 0;
         distances->ResetCounter();
 
@@ -88,6 +90,8 @@ namespace prefr
             }
           }
         }
+
+
       }
       void ThrustParticleSorter::UpdateCameraDistance( const tparticle_ptr current, 
                                                        const glm::vec3& cameraPosition,

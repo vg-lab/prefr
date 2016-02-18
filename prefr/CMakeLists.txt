@@ -46,17 +46,21 @@ set(PREFR_SOURCES
   Config.cpp
 )
 
-set(NEUROLOTS_LINK_LIBRARIES
+set(PREFR_LINK_LIBRARIES
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GLUT_LIBRARIES}
 )
 
 if (OPENSCENEGRAPH_FOUND)
-  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} PUBLIC ${OPENSCENEGRAPH_LIBRARIES})
+  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES}) 
 endif()
 
 if (CUDA_FOUND)
+
+  set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+  list(APPEND CUDA_NVCC_FLAGS -std=c++11 )
+  
   if (MODERN_GPU_ARCH)
     list(APPEND CUDA_NVCC_FLAGS -arch=sm_20)
   else()
@@ -64,6 +68,7 @@ if (CUDA_FOUND)
   endif()
   
   cuda_common_library(prefr)
+    
 else()
   common_library(prefr)
 endif()

@@ -13,10 +13,10 @@ namespace prefr
   {
   public:
 
-    ThrustParticleSorter( const ParticleCollection& arrayParticles );
-    virtual ~ThrustParticleSorter();
+    PREFR_API ThrustParticleSorter( const ParticleCollection& arrayParticles );
+    PREFR_API virtual ~ThrustParticleSorter();
 
-    void Sort(SortOrder order);
+    PREFR_API void Sort(SortOrder order);
 
     virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
                                        bool discardDeadParticles = true );
@@ -28,7 +28,7 @@ namespace prefr
     virtual void InitDistanceArray();
   };
 
-} // namespace prefer
+} // namespace prefr
 
 
 #endif

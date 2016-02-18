@@ -233,6 +233,7 @@ int main(int argc, char** argv)
   ParticleSorter* sorter;
 
 #if (PREFR_USE_CUDA)
+  std::cout << "Using CUDA sorter" << std::endl;
   sorter = new ThrustParticleSorter(*ps->particles);
 #else
   sorter = new ParticleSorter(*ps->particles);
