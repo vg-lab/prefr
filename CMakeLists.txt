@@ -48,6 +48,7 @@ include(Common)
 # include(FindPackages)
 
 common_package( OpenGL REQUIRED SYSTEM )
+common_package( nvidiaOpenGL SYSTEM )
 common_package( GLEW REQUIRED SYSTEM )
 common_package( GLUT REQUIRED SYSTEM )
 common_package( GLM REQUIRED )
