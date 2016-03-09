@@ -16,9 +16,9 @@
 namespace prefr
 {
 
-  typedef utils::InterpolationSet<float> vectortfloat;
-  typedef utils::InterpolationSet<glm::vec3> vectortvec3;
-  typedef utils::InterpolationSet<glm::vec4> vectortvec4;
+  typedef ::utils::InterpolationSet<float> vectortfloat;
+  typedef ::utils::InterpolationSet<glm::vec3> vectortvec3;
+  typedef ::utils::InterpolationSet<glm::vec4> vectortvec4;
 
   class ParticlePrototype
   {
