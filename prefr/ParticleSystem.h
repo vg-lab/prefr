@@ -24,8 +24,6 @@
 
 #include <vector>
 
-using namespace std;
-using namespace utils;
 
 namespace prefr
 {
@@ -59,10 +57,10 @@ namespace prefr
     PrototypesArray* prototypes;
 
     //! Emitter objects collection of the system.
-    vector<ParticleEmitter*>* emitters;
+    std::vector<ParticleEmitter*>* emitters;
 
     //! Updater objects collection of the system.
-    vector<ParticleUpdater*>* updaters;
+    std::vector<ParticleUpdater*>* updaters;
 
     //! Particle sorter for alpha rendering.
     ParticleSorter* sorter;
@@ -71,10 +69,10 @@ namespace prefr
     ParticleRenderer* renderer;
 
   protected:
-    vector<int> particleEmissionNodes;
-    vector<int> particlePrototype;
-    vector<int> particleEmitter;
-    vector<int> particleUpdater;
+    std::vector<int> particleEmissionNodes;
+    std::vector<int> particlePrototype;
+    std::vector<int> particleEmitter;
+    std::vector<int> particleUpdater;
 
   public:
     unsigned int aliveParticles;

@@ -62,7 +62,7 @@ namespace prefr
     PREFR_API virtual glm::vec3 GetEmissionVelocityDirection() = 0;
   };
 
-  typedef vector<EmissionNode*> EmissionNodesArray;
+  typedef std::vector<EmissionNode*> EmissionNodesArray;
 
   class TimedEmissionNode : public EmissionNode, public utils::SingleFrameTimer
   {

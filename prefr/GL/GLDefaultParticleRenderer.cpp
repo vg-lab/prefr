@@ -7,6 +7,8 @@
 
 #include "GLDefaultParticleRenderer.h"
 
+using namespace std;
+
 namespace prefr
 {
 

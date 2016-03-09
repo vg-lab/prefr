@@ -29,8 +29,8 @@ namespace prefr
 
     emissionNodes = new EmissionNodesArray;
     prototypes = new PrototypesArray;
-    emitters = new vector<ParticleEmitter*>;
-    updaters = new vector<ParticleUpdater*>;
+    emitters = new std::vector<ParticleEmitter*>;
+    updaters = new std::vector<ParticleUpdater*>;
 
 
     if (initialParticlesNumber > maxParticles)

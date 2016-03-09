@@ -19,8 +19,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 namespace utils
 {
   template <class T>
@@ -28,13 +26,13 @@ namespace utils
   {
   public:
 
-    vector<float> times;
-    vector<T> values;
+    std::vector<float> times;
+    std::vector<T> values;
 
-    vector<unsigned int> precisionValues;
+    std::vector<unsigned int> precisionValues;
 
-    vector<int> quickReference;
-    vector<float> invIntervals;
+    std::vector<int> quickReference;
+    std::vector<float> invIntervals;
     float step;
 
 
@@ -191,7 +189,7 @@ namespace utils
     {
       int precision = 0;
 
-      string str = std::to_string( (long double) (time));
+      std::string str = std::to_string( (long double) (time));
 
       //@sgalindo: this may yield to an underflow value
       unsigned int pos = (unsigned int) str.length()-1;
@@ -236,7 +234,7 @@ namespace utils
           invIntervals[i] = 1.0f / (times[i+1] - times[i]);
         }
 
-      vector<int> limits(times.size());
+      std::vector<int> limits(times.size());
 
       for (unsigned int i = 0; i < limits.size()-1; i++)
       {
