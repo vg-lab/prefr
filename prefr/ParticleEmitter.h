@@ -15,8 +15,6 @@
 #include "ParticleEmissionNode.h"
 
 
-using namespace utils;
-
 namespace prefr
 {
 
@@ -27,11 +25,11 @@ namespace prefr
 
     ParticleCollection* particles;
 
-    vector<EmissionNode*>* emissionNodes;
-    vector<int>* refEmissionNodes;
+    std::vector<EmissionNode*>* emissionNodes;
+    std::vector<int>* refEmissionNodes;
 
     PrototypesArray* prototypes;
-    vector<int>* refPrototypes;
+    std::vector<int>* refPrototypes;
 
     int maxParticles;
     float particlesBudget;

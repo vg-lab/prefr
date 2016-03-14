@@ -12,8 +12,6 @@
 #include "ElementCollection.hpp"
 #include "ParticleEmitter.h"
 
-using namespace utils;
-
 namespace prefr
 {
   //! This class updates the particles through the particle life cycle.
@@ -27,10 +25,10 @@ public:
     ParticleCollection* particles;
 
     PrototypesArray* prototypes;
-    vector<int>* refPrototypes;
+    std::vector<int>* refPrototypes;
 
-    vector<EmissionNode*>* emissionNodes;
-    vector<int>* refEmissionNodes;
+    std::vector<EmissionNode*>* emissionNodes;
+    std::vector<int>* refEmissionNodes;
 
 protected:
 

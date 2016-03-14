@@ -4,8 +4,6 @@
 
 #include <vector>
 
-using namespace std;
-
 namespace utils
 {
 
@@ -14,13 +12,13 @@ namespace utils
   {
   public:
 
-    vector<ELEM*>* elements;
-    typename vector<ELEM*>::iterator start;
-    typename vector<ELEM*>::iterator end;
+    std::vector<ELEM*>* elements;
+    typename std::vector<ELEM*>::iterator start;
+    typename std::vector<ELEM*>::iterator end;
 
     int size;
 
-    ElementCollection(vector<ELEM*>* elementsArray, unsigned int _start, unsigned int _end)
+    ElementCollection(std::vector<ELEM*>* elementsArray, unsigned int _start, unsigned int _end)
     {
       this->elements = elementsArray;
       this->start = elementsArray->begin() + _start;
@@ -28,7 +26,7 @@ namespace utils
       this->size = _end - _start;
     }
 
-    ElementCollection(vector<ELEM*>* elementsArray, typename vector<ELEM*>::iterator _start, typename vector<ELEM*>::iterator _end)
+    ElementCollection(std::vector<ELEM*>* elementsArray, typename std::vector<ELEM*>::iterator _start, typename std::vector<ELEM*>::iterator _end)
     {
       this->elements = elementsArray;
       this->start = _start;
@@ -60,7 +58,7 @@ namespace utils
       this->size = _end - _start;
     }
 
-    ElementCollection(ElementCollection* other, typename vector<ELEM*>::iterator _start, typename vector<ELEM*>::iterator _end)
+    ElementCollection(ElementCollection* other, typename std::vector<ELEM*>::iterator _start, typename std::vector<ELEM*>::iterator _end)
     {
       this->elements = other->elements;
       this->start = _start;

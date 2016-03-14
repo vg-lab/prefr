@@ -14,8 +14,6 @@
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 
-using namespace utils;
-
 namespace prefr
 {
 

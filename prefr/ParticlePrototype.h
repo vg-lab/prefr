@@ -12,14 +12,13 @@
 #include "ElementCollection.hpp"
 #include "InterpolationSet.hpp"
 
-using namespace utils;
 
 namespace prefr
 {
 
-  typedef InterpolationSet<float> vectortfloat;
-  typedef InterpolationSet<glm::vec3> vectortvec3;
-  typedef InterpolationSet<glm::vec4> vectortvec4;
+  typedef ::utils::InterpolationSet<float> vectortfloat;
+  typedef ::utils::InterpolationSet<glm::vec3> vectortvec3;
+  typedef ::utils::InterpolationSet<glm::vec4> vectortvec4;
 
   class ParticlePrototype
   {
@@ -51,7 +50,7 @@ namespace prefr
 
   typedef ParticlePrototype tprototype;
   typedef tprototype* tprototype_ptr;
-  typedef vector<tprototype_ptr> PrototypesArray;
+  typedef std::vector<tprototype_ptr> PrototypesArray;
 
 
 }

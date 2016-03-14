@@ -15,8 +15,6 @@
 #include <iostream>
 #include "ParticleEmissionNode.h"
 
-using namespace utils;
-
 namespace prefr
 {
   static inline float length2(const glm::vec3& elem)
