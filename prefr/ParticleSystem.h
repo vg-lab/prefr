@@ -68,7 +68,6 @@ namespace prefr
     //! Particles renderer (OpenGL, OSG, etc.)
     ParticleRenderer* renderer;
 
-  protected:
     std::vector<int> particleEmissionNodes;
     std::vector<int> particlePrototype;
     std::vector<int> particleEmitter;
