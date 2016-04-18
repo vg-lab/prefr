@@ -69,11 +69,12 @@ namespace prefr
     int ParticleUpdater::Update(float deltaTime)
     {
       int aliveParticles = 0;
-      for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+      for ( tparticle it = particles->begin( );
+            it != particles->end( ); it++)
       {
-        Update((*it), deltaTime);
+        Update( &it, deltaTime );
 
-        aliveParticles += (*it)->Alive();
+        aliveParticles += it.alive( );
       }
 
       return aliveParticles;
@@ -81,31 +82,33 @@ namespace prefr
 
     void ParticleUpdater::Update(const tparticle_ptr current, float deltaTime)
     {
-      currentNode = GetCurrentNode( current->id );
-      currentPrototype = GetCurrentPrototype( current->id );
+      currentNode = GetCurrentNode( current->id( ) );
+      currentPrototype = GetCurrentPrototype( current->id( ) );
 
       if (!currentNode || !currentPrototype)
         return;
 
-      current->life = std::max(0.0f, current->life - deltaTime);
-      current->alive = (current->life > 0) &&
-          (!(currentNode->killParticlesIfInactive && !currentNode->active));
+      current->life( std::max( 0.0f, current->life( ) - deltaTime ));
+      current->alive( ( current->life( ) > 0) &&
+          (!(currentNode->killParticlesIfInactive && !currentNode->active)));
 
-      if (current->Alive() && currentPrototype && !current->Newborn())
+      if (current->alive( ) && currentPrototype && !current->newborn( ))
       {
 
-        float refLife = 1.0f - glm::clamp((current->life) * (currentPrototype->lifeNormalization), 0.0f, 1.0f);
+        float refLife = 1.0f - glm::clamp(( current->life( ) ) * (currentPrototype->lifeNormalization), 0.0f, 1.0f);
 
-        current->color = (currentPrototype->color.GetValue(refLife));
+        current->color( currentPrototype->color.GetValue( refLife ));
 
-        current->size = currentPrototype->size.GetValue(refLife);
-        current->velocityModule = currentPrototype->velocity.GetValue(refLife);
+        current->size( currentPrototype->size.GetValue( refLife ));
+        current->velocityModule( currentPrototype->velocity.GetValue( refLife ));
 
-        current->position += current->velocity * current->velocityModule * deltaTime;
+        current->position( current->position( ) +
+                           current->velocity( ) *
+                           current->velocityModule( ) * deltaTime );
 
       }
 
-      current->newborn = false;
+      current->newborn( false );
 
     }
 

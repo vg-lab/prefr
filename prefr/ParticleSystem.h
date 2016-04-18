@@ -14,6 +14,8 @@
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 
+#include "Particles.h"
+
 #include "ParticleEmitter.h"
 #include "ParticleEmissionNode.h"
 #include "ParticleUpdater.h"
@@ -27,6 +29,8 @@
 
 namespace prefr
 {
+
+
 
   //! This class provides the common inheritable framework for creating a particle system.
   /*!
@@ -48,7 +52,8 @@ namespace prefr
   public:
 
     //! Particles collection the system will manage.
-    ParticleCollection* particles;
+//    ParticleCollection* particles;
+    Particles particles;
 
     //! Emission nodes array of the particle set.
     EmissionNodesArray* emissionNodes;
@@ -72,6 +77,11 @@ namespace prefr
     std::vector<int> particlePrototype;
     std::vector<int> particleEmitter;
     std::vector<int> particleUpdater;
+
+//    PREFR_HANDLER( emissionNode, EmissionNode );
+//    PREFR_HANDLER( prototype, ParticlePrototype );
+//    PREFR_HANDLER( updater, ParticleUpdater );
+//    PREFR_HANDLER( emitter, ParticleEmitter );
 
   public:
     unsigned int aliveParticles;

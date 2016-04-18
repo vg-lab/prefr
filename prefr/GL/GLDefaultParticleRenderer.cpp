@@ -81,7 +81,7 @@ namespace prefr
 
   void GLDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
   {
-    tparticle_ptr currentParticle;
+    tparticle currentParticle;
     int idx;
 
     for (unsigned int i = 0; i < aliveParticles; i++)
@@ -90,15 +90,15 @@ namespace prefr
 
       idx = i * 4;
 
-      (*renderConfig->particlePositions)[idx] = currentParticle->position.x;
-      (*renderConfig->particlePositions)[idx+1] = currentParticle->position.y;
-      (*renderConfig->particlePositions)[idx+2] = currentParticle->position.z;
-      (*renderConfig->particlePositions)[idx+3] = currentParticle->size;
+      (*renderConfig->particlePositions)[idx] = currentParticle.position( ).x;
+      (*renderConfig->particlePositions)[idx+1] = currentParticle.position( ).y;
+      (*renderConfig->particlePositions)[idx+2] = currentParticle.position( ).z;
+      (*renderConfig->particlePositions)[idx+3] = currentParticle.size( );
 
-      (*renderConfig->particleColors)[idx] = currentParticle->color.x;
-      (*renderConfig->particleColors)[idx+1] = currentParticle->color.y;
-      (*renderConfig->particleColors)[idx+2] = currentParticle->color.z;
-      (*renderConfig->particleColors)[idx+3] = currentParticle->color.w;
+      (*renderConfig->particleColors)[idx] = currentParticle.color( ).x;
+      (*renderConfig->particleColors)[idx+1] = currentParticle.color( ).y;
+      (*renderConfig->particleColors)[idx+2] = currentParticle.color( ).z;
+      (*renderConfig->particleColors)[idx+3] = currentParticle.color( ).w;
     }
 
     glBindVertexArray(renderConfig->vao);

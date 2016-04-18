@@ -10,7 +10,7 @@
 
 #include <prefr/api.h>
 #include "InterpolationSet.hpp"
-#include "ElementCollection.hpp"
+#include "Particles.h"
 #include "ParticlePrototype.h"
 #include "ParticleEmissionNode.h"
 

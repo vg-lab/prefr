@@ -19,8 +19,8 @@ namespace prefr
   , renderDeadParticles( false )
   , run( false )
   {
-    tparticleContainer* p = new tparticleContainer(maxParticles);
-    particles = new ParticleCollection(p, p->begin(), p->end());
+//    tparticleContainer* p = new tparticleContainer(maxParticles);
+//    particles = new ParticleCollection(p, p->begin(), p->end());
 
     particleEmissionNodes.resize(maxParticles, -1);
     particlePrototype.resize(maxParticles, -1);
@@ -32,17 +32,34 @@ namespace prefr
     emitters = new std::vector<ParticleEmitter*>;
     updaters = new std::vector<ParticleUpdater*>;
 
-
     if (initialParticlesNumber > maxParticles)
       initialParticlesNumber = maxParticles;
 
-    unsigned int counter = 0;
+    particles.resize( _maxParticles );
 
-    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    auto particle = particles.begin( );
+    for( unsigned int i = 0; i < maxParticles; i++ )
     {
-      (*particles->elements)[counter] = new tparticle(counter, counter < initialParticlesNumber);
-      counter++;
+      particle.id( i );
+      if( i < initialParticlesNumber )
+        particle.alive( true );
+
+      particle++;
     }
+
+//    auto particle = particles.begin( );
+//    for( unsigned int i = 0; i < initialParticlesNumber; i++ )
+//    {
+//      particle.alive( true );
+//      particle++;
+//    }
+
+//    unsigned int counter = 0;
+//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+//    {
+//      (*particles->elements)[counter] = new tparticle(counter, counter < initialParticlesNumber);
+//      counter++;
+//    }
 
     aliveParticles = initialParticlesNumber;
   }
@@ -72,10 +89,10 @@ namespace prefr
     delete( sorter );
     delete( renderer );
 
-    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-      delete( *it );
+//    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+//      delete( *it );
 
-    delete( particles );
+//    delete( particles );
   }
 
   void ParticleSystem::AddEmissionNode(EmissionNode* node)
@@ -83,8 +100,8 @@ namespace prefr
     this->emissionNodes->push_back(node);
 
     int size = int(this->emissionNodes->size());
-    int start = node->particles->start - this->particles->start;
-    int end = node->particles->end - this->particles->start;
+    int start = node->particles->begin( ) - this->particles.begin( );
+    int end = node->particles->end( ) - this->particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -97,8 +114,8 @@ namespace prefr
     this->prototypes->push_back(prototype);
 
     int size = int(this->prototypes->size());
-    int start = prototype->particles->start - this->particles->start;
-    int end = prototype->particles->end - this->particles->start;
+    int start = prototype->particles->begin( ) - this->particles.begin( );
+    int end = prototype->particles->end( ) - this->particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -111,8 +128,8 @@ namespace prefr
     this->emitters->push_back(emitter);
 
     int size = int(this->emitters->size());
-    int start = emitter->particles->start - this->particles->start;
-    int end = emitter->particles->end - this->particles->start;
+    int start = emitter->particles->begin( ) - this->particles.begin( );
+    int end = emitter->particles->end( ) - this->particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -131,8 +148,8 @@ namespace prefr
     this->updaters->push_back(updater);
 
     int size = int(this->updaters->size());
-    int start = updater->particles->start - this->particles->start;
-    int end = updater->particles->end - this->particles->start;
+    int start = updater->particles->begin( ) - this->particles.begin( );
+    int end = updater->particles->end( ) - this->particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -162,10 +179,11 @@ namespace prefr
 
   void ParticleSystem::Start()
   {
+    tparticle current = particles.begin( );
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      tparticle_ptr current = particles->GetElement(i);
-      (*emitters)[particleEmitter[i]]->EmitFunction(current, true);
+      (*emitters)[particleEmitter[i]]->EmitFunction( &current, true);
+      current++;
     }
 
     run = true;
@@ -218,19 +236,19 @@ namespace prefr
 
       EmissionNode* currentNode = (*nodit);
 
-      for (tparticleContainer::iterator it = currentNode->particles->start;
-          it != currentNode->particles->end;
-          it++)
+      for ( Particles::iterator it = currentNode->particles->begin( );
+            it != currentNode->particles->end( );
+            ++it)
       {
-        i = ((tparticle_ptr) *it)->id;
+        i = it.id( );
 
         // Emit each particle with its own emitter
-        (*emitters)[particleEmitter[i]]->EmitSingle(*it);
+        (*emitters)[particleEmitter[i]]->EmitSingle( &it );
 
         // Update each particle with its own updater
-        (*updaters)[particleUpdater[i]]->Update(*it, deltaTime);
+        (*updaters)[particleUpdater[i]]->Update( &it, deltaTime);
 
-        if ((*it)->Alive())
+        if (it.alive( ))
         {
         currentNode->IncreaseAlive();
         accumulator++;// += (*it)->Alive();

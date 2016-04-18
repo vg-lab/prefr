@@ -10,7 +10,7 @@
 
 #include <prefr/api.h>
 #include "types.h"
-#include "ElementCollection.hpp"
+#include "Particles.h"
 #include "DistanceArray.hpp"
 #include <iostream>
 #include "ParticleEmissionNode.h"

@@ -10,7 +10,9 @@
 
 // #include <particles/config.h>
 #include "types.h"
-#include "ElementCollection.hpp"
+
+#include "Particles.h"
+
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 

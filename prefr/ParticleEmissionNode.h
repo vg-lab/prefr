@@ -10,7 +10,7 @@
 
 #include <prefr/api.h>
 #include "types.h"
-#include "ElementCollection.hpp"
+#include "Particles.h"
 #include "Timer.hpp"
 
 namespace prefr
@@ -70,9 +70,9 @@ namespace prefr
 
     PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles );
     PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles,
-				 float period,
-				 float offset,
-				 float duration);
+                                 float period,
+                                 float offset,
+                                 float duration);
     PREFR_API virtual bool Emits();
 
     PREFR_API virtual void CheckEmissionEnd();

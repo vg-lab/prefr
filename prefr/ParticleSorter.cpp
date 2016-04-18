@@ -9,6 +9,7 @@
 
 namespace prefr
 {
+
   ParticleSorter::ParticleSorter( const ParticleCollection& particlesArray  )
   : particles( new ParticleCollection( particlesArray ) )
   , emissionNodes( nullptr )
@@ -36,12 +37,13 @@ namespace prefr
     auto sizeIt = distances->sizes->begin( );
     auto colorIt = distances->colors->begin( );
 
-    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+    for( Particles::iterator it = particles->begin( );
+         it != particles->end( ); it++)
     {
 
-      *posIt = ( *it )->position;
-      *sizeIt = ( *it )->size;
-      *colorIt = ( *it )->color;
+      *posIt = it.position( );
+      *sizeIt = it.size( );
+      *colorIt = it.color( );
 
       posIt++;
       sizeIt++;
@@ -91,13 +93,13 @@ namespace prefr
       if (!(*nodit) || !(*nodit)->Active())
         continue;
 
-      for (tparticleContainer::iterator it = (*nodit)->particles->start;
-           it != (*nodit)->particles->end;
-           it++)
+      for ( tparticle it = (*nodit)->particles->begin( );
+            it != (*nodit)->particles->end( );
+            it++)
       {
-        if ((*it)->Alive())
+        if (it.alive())
         {
-          UpdateCameraDistance((*it), cameraPosition, renderDeadParticles );
+          UpdateCameraDistance( &it, cameraPosition, renderDeadParticles );
           aliveParticles++;
         }
       }
@@ -114,10 +116,10 @@ namespace prefr
 //    DistanceUnit& dist = distances->at(current->id);
     DistanceUnit& dist = distances->next();
 
-    dist.Id() = current->id;
+    dist.Id() = current->id( );
 
-    dist.Distance() = current->Alive() || renderDeadParticles ?
-                      length2(current->position - cameraPosition) :
+    dist.Distance() = current->alive() || renderDeadParticles ?
+                      length2(current->position( ) - cameraPosition) :
                       -1;
 
   }

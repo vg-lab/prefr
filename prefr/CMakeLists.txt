@@ -4,11 +4,12 @@ set(PREFR_PUBLIC_HEADERS
   # To ensure that Glew is included before GL this
   # should be the first file included by the library
   types.h
-  #
+  #  
   ElementCollection.hpp
   InterpolationSet.hpp
   DistanceArray.hpp
   Timer.hpp
+  Particles.h
   ParticlePrototype.h
   OSG/OSGRenderConfig.h
   OSG/OSGDefaultParticleSystem.h
@@ -20,8 +21,7 @@ set(PREFR_PUBLIC_HEADERS
   ParticleRenderer.h
   ParticleSorter.h
   ParticleUpdater.h
-  GL/GLDefaultParticleRenderer.h
-  Particle.h
+  GL/GLDefaultParticleRenderer.h  
   log.h
   ParticleSystem.h
   ParticleEmissionNode.h
@@ -33,6 +33,7 @@ set(PREFR_PUBLIC_HEADERS
 set(PREFR_HEADERS )
 
 set(PREFR_SOURCES
+  Particles.cpp
   ParticleEmitter.cpp
   ParticleSorter.cpp
   ParticleUpdater.cpp
