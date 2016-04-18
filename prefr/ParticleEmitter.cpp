@@ -42,7 +42,6 @@ namespace prefr
     ParticleEmitter::~ParticleEmitter()
     {
       delete( particles );
-      delete( prototypes );
     }
 
     EmissionNode* ParticleEmitter::GetCurrentNode( const int& particleID )

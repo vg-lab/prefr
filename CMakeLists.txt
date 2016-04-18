@@ -83,6 +83,9 @@ endif()
 
 common_package_post()
 
+set(PREFR_LIBRARY_BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/prefr)
+#message( ${PREFR_LIBRARY_BASE_PATH} )
+
 # library subdirectory
 add_subdirectory(prefr)
 

@@ -76,7 +76,7 @@ namespace prefr
 
   GLDefaultParticleRenderer::~GLDefaultParticleRenderer()
   {
-    delete( particles );
+
   }
 
   void GLDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)

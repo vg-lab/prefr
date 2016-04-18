@@ -4,8 +4,7 @@ IF (WITH_EXAMPLES)
   CShader.cpp
   FPS.cpp
   )
-  
-  set(PREFR_LIBRARY_BASE_PATH ${CMAKE_SOURCE_DIR}/prefr)
+    
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/shaderPath.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/shaderPath.h)
   

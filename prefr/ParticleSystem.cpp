@@ -50,12 +50,32 @@ namespace prefr
 
   ParticleSystem::~ParticleSystem()
   {
+    for( EmissionNode* emissionNode : *emissionNodes )
+      delete( emissionNode );
+
     delete( emissionNodes );
+
+    for( ParticlePrototype* prototype : *prototypes )
+      delete( prototype );
+
     delete( prototypes);
+
+    for( ParticleEmitter* emitter : *emitters )
+      delete( emitter );
+
     delete( emitters );
+
+    for( ParticleUpdater* updater : *updaters )
+      delete( updater );
+
     delete( updaters );
     delete( sorter );
     delete( renderer );
+
+    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
+      delete( *it );
+
+    delete( particles );
   }
 
   void ParticleSystem::AddEmissionNode(EmissionNode* node)

@@ -27,7 +27,6 @@ namespace prefr
     ParticleUpdater::~ParticleUpdater()
     {
       delete( particles );
-      delete( prototypes );
     }
 
     EmissionNode* ParticleUpdater::GetCurrentNode( const int& particleID )

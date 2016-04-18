@@ -374,7 +374,7 @@ void sceneRender (void)
         for ( int i = 0; i < 5 ; i++ )
           std::cout << "," << 100 * times[i] / totalTime;
 
-        std::cout << endl;
+        std::cout << std::endl;
 
         exit(0);
     }
