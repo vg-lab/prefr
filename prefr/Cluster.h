@@ -25,13 +25,16 @@ namespace prefr
     Cluster( );
     Cluster( unsigned int lowerBound, unsigned int upperBound );
 
-    Source* source( void );
-    Model* model( void );
-    Updater* updater( void );
+    EmissionNode* source( void );
+    ParticlePrototype* model( void );
+    ParticleEmitter* emitter( void );
+    ParticleUpdater* updater( void );
 
-    void source( Source* source );
-    void model( Model* model );
-    void updater( Updater* updater);
+    void source( EmissionNode* source );
+    void prototype( ParticlePrototype* model );
+    void emitter( ParticleEmitter* emitter );
+    void updater( ParticleUpdater* updater);
+
 
     TBoundsIt bounds( void );
     void bounds( TBoundsUI bounds_ );

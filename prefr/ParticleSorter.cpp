@@ -106,7 +106,7 @@ namespace prefr
     }
 
 
-    SerializeAttributes( );
+//    SerializeAttributes( );
   }
 
   void ParticleSorter::UpdateCameraDistance( const tparticle_ptr current,
