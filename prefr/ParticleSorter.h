@@ -13,7 +13,8 @@
 #include "Particles.h"
 #include "DistanceArray.hpp"
 #include <iostream>
-#include "ParticleEmissionNode.h"
+
+#include "Source.h"
 
 namespace prefr
 {

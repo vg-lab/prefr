@@ -9,8 +9,8 @@
 #define PARTICLEUPDATER_H_
 
 #include <prefr/api.h>
+#include "Emitter.h"
 #include "Particles.h"
-#include "ParticleEmitter.h"
 
 namespace prefr
 {
@@ -27,7 +27,7 @@ public:
     PrototypesArray* prototypes;
     std::vector<int>* refPrototypes;
 
-    std::vector<EmissionNode*>* emissionNodes;
+    std::vector<Source*>* emissionNodes;
     std::vector<int>* refEmissionNodes;
 
 protected:
@@ -38,10 +38,10 @@ protected:
     int currentNodeID;
     int currentPrototypeID;
 
-    EmissionNode* currentNode;
+    Source* currentNode;
     tprototype_ptr currentPrototype;
 
-    EmissionNode* GetCurrentNode( const int& particleID );
+    Source* GetCurrentNode( const int& particleID );
     tprototype_ptr GetCurrentPrototype( const int& particleID );
 
 public:

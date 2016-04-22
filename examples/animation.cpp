@@ -10,11 +10,11 @@
 
 #include <prefr/ParticleSystem.h>
 #include <prefr/ParticlePrototype.h>
-#include <prefr/ParticleEmitter.h>
 #include <prefr/ParticleUpdater.h>
 #include <prefr/OSG/OSGDefaultParticleSystem.h>
 #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #include <prefr/ParticleSorter.h>
+#include "../prefr/Source.h"
 
 #if (PREFR_USE_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
@@ -228,7 +228,7 @@ int main(int argc, char** argv)
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
+  Emitter* emitter = new Emitter(*ps->particles, 0.3f, true);
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;

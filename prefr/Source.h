@@ -16,32 +16,15 @@
 namespace prefr
 {
 
-  class EmissionNode
+  class Source
   {
   public:
 
-    ParticleCollection* particles;
-    float emissionAcc;
-    int particlesBudget;
-    bool active;
-    bool continueEmission;
-    bool finished;
-
-    bool autoDeactivateWhenFinished;
-
-    bool killParticlesIfInactive;
-
-    int lastFrameAliveParticles;
-
-    int emittedParticles;
-    unsigned int maxEmissionCycles;
-    unsigned int currentCycle;
+    PREFR_API
+    Source( float emissionRate_, const glm::vec3& position_ );
 
     PREFR_API
-    EmissionNode( const ParticleCollection& arrayParticles );
-
-    PREFR_API
-    virtual ~EmissionNode(void) {delete particles;}
+    virtual ~Source( void );
 
     PREFR_API virtual bool Active();
     PREFR_API virtual bool Emits();
@@ -50,7 +33,7 @@ namespace prefr
     PREFR_API virtual void Restart();
 
     PREFR_API virtual const int& GetBudget();
-    PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
+    PREFR_API virtual void PrepareFrame( const float& deltaTime );
     PREFR_API virtual void CloseFrame();
 
     PREFR_API virtual void IncreaseAlive();
@@ -60,35 +43,63 @@ namespace prefr
 
     PREFR_API virtual glm::vec3 GetEmissionPosition() = 0;
     PREFR_API virtual glm::vec3 GetEmissionVelocityDirection() = 0;
+
+    Cluster* cluster( void );
+    void cluster( const Cluster& cluster_ );
+
+  protected:
+
+      Cluster* _cluster;
+
+      glm::vec3 _position;
+
+      float _emissionRate;
+      unsigned int _totalParticles;
+
+      float _emissionAcc;
+      int _particlesBudget;
+      bool _active;
+      bool _continueEmission;
+      bool _finished;
+
+      bool _autoDeactivateWhenFinished;
+
+      bool _killParticlesIfInactive;
+
+      int _lastFrameAliveParticles;
+
+      int _emittedParticles;
+      unsigned int _maxEmissionCycles;
+      unsigned int _currentCycle;
+
   };
 
-  typedef std::vector<EmissionNode*> EmissionNodesArray;
+  typedef std::vector<Source*> EmissionNodesArray;
 
-  class TimedEmissionNode : public EmissionNode, public utils::SingleFrameTimer
+  class TimedSource : public Source, public utils::SingleFrameTimer
   {
   public:
 
-    PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles );
-    PREFR_API TimedEmissionNode( const ParticleCollection& arrayParticles,
-                                 float period,
-                                 float offset,
-                                 float duration);
+    PREFR_API TimedSource( float emissionRate_, glm::vec3 position_ );
+    PREFR_API TimedSource( float emissionRate_, glm::vec3 position_,
+                           float period, float offset, float duration );
+
     PREFR_API virtual bool Emits();
 
     PREFR_API virtual void CheckEmissionEnd();
 
-    PREFR_API virtual void StartFrame(const float& rawBudget, const float& deltaTime);
+    PREFR_API virtual void PrepareFrame( const float& deltaTime );
     PREFR_API virtual void CloseFrame();
 
   };
 
   //TODO class MultiTimedEmissionNode : public utils::MultiFrameTimer
 
-  class PointEmissionNode : public TimedEmissionNode
+  class PointEmissionNode : public TimedSource
   {
   public:
 
-    glm::vec3 position;
+
 
     PREFR_API PointEmissionNode( const ParticleCollection& arrayParticles,
 				 glm::vec3 _position );

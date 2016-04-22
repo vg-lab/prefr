@@ -385,7 +385,7 @@ int main(int argc, char** argv)
 
   ps = new ParticleSystem(10, maxParticles, true);
 
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
+  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
 
   prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
   prototype->color.Insert(0.65f, (glm::vec4(1, 1, 0, 0.2)));
@@ -402,7 +402,7 @@ int main(int argc, char** argv)
 
   ps->AddPrototype(prototype);
 
-  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, maxParticles / 2, maxParticles));
+  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
 
   prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
   prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
@@ -431,7 +431,7 @@ int main(int argc, char** argv)
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-        new PointEmissionNode(ParticleCollection(ps->particles,
+        new PointEmissionNode(ParticleCollection(ps->_particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, 0, 0));
@@ -439,26 +439,26 @@ int main(int argc, char** argv)
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter( ParticleCollection( ps->particles ), 0.3f, true);
+  Emitter* emitter = new Emitter( ParticleCollection( ps->_particles ), 0.3f, true);
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater( ParticleCollection( ps->particles ));
+  ParticleUpdater* updater = new ParticleUpdater( ParticleCollection( ps->_particles ));
   std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
 #if (PREFR_USE_CUDA)
   std::cout << "CUDA sorter" << std::endl;
-  sorter = new ThrustParticleSorter( ParticleCollection( ps->particles ));
+  sorter = new ThrustParticleSorter( ParticleCollection( ps->_particles ));
 #else
-  sorter = new ParticleSorter( ParticleCollection( ps->particles ));
+  sorter = new ParticleSorter( ParticleCollection( ps->_particles ));
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
   GLDefaultParticleRenderer* renderer =
-    new GLDefaultParticleRenderer( ParticleCollection( ps->particles ));
+    new GLDefaultParticleRenderer( ParticleCollection( ps->_particles ));
 
   std::cout << "Created systems" << std::endl;
 

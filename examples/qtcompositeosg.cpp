@@ -10,11 +10,11 @@
 // This include has to be called before any other GL-dependent
 #include <prefr/ParticleSystem.h>
 #include <prefr/ParticlePrototype.h>
-#include <prefr/ParticleEmitter.h>
 #include <prefr/ParticleUpdater.h>
 #include <prefr/OSG/OSGDefaultParticleSystem.h>
 #include <prefr/OSG/OSGDefaultParticleRenderer.h>
 #include <prefr/ParticleSorter.h>
+#include "../prefr/Source.h"
 
 #if (PREFR_USE_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
@@ -187,7 +187,7 @@ int main( int argc, char** argv )
 
   ps->SetCameraManipulator(&viewWidget);
 
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
+  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
   prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
   prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
@@ -199,7 +199,7 @@ int main( int argc, char** argv )
 
   ps->AddPrototype(prototype);
 
-  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, maxParticles / 2, maxParticles));
+  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
 
   prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
   prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
@@ -225,7 +225,7 @@ int main( int argc, char** argv )
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-        new PointEmissionNode(ParticleCollection(ps->particles,
+        new PointEmissionNode(ParticleCollection(ps->_particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, 0, 0));
@@ -233,24 +233,24 @@ int main( int argc, char** argv )
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
+  Emitter* emitter = new Emitter(*ps->_particles, 0.3f, true);
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
+  ParticleUpdater* updater = new ParticleUpdater(*ps->_particles);
   std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
 #if (PREFR_USE_CUDA)
-  sorter = new ThrustParticleSorter(*ps->particles);
+  sorter = new ThrustParticleSorter(*ps->_particles);
 #else
-  sorter = new ParticleSorter(*ps->particles);
+  sorter = new ParticleSorter(*ps->_particles);
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
-  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(*ps->particles);
+  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(*ps->_particles);
 
   std::cout << "Created systems" << std::endl;
 

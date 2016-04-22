@@ -29,7 +29,7 @@ namespace prefr
       delete( particles );
     }
 
-    EmissionNode* ParticleUpdater::GetCurrentNode( const int& particleID )
+    Source* ParticleUpdater::GetCurrentNode( const int& particleID )
     {
       if (particleID == lastParticleNodeID)
         return currentNode;
@@ -90,7 +90,7 @@ namespace prefr
 
       current->life( std::max( 0.0f, current->life( ) - deltaTime ));
       current->alive( ( current->life( ) > 0) &&
-          (!(currentNode->killParticlesIfInactive && !currentNode->active)));
+          (!(currentNode->_killParticlesIfInactive && !currentNode->_active)));
 
       if (current->alive( ) && currentPrototype && !current->newborn( ))
       {

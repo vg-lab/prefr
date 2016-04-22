@@ -1,0 +1,268 @@
+/*
+ * ParticleEmissionNode.cpp
+ *
+ *  Created on: 11/12/2014
+ *      Author: sgalindo
+ */
+
+#include "Source.h"
+#include "types.h"
+
+namespace prefr
+{
+
+    static float invRandMax = 1.0f / RAND_MAX;
+    static float pi2 = 2.0f * float(M_PI);
+
+    glm::vec3 GetRandomDirection(float thetaAngle = pi2)
+    {
+      float theta, phi, vxz;
+
+      theta = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * thetaAngle;//asinf(clamp(rand()*invRandMax, 0.0f, 1.0f));
+      phi = glm::clamp(rand()*invRandMax, 0.0f, 1.0f) * pi2;
+      vxz = sinf(theta);
+
+      return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
+    }
+
+
+    //***********************************************************
+    // EMISSION NODE
+    //***********************************************************
+
+    Source::Source( float emissionRate_, const glm::vec3& position_ )
+    : _cluster( nullptr )
+    , _position( position_ )
+    , _emissionRate( emissionRate_ )
+    , _totalParticles( 0 )
+    , _emissionAcc( 0 )
+    , _particlesBudget( 0 )
+    , _active( true )
+    , _continueEmission( true )
+    , _finished( false )
+    , _autoDeactivateWhenFinished( true )
+    , _killParticlesIfInactive( false )
+    , _lastFrameAliveParticles( 0 )
+    , _emittedParticles( 0 )
+    , _maxEmissionCycles( 0 )
+    , _currentCycle( 0 )
+    {}
+
+    Source::~Source( void )
+    {
+
+    }
+
+    bool Source::Active()
+    {
+      return _active;
+    }
+
+    bool Source::Emits()
+    {
+      return _active && _particlesBudget > 0 && Continue();
+    }
+
+    bool Source::Continue()
+    {
+      return _continueEmission;
+    }
+
+    bool Source::Finished()
+    {
+      return _finished;
+    }
+
+    const int& Source::GetBudget()
+    {
+      return _particlesBudget;
+    }
+
+    void Source::Restart()
+    {
+      _currentCycle = 0;
+      _emittedParticles = 0;
+      _continueEmission = true;
+    }
+
+    void Source::PrepareFrame( const float& deltaTime )
+    {
+      assert( _cluster );
+
+      // Compute raw budget, as it can be zero along several consecutive frames
+      float rawBudget = deltaTime * _cluster->particles( ).size * _emissionRate;
+
+      // Accumulate budget to emit as soon as it reaches a unit
+      _emissionAcc += rawBudget;
+      _particlesBudget = int(floor(_emissionAcc));
+      _emissionAcc -= _particlesBudget;
+
+      _lastFrameAliveParticles = 0;
+    }
+
+    void Source::IncreaseAlive()
+    {
+      _lastFrameAliveParticles++;
+    }
+
+    void Source::CheckEmissionEnd()
+    {
+      if (_maxEmissionCycles > 0)
+      {
+
+        if (_emittedParticles >= _totalParticles )
+        {
+         _currentCycle++;
+         _emittedParticles -= _totalParticles;
+        }
+
+        this->_continueEmission = !(_currentCycle >= _maxEmissionCycles);
+
+      }
+    }
+
+
+    void Source::ReduceBudgetBy(const unsigned int& decrement)
+    {
+      _particlesBudget -= decrement;
+      _emittedParticles += decrement;
+    }
+
+
+    void Source::CloseFrame()
+    {
+      _particlesBudget = 0;
+
+      CheckEmissionEnd();
+
+      this->_finished = !_continueEmission && _lastFrameAliveParticles == 0 ;
+
+      if (_finished && _autoDeactivateWhenFinished)
+        this->_active = false;
+    }
+
+
+    Cluster* Source::cluster( void )
+    {
+      return _cluster;
+    }
+
+    void Source::cluster( const Cluster& cluster_ )
+    {
+      _cluster = &cluster_;
+
+      _totalParticles = _cluster->particles( ).size;
+    }
+
+
+    //***********************************************************
+    // TIMED EMISSION NODE
+    //***********************************************************
+
+    TimedSource::TimedSource( float emissionRate_, glm::vec3 position_ )
+    : Source( emissionRate_, position_ )
+    , SingleFrameTimer( 0, 0, 0 )
+    {}
+
+    TimedSource::TimedSource( float emissionRate_, glm::vec3 position_,
+                              float period, float offset, float duration)
+    : Source( emissionRate_, position_ )
+    , SingleFrameTimer( period, offset, duration )
+    {}
+
+    bool TimedSource::Emits()
+    {
+      return InTime() && Source::Emits();
+    }
+
+    void TimedSource::CheckEmissionEnd()
+    {
+      if (_maxEmissionCycles > 0)
+      {
+
+        if (_emittedParticles >= _totalParticles)
+        {
+          _currentCycle++;
+          _emittedParticles -= _totalParticles;
+        }
+        else if (AfterTime())
+        {
+          _currentCycle++;
+          _emittedParticles = 0;
+        }
+
+        this->_continueEmission = !(_currentCycle >= _maxEmissionCycles);
+
+      }
+    }
+
+    void TimedSource::PrepareFrame( const float& deltaTime )
+    {
+      Source::PrepareFrame( deltaTime);
+
+      UpdateTimer(deltaTime);
+    }
+
+    void TimedSource::CloseFrame()
+    {
+      Source::CloseFrame();
+
+      RestoreTimer();
+
+//      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
+
+    }
+
+    //***********************************************************
+    // POINT EMISSION NODE
+    //***********************************************************
+
+
+    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
+    : TimedSource( arrayParticles )
+    ,position( _position )
+    {}
+
+    PointEmissionNode::~PointEmissionNode()
+    {}
+
+    void PointEmissionNode::SetEmissionPosition(float x, float y, float z)
+    {
+      position = glm::vec3(x, y, z);
+    }
+
+    glm::vec3 PointEmissionNode::GetEmissionPosition()
+    {
+      return position;
+    }
+
+    glm::vec3 PointEmissionNode::GetEmissionVelocityDirection()
+    {
+      return GetRandomDirection();
+    }
+
+
+
+    SphereEmissionNode::SphereEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position, float radius_, float angle_)
+    : PointEmissionNode( arrayParticles, _position )
+    , radius( radius_ )
+    , angle( glm::radians(angle_) )
+    {}
+
+    SphereEmissionNode::~SphereEmissionNode()
+    {}
+
+    glm::vec3 SphereEmissionNode::GetEmissionPosition()
+    {
+      return position + (radius * velocity);
+    }
+
+    glm::vec3 SphereEmissionNode::GetEmissionVelocityDirection()
+    {
+      velocity = GetRandomDirection();
+      return velocity;
+    }
+
+}
+
+

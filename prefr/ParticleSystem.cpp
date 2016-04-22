@@ -29,15 +29,15 @@ namespace prefr
 
     emissionNodes = new EmissionNodesArray;
     prototypes = new PrototypesArray;
-    emitters = new std::vector<ParticleEmitter*>;
+    emitters = new std::vector<Emitter*>;
     updaters = new std::vector<ParticleUpdater*>;
 
     if (initialParticlesNumber > maxParticles)
       initialParticlesNumber = maxParticles;
 
-    particles.resize( _maxParticles );
+    _particles.resize( _maxParticles );
 
-    auto particle = particles.begin( );
+    auto particle = _particles.begin( );
     for( unsigned int i = 0; i < maxParticles; i++ )
     {
       particle.id( i );
@@ -67,7 +67,7 @@ namespace prefr
 
   ParticleSystem::~ParticleSystem()
   {
-    for( EmissionNode* emissionNode : *emissionNodes )
+    for( Source* emissionNode : *emissionNodes )
       delete( emissionNode );
 
     delete( emissionNodes );
@@ -77,7 +77,7 @@ namespace prefr
 
     delete( prototypes);
 
-    for( ParticleEmitter* emitter : *emitters )
+    for( Emitter* emitter : *emitters )
       delete( emitter );
 
     delete( emitters );
@@ -95,13 +95,35 @@ namespace prefr
 //    delete( particles );
   }
 
-  void ParticleSystem::AddEmissionNode(EmissionNode* node)
+  void ParticleSystem::AddCluster( Cluster* cluster,
+                                   unsigned int start,
+                                   unsigned int size_ )
+  {
+
+    assert( start + size_ <= maxParticles );
+
+    cluster->particles( ParticleRange( this->_particles, start, start + size_ ));
+
+    this->_clusters.push_back( cluster );
+
+    unsigned int reference = _clusters.size( );
+
+    auto clusterIT = _clusterReference.begin( ) + start;
+
+    for( unsigned int i = 0; i < size_; i++ )
+    {
+      clusterIT = reference;
+    }
+
+  }
+
+  void ParticleSystem::AddEmissionNode(Source* node)
   {
     this->emissionNodes->push_back(node);
 
     int size = int(this->emissionNodes->size());
-    int start = node->particles->begin( ) - this->particles.begin( );
-    int end = node->particles->end( ) - this->particles.begin( );
+    int start = node->_particles.begin( ) - this->_particles.begin( );
+    int end = node->_particles.end( ) - this->_particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -114,8 +136,8 @@ namespace prefr
     this->prototypes->push_back(prototype);
 
     int size = int(this->prototypes->size());
-    int start = prototype->particles->begin( ) - this->particles.begin( );
-    int end = prototype->particles->end( ) - this->particles.begin( );
+    int start = prototype->particles->begin( ) - this->_particles.begin( );
+    int end = prototype->particles->end( ) - this->_particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -123,13 +145,13 @@ namespace prefr
     }
   }
 
-  void ParticleSystem::AddEmitter(ParticleEmitter* emitter)
+  void ParticleSystem::AddEmitter(Emitter* emitter)
   {
     this->emitters->push_back(emitter);
 
     int size = int(this->emitters->size());
-    int start = emitter->particles->begin( ) - this->particles.begin( );
-    int end = emitter->particles->end( ) - this->particles.begin( );
+    int start = emitter->_particles.begin( ) - this->_particles.begin( );
+    int end = emitter->_particles.end( ) - this->_particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -148,8 +170,8 @@ namespace prefr
     this->updaters->push_back(updater);
 
     int size = int(this->updaters->size());
-    int start = updater->particles->begin( ) - this->particles.begin( );
-    int end = updater->particles->end( ) - this->particles.begin( );
+    int start = updater->particles->begin( ) - this->_particles.begin( );
+    int end = updater->particles->end( ) - this->_particles.begin( );
 
     for (int i = start; i < end; i++)
     {
@@ -179,7 +201,7 @@ namespace prefr
 
   void ParticleSystem::Start()
   {
-    tparticle current = particles.begin( );
+    tparticle current = _particles.begin( );
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
       (*emitters)[particleEmitter[i]]->EmitFunction( &current, true);
@@ -217,10 +239,15 @@ namespace prefr
 
     unsigned int i = 0;
 
-    // Set emitter delta time to calculate the number of particles to emit this frame
-    for (i = 0; i < emitters->size(); i++)
+//    // Set emitter delta time to calculate the number of particles to emit this frame
+//    for (i = 0; i < emitters->size(); i++)
+//    {
+//      (*emitters)[i]->StartEmission(deltaTime);
+//    }
+
+    for( Source* source : emissionNodes )
     {
-      (*emitters)[i]->StartEmission(deltaTime);
+
     }
 
     int accumulator = 0;
@@ -234,7 +261,7 @@ namespace prefr
       if (!(*nodit) || !(*nodit)->Active())
         continue;
 
-      EmissionNode* currentNode = (*nodit);
+      Source* currentNode = (*nodit);
 
       for ( Particles::iterator it = currentNode->particles->begin( );
             it != currentNode->particles->end( );

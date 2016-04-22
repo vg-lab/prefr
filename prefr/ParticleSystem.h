@@ -16,8 +16,6 @@
 
 #include "Particles.h"
 
-#include "ParticleEmitter.h"
-#include "ParticleEmissionNode.h"
 #include "ParticleUpdater.h"
 #include "ParticleSorter.h"
 #include "ParticleRenderer.h"
@@ -25,6 +23,9 @@
 #include "ParticlePrototype.h"
 
 #include <vector>
+
+#include "Emitter.h"
+#include "Source.h"
 
 
 namespace prefr
@@ -51,27 +52,8 @@ namespace prefr
   {
   public:
 
-    //! Particles collection the system will manage.
-//    ParticleCollection* particles;
-    Particles particles;
 
-    //! Emission nodes array of the particle set.
-    EmissionNodesArray* emissionNodes;
-
-    //! Particle prototypes of the particle set.
-    PrototypesArray* prototypes;
-
-    //! Emitter objects collection of the system.
-    std::vector<ParticleEmitter*>* emitters;
-
-    //! Updater objects collection of the system.
-    std::vector<ParticleUpdater*>* updaters;
-
-    //! Particle sorter for alpha rendering.
-    ParticleSorter* sorter;
-
-    //! Particles renderer (OpenGL, OSG, etc.)
-    ParticleRenderer* renderer;
+    std::vector< int > _clusterReference;
 
     std::vector<int> particleEmissionNodes;
     std::vector<int> particlePrototype;
@@ -97,12 +79,16 @@ namespace prefr
     PREFR_API
     virtual ~ParticleSystem();
 
+    virtual void AddCluster( Cluster* cluster,
+                             unsigned int start,
+                             unsigned int size_ );
+
     PREFR_API
-    virtual void AddEmissionNode(EmissionNode* node);
+    virtual void AddEmissionNode(Source* node);
     PREFR_API
     virtual void AddPrototype(ParticlePrototype* prototype);
     PREFR_API
-    virtual void AddEmitter(ParticleEmitter* emitter);
+    virtual void AddEmitter(Emitter* emitter);
     PREFR_API
     virtual void AddUpdater(ParticleUpdater* updater);
     PREFR_API
@@ -133,6 +119,33 @@ namespace prefr
 
     virtual void Run( bool run_ );
     virtual bool Run( void );
+
+  protected:
+
+    //! Particles collection the system will manage.
+//    ParticleCollection* particles;
+    Particles _particles;
+
+    std::vector< Cluster* > _clusters;
+
+    //! Emission nodes array of the particle set.
+    EmissionNodesArray* emissionNodes;
+
+    //! Particle prototypes of the particle set.
+    PrototypesArray* prototypes;
+
+    //! Emitter objects collection of the system.
+    std::vector<Emitter*>* emitters;
+
+    //! Updater objects collection of the system.
+    std::vector<ParticleUpdater*>* updaters;
+
+    //! Particle sorter for alpha rendering.
+    ParticleSorter* sorter;
+
+    //! Particles renderer (OpenGL, OSG, etc.)
+    ParticleRenderer* renderer;
+
 
 
   };

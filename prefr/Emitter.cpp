@@ -4,7 +4,7 @@
  *  Created on: 14/10/2014
  *      Author: sergio
  */
-#include "ParticleEmitter.h"
+#include "Emitter.h"
 
 namespace prefr
 {
@@ -16,7 +16,7 @@ namespace prefr
     //**********************************************************
 
 
-    ParticleEmitter::ParticleEmitter ( const ParticleCollection& particlesArray,
+    Emitter::Emitter ( const ParticleCollection& particlesArray,
                                       float _emissionRate, bool _loop)
     : particles( new ParticleCollection( particlesArray ) )
     , emissionNodes( nullptr )
@@ -39,12 +39,12 @@ namespace prefr
       normalizationFactor = 1.0f/particles->size;
     }
 
-    ParticleEmitter::~ParticleEmitter()
+    Emitter::~Emitter()
     {
       delete( particles );
     }
 
-    EmissionNode* ParticleEmitter::GetCurrentNode( const int& particleID )
+    Source* Emitter::GetCurrentNode( const int& particleID )
     {
       if (particleID == lastParticleNodeID)
         return currentNode;
@@ -63,7 +63,7 @@ namespace prefr
     }
 
 
-    tprototype_ptr ParticleEmitter::GetCurrentPrototype( const int& particleID )
+    tprototype_ptr Emitter::GetCurrentPrototype( const int& particleID )
     {
       if (particleID == lastParticlePrototypeID)
         return currentPrototype;
@@ -81,7 +81,7 @@ namespace prefr
       return currentPrototype;
     }
 
-    void ParticleEmitter::EmitAll(float deltaTime)
+    void Emitter::EmitAll(float deltaTime)
     {
 
       if (!active)
@@ -115,7 +115,7 @@ namespace prefr
 
     }
 
-    void ParticleEmitter::StartEmission(float deltaTime)
+    void Emitter::StartEmission(float deltaTime)
     {
       particlesBudget = emissionRate * maxParticles * deltaTime;
 
@@ -125,7 +125,7 @@ namespace prefr
         if (*it && (*it)->Active())
         {
 
-          (*it)->StartFrame(particlesBudget *
+          (*it)->PrepareFrame(particlesBudget *
                            ((*it)->particles->size * normalizationFactor)
                            , deltaTime);
 
@@ -136,7 +136,7 @@ namespace prefr
       }
     }
 
-    void ParticleEmitter::EndEmission()
+    void Emitter::EndEmission()
     {
       for (EmissionNodesArray::iterator it = emissionNodes->begin();
                  it != emissionNodes->end(); it++)
@@ -146,7 +146,7 @@ namespace prefr
       }
     }
 
-    int ParticleEmitter::EmitSingle(const tparticle_ptr current)
+    int Emitter::EmitSingle(const tparticle_ptr current)
     {
       if (!active)
         return 0;
@@ -154,7 +154,7 @@ namespace prefr
       currentNode = GetCurrentNode(current->id( ));
 
       if (!currentNode ||
-          (currentNode->killParticlesIfInactive && !currentNode->Active()))
+          (currentNode->_killParticlesIfInactive && !currentNode->Active()))
       {
         current->life( 0 );
         return 0;
@@ -167,10 +167,10 @@ namespace prefr
       }
 
       // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
-      return currentNode->particlesBudget;
+      return currentNode->_particlesBudget;
     }
 
-    void ParticleEmitter::EmitFunction(const tparticle_ptr current, bool override)
+    void Emitter::EmitFunction(const tparticle_ptr current, bool override)
     {
       currentNode = GetCurrentNode(current->id( ));
       currentPrototype = GetCurrentPrototype(current->id( ));

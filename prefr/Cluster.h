@@ -21,36 +21,39 @@ namespace prefr
     typedef std::pair< unsigned int, unsigned int > TBoundsUI;
     typedef std::pair< Particles::iterator, Particles::iterator > TBoundsIt;
 
-
     Cluster( );
-    Cluster( unsigned int lowerBound, unsigned int upperBound );
 
-    EmissionNode* source( void );
+    Source* source( void );
+    void source( Source* source );
+
     ParticlePrototype* model( void );
-    ParticleEmitter* emitter( void );
-    ParticleUpdater* updater( void );
+    void model( ParticlePrototype* model );
 
-    void source( EmissionNode* source );
-    void prototype( ParticlePrototype* model );
-    void emitter( ParticleEmitter* emitter );
+    Emitter* emitter( void );
+    void emitter( Emitter* emitter );
+
+    ParticleUpdater* updater( void );
     void updater( ParticleUpdater* updater);
 
-
-    TBoundsIt bounds( void );
-    void bounds( TBoundsUI bounds_ );
-    void bounds( TBoundsIt bounds_ );
-    void bounds( unsigned int lowerBound, unsigned int upperBound );
+    ParticleRange particles( void );
+    void particles( const ParticleRange& particleArray );
 
     bool active( void );
     void active( bool active_ );
 
   protected:
 
-    Particles::iterator _begin;
-    Particles::iterator _end;
+    ParticleRange _particlesArray;
 
-    unsigned int _lowerBound;
-    unsigned int _upperbound;
+    unsigned int _size;
+
+    Source* _source;
+
+    ParticlePrototype* _model;
+
+    Emitter* _emitter;
+
+    ParticleUpdater* _updater;
 
     bool _active;
   };
