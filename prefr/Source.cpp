@@ -147,9 +147,9 @@ namespace prefr
       return _cluster;
     }
 
-    void Source::cluster( const Cluster& cluster_ )
+    void Source::cluster( Cluster* cluster_ )
     {
-      _cluster = &cluster_;
+      _cluster = cluster_;
 
       _totalParticles = _cluster->particles( ).size;
     }
@@ -218,46 +218,47 @@ namespace prefr
     //***********************************************************
 
 
-    PointEmissionNode::PointEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position)
-    : TimedSource( arrayParticles )
-    ,position( _position )
+    PointSource::PointSource( float emissionRate_,
+                                          glm::vec3 position_)
+    : TimedSource( emissionRate_, position_ )
     {}
 
-    PointEmissionNode::~PointEmissionNode()
+    PointSource::~PointSource()
     {}
 
-    void PointEmissionNode::SetEmissionPosition(float x, float y, float z)
+    void PointSource::SetEmissionPosition(float x, float y, float z)
     {
-      position = glm::vec3(x, y, z);
+      _position = glm::vec3(x, y, z);
     }
 
-    glm::vec3 PointEmissionNode::GetEmissionPosition()
+    glm::vec3 PointSource::GetEmissionPosition()
     {
-      return position;
+      return _position;
     }
 
-    glm::vec3 PointEmissionNode::GetEmissionVelocityDirection()
+    glm::vec3 PointSource::GetEmissionVelocityDirection()
     {
       return GetRandomDirection();
     }
 
 
 
-    SphereEmissionNode::SphereEmissionNode( const ParticleCollection& arrayParticles, glm::vec3 _position, float radius_, float angle_)
-    : PointEmissionNode( arrayParticles, _position )
+    SphereSource::SphereSource( float emissionRate_, glm::vec3 position_,
+                                            float radius_, float angle_)
+    : PointSource( emissionRate_, position_ )
     , radius( radius_ )
     , angle( glm::radians(angle_) )
     {}
 
-    SphereEmissionNode::~SphereEmissionNode()
+    SphereSource::~SphereSource()
     {}
 
-    glm::vec3 SphereEmissionNode::GetEmissionPosition()
+    glm::vec3 SphereSource::GetEmissionPosition()
     {
-      return position + (radius * velocity);
+      return _position + (radius * velocity);
     }
 
-    glm::vec3 SphereEmissionNode::GetEmissionVelocityDirection()
+    glm::vec3 SphereSource::GetEmissionVelocityDirection()
     {
       velocity = GetRandomDirection();
       return velocity;

@@ -18,6 +18,12 @@ namespace utils
 
     int size;
 
+    ElementCollection( )
+    {
+      this->elements = nullptr;
+      size = 0;
+    }
+
     ElementCollection( ELEM& elementsArray )
     {
       this->elements = &elementsArray;
@@ -99,6 +105,16 @@ namespace utils
     }
 
     typename ELEM::iterator end( void )
+    {
+      return this->_end;
+    }
+
+    typename ELEM::const_iterator begin( void ) const
+    {
+      return this->_begin;
+    }
+
+    typename ELEM::const_iterator end( void ) const
     {
       return this->_end;
     }

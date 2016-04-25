@@ -20,7 +20,7 @@ namespace prefr
   typedef ::utils::InterpolationSet<glm::vec3> vectortvec3;
   typedef ::utils::InterpolationSet<glm::vec4> vectortvec4;
 
-  class ParticlePrototype
+  class Model
   {
   public:
     float minLife;
@@ -37,20 +37,18 @@ namespace prefr
     vectortfloat velocity;
     vectortvec4 color;
 
-    ParticleCollection* particles;
+    PREFR_API Model(void);
+    PREFR_API Model(float min, float max );
 
-    PREFR_API ParticlePrototype(void);
-    PREFR_API ParticlePrototype(float min, float max, const ParticleCollection& particlesArray);
-
-    PREFR_API virtual ~ParticlePrototype();
+    PREFR_API virtual ~Model();
 
     PREFR_API void SetLife(float min, float max);
 
   };
 
-  typedef ParticlePrototype tprototype;
+  typedef Model tprototype;
   typedef tprototype* tprototype_ptr;
-  typedef std::vector<tprototype_ptr> PrototypesArray;
+  typedef std::vector<tprototype_ptr> ModelsArray;
 
 
 }

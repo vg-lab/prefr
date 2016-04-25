@@ -9,20 +9,20 @@
 #define DEFAULTPARTICLERENDERCONFIG_H_
 
 #include <prefr/api.h>
-#include "../ParticleRenderer.h"
+#include "../Renderer.h"
 
 namespace prefr
 {
 
-  class GLDefaultParticleRenderer : public ParticleRenderer
+  class GLRenderer : public Renderer
   {
   public:
 
     PREFR_API
-    GLDefaultParticleRenderer( const ParticleCollection&particlesArray);
+    GLRenderer( );
     
     PREFR_API
-    virtual ~GLDefaultParticleRenderer();
+    virtual ~GLRenderer();
 
     PREFR_API
     virtual void SetupRender(unsigned int aliveParticles = 0);

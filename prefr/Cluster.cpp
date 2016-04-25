@@ -13,15 +13,22 @@ namespace prefr
 {
 
   Cluster::Cluster( )
-  : _size( 0 )
+  : _particlesArray( )
+  , _size( 0 )
   , _source( nullptr )
   , _model( nullptr )
   , _emitter( nullptr )
   , _updater( nullptr )
   , _active( false )
+  , _inactiveKillParticles( false )
   { }
 
-  Source* Cluster::source( void )
+  Cluster::~Cluster( void )
+  {
+
+  }
+
+  Source* Cluster::source( void ) const
   {
     return _source;
   }
@@ -31,18 +38,18 @@ namespace prefr
     _source = source_;
   }
 
-  ParticlePrototype* Cluster::model( void )
+  Model* Cluster::model( void ) const
   {
     return _model;
   }
 
-  void Cluster::model( ParticlePrototype* model_ )
+  void Cluster::model( Model* model_ )
   {
     _model = model_;
   }
 
 
-  Emitter* Cluster::emitter( void )
+  Emitter* Cluster::emitter( void ) const
   {
     return _emitter;
   }
@@ -52,17 +59,17 @@ namespace prefr
     _emitter = emitter_;
   }
 
-  ParticleUpdater* Cluster::updater( void )
+  Updater* Cluster::updater( void ) const
   {
     return _updater;
   }
 
-  void Cluster::updater( ParticleUpdater* updater_)
+  void Cluster::updater( Updater* updater_)
   {
     _updater = updater_;
   }
 
-  ParticleRange Cluster::particles( void )
+  ParticleRange Cluster::particles( void ) const
   {
     return _particlesArray;
   }
@@ -72,7 +79,7 @@ namespace prefr
     _particlesArray = particleArray;
   }
 
-  bool Cluster::active( void )
+  bool Cluster::active( void ) const
   {
     return _active;
   }
@@ -82,6 +89,26 @@ namespace prefr
     _active = active_;
   }
 
+  bool Cluster::inactiveKillParticles( void ) const
+  {
+    return _inactiveKillParticles;
+  }
+
+  void Cluster::inactiveKillParticles( bool killParticles )
+  {
+    _inactiveKillParticles = killParticles;
+  }
+
+  void Cluster::KillParticles( void )
+  {
+    for( tparticle particle = _particlesArray.begin( );
+         particle != _particlesArray.end( );
+         particle++ )
+    {
+      particle.life( 0.0f );
+      particle.alive( false );
+    }
+  }
 
 }
 

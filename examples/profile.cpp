@@ -294,7 +294,7 @@ void sceneRender (void)
 //  ps->UpdateRender();
 
   gettimeofday(&startTime, NULL);
-  ps->sorter->Sort();
+  ps->sorter( )->Sort();
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -302,7 +302,7 @@ void sceneRender (void)
   times[2] += totalTime;
 
   gettimeofday(&startTime, NULL);
-  ps->renderer->SetupRender(ps->aliveParticles);
+  ps->renderer( )->SetupRender( ps->aliveParticles( ) );
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -453,77 +453,79 @@ int main(int argc, char** argv)
 
   ps = new ParticleSystem(10, maxParticles, true);
 
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
-  prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
-  prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+  Model* model = new Model( 3.0f, 5.0f );
+  model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
+  model->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
+  model->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
 
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
+  model->velocity.Insert(0.0f, 3.0f);
+  model->velocity.Insert(1.0f, 5.0f);
 
-  prototype->size.Insert(0.0f, 1.0f);
+  model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddPrototype(model);
 
-  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
+  model = new Model(3.0f, 5.0f );
 
-  prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
-  prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
+  model->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
+  model->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
+  model->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
 
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
+  model->velocity.Insert(0.0f, 3.0f);
+  model->velocity.Insert(1.0f, 5.0f);
 
-  prototype->size.Insert(0.0f, 1.0f);
+  model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddPrototype(model);
 
 //  std::cout << "Created prototype." << std::endl;
 
-  PointEmissionNode* emissionNode;
+  PointSource* source;
+  Cluster* cluster;
 
-  int particlesPerEmitter = maxParticles / maxEmitters;
+  int particlesPerCluster = maxParticles / maxEmitters;
 
 //  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
 
   for (unsigned int i = 0; i < maxEmitters; i++)
   {
-//    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+    std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
-    emissionNode =
-        new PointEmissionNode(ParticleCollection(ps->_particles,
-                                                 i * particlesPerEmitter,
-                                                 i * particlesPerEmitter + particlesPerEmitter),
-                              glm::vec3(i * 10, 0, 0));
+    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
+    ps->AddEmissionNode(source);
 
-    ps->AddEmissionNode(emissionNode);
+    cluster = new Cluster( );
+    cluster->source( source );
+
+    ps->AddCluster( cluster,
+                    i * particlesPerCluster,
+                    i * particlesPerCluster + particlesPerCluster);
   }
 
-  Emitter* emitter = new Emitter( ParticleCollection( ps->_particles ), 0.3f, true);
+  Emitter* emitter = new Emitter( 0.3f, true);
   ps->AddEmitter(emitter);
 
 //  std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater( ParticleCollection( ps->_particles ));
+  Updater* updater = new Updater( );
 //  std::cout << "Created updater" << std::endl;
 
-  ParticleSorter* sorter;
+  Sorter* sorter;
 
 #if (PREFR_USE_CUDA)
-  sorter = new ThrustParticleSorter( ParticleCollection( ps->_particles ));
+  sorter = new ThrustSorter( );
 #else
-  sorter = new ParticleSorter(ParticleCollection( ps->_particles ));
+  sorter = new Sorter( );
 #endif
 
 //  std::cout << "Created sorter" << std::endl;
 
-  GLDefaultParticleRenderer* renderer =
-    new GLDefaultParticleRenderer( ParticleCollection( ps->_particles ));
+  GLRenderer* renderer = new GLRenderer( );
 
 //  std::cout << "Created systems" << std::endl;
 
   ps->AddUpdater(updater);
-  ps->SetSorter(sorter);
-  ps->SetRenderer(renderer);
+  ps->sorter(sorter);
+  ps->renderer(renderer);
 
   ps->Start();
 

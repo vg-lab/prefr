@@ -12,82 +12,59 @@ namespace prefr
 {
 
   ParticleSystem::ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
-  : sorter( nullptr )
-  , renderer( nullptr )
+  : _sorter( nullptr )
+  , _renderer( nullptr )
   , maxParticles (_maxParticles)
   , loop(_loop)
   , renderDeadParticles( false )
   , run( false )
   {
-//    tparticleContainer* p = new tparticleContainer(maxParticles);
-//    particles = new ParticleCollection(p, p->begin(), p->end());
-
-    particleEmissionNodes.resize(maxParticles, -1);
-    particlePrototype.resize(maxParticles, -1);
-    particleEmitter.resize(maxParticles, -1);
-    particleUpdater.resize(maxParticles, -1);
-
-    emissionNodes = new EmissionNodesArray;
-    prototypes = new PrototypesArray;
-    emitters = new std::vector<Emitter*>;
-    updaters = new std::vector<ParticleUpdater*>;
 
     if (initialParticlesNumber > maxParticles)
       initialParticlesNumber = maxParticles;
 
     _particles.resize( _maxParticles );
 
+    _clusterReference.resize( maxParticles, -1 );
+
     auto particle = _particles.begin( );
     for( unsigned int i = 0; i < maxParticles; i++ )
     {
       particle.id( i );
-      if( i < initialParticlesNumber )
-        particle.alive( true );
+
+//      if( i < initialParticlesNumber )
+//        particle.alive( true );
 
       particle++;
     }
 
-//    auto particle = particles.begin( );
-//    for( unsigned int i = 0; i < initialParticlesNumber; i++ )
-//    {
-//      particle.alive( true );
-//      particle++;
-//    }
-
-//    unsigned int counter = 0;
-//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-//    {
-//      (*particles->elements)[counter] = new tparticle(counter, counter < initialParticlesNumber);
-//      counter++;
-//    }
-
-    aliveParticles = initialParticlesNumber;
+    _aliveParticles = initialParticlesNumber;
   }
 
 
   ParticleSystem::~ParticleSystem()
   {
-    for( Source* emissionNode : *emissionNodes )
+    for( Source* emissionNode : _sources )
       delete( emissionNode );
 
-    delete( emissionNodes );
+//    delete( _sources );
 
-    for( ParticlePrototype* prototype : *prototypes )
+    for( Model* prototype : prototypes )
       delete( prototype );
 
-    delete( prototypes);
+//    delete( prototypes);
 
-    for( Emitter* emitter : *emitters )
+    for( Emitter* emitter : emitters )
       delete( emitter );
 
-    delete( emitters );
+//    delete( emitters );
 
-    for( ParticleUpdater* updater : *updaters )
+    for( Updater* updater : updaters )
       delete( updater );
 
-    delete( updaters );
-    delete( sorter );
-    delete( renderer );
+//    delete( updaters );
+    delete( _sorter );
+    delete( _renderer );
 
 //    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
 //      delete( *it );
@@ -112,208 +89,171 @@ namespace prefr
 
     for( unsigned int i = 0; i < size_; i++ )
     {
-      clusterIT = reference;
+      *clusterIT = reference;
     }
 
   }
 
-  void ParticleSystem::AddEmissionNode(Source* node)
+  void ParticleSystem::AddEmissionNode( Source* node )
   {
-    this->emissionNodes->push_back(node);
-
-    int size = int(this->emissionNodes->size());
-    int start = node->_particles.begin( ) - this->_particles.begin( );
-    int end = node->_particles.end( ) - this->_particles.begin( );
-
-    for (int i = start; i < end; i++)
-    {
-      this->particleEmissionNodes[i] = size-1;
-    }
+    this->_sources.push_back( node );
   }
 
-  void ParticleSystem::AddPrototype(ParticlePrototype* prototype)
+  void ParticleSystem::AddPrototype(Model* prototype)
   {
-    this->prototypes->push_back(prototype);
-
-    int size = int(this->prototypes->size());
-    int start = prototype->particles->begin( ) - this->_particles.begin( );
-    int end = prototype->particles->end( ) - this->_particles.begin( );
-
-    for (int i = start; i < end; i++)
-    {
-      this->particlePrototype[i] = size-1;
-    }
+    this->prototypes.push_back(prototype);
   }
 
-  void ParticleSystem::AddEmitter(Emitter* emitter)
+  void ParticleSystem::AddEmitter(Emitter* /*emitter*/)
   {
-    this->emitters->push_back(emitter);
+//    this->emitters->push_back(emitter);
+//
+//    for (int i = start; i < end; i++)
+//    {
+//      this->particleEmitter[i] = size-1;
+//    }
 
-    int size = int(this->emitters->size());
-    int start = emitter->_particles.begin( ) - this->_particles.begin( );
-    int end = emitter->_particles.end( ) - this->_particles.begin( );
-
-    for (int i = start; i < end; i++)
-    {
-      this->particleEmitter[i] = size-1;
-    }
-
-    emitter->emissionNodes = this->emissionNodes;
-    emitter->refEmissionNodes = &this->particleEmissionNodes;
-
-    emitter->prototypes = this->prototypes;
-    emitter->refPrototypes = &this->particlePrototype;
 
   }
-  void ParticleSystem::AddUpdater(ParticleUpdater* updater)
+
+  void ParticleSystem::AddUpdater(Updater* updater)
   {
-    this->updaters->push_back(updater);
-
-    int size = int(this->updaters->size());
-    int start = updater->particles->begin( ) - this->_particles.begin( );
-    int end = updater->particles->end( ) - this->_particles.begin( );
-
-    for (int i = start; i < end; i++)
-    {
-      this->particleUpdater[i] = size-1;
-    }
-
-    updater->prototypes = this->prototypes;
-    updater->refPrototypes = &this->particlePrototype;
-
-    updater->emissionNodes = this->emissionNodes;
-    updater->refEmissionNodes = &this->particleEmissionNodes;
-
+    this->updaters.push_back(updater);
   }
-  void ParticleSystem::SetSorter(ParticleSorter* _sorter)
-  {
-    this->sorter = _sorter;
-    this->sorter->InitDistanceArray();
-    this->sorter->emissionNodes = this->emissionNodes;
-  }
-  void ParticleSystem::SetRenderer(ParticleRenderer* _renderer)
-  {
-    this->renderer = _renderer;
 
-    PREFR_DEBUG_CHECK( this->sorter->distances, "distances is null" );
-    this->renderer->distances = this->sorter->distances;
+  void ParticleSystem::sorter( Sorter* sorter_ )
+  {
+    this->_sorter = sorter_;
+    this->_sorter->InitDistanceArray( );
+    this->_sorter->clusters( &_clusters );
+  }
+
+  Sorter* ParticleSystem::sorter( void )
+  {
+    return _sorter;
+  }
+
+  void ParticleSystem::renderer( Renderer* renderer_ )
+  {
+    this->_renderer = renderer_ ;
+
+    PREFR_DEBUG_CHECK( this->_sorter->distances, "distances is null" );
+    this->_renderer->distances = this->_sorter->distances;
+  }
+
+  Renderer* ParticleSystem::renderer( void )
+  {
+    return _renderer;
   }
 
   void ParticleSystem::Start()
   {
-    tparticle current = _particles.begin( );
-    for (unsigned int i = 0; i < aliveParticles; i++)
-    {
-      (*emitters)[particleEmitter[i]]->EmitFunction( &current, true);
-      current++;
-    }
+//    tparticle current = _particles.begin( );
+//    for (unsigned int i = 0; i < aliveParticles; i++)
+//    {
+//      (*emitters)[particleEmitter[i]]->EmitFunction( &current, true);
+//      current++;
+//    }
 
     run = true;
 
   }
 
-  void ParticleSystem::Update(float deltaTime)
+  void ParticleSystem::Update(float /*deltaTime*/ )
   {
-    if( !run )
-      return;
-
-    for (unsigned int i = 0; i < emitters->size(); i++)
-    {
-      (*emitters)[i]->EmitAll(deltaTime);
-    }
-
-    int accumulator = 0;
-    for (unsigned int i = 0; i < updaters->size(); i++)
-    {
-      accumulator += (*updaters)[i]->Update(deltaTime);
-    }
-
-    this->aliveParticles = accumulator;
+//    if( !run )
+//      return;
+//
+//    for (unsigned int i = 0; i < emitters->size(); i++)
+//    {
+//      (*emitters)[i]->EmitAll(deltaTime);
+//    }
+//
+//    int accumulator = 0;
+//    for (unsigned int i = 0; i < updaters->size(); i++)
+//    {
+//      accumulator += (*updaters)[i]->UpdateAll(deltaTime);
+//    }
+//
+//    this->aliveParticles = accumulator;
 
   }
 
-  void ParticleSystem::UpdateUnified(float deltaTime)
+  void ParticleSystem::UpdateUnified( const float& deltaTime)
   {
     if( !run )
       return;
 
     unsigned int i = 0;
 
-//    // Set emitter delta time to calculate the number of particles to emit this frame
-//    for (i = 0; i < emitters->size(); i++)
-//    {
-//      (*emitters)[i]->StartEmission(deltaTime);
-//    }
-
-    for( Source* source : emissionNodes )
+    // Set emitter delta time to calculate the number of particles to emit this frame
+    for( Source* source : _sources )
     {
-
+      source->PrepareFrame( deltaTime );
     }
 
-    int accumulator = 0;
-
-    EmissionNodesArray::iterator nodit;
-    for (nodit = emissionNodes->begin();
-         nodit != emissionNodes->end();
-         nodit++)
+    // For each cluster....
+    for( auto cluster : _clusters )
     {
-
-      if (!(*nodit) || !(*nodit)->Active())
-        continue;
-
-      Source* currentNode = (*nodit);
-
-      for ( Particles::iterator it = currentNode->particles->begin( );
-            it != currentNode->particles->end( );
-            ++it)
+      // If active
+      if( cluster->active( ))
       {
-        i = it.id( );
 
-        // Emit each particle with its own emitter
-        (*emitters)[particleEmitter[i]]->EmitSingle( &it );
 
-        // Update each particle with its own updater
-        (*updaters)[particleUpdater[i]]->Update( &it, deltaTime);
 
-        if (it.alive( ))
+        // For each particle of the cluster...
+        for( tparticle particle = cluster->particles( ).begin( );
+             particle != cluster->particles( ).end( );
+             particle++ )
         {
-        currentNode->IncreaseAlive();
-        accumulator++;// += (*it)->Alive();
+
+          // Update
+          cluster->updater( )->Update( *cluster, &particle, deltaTime );
+
+          i += particle.alive( );
         }
       }
+      // Else
+      else
+      {
 
+        // If kill particles...
+        if( cluster->inactiveKillParticles( ))
+        {
+          // Kill particles
+          cluster->KillParticles( );
+        }
+
+      }
     }
 
-    for (i = 0; i < emitters->size(); i++)
+    // For each source...
+    for( Source* source : _sources )
     {
-      (*emitters)[i]->EndEmission();
+      // Finish frame
+      source->CloseFrame( );
     }
 
-    this->aliveParticles = accumulator;
+    this->_aliveParticles = i;
   }
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
   {
 
-    this->sorter->UpdateCameraDistance( cameraPosition, renderDeadParticles );
-//    unsigned int i = 0;
-//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-//    {
-////     i = ((tparticle_ptr) *it)->id;
-//     this->sorter->UpdateCameraDistance(*it, cameraPosition);
-//    }
+    this->_sorter->UpdateCameraDistance( cameraPosition, renderDeadParticles );
+
   }
 
   void ParticleSystem::UpdateRender()
   {
-   this->sorter->Sort();
+   this->_sorter->Sort();
 
-   this->renderer->SetupRender(this->aliveParticles);
+   this->_renderer->SetupRender(this->_aliveParticles);
   }
 
   void ParticleSystem::Render() const
   {
-   this->renderer->Paint(aliveParticles);
+   this->_renderer->Paint(_aliveParticles);
   }
 
   void ParticleSystem::Run( bool run_ )
@@ -324,6 +264,11 @@ namespace prefr
   bool ParticleSystem::Run( void )
   {
     return run;
+  }
+
+  unsigned int ParticleSystem::aliveParticles( void )
+  {
+    return _aliveParticles;
   }
 
 }

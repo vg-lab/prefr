@@ -16,16 +16,14 @@
 
 #include "Particles.h"
 
-#include "ParticleUpdater.h"
-#include "ParticleSorter.h"
-#include "ParticleRenderer.h"
-
-#include "ParticlePrototype.h"
-
 #include <vector>
 
 #include "Emitter.h"
+#include "Model.h"
+#include "Renderer.h"
+#include "Sorter.h"
 #include "Source.h"
+#include "Updater.h"
 
 
 namespace prefr
@@ -53,25 +51,11 @@ namespace prefr
   public:
 
 
-    std::vector< int > _clusterReference;
-
-    std::vector<int> particleEmissionNodes;
-    std::vector<int> particlePrototype;
-    std::vector<int> particleEmitter;
-    std::vector<int> particleUpdater;
-
 //    PREFR_HANDLER( emissionNode, EmissionNode );
 //    PREFR_HANDLER( prototype, ParticlePrototype );
 //    PREFR_HANDLER( updater, ParticleUpdater );
 //    PREFR_HANDLER( emitter, ParticleEmitter );
 
-  public:
-    unsigned int aliveParticles;
-    unsigned int maxParticles;
-
-    bool loop;
-    bool renderDeadParticles;
-    bool run;
 
     PREFR_API
     ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
@@ -86,15 +70,20 @@ namespace prefr
     PREFR_API
     virtual void AddEmissionNode(Source* node);
     PREFR_API
-    virtual void AddPrototype(ParticlePrototype* prototype);
+    virtual void AddPrototype(Model* prototype);
     PREFR_API
     virtual void AddEmitter(Emitter* emitter);
     PREFR_API
-    virtual void AddUpdater(ParticleUpdater* updater);
+    virtual void AddUpdater(Updater* updater);
     PREFR_API
-    virtual void SetSorter(ParticleSorter* _sorter);
+    virtual void sorter(Sorter* _sorter);
     PREFR_API
-    virtual void SetRenderer(ParticleRenderer* _renderConfig);
+    virtual Sorter* sorter( void );
+
+    PREFR_API
+    virtual void renderer(Renderer* _renderConfig);
+
+    PREFR_API Renderer* renderer( void );
 
     PREFR_API
     virtual void Start();
@@ -104,7 +93,7 @@ namespace prefr
     virtual void Update(float deltaTime);
 
     PREFR_API
-    virtual void UpdateUnified(float deltaTime);
+    virtual void UpdateUnified( const float& deltaTime);
 
     PREFR_API
     virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
@@ -120,33 +109,49 @@ namespace prefr
     virtual void Run( bool run_ );
     virtual bool Run( void );
 
+    virtual unsigned int aliveParticles( void );
+
   protected:
 
     //! Particles collection the system will manage.
 //    ParticleCollection* particles;
     Particles _particles;
 
-    std::vector< Cluster* > _clusters;
+    ClustersArray _clusters;
 
     //! Emission nodes array of the particle set.
-    EmissionNodesArray* emissionNodes;
+    SourcesArray _sources;
 
     //! Particle prototypes of the particle set.
-    PrototypesArray* prototypes;
+    ModelsArray prototypes;
 
     //! Emitter objects collection of the system.
-    std::vector<Emitter*>* emitters;
+    std::vector<Emitter*> emitters;
 
     //! Updater objects collection of the system.
-    std::vector<ParticleUpdater*>* updaters;
+    std::vector<Updater*> updaters;
 
     //! Particle sorter for alpha rendering.
-    ParticleSorter* sorter;
+    Sorter* _sorter;
 
     //! Particles renderer (OpenGL, OSG, etc.)
-    ParticleRenderer* renderer;
+    Renderer* _renderer;
 
 
+
+    std::vector< int > _clusterReference;
+
+    unsigned int _aliveParticles;
+    unsigned int maxParticles;
+
+    bool loop;
+    bool renderDeadParticles;
+    bool run;
+
+//    std::vector<int> particleEmissionNodes;
+//    std::vector<int> particlePrototype;
+//    std::vector<int> particleEmitter;
+//    std::vector<int> particleUpdater;
 
   };
 

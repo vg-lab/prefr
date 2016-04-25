@@ -5,24 +5,24 @@
  *      Author: sergio
  */
 
-#include "GLDefaultParticleRenderer.h"
+#include "GLRenderer.h"
 
 using namespace std;
 
 namespace prefr
 {
 
-  GLDefaultParticleRenderer::GLDefaultParticleRenderer( const ParticleCollection& particlesArray)
-  : ParticleRenderer( particlesArray )
+  GLRenderer::GLRenderer( )
+  : Renderer( )
   {
 
-    renderConfig = new RenderConfig( particles->size );
+    renderConfig = new RenderConfig( _particles.size );
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f};
 
     renderConfig->billboardVertices = new vector<GLfloat>(12);
-    renderConfig->particlePositions = new vector<GLfloat>(particles->size * 4);
-    renderConfig->particleColors = new vector<GLfloat>(particles->size * 4);
+    renderConfig->particlePositions = new vector<GLfloat>(_particles.size * 4);
+    renderConfig->particleColors = new vector<GLfloat>(_particles.size * 4);
 
     for (unsigned int i = 0; i < renderConfig->billboardVertices->size(); i++)
     {
@@ -74,19 +74,19 @@ namespace prefr
 
   }
 
-  GLDefaultParticleRenderer::~GLDefaultParticleRenderer()
+  GLRenderer::~GLRenderer()
   {
 
   }
 
-  void GLDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
+  void GLRenderer::SetupRender(unsigned int aliveParticles)
   {
     tparticle currentParticle;
     int idx;
 
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      currentParticle = particles->GetElement(distances->getID(i));
+      currentParticle = _particles.GetElement(distances->getID(i));
 
       idx = i * 4;
 
@@ -116,7 +116,7 @@ namespace prefr
     glBindVertexArray(0);
   }
 
-  void GLDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
+  void GLRenderer::Paint(unsigned int aliveParticles) const
   {
     glBindVertexArray(renderConfig->vao);
 

@@ -140,25 +140,25 @@ void mouseFunc (int /* button */, int /* state */,
 void printPrototypeColor(unsigned int num)
 {
   std::cout << "Prototype " << num << std::endl;
-  ParticlePrototype* prot = ps->prototypes->at(num);
-
-  for (unsigned int i = 0; i < prot->color.size; i++)
-  {
-    std::cout << prot->color.times[i] << ": ";
-    glm::vec4 color = prot->color.values.at(i);
-    std::cout << color.x << ", "
-              << color.y << ", "
-              << color.z << ", "
-              << color.w << ", "
-              << std::endl;
-  }
-
-  for (unsigned int i = 0; i < prot->color.quickReference.size(); i++)
-  {
-    std::cout << prot->color.quickReference[i] <<  ", ";
-  }
-
-  std::cout << std::endl;
+//  ParticlePrototype* prot = ps->prototypes->at(num);
+//
+//  for (unsigned int i = 0; i < prot->color.size; i++)
+//  {
+//    std::cout << prot->color.times[i] << ": ";
+//    glm::vec4 color = prot->color.values.at(i);
+//    std::cout << color.x << ", "
+//              << color.y << ", "
+//              << color.z << ", "
+//              << color.w << ", "
+//              << std::endl;
+//  }
+//
+//  for (unsigned int i = 0; i < prot->color.quickReference.size(); i++)
+//  {
+//    std::cout << prot->color.quickReference[i] <<  ", ";
+//  }
+//
+//  std::cout << std::endl;
 }
 
 
@@ -204,10 +204,10 @@ void keyboardFunc(unsigned char key, int /* x */, int /* y */)
     {
       unsigned int val = key - '0';
 
-      std::cout << "Deleting value " << val << std::endl;
-
-      ParticlePrototype* prot = ps->prototypes->at(0);
-      prot->color.Remove(val);
+//      std::cout << "Deleting value " << val << std::endl;
+//
+//      ParticlePrototype* prot = ps->prototypes->at(0);
+//      prot->color.Remove(val);
 
       printPrototypeColor(0);
     }
@@ -375,96 +375,99 @@ int main(int argc, char** argv)
   makeProjectionMatrix();
 
   unsigned int maxParticles = 10;
-  unsigned int maxEmitters = 1;
+  unsigned int maxClusters = 1;
 
   if (argc >= 2)
     maxParticles = atoi(argv[1]);
 
   if (argc >= 3)
-    maxEmitters = atoi(argv[2]);
+    maxClusters = atoi(argv[2]);
 
   ps = new ParticleSystem(10, maxParticles, true);
 
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
+  Model* model = new Model( 3.0f, 5.0f );
 
-  prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
-  prototype->color.Insert(0.65f, (glm::vec4(1, 1, 0, 0.2)));
-  prototype->color.Insert(0.35f, (glm::vec4(0, 1, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
-  prototype->color.Remove(3);
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, .5)));
+  model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
+  model->color.Insert(0.65f, (glm::vec4(1, 1, 0, 0.2)));
+  model->color.Insert(0.35f, (glm::vec4(0, 1, 0, 0.2)));
+  model->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+  model->color.Remove(3);
+  model->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+  model->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, .5)));
 
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
+  model->velocity.Insert(0.0f, 3.0f);
+  model->velocity.Insert(1.0f, 5.0f);
 
-  prototype->size.Insert(0.0f, 1.0f);
+  model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddPrototype(model);
 
-  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
+  model = new Model( 3.0f, 5.0f );
 
-  prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
-  prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
+  model->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
+  model->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
+  model->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
 
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
+  model->velocity.Insert(0.0f, 3.0f);
+  model->velocity.Insert(1.0f, 5.0f);
 
-  prototype->size.Insert(0.0f, 1.0f);
+  model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddPrototype(model);
 
   std::cout << "Created prototype." << std::endl;
 
   printPrototypeColor(0);
   printPrototypeColor(1);
 
-  PointEmissionNode* emissionNode;
+  PointSource* source;
+  Cluster* cluster;
 
-  int particlesPerEmitter = maxParticles / maxEmitters;
+  int particlesPerCluster = maxParticles / maxClusters;
 
-  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
+  std::cout << "Creating " << maxClusters << " emitters with " << particlesPerCluster << std::endl;
 
-  for (unsigned int i = 0; i < maxEmitters; i++)
+  for (unsigned int i = 0; i < maxClusters; i++)
   {
-    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
+    std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
-    emissionNode =
-        new PointEmissionNode(ParticleCollection(ps->_particles,
-                                                 i * particlesPerEmitter,
-                                                 i * particlesPerEmitter + particlesPerEmitter),
-                              glm::vec3(i * 10, 0, 0));
+    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
+    ps->AddEmissionNode(source);
 
-    ps->AddEmissionNode(emissionNode);
+    cluster = new Cluster( );
+    cluster->source( source );
+
+    ps->AddCluster( cluster,
+                    i * particlesPerCluster,
+                    i * particlesPerCluster + particlesPerCluster);
+
   }
 
-  Emitter* emitter = new Emitter( ParticleCollection( ps->_particles ), 0.3f, true);
+  Emitter* emitter = new Emitter( 0.3f, true);
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater( ParticleCollection( ps->_particles ));
+  Updater* updater = new Updater( );
   std::cout << "Created updater" << std::endl;
 
-  ParticleSorter* sorter;
+  Sorter* sorter;
 
 #if (PREFR_USE_CUDA)
   std::cout << "CUDA sorter" << std::endl;
-  sorter = new ThrustParticleSorter( ParticleCollection( ps->_particles ));
+  sorter = new ThrustSorter( );
 #else
-  sorter = new ParticleSorter( ParticleCollection( ps->_particles ));
+  sorter = new Sorter( );
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
-  GLDefaultParticleRenderer* renderer =
-    new GLDefaultParticleRenderer( ParticleCollection( ps->_particles ));
+  GLRenderer* renderer = new GLRenderer( );
 
   std::cout << "Created systems" << std::endl;
 
   ps->AddUpdater(updater);
-  ps->SetSorter(sorter);
-  ps->SetRenderer(renderer);
+  ps->sorter(sorter);
+  ps->renderer(renderer);
 
   ps->Start();
 

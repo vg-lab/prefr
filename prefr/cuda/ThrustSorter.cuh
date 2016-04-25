@@ -1,20 +1,19 @@
 #ifndef THRUSTPARTICLESORTER_H_
 #define THRUSTPARTICLESORTER_H_
 
+#include "../Sorter.h"
 #include "../types.h"
-#include "../ParticleSorter.h"
-
 #include "CUDADistanceArray.cuh"
 
 namespace prefr
 {
 
-  class ThrustParticleSorter : public ParticleSorter
+  class ThrustSorter : public Sorter
   {
   public:
 
-    PREFR_API ThrustParticleSorter( const ParticleCollection& arrayParticles );
-    PREFR_API virtual ~ThrustParticleSorter();
+    PREFR_API ThrustSorter(  );
+    PREFR_API virtual ~ThrustSorter();
 
     PREFR_API void Sort(SortOrder order);
 

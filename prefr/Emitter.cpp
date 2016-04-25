@@ -9,192 +9,77 @@
 namespace prefr
 {
 
-    static float invRandMax = 1.0f / RAND_MAX;
+//    static float invRandMax = 1.0f / RAND_MAX;
 
     //**********************************************************
     // Default Emitter
     //**********************************************************
 
 
-    Emitter::Emitter ( const ParticleCollection& particlesArray,
-                                      float _emissionRate, bool _loop)
-    : particles( new ParticleCollection( particlesArray ) )
-    , emissionNodes( nullptr )
-    , refEmissionNodes( nullptr )
-    , prototypes( nullptr )
-    , refPrototypes( nullptr )
-    , particlesBudget( 0 )
+    Emitter::Emitter ( float _emissionRate, bool _loop)
+    : particlesBudget( 0 )
     , emissionRate( _emissionRate )
     , loop( _loop )
     , active( true )
-    , lastParticleNodeID( -1 )
-    , lastParticlePrototypeID( -1 )
-    , currentNodeID( -1 )
-    , currentPrototypeID( -1 )
-    , currentNode( nullptr )
-    , currentPrototype( nullptr )
     {
-      maxParticles = particles->size;
 
-      normalizationFactor = 1.0f/particles->size;
     }
 
     Emitter::~Emitter()
     {
-      delete( particles );
-    }
-
-    Source* Emitter::GetCurrentNode( const int& particleID )
-    {
-      if (particleID == lastParticleNodeID)
-        return currentNode;
-
-      int nodeID = (*refEmissionNodes)[ particleID ];
-
-      if (nodeID < 0)
-        currentNode = nullptr;
-      else if (nodeID != currentNodeID)
-        currentNode = (*emissionNodes)[ nodeID ];
-
-      currentNodeID = nodeID;
-      lastParticleNodeID = particleID;
-
-      return currentNode;
-    }
-
-
-    tprototype_ptr Emitter::GetCurrentPrototype( const int& particleID )
-    {
-      if (particleID == lastParticlePrototypeID)
-        return currentPrototype;
-
-      int prototypeID = (*refPrototypes)[particleID];
-
-      if (prototypeID < 0)
-        currentPrototype = nullptr;
-      else if (prototypeID != currentPrototypeID)
-        currentPrototype = (*prototypes)[ prototypeID ];
-
-      currentPrototypeID = prototypeID;
-      lastParticlePrototypeID = particleID;
-
-      return currentPrototype;
-    }
-
-    void Emitter::EmitAll(float deltaTime)
-    {
-
-      if (!active)
-        return;
-
-      StartEmission(deltaTime);
-
-//      int* nodeParticlesPerCycle;
-//      int previousNodeID;
-//      int emissionNodeID;
-
-      for ( tparticle current = particles->begin( );
-          current != particles->end( ); current++ )
-      {
-//        current = (*it);
-
-        currentNode = GetCurrentNode( current.id( ));
-
-        if (!currentNode)
-          continue;
-
-        if (currentNode->Emits() && !current.alive( ))
-        {
-          this->EmitFunction( &current );
-        }
-
-//        previousNodeID = emissionNodeID;
-      }
-
-      EndEmission();
 
     }
 
-    void Emitter::StartEmission(float deltaTime)
-    {
-      particlesBudget = emissionRate * maxParticles * deltaTime;
 
-      for (EmissionNodesArray::iterator it = emissionNodes->begin();
-           it != emissionNodes->end(); it++)
-      {
-        if (*it && (*it)->Active())
-        {
 
-          (*it)->PrepareFrame(particlesBudget *
-                           ((*it)->particles->size * normalizationFactor)
-                           , deltaTime);
+//    int Emitter::EmitSingle(const Cluster& cluster,
+//                            const tparticle_ptr current)
+//    {
+////      if (!active)
+////        return 0;
+////
+////      Source* source = cluster.source( );
+////
+////      if (source->Emits( ) && !current->alive( ))
+////      {
+////        this->EmitFunction( cluster, current);
+////
+////      }
+////
+////      // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
+////      return source->_particlesBudget;
+//
+//      return 0;
+//    }
 
-//          std::cout << particlesPerCycle << " "
-//              << emissionNodes->at(i)->particles->size << " "
-//              << emissionNodeParticlesPerCycle[i] << std::endl;
-        }
-      }
-    }
-
-    void Emitter::EndEmission()
-    {
-      for (EmissionNodesArray::iterator it = emissionNodes->begin();
-                 it != emissionNodes->end(); it++)
-      {
-        if (*it && (*it)->Active())
-        (*it)->CloseFrame();
-      }
-    }
-
-    int Emitter::EmitSingle(const tparticle_ptr current)
-    {
-      if (!active)
-        return 0;
-
-      currentNode = GetCurrentNode(current->id( ));
-
-      if (!currentNode ||
-          (currentNode->_killParticlesIfInactive && !currentNode->Active()))
-      {
-        current->life( 0 );
-        return 0;
-      }
-
-      if (currentNode->Emits( ) && !current->alive( ))
-      {
-        this->EmitFunction(current);
-
-      }
-
-      // This might be used as signal to stop looping through this emitter, returning zero after the last particle emitted.
-      return currentNode->_particlesBudget;
-    }
-
-    void Emitter::EmitFunction(const tparticle_ptr current, bool override)
-    {
-      currentNode = GetCurrentNode(current->id( ));
-      currentPrototype = GetCurrentPrototype(current->id( ));
-
-      if (!currentNode || !currentPrototype)
-        return;
-
-      if ((!current->alive() || override))
-      {
-       current->life( glm::clamp(rand() * invRandMax, 0.0f, 1.0f) *
-           currentPrototype->lifeInterval + currentPrototype->minLife );
-
-       current->velocity( currentNode->GetEmissionVelocityDirection( ));
-       current->position( currentNode->GetEmissionPosition( ));
-
-       current->velocityModule( currentPrototype->velocity.GetFirstValue( ));
-       current->color( currentPrototype->color.GetFirstValue( ));
-       current->size( currentPrototype->size.GetFirstValue( ));
-
-       current->newborn( true );
-
-       currentNode->ReduceBudgetBy(1);
-     }
-    }
+//    void Emitter::EmitFunction( const Cluster& cluster,
+//                                const tparticle_ptr current,
+//                                bool override )
+//    {
+//
+////      Source* source = cluster.source( );
+////      ParticlePrototype* model = cluster.model( );
+////
+////      if (!source || !model)
+////        return;
+////
+////      if ((!current->alive() || override))
+////      {
+////       current->life( glm::clamp(rand() * invRandMax, 0.0f, 1.0f) *
+////           model->lifeInterval + model->minLife );
+////
+////       current->velocity( source->GetEmissionVelocityDirection( ));
+////       current->position( source->GetEmissionPosition( ));
+////
+////       current->velocityModule( model->velocity.GetFirstValue( ));
+////       current->color( model->color.GetFirstValue( ));
+////       current->size( model->size.GetFirstValue( ));
+////
+////       current->newborn( true );
+////
+////       source->ReduceBudgetBy(1);
+////     }
+//    }
 
 
 }

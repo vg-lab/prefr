@@ -9,7 +9,7 @@
 #define OSGDEFAULTPARTICLERENDERCONFIG_H_
 
 #include <prefr/api.h>
-#include "../ParticleRenderer.h"
+#include "../Renderer.h"
 #include "OSGRenderConfig.h"
 #ifndef PREFR_SKIP_GLEW_INCLUDE
 #include <GL/glew.h>
@@ -20,15 +20,15 @@
 namespace prefr
 {
 
-  class OSGDefaultParticleRenderer : public ParticleRenderer
+  class OSGRenderer : public Renderer
   {
   public:
 
     int currentAliveParticles;
 
-    PREFR_API OSGDefaultParticleRenderer( const ParticleCollection& particlesArray);
+    PREFR_API OSGRenderer( );
 
-    PREFR_API virtual ~OSGDefaultParticleRenderer();
+    PREFR_API virtual ~OSGRenderer();
 
     PREFR_API void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
 

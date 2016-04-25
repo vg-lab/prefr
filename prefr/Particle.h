@@ -7,7 +7,7 @@
 namespace prefr
 {
 
-  class ParticlePrototype;
+  class Model;
 
   static glm::vec3 vec3zero (0,0,0);
   static glm::vec3 vec3one (1,1,1);

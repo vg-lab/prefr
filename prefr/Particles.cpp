@@ -319,6 +319,15 @@ namespace prefr
     return result;
   }
 
+//  Particles::iterator& Particles::iterator::operator*( void ) const
+//  {
+//    return *this;
+//  }
+//
+//  Particles::iterator* Particles::iterator::operator->( void ) const
+//  {
+//    return this;
+//  }
 
   bool Particles::iterator::operator==( const Particles::iterator& other )
   {
@@ -502,6 +511,15 @@ namespace prefr
     return result;
   }
 
+//  Particles::const_iterator& Particles::const_iterator::operator*( void )
+//  {
+//    return *this;
+//  }
+//
+//  Particles::const_iterator* Particles::const_iterator::operator->( void )
+//  {
+//    return this;
+//  }
 
   bool
   Particles::const_iterator::operator==( const Particles::const_iterator& other )

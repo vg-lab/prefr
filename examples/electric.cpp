@@ -9,12 +9,12 @@
 #include <shaderPath.h>
 
 #include <prefr/ParticleSystem.h>
-#include <prefr/ParticlePrototype.h>
-#include <prefr/ParticleUpdater.h>
 #include <prefr/OSG/OSGDefaultParticleSystem.h>
-#include <prefr/OSG/OSGDefaultParticleRenderer.h>
-#include <prefr/ParticleSorter.h>
+#include "../prefr/Model.h"
+#include "../prefr/OSG/OSGRenderer.h"
+#include "../prefr/Sorter.h"
 #include "../prefr/Source.h"
+#include "../prefr/Updater.h"
 
 #if (PREFR_USE_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 
 
 
-  ParticlePrototype* prototype = new ParticlePrototype(5.0f, 7.0f, ParticleCollection(ps->particles, 0, maxParticles));
+  Model* prototype = new Model(5.0f, 7.0f, ParticleCollection(ps->particles, 0, maxParticles));
   prototype->color.Insert(0.0f, (glm::vec4(0.5, 0.5, 1, 0.7)));
   prototype->color.Insert(0.75f, (glm::vec4(0, 0, 0.5, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0, 1, 0)));
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
   std::cout << "Created prototype." << std::endl;
 
 
-  SphereEmissionNode* emissionNode;
+  SphereSource* emissionNode;
 
   int particlesPerEmitter = maxParticles / maxEmitters;
 
@@ -218,7 +218,7 @@ int main(int argc, char** argv)
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-        new SphereEmissionNode(ParticleCollection(ps->particles,
+        new SphereSource(ParticleCollection(ps->particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, abs(int(i % 20) - 10) * 5, 0), 3);
@@ -236,26 +236,26 @@ int main(int argc, char** argv)
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
+  Updater* updater = new Updater(*ps->particles);
   std::cout << "Created updater" << std::endl;
 
-  ParticleSorter* sorter;
+  Sorter* sorter;
 
 #if (PREFR_USE_CUDA)
   sorter = new ThrustParticleSorter(*ps->particles);
 #else
-  sorter = new ParticleSorter(*ps->particles);
+  sorter = new Sorter(*ps->particles);
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
-  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(*ps->particles);
+  OSGRenderer* renderer = new OSGRenderer(*ps->particles);
 
   std::cout << "Created systems" << std::endl;
 
   ps->AddUpdater(updater);
-  ps->SetSorter(sorter);
-  ps->SetRenderer(renderer);
+  ps->Sorter(sorter);
+  ps->renderer(renderer);
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(PREFR_LIBRARY_BASE_PATH);

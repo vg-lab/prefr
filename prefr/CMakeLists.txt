@@ -5,26 +5,27 @@ set(PREFR_PUBLIC_HEADERS
   # should be the first file included by the library
   types.h
   #  
+  Cluster.h
   ElementCollection.hpp
   InterpolationSet.hpp
   DistanceArray.hpp
   Timer.hpp
   Particles.h
-  ParticlePrototype.h
+  Model.h
   OSG/OSGRenderConfig.h
   OSG/OSGDefaultParticleSystem.h
-  OSG/OSGDefaultParticleRenderer.h
+  OSG/OSGRenderer.h
   RenderConfig.h
-  cuda/ThrustParticleSorter.cuh
+  cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh
-  ParticleEmitter.h
-  ParticleRenderer.h
-  ParticleSorter.h
-  ParticleUpdater.h
-  GL/GLDefaultParticleRenderer.h  
+  Emitter.h
+  Renderer.h
+  Sorter.h
+  Updater.h
+  GL/GLRenderer.h  
   log.h
   ParticleSystem.h
-  ParticleEmissionNode.h
+  Source.h
   GL/shd/GL-frag.glsl
   GL/shd/GL-vert.glsl
   Config.h
@@ -33,17 +34,19 @@ set(PREFR_PUBLIC_HEADERS
 set(PREFR_HEADERS )
 
 set(PREFR_SOURCES
+  Cluster.cpp
   Particles.cpp
-  ParticleEmitter.cpp
-  ParticleSorter.cpp
-  ParticleUpdater.cpp
-  OSG/OSGDefaultParticleRenderer.cpp
+  Emitter.cpp
+  Sorter.cpp
+  Updater.cpp
+  Renderer.cpp
+  OSG/OSGRenderer.cpp
   OSG/OSGDefaultParticleSystem.cpp
   ParticleSystem.cpp
-  cuda/ThrustParticleSorter.cu
-  ParticlePrototype.cpp
-  GL/GLDefaultParticleRenderer.cpp
-  ParticleEmissionNode.cpp
+  cuda/ThrustSorter.cu
+  Model.cpp
+  GL/GLRenderer.cpp
+  Source.cpp
   Config.cpp
 )
 

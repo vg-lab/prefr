@@ -9,12 +9,12 @@
 
 // This include has to be called before any other GL-dependent
 #include <prefr/ParticleSystem.h>
-#include <prefr/ParticlePrototype.h>
-#include <prefr/ParticleUpdater.h>
 #include <prefr/OSG/OSGDefaultParticleSystem.h>
-#include <prefr/OSG/OSGDefaultParticleRenderer.h>
-#include <prefr/ParticleSorter.h>
+#include "../prefr/Model.h"
+#include "../prefr/OSG/OSGRenderer.h"
+#include "../prefr/Sorter.h"
 #include "../prefr/Source.h"
+#include "../prefr/Updater.h"
 
 #if (PREFR_USE_CUDA)
 #include <prefr/cuda/ThrustParticleSorter.cuh>
@@ -187,7 +187,7 @@ int main( int argc, char** argv )
 
   ps->SetCameraManipulator(&viewWidget);
 
-  ParticlePrototype* prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
+  Model* prototype = new Model(3.0f, 5.0f, ParticleCollection(ps->_particles, 0, maxParticles / 2));
   prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
   prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
@@ -199,7 +199,7 @@ int main( int argc, char** argv )
 
   ps->AddPrototype(prototype);
 
-  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
+  prototype = new Model(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
 
   prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
   prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
@@ -214,7 +214,7 @@ int main( int argc, char** argv )
 
   std::cout << "Created prototype." << std::endl;
 
-  PointEmissionNode* emissionNode;
+  PointSource* emissionNode;
 
   int particlesPerEmitter = maxParticles / maxEmitters;
 
@@ -225,7 +225,7 @@ int main( int argc, char** argv )
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-        new PointEmissionNode(ParticleCollection(ps->_particles,
+        new PointSource(ParticleCollection(ps->_particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, 0, 0));
@@ -237,28 +237,28 @@ int main( int argc, char** argv )
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(*ps->_particles);
+  Updater* updater = new Updater(*ps->_particles);
   std::cout << "Created updater" << std::endl;
 
-  ParticleSorter* sorter;
+  Sorter* sorter;
 
 #if (PREFR_USE_CUDA)
   sorter = new ThrustParticleSorter(*ps->_particles);
 #else
-  sorter = new ParticleSorter(*ps->_particles);
+  sorter = new Sorter(*ps->_particles);
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
-  OSGDefaultParticleRenderer* renderer = new OSGDefaultParticleRenderer(*ps->_particles);
+  OSGRenderer* renderer = new OSGRenderer(*ps->_particles);
 
   std::cout << "Created systems" << std::endl;
 
 
 
   ps->AddUpdater(updater);
-  ps->SetSorter(sorter);
-  ps->SetRenderer(renderer);
+  ps->Sorter(sorter);
+  ps->renderer(renderer);
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(PREFR_LIBRARY_BASE_PATH);

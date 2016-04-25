@@ -5,33 +5,31 @@
  *      Author: sgalindo
  */
 
-#include "ParticlePrototype.h"
+#include "Model.h"
 
 namespace prefr
 {
-  ParticlePrototype::ParticlePrototype()
+  Model::Model()
   : minLife( 0.0f )
   , maxLife( 0.0f )
   , lifeInterval( 0.0f )
   , lifeNormalization( 1.0f )
   , dispersion( 0.0f )
-  , particles( nullptr )
   {
   }
 
-  ParticlePrototype::ParticlePrototype(float min, float max, const ParticleCollection& particlesArray)
+  Model::Model(float min, float max )
   : dispersion( 0.0f )
-  , particles( new ParticleCollection( particlesArray ) )
   {
     SetLife(min, max);
   }
 
-  ParticlePrototype::~ParticlePrototype()
+  Model::~Model()
   {
-    delete( particles );
+
   }
 
-  void ParticlePrototype::SetLife(float min, float max)
+  void Model::SetLife(float min, float max)
   {
     minLife = min;
     maxLife = max;

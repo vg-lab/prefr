@@ -5,20 +5,19 @@
  *      Author: sergio
  */
 
-#include "OSGDefaultParticleRenderer.h"
+#include "OSGRenderer.h"
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
 
 namespace prefr
 {
 
-  OSGDefaultParticleRenderer::OSGDefaultParticleRenderer(
-      const ParticleCollection& particlesArray)
-  : ParticleRenderer( particlesArray )
+  OSGRenderer::OSGRenderer( )
+  : Renderer( )
   , currentAliveParticles( 0 )
   {
 
-    renderConfig = new OSGRenderConfig( particles->size );
+    renderConfig = new OSGRenderConfig( _particles.size );
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f,
                    0.5f,  -0.5f, 0.0f,
@@ -27,11 +26,11 @@ namespace prefr
 
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
 
-    osgrc->billboardVertices = new vector<GLfloat>;
+    osgrc->billboardVertices = new std::vector<GLfloat>;
     osgrc->vertexArray = new osg::Vec3Array;
     osgrc->billboardIndices = new osg::DrawElementsUByte(GL_TRIANGLE_STRIP);
-    osgrc->particlePositions = new vector<GLfloat>(particles->size * 4);
-    osgrc->particleColors = new vector<GLfloat>(particles->size * 4);
+    osgrc->particlePositions = new std::vector<GLfloat>(_particles.size * 4);
+    osgrc->particleColors = new std::vector<GLfloat>(_particles.size * 4);
 
     for (unsigned int i = 0; i < 4; i++)
     {
@@ -50,12 +49,12 @@ namespace prefr
 
   }
 
-  OSGDefaultParticleRenderer::~OSGDefaultParticleRenderer()
+  OSGRenderer::~OSGRenderer()
   {
 
   }
 
-  void OSGDefaultParticleRenderer::osgCompileGLObjects(
+  void OSGRenderer::osgCompileGLObjects(
     osg::RenderInfo& /* renderInfo */ ) const
   {
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
@@ -116,7 +115,7 @@ namespace prefr
 
   }
 
-  void OSGDefaultParticleRenderer::SetupRender(unsigned int aliveParticles)
+  void OSGRenderer::SetupRender(unsigned int aliveParticles)
   {
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
 
@@ -128,23 +127,23 @@ namespace prefr
 
     for (unsigned int i = 0; i < aliveParticles; i++)
     {
-      currentParticle = particles->GetElement(distances->getID(i));
+      currentParticle = _particles.GetElement(distances->getID(i));
 
       idx = i * 4;
 
-      (*renderConfig->particlePositions)[idx] = currentParticle->position.x;
-      (*renderConfig->particlePositions)[idx+1] = currentParticle->position.y;
-      (*renderConfig->particlePositions)[idx+2] = currentParticle->position.z;
-      (*renderConfig->particlePositions)[idx+3] = currentParticle->size;
+      (*renderConfig->particlePositions)[idx] = currentParticle->position( ).x;
+      (*renderConfig->particlePositions)[idx+1] = currentParticle->position( ).y;
+      (*renderConfig->particlePositions)[idx+2] = currentParticle->position( ).z;
+      (*renderConfig->particlePositions)[idx+3] = currentParticle->size( );
 
-      osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle->position.x
-                            , currentParticle->position.y
-                            , currentParticle->position.z));
+      osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle->position( ).x
+                            , currentParticle->position( ).y
+                            , currentParticle->position( ).z));
 
-      (*renderConfig->particleColors)[idx] = currentParticle->color.x;
-      (*renderConfig->particleColors)[idx+1] = currentParticle->color.y;
-      (*renderConfig->particleColors)[idx+2] = currentParticle->color.z;
-      (*renderConfig->particleColors)[idx+3] = currentParticle->color.w;
+      (*renderConfig->particleColors)[idx] = currentParticle->color( ).x;
+      (*renderConfig->particleColors)[idx+1] = currentParticle->color( ).y;
+      (*renderConfig->particleColors)[idx+2] = currentParticle->color( ).z;
+      (*renderConfig->particleColors)[idx+3] = currentParticle->color( ).w;
     }
 
     if (osgrc->boundingBox.radius() == 0)
@@ -157,7 +156,7 @@ namespace prefr
 
 
 
-  void OSGDefaultParticleRenderer::Paint(unsigned int aliveParticles) const
+  void OSGRenderer::Paint(unsigned int aliveParticles) const
   {
     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderConfig);
 

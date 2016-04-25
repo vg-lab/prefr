@@ -84,8 +84,8 @@ const osg::CopyOp& copyOp)
   void OSGDefaultParticleSystem::ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag)
   {
 
-    PREFR_DEBUG_CHECK( renderer, "Configure executed before adding a renderer to the particle system.");
-    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderer->renderConfig);
+    PREFR_DEBUG_CHECK( _renderer, "Configure executed before adding a renderer to the particle system.");
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
 
     osg::StateSet* psState = rootNode->getOrCreateStateSet();
@@ -187,7 +187,7 @@ const osg::CopyOp& copyOp)
   {
     assert(cameraManipulator != nullptr);
 
-    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(renderer->renderConfig);
+    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
     // Get camera position to calculate distances
     osg::Vec3d eye, center, up;
@@ -244,27 +244,27 @@ const osg::CopyOp& copyOp)
 
   void OSGDefaultParticleSystem::UpdateRender()
   {
-    this->sorter->Sort();
+    this->_sorter->Sort();
 
-    PREFR_DEBUG_CHECK( static_cast<OSGDefaultParticleRenderer*>(this->renderer), "casting failed" );
+    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer), "casting failed" );
 
-    static_cast<OSGDefaultParticleRenderer*>(this->renderer)->SetupRender(this->aliveParticles);
+    static_cast<OSGRenderer*>(this->_renderer)->SetupRender(this->_aliveParticles);
 
     dirtyBound();
   }
 
   void OSGDefaultParticleSystem::Render() const
   {
-    PREFR_DEBUG_CHECK( static_cast<OSGDefaultParticleRenderer*>(this->renderer), "casting failed" );
+    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer), "casting failed" );
 
-    static_cast<OSGDefaultParticleRenderer*>(this->renderer)->Paint(aliveParticles);
+    static_cast<OSGRenderer*>(this->_renderer)->Paint(_aliveParticles);
   }
 
   osg::BoundingBox OSGDefaultParticleSystem::computeBound() const
   {
-    PREFR_DEBUG_CHECK( renderer->renderConfig, "renderConfig is nullptr" );
+    PREFR_DEBUG_CHECK( _renderer->renderConfig, "renderConfig is nullptr" );
 
-    return static_cast<OSGRenderConfig*>(renderer->renderConfig)->boundingBox;
+    return static_cast<OSGRenderConfig*>(_renderer->renderConfig)->boundingBox;
 
   }
 
@@ -273,11 +273,11 @@ const osg::CopyOp& copyOp)
     osg::RenderInfo& renderInfo ) const
   {
     PREFR_DEBUG_CHECK(
-      static_cast<OSGDefaultParticleRenderer*>(this->renderer),
+      static_cast<OSGRenderer*>(this->_renderer),
       "casting failed" );
 
-    static_cast<OSGDefaultParticleRenderer*>
-      (this->renderer)->osgCompileGLObjects(renderInfo);
+    static_cast<OSGRenderer*>
+      (this->_renderer)->osgCompileGLObjects(renderInfo);
   }
 
   void OSGDefaultParticleSystem::drawImplementation(
@@ -294,7 +294,7 @@ const osg::CopyOp& copyOp)
     const
   {
     OSGRenderConfig* osgrc =
-      static_cast<OSGRenderConfig*>(renderer->renderConfig);
+      static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
     glDeleteBuffers(1, &osgrc->vboBillboardVertex);
     glDeleteBuffers(1, &osgrc->vboDrawElements);
@@ -306,7 +306,7 @@ const osg::CopyOp& copyOp)
   void OSGDefaultParticleSystem::accept(osg::PrimitiveFunctor& functor) const
   {
     OSGRenderConfig* osgrc =
-          static_cast<OSGRenderConfig*>(renderer->renderConfig);
+          static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
     if (!osgrc->vertexArray|| !osgrc->billboardIndices)
       return;

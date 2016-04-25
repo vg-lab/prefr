@@ -10,8 +10,8 @@
 
 #include <prefr/api.h>
 #include "InterpolationSet.hpp"
+#include "Model.h"
 #include "Particles.h"
-#include "ParticlePrototype.h"
 #include "Source.h"
 
 
@@ -23,45 +23,28 @@ namespace prefr
 
   public:
 
-    PREFR_API Emitter( const ParticleCollection& particlesArray, float _emissionRate, bool _loop);
+    PREFR_API Emitter( float _emissionRate, bool _loop);
 
     PREFR_API virtual ~Emitter();
 
-    PREFR_API virtual void StartEmission(float deltaTime);
-    PREFR_API virtual void EndEmission();
-    PREFR_API virtual int EmitSingle(const tparticle_ptr i);
+//    PREFR_API virtual void StartEmission(float deltaTime);
+//    PREFR_API virtual void EndEmission();
+//    PREFR_API virtual int EmitSingle( const Cluster& cluster,
+//                                      const tparticle_ptr particle );
 
-    PREFR_API virtual void EmitAll(float deltaTime);
+//    PREFR_API virtual void EmitAll(float deltaTime);
 
-    PREFR_API virtual void EmitFunction(const tparticle_ptr current, bool override = false);
+//    PREFR_API virtual void EmitFunction( const Cluster& cluster,
+//                                         const tparticle_ptr current,
+//                                         bool override = false );
 
   protected:
-
-    ParticleCollection _particles;
-
-    std::vector<Source*>* emissionNodes;
-    std::vector<int>* refEmissionNodes;
-
-    PrototypesArray* prototypes;
-    std::vector<int>* refPrototypes;
 
     int maxParticles;
     float particlesBudget;
     float emissionRate;
     bool loop;
     bool active;
-
-    int lastParticleNodeID;
-    int lastParticlePrototypeID;
-
-    int currentNodeID;
-    int currentPrototypeID;
-
-    Source* currentNode;
-    tprototype_ptr currentPrototype;
-
-    Source* GetCurrentNode( const int& particleID );
-    tprototype_ptr GetCurrentPrototype( const int& particleID );
 
   private:
 

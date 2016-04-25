@@ -10,8 +10,19 @@
 
 #include "Particles.h"
 
+#include "Source.h"
+#include "Emitter.h"
+#include "ElementCollection.hpp"
+#include "Model.h"
+#include "Updater.h"
+
 namespace prefr
 {
+
+  class Source;
+  class Model;
+  class Emitter;
+  class Updater;
 
   class Cluster
   {
@@ -23,23 +34,30 @@ namespace prefr
 
     Cluster( );
 
-    Source* source( void );
+    virtual ~Cluster( void );
+
+    Source* source( void ) const;
     void source( Source* source );
 
-    ParticlePrototype* model( void );
-    void model( ParticlePrototype* model );
+    Model* model( void ) const;
+    void model( Model* model );
 
-    Emitter* emitter( void );
+    Emitter* emitter( void ) const;
     void emitter( Emitter* emitter );
 
-    ParticleUpdater* updater( void );
-    void updater( ParticleUpdater* updater);
+    Updater* updater( void ) const;
+    void updater( Updater* updater);
 
-    ParticleRange particles( void );
+    ParticleRange particles( void ) const;
     void particles( const ParticleRange& particleArray );
 
-    bool active( void );
+    bool active( void ) const;
     void active( bool active_ );
+
+    bool inactiveKillParticles( void ) const;
+    void inactiveKillParticles( bool killParticles );
+
+    virtual void KillParticles( void );
 
   protected:
 
@@ -49,14 +67,18 @@ namespace prefr
 
     Source* _source;
 
-    ParticlePrototype* _model;
+    Model* _model;
 
     Emitter* _emitter;
 
-    ParticleUpdater* _updater;
+    Updater* _updater;
 
     bool _active;
+
+    bool _inactiveKillParticles;
   };
+
+  typedef std::vector< Cluster* > ClustersArray;
 
 }
 

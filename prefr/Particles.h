@@ -206,6 +206,9 @@ namespace prefr
     iterator operator+( int increase );
     iterator operator-( int decrease );
 
+//    iterator* operator->( void ) const;
+//    iterator& operator*( void ) const;
+
     int operator+( const iterator& other );
     int operator-( const iterator& other );
 
@@ -253,6 +256,9 @@ namespace prefr
 
     const_iterator operator+( int increase );
     const_iterator operator-( int decrease );
+
+//    const_iterator* operator->( void );
+//    const_iterator& operator*( void );
 
     bool operator== ( const const_iterator& other );
     bool operator!= ( const const_iterator& other );

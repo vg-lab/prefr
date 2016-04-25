@@ -23,8 +23,10 @@ namespace prefr
     return (elem.x * elem.x + elem.y * elem.y + elem.z * elem.z);
   }
 
-  class ParticleSorter
+  class Sorter
   {
+    friend class ParticleSystem;
+
   public:
 
     enum SortOrder
@@ -33,9 +35,9 @@ namespace prefr
       Ascending = 1,
     };
 
-    PREFR_API ParticleSorter( const ParticleCollection& particlesArray );
+    PREFR_API Sorter( );
 
-    PREFR_API virtual ~ParticleSorter();
+    PREFR_API virtual ~Sorter();
 
     PREFR_API virtual void Sort(SortOrder order = Descending);
 
@@ -48,17 +50,24 @@ namespace prefr
 
     PREFR_API virtual void InitDistanceArray();
 
+
 #ifdef SERIALIZE_BEFORE_SORT
     virtual void SerializeAttributes( );
 #endif
 
-    ParticleCollection* particles;
+protected:
 
-    EmissionNodesArray* emissionNodes;
+    void clusters( ClustersArray* clusters );
+
+    ParticleCollection _particles;
+
+    ClustersArray* _clusters;
+
+    SourcesArray* emissionNodes;
 
     DistanceArray* distances;
 
-    unsigned int aliveParticles;
+    unsigned int _aliveParticles;
   };
 }
 
