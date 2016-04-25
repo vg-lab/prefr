@@ -48,7 +48,7 @@ namespace prefr
     current->life( std::max( 0.0f, current->life( ) - deltaTime ));
     current->alive( ( current->life( ) > 0) );
 
-    if (current->alive( ) && !current->newborn( ))
+    if (current->alive( ) /*&& !current->newborn( )*/)
     {
 
       float refLife = 1.0f - glm::clamp(( current->life( ) ) * (model->lifeNormalization), 0.0f, 1.0f);

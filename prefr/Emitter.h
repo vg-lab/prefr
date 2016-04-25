@@ -32,9 +32,8 @@ namespace prefr
 //    PREFR_API virtual int EmitSingle( const Cluster& cluster,
 //                                      const tparticle_ptr particle );
 
-//    PREFR_API virtual void EmitAll(float deltaTime);
 
-//    PREFR_API virtual void EmitFunction( const Cluster& cluster,
+//    PREFR_API virtual void Emit( const Cluster& cluster,
 //                                         const tparticle_ptr current,
 //                                         bool override = false );
 

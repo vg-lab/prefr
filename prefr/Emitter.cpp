@@ -31,7 +31,7 @@ namespace prefr
     }
 
 
-
+//
 //    int Emitter::EmitSingle(const Cluster& cluster,
 //                            const tparticle_ptr current)
 //    {
@@ -51,14 +51,14 @@ namespace prefr
 //
 //      return 0;
 //    }
-
-//    void Emitter::EmitFunction( const Cluster& cluster,
-//                                const tparticle_ptr current,
-//                                bool override )
+//
+//    void Emitter::Emit( const Cluster& cluster,
+//                        const tparticle_ptr current,
+//                        bool override )
 //    {
 //
 ////      Source* source = cluster.source( );
-////      ParticlePrototype* model = cluster.model( );
+////      Model* model = cluster.model( );
 ////
 ////      if (!source || !model)
 ////        return;

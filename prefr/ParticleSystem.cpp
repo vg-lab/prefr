@@ -199,13 +199,15 @@ namespace prefr
       if( cluster->active( ))
       {
 
-
-
         // For each particle of the cluster...
         for( tparticle particle = cluster->particles( ).begin( );
              particle != cluster->particles( ).end( );
              particle++ )
         {
+          if( !particle.alive( ) && cluster->source( )->Emits( ))
+          {
+            cluster->updater( )->Emit( *cluster, &particle );
+          }
 
           // Update
           cluster->updater( )->Update( *cluster, &particle, deltaTime );
