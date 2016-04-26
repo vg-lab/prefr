@@ -35,6 +35,8 @@ namespace prefr
 
   protected:
 
+    virtual void init( ) = 0;
+
     void particles( const ParticleRange& particles );
 
     ParticleCollection _particles;

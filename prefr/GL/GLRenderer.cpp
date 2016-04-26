@@ -14,8 +14,13 @@ namespace prefr
 
   GLRenderer::GLRenderer( )
   : Renderer( )
-  {
+  { }
 
+  GLRenderer::~GLRenderer()
+  { }
+
+  void GLRenderer::init( void )
+  {
     renderConfig = new RenderConfig( _particles.size );
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f};
@@ -70,13 +75,6 @@ namespace prefr
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
-
-
-  }
-
-  GLRenderer::~GLRenderer()
-  {
-
   }
 
   void GLRenderer::SetupRender(unsigned int aliveParticles)

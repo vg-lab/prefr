@@ -21,6 +21,9 @@ namespace prefr
 
   class Source
   {
+    friend class ParticleSystem;
+    friend class Cluster;
+
   public:
 
     PREFR_API

@@ -420,29 +420,6 @@ int main(int argc, char** argv)
   printPrototypeColor(0);
   printPrototypeColor(1);
 
-  PointSource* source;
-  Cluster* cluster;
-
-  int particlesPerCluster = maxParticles / maxClusters;
-
-  std::cout << "Creating " << maxClusters << " emitters with " << particlesPerCluster << std::endl;
-
-  for (unsigned int i = 0; i < maxClusters; i++)
-  {
-    std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
-
-    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
-    ps->AddEmissionNode(source);
-
-    cluster = new Cluster( );
-    cluster->source( source );
-
-    ps->AddCluster( cluster,
-                    i * particlesPerCluster,
-                    i * particlesPerCluster + particlesPerCluster);
-
-  }
-
   Emitter* emitter = new Emitter( 0.3f, true);
   ps->AddEmitter(emitter);
 
@@ -468,6 +445,32 @@ int main(int argc, char** argv)
   ps->AddUpdater(updater);
   ps->sorter(sorter);
   ps->renderer(renderer);
+
+  PointSource* source;
+  Cluster* cluster;
+
+  int particlesPerCluster = maxParticles / maxClusters;
+
+  std::cout << "Creating " << maxClusters << " emitters with " << particlesPerCluster << std::endl;
+
+  for (unsigned int i = 0; i < maxClusters; i++)
+  {
+    std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
+
+    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
+    ps->AddEmissionNode(source);
+
+    cluster = new Cluster( );
+    cluster->source( source );
+    cluster->updater( updater );
+    cluster->model( model );
+    cluster->emitter( emitter );
+
+    ps->AddCluster( cluster,
+                    i * particlesPerCluster,
+                    i * particlesPerCluster + particlesPerCluster);
+
+  }
 
   ps->Start();
 

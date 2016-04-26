@@ -82,8 +82,8 @@ namespace prefr
   }
 
   void Sorter::UpdateCameraDistance( const tparticle_ptr current,
-                                             const glm::vec3& cameraPosition,
-                                             bool renderDeadParticles )
+                                     const glm::vec3& cameraPosition,
+                                     bool renderDeadParticles )
   {
 
     DistanceUnit& dist = distances->next();
@@ -100,6 +100,11 @@ namespace prefr
   void Sorter::clusters( ClustersArray* clusters_ )
   {
     _clusters = clusters_;
+  }
+
+  void Sorter::particles( const ParticleRange& particles_ )
+  {
+    _particles = particles_;
   }
 
 }

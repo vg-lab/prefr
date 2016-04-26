@@ -11,10 +11,11 @@ namespace prefr
 {
 
   Renderer::Renderer( )
-  : _particles( nullptr )
-  , distances( nullptr )
+  : distances( nullptr )
   , renderConfig( nullptr )
-  {}
+  {
+
+  }
 
   Renderer::~Renderer()
   {

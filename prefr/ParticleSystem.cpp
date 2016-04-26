@@ -124,8 +124,12 @@ namespace prefr
   void ParticleSystem::sorter( Sorter* sorter_ )
   {
     this->_sorter = sorter_;
-    this->_sorter->InitDistanceArray( );
+
     this->_sorter->clusters( &_clusters );
+    this->_sorter->particles( ParticleRange( _particles ));
+
+    this->_sorter->InitDistanceArray( );
+
   }
 
   Sorter* ParticleSystem::sorter( void )
@@ -136,9 +140,12 @@ namespace prefr
   void ParticleSystem::renderer( Renderer* renderer_ )
   {
     this->_renderer = renderer_ ;
+    this->_renderer->particles( ParticleRange( _particles ));
 
     PREFR_DEBUG_CHECK( this->_sorter->distances, "distances is null" );
     this->_renderer->distances = this->_sorter->distances;
+
+    this->_renderer->init( );
   }
 
   Renderer* ParticleSystem::renderer( void )
@@ -159,24 +166,64 @@ namespace prefr
 
   }
 
-  void ParticleSystem::Update(float /*deltaTime*/ )
+  void ParticleSystem::Update(float deltaTime )
   {
-//    if( !run )
-//      return;
-//
-//    for (unsigned int i = 0; i < emitters->size(); i++)
-//    {
-//      (*emitters)[i]->EmitAll(deltaTime);
-//    }
-//
-//    int accumulator = 0;
-//    for (unsigned int i = 0; i < updaters->size(); i++)
-//    {
-//      accumulator += (*updaters)[i]->UpdateAll(deltaTime);
-//    }
-//
-//    this->aliveParticles = accumulator;
+    if( !run )
+     return;
 
+    unsigned int i = 0;
+
+    // Set emitter delta time to calculate the number of particles to emit this frame
+    for( Source* source : _sources )
+    {
+      source->PrepareFrame( deltaTime );
+    }
+
+    // For each particle...
+    for( tparticle particle = _particles.begin( );
+         particle != _particles.end( );
+         particle++ )
+    {
+      int ref = _clusterReference[ particle.id( )];
+      if( ref < 0 )
+        continue;
+
+      Cluster* cluster = _clusters[ ref ];
+
+      if( cluster->active( ))
+      {
+
+        if( !particle.alive( ) && cluster->source( )->Emits( ))
+        {
+          cluster->updater( )->Emit( *cluster, &particle );
+        }
+
+        // Update
+        cluster->updater( )->Update( *cluster, &particle, deltaTime );
+
+        i += particle.alive( );
+
+      }
+      else
+      {
+        // If kill particles...
+        if( cluster->inactiveKillParticles( ))
+        {
+          // Kill particles
+          cluster->KillParticles( );
+        }
+      }
+
+      // For each source...
+      for( Source* source : _sources )
+      {
+       // Finish frame
+       source->CloseFrame( );
+      }
+
+      this->_aliveParticles = i;
+
+    }
   }
 
   void ParticleSystem::UpdateUnified( const float& deltaTime)

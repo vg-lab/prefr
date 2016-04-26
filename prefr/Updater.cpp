@@ -32,6 +32,9 @@ namespace prefr
     current->alive( true );
     current->newborn( true );
 
+    current->position( source->GetEmissionPosition( ));
+    current->velocity( source->GetEmissionVelocityDirection( ));
+
     source->ReduceBudgetBy( 1 );
   }
 

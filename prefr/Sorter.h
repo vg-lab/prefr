@@ -59,6 +59,8 @@ protected:
 
     void clusters( ClustersArray* clusters );
 
+    void particles( const ParticleRange& particles );
+
     ParticleCollection _particles;
 
     ClustersArray* _clusters;

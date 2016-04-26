@@ -30,6 +30,9 @@ namespace prefr
     PREFR_API
     virtual void Paint(unsigned int aliveParticles = 0) const;
 
+  protected:
+
+    void init( void );
   };
 
 

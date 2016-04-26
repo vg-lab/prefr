@@ -19,7 +19,7 @@ namespace prefr
   , _model( nullptr )
   , _emitter( nullptr )
   , _updater( nullptr )
-  , _active( false )
+  , _active( true )
   , _inactiveKillParticles( false )
   { }
 
@@ -36,6 +36,7 @@ namespace prefr
   void Cluster::source( Source* source_ )
   {
     _source = source_;
+    _source->cluster( this );
   }
 
   Model* Cluster::model( void ) const
