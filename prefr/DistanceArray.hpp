@@ -12,29 +12,12 @@
 
 #include "types.h"
 
+#include <iostream>
+
 #define SERIALIZE_BEFORE_SORT 1
 
 namespace prefr
 {
-
-  class SortUnit
-  {
-  public:
-    int idx;
-    float distance;
-
-    inline static bool sortDescending (const SortUnit& lhs,
-                                const SortUnit& rhs)
-    {
-      return lhs.distance > rhs.distance;
-    }
-
-    inline static bool sortAscending (const SortUnit& lhs,
-                               const SortUnit& rhs)
-    {
-      return lhs.distance < rhs.distance;
-    }
-  };
 
   class DistanceUnit
   {
@@ -42,7 +25,11 @@ namespace prefr
     int* id;
     float* distance;
 
-    DistanceUnit(void):id(nullptr), distance(nullptr){}
+    DistanceUnit( void )
+    {
+      id = nullptr;
+      distance = nullptr;
+    }
 
     DistanceUnit(int* id_, float* distance_)
       : id(id_)
@@ -50,12 +37,14 @@ namespace prefr
     {
     }
 
-    inline int& Id(void){return (int&)*id;}
+    inline const int& Id( void ) const { return *id; }
+    inline void Id( int i ){ *id = i; }
 
-    inline float& Distance(void){return (float&)*distance;}
+    inline const float& Distance( void ) const { return *distance; }
+    inline void Distance( float d ){ *distance = d; }
 
-    inline const int& getID(void){return (const int&)*id;}
-    inline const float& getDistance(void){return (const float&)*distance;}
+//    inline const int& getID(void){return (const int&)*id;}
+//    inline const float& getDistance(void){return (const float&)*distance;}
   };
 
   typedef DistanceUnit tdunit;
@@ -67,88 +56,99 @@ namespace prefr
 
     DistanceArray(unsigned int size)
     {
-      ids = new std::vector<int>(size);
-      distances = new std::vector<float>(size);
-      elements = new tdcontainter(size);
+      ids.resize( size );
+      distances.resize( size );
+      elements.resize( size );
       current = 0;
+      currentIt = elements.begin( );
 
-      for (unsigned int i = 0; i < size; i++)
+//      unsigned int i = 0;
+      std::vector< int >::iterator currentId = ids.begin( );
+      std::vector< float >::iterator currentDist = distances.begin( );
+
+
+      for( tdcontainter::iterator element = elements.begin( );
+           element != elements.end( );
+           ++element, ++currentId, ++currentDist )
       {
-        (*elements)[i] = tdunit(&(*ids)[i], &(*distances)[i]);
-        (*ids)[i] = i;
+        ( *element ).id = &( *currentId );
+        ( *element ).distance = &( *currentDist );
+
+        std::cout << ( *element ).id << " -> "
+                  << ( *element ).distance << std::endl;
+//        ++i;
       }
-
-#ifdef SERIALIZE_BEFORE_SORT
-      positions = new std::vector< glm::vec3 >( size );
-      sizes = new std::vector< float >( size );
-      colors = new std::vector< glm::vec4 >( size );
-#endif
-
+//      for (unsigned int i = 0; i < size; i++)
+//      {
+//        (*elements)[i] = tdunit(&ids[i], &(*distances)[i]);
+//        (*ids)[i] = i;
+//      }
 
     }
 
     virtual ~DistanceArray()
     {
-      delete( elements );
-      delete( ids );
-      delete( distances );
+//      delete( elements );
+//      delete( ids );
+//      delete( distances );
     }
 
-    std::vector<DistanceUnit>::iterator begin()
+    std::vector< DistanceUnit >::iterator begin()
     {
-      return elements->begin();
+      return elements.begin( );
     }
 
-    std::vector<DistanceUnit>::iterator end()
+    std::vector< DistanceUnit >::iterator end()
     {
-      return elements->end();
+      return elements.end( );
     }
 
     inline DistanceUnit& at(unsigned int i)
     {
-      return (*elements)[i];
+      return elements[ i ];
     }
 
     inline DistanceUnit& operator[](unsigned int i)
     {
-      return (*elements)[i];
+      return elements[ i ];
     }
 
-    virtual inline int& getID(unsigned int i)
+    virtual inline const int& getID( unsigned int i ) const
     {
-      return (*elements)[i].Id();
+      return elements[ i ].Id( );
     }
 
-    virtual inline float& getDistance(unsigned int i)
+    virtual inline const float& getDistance( unsigned int i ) const
     {
-      return (*elements)[i].Distance();
+      return elements[i].Distance( );
     }
 
-    inline void ResetCounter(){current=-1;}
-
-    inline DistanceUnit& next()
+    inline void ResetCounter()
     {
+      current = 0;
+      currentIt = elements.begin( );
+    }
+
+    inline DistanceUnit* next()
+    {
+      DistanceUnit* result = &( *currentIt );
+
       current++;
-//      if (current >= int(elements->size()))
-//        current = elements->size() - 1;
-      return (*elements)[current];
+      currentIt++;
+
+      return result;
     }
 
     inline static bool sortDescending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance > *rhs.distance;}
     inline static bool sortAscending (const DistanceUnit& lhs, const DistanceUnit& rhs){return *lhs.distance < *rhs.distance;}
 
-    std::vector< int >* ids;
-    std::vector< float >* distances;
+    std::vector< int > ids;
+    std::vector< float > distances;
 
-    tdcontainter* elements;
+    tdcontainter elements;
+    tdcontainter::iterator currentIt;
+
     int current;
-
-#ifdef SERIALIZE_BEFORE_SORT
-    std::vector< glm::vec3 >* positions;
-    std::vector< float >* sizes;
-    std::vector< glm::vec4 >* colors;
   };
-#endif
-
 }
 #endif /* DISTANCEARRAY_HPP_ */

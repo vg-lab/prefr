@@ -30,55 +30,12 @@ namespace prefr
     distances = new DistanceArray( particles->size );
   }
 
-#ifdef SERIALIZE_BEFORE_SORT
-  void ParticleSorter::SerializeAttributes( )
-  {
-    auto posIt = distances->positions->begin( );
-    auto sizeIt = distances->sizes->begin( );
-    auto colorIt = distances->colors->begin( );
-
-    for( Particles::iterator it = particles->begin( );
-         it != particles->end( ); it++)
-    {
-
-      *posIt = it.position( );
-      *sizeIt = it.size( );
-      *colorIt = it.color( );
-
-      posIt++;
-      sizeIt++;
-      colorIt++;
-    }
-
-  }
-#endif
-
   void ParticleSorter::Sort(SortOrder order)
   {
 
     tdcontainter::iterator end = distances->begin() + aliveParticles;
 
     std::sort(distances->begin(), end, order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
-//    std::vector<DistanceUnit>::iterator it;
-//    for (it = distances->begin(); it != distances->end(); it++)
-//    {
-//      *it->id = rand() % particles->size;
-//      *it->distance = rand() % 4;
-//    }
-
-// #include <parallel/algorithm>
-// __gnu_parallel::sort(distances->begin(),
-//               distances->end() ,
-//               order == SortOrder::Descending ?
-//               DistanceArray::sortDescending : DistanceArray::sortAscending );
-
-//    std::vector<DistanceUnit>::iterator it;
-//    for (it = distances->begin(); it != distances->end(); it++)
-//    {
-//      *it->id = rand() % particles->size;
-//      *it->distance = rand() % 4;
-//    }
-
   }
 
   void ParticleSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
@@ -114,13 +71,13 @@ namespace prefr
                                              bool renderDeadParticles )
   {
 //    DistanceUnit& dist = distances->at(current->id);
-    DistanceUnit& dist = distances->next();
+    DistanceUnit* dist = distances->next();
 
-    dist.Id() = current->id( );
+    dist->Id( current->id( ));
 
-    dist.Distance() = current->alive() || renderDeadParticles ?
-                      length2(current->position( ) - cameraPosition) :
-                      -1;
+    dist->Distance( current->alive( ) || renderDeadParticles ?
+                   length2(current->position( ) - cameraPosition) :
+                   -1 );
 
   }
 
