@@ -78,12 +78,6 @@ namespace prefr
         (*ids)[i] = i;
       }
 
-#ifdef SERIALIZE_BEFORE_SORT
-      positions = new std::vector< glm::vec3 >( size );
-      sizes = new std::vector< float >( size );
-      colors = new std::vector< glm::vec4 >( size );
-#endif
-
 
     }
 
@@ -142,13 +136,6 @@ namespace prefr
 
     tdcontainter* elements;
     int current;
-
-#ifdef SERIALIZE_BEFORE_SORT
-    std::vector< glm::vec3 >* positions;
-    std::vector< float >* sizes;
-    std::vector< glm::vec4 >* colors;
   };
-#endif
-
 }
 #endif /* DISTANCEARRAY_HPP_ */

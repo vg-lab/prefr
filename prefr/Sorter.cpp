@@ -28,29 +28,6 @@ namespace prefr
     distances = new DistanceArray( _particles.size );
   }
 
-#ifdef SERIALIZE_BEFORE_SORT
-  void Sorter::SerializeAttributes( )
-  {
-    auto posIt = distances->positions->begin( );
-    auto sizeIt = distances->sizes->begin( );
-    auto colorIt = distances->colors->begin( );
-
-    for( Particles::iterator it = _particles.begin( );
-         it != _particles.end( ); it++)
-    {
-
-      *posIt = it.position( );
-      *sizeIt = it.size( );
-      *colorIt = it.color( );
-
-      posIt++;
-      sizeIt++;
-      colorIt++;
-    }
-
-  }
-#endif
-
   void Sorter::Sort(SortOrder order)
   {
 
@@ -70,8 +47,8 @@ namespace prefr
     {
       if( cluster->active( ) || renderDeadParticles )
       {
-        for( tparticle particle = _particles.begin( );
-             particle != _particles.end( );
+        for( tparticle particle = cluster->particles( ).begin( );
+             particle != cluster->particles( ).end( );
              particle++ )
         {
           UpdateCameraDistance( &particle, cameraPosition, renderDeadParticles );

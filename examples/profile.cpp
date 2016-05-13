@@ -18,7 +18,7 @@
 #include <sys/time.h>
 
 #if (PREFR_USE_CUDA)
-  #include <prefr/cuda/ThrustParticleSorter.cuh>
+  #include <prefr/cuda/ThrustSorter.cuh>
 #endif
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
@@ -437,6 +437,9 @@ int main(int argc, char** argv)
 
   makeProjectionMatrix();
 
+  unsigned int maxParticles = 10;
+  unsigned int maxClusters = 1;
+
   frameCounter = 0;
   frameLimit = 1000;
 
@@ -444,7 +447,7 @@ int main(int argc, char** argv)
     maxParticles = atoi(argv[1]);
 
   if (argc >= 3)
-    maxEmitters = atoi(argv[2]);
+    maxClusters = atoi(argv[2]);
 
   if (argc >= 4)
     frameLimit = atoi(argv[3]);
@@ -480,14 +483,40 @@ int main(int argc, char** argv)
 
 //  std::cout << "Created prototype." << std::endl;
 
+  Emitter* emitter = new Emitter( 0.3f, true);
+  ps->AddEmitter(emitter);
+
+  std::cout << "Created emitter" << std::endl;
+  Updater* updater = new Updater( );
+  std::cout << "Created updater" << std::endl;
+
+  Sorter* sorter;
+
+#if (PREFR_USE_CUDA)
+  std::cout << "CUDA sorter" << std::endl;
+  sorter = new ThrustSorter( );
+#else
+  sorter = new Sorter( );
+#endif
+
+  std::cout << "Created sorter" << std::endl;
+
+  GLRenderer* renderer = new GLRenderer( );
+
+  std::cout << "Created systems" << std::endl;
+
+  ps->AddUpdater(updater);
+  ps->sorter(sorter);
+  ps->renderer(renderer);
+
   PointSource* source;
   Cluster* cluster;
 
-  int particlesPerCluster = maxParticles / maxEmitters;
+  int particlesPerCluster = maxParticles / maxClusters;
 
-//  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
+  std::cout << "Creating " << maxClusters << " emitters with " << particlesPerCluster << std::endl;
 
-  for (unsigned int i = 0; i < maxEmitters; i++)
+  for (unsigned int i = 0; i < maxClusters; i++)
   {
     std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
@@ -496,36 +525,15 @@ int main(int argc, char** argv)
 
     cluster = new Cluster( );
     cluster->source( source );
+    cluster->updater( updater );
+    cluster->model( model );
+    cluster->emitter( emitter );
 
     ps->AddCluster( cluster,
                     i * particlesPerCluster,
-                    i * particlesPerCluster + particlesPerCluster);
+                    particlesPerCluster);
+
   }
-
-  Emitter* emitter = new Emitter( 0.3f, true);
-  ps->AddEmitter(emitter);
-
-//  std::cout << "Created emitter" << std::endl;
-  Updater* updater = new Updater( );
-//  std::cout << "Created updater" << std::endl;
-
-  Sorter* sorter;
-
-#if (PREFR_USE_CUDA)
-  sorter = new ThrustSorter( );
-#else
-  sorter = new Sorter( );
-#endif
-
-//  std::cout << "Created sorter" << std::endl;
-
-  GLRenderer* renderer = new GLRenderer( );
-
-//  std::cout << "Created systems" << std::endl;
-
-  ps->AddUpdater(updater);
-  ps->sorter(sorter);
-  ps->renderer(renderer);
 
   ps->Start();
 

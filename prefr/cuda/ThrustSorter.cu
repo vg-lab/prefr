@@ -57,8 +57,6 @@ namespace prefr
       void ThrustSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                                        bool renderDeadParticles )
       {
-        SerializeAttributes( );
-
         _aliveParticles = 0;
         distances->ResetCounter();
 
@@ -74,8 +72,8 @@ namespace prefr
         {
           if( cluster->active( ) || renderDeadParticles )
           {
-            for( tparticle particle = _particles.begin( );
-                 particle != _particles.end( );
+            for( tparticle particle = cluster->particles( ).begin( );
+                 particle != cluster->particles( ).end( );
                  particle++ )
             {
               UpdateCameraDistance( &particle, cameraPosition, renderDeadParticles );

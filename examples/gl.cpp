@@ -13,7 +13,7 @@
 #include <iostream>
 
 #if (PREFR_USE_CUDA)
-  #include <prefr/cuda/ThrustParticleSorter.cuh>
+  #include <prefr/cuda/ThrustSorter.cuh>
 #endif
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
@@ -468,7 +468,7 @@ int main(int argc, char** argv)
 
     ps->AddCluster( cluster,
                     i * particlesPerCluster,
-                    i * particlesPerCluster + particlesPerCluster);
+                    particlesPerCluster);
 
   }
 

@@ -50,11 +50,6 @@ namespace prefr
 
     PREFR_API virtual void InitDistanceArray();
 
-
-#ifdef SERIALIZE_BEFORE_SORT
-    virtual void SerializeAttributes( );
-#endif
-
 protected:
 
     void clusters( ClustersArray* clusters );
