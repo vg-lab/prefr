@@ -79,20 +79,16 @@ namespace prefr
 
   void GLRenderer::SetupRender(unsigned int aliveParticles)
   {
-    tparticle currentParticle;
-//    int idx;
 
-    std::vector< GLfloat >::iterator posit =
-        renderConfig->particlePositions->begin( );
-    std::vector< GLfloat >::iterator colorit =
-        renderConfig->particleColors->begin( );
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for (unsigned int i = 0; i < aliveParticles; ++i )
     {
-      currentParticle = _particles.GetElement(distances->getID(i));
+      tparticle currentParticle = _particles.GetElement(distances->getID(i));
 
-//      unsigned int idx = i * 4;
+      unsigned int idx = i * 4;
 
+      std::vector< GLfloat >::iterator posit =
+          renderConfig->particlePositions->begin( ) + idx;
 
       *posit = currentParticle.position( ).x;
       ++posit;
@@ -106,7 +102,8 @@ namespace prefr
       *posit = currentParticle.size( );
       ++posit;
 
-
+      std::vector< GLfloat >::iterator colorit =
+          renderConfig->particleColors->begin( ) + idx;
 
       *colorit = currentParticle.color( ).x;
       ++colorit;
@@ -120,16 +117,6 @@ namespace prefr
       *colorit = currentParticle.color( ).w;
       ++colorit;
 
-
-//      (*renderConfig->particlePositions)[idx] = currentParticle.position( ).x;
-//      (*renderConfig->particlePositions)[idx+1] = currentParticle.position( ).y;
-//      (*renderConfig->particlePositions)[idx+2] = currentParticle.position( ).z;
-//      (*renderConfig->particlePositions)[idx+3] = currentParticle.size( );
-//
-//      (*renderConfig->particleColors)[idx] = currentParticle.color( ).x;
-//      (*renderConfig->particleColors)[idx+1] = currentParticle.color( ).y;
-//      (*renderConfig->particleColors)[idx+2] = currentParticle.color( ).z;
-//      (*renderConfig->particleColors)[idx+3] = currentParticle.color( ).w;
     }
 
     glBindVertexArray(renderConfig->vao);
