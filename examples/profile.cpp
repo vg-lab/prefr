@@ -520,7 +520,7 @@ int main(int argc, char** argv)
   {
     std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
-    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
+    source = new PointSource( 1.f, glm::vec3( i * 10, 0, 0 ));
     ps->AddEmissionNode(source);
 
     cluster = new Cluster( );

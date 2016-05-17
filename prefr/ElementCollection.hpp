@@ -16,7 +16,7 @@ namespace utils
     typename ELEM::iterator _begin;
     typename ELEM::iterator _end;
 
-    int size;
+    unsigned int size;
 
     ElementCollection( )
     {

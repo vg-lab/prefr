@@ -40,11 +40,15 @@ namespace prefr
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                              bool renderDeadParticles )
   {
-    _aliveParticles = 0;
+//    _aliveParticles = 0;
     distances->ResetCounter();
 
-    for( auto cluster : *_clusters )
+    #pragma omp parallel for
+    for( unsigned int i = 0; i < _clusters->size( ); ++i)
+//    for( auto cluster : *_clusters )
     {
+      Cluster* cluster = (*_clusters)[ i ];
+
       if( cluster->active( ) || renderDeadParticles )
       {
         for( tparticle particle = cluster->particles( ).begin( );
@@ -52,7 +56,7 @@ namespace prefr
              particle++ )
         {
           UpdateCameraDistance( &particle, cameraPosition, renderDeadParticles );
-          _aliveParticles++;
+//          _aliveParticles++;
         }
       }
     }
@@ -63,7 +67,7 @@ namespace prefr
                                      bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = distances->next();
+    DistanceUnit& dist = distances->at( current->id( ) );
 
     dist.Id() = current->id( );
 

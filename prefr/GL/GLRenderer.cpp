@@ -80,23 +80,56 @@ namespace prefr
   void GLRenderer::SetupRender(unsigned int aliveParticles)
   {
     tparticle currentParticle;
-    int idx;
+//    int idx;
 
-    for (unsigned int i = 0; i < aliveParticles; i++)
+    std::vector< GLfloat >::iterator posit =
+        renderConfig->particlePositions->begin( );
+    std::vector< GLfloat >::iterator colorit =
+        renderConfig->particleColors->begin( );
+//    #pragma omp parallel for
+    for (unsigned int i = 0; i < aliveParticles; ++i )
     {
       currentParticle = _particles.GetElement(distances->getID(i));
 
-      idx = i * 4;
+//      unsigned int idx = i * 4;
 
-      (*renderConfig->particlePositions)[idx] = currentParticle.position( ).x;
-      (*renderConfig->particlePositions)[idx+1] = currentParticle.position( ).y;
-      (*renderConfig->particlePositions)[idx+2] = currentParticle.position( ).z;
-      (*renderConfig->particlePositions)[idx+3] = currentParticle.size( );
 
-      (*renderConfig->particleColors)[idx] = currentParticle.color( ).x;
-      (*renderConfig->particleColors)[idx+1] = currentParticle.color( ).y;
-      (*renderConfig->particleColors)[idx+2] = currentParticle.color( ).z;
-      (*renderConfig->particleColors)[idx+3] = currentParticle.color( ).w;
+      *posit = currentParticle.position( ).x;
+      ++posit;
+
+      *posit = currentParticle.position( ).y;
+      ++posit;
+
+      *posit = currentParticle.position( ).z;
+      ++posit;
+
+      *posit = currentParticle.size( );
+      ++posit;
+
+
+
+      *colorit = currentParticle.color( ).x;
+      ++colorit;
+
+      *colorit = currentParticle.color( ).y;
+      ++colorit;
+
+      *colorit = currentParticle.color( ).z;
+      ++colorit;
+
+      *colorit = currentParticle.color( ).w;
+      ++colorit;
+
+
+//      (*renderConfig->particlePositions)[idx] = currentParticle.position( ).x;
+//      (*renderConfig->particlePositions)[idx+1] = currentParticle.position( ).y;
+//      (*renderConfig->particlePositions)[idx+2] = currentParticle.position( ).z;
+//      (*renderConfig->particlePositions)[idx+3] = currentParticle.size( );
+//
+//      (*renderConfig->particleColors)[idx] = currentParticle.color( ).x;
+//      (*renderConfig->particleColors)[idx+1] = currentParticle.color( ).y;
+//      (*renderConfig->particleColors)[idx+2] = currentParticle.color( ).z;
+//      (*renderConfig->particleColors)[idx+3] = currentParticle.color( ).w;
     }
 
     glBindVertexArray(renderConfig->vao);

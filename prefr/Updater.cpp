@@ -35,7 +35,7 @@ namespace prefr
     current->position( source->GetEmissionPosition( ));
     current->velocity( source->GetEmissionVelocityDirection( ));
 
-    source->ReduceBudgetBy( 1 );
+//    source->ReduceBudgetBy( 1 );
   }
 
   void Updater::Update( const Cluster& cluster,
