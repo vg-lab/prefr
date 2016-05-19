@@ -33,8 +33,8 @@ namespace prefr
     virtual ~Source( void );
 
     PREFR_API virtual bool Active();
-    PREFR_API virtual bool Emits();
-    PREFR_API virtual bool Continue();
+    PREFR_API virtual bool Emits() const;
+    PREFR_API virtual bool Continue() const;
     PREFR_API virtual bool Finished();
     PREFR_API virtual void Restart();
 

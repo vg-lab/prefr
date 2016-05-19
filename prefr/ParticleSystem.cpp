@@ -194,7 +194,6 @@ namespace prefr
       int ref = _clusterReference[ particle.id( )];
       if( ref < 0 )
       {
-        std::cout << "Cluster reference not found " << ref << std::endl;
         continue;
       }
       Cluster* cluster = _clusters[ ref ];
@@ -204,6 +203,7 @@ namespace prefr
       if( cluster->active( ))
       {
 
+        #pragma omp critical
         if( !particle.alive( ) && cluster->source( )->Emits( ))
         {
           cluster->updater( )->Emit( *cluster, &particle );
@@ -240,7 +240,7 @@ namespace prefr
       }
 
       this->_aliveParticles = i;
-
+      this->sorter( )->_aliveParticles = _aliveParticles;
     }
   }
 
@@ -249,8 +249,8 @@ namespace prefr
     if( !run )
       return;
 
-    unsigned int i = 0;
-
+//    unsigned int i = 0;
+    this->_aliveParticles = 0;
     // Set emitter delta time to calculate the number of particles to emit this frame
 //    for( Source* source : _sources )
     #pragma omp parallel for
@@ -266,6 +266,7 @@ namespace prefr
     for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
       Cluster* cluster = _clusters[ c ];
+      cluster->aliveParticles = 0;
       // If active
       if( cluster->active( ))
       {
@@ -283,8 +284,10 @@ namespace prefr
           // Update
           cluster->updater( )->Update( *cluster, &particle, deltaTime );
 
-          #pragma omp atomic
-          i += particle.alive( );
+          cluster->aliveParticles += particle.alive( );
+
+//          #pragma omp atomic
+//          i += particle.alive( );
         }
       }
       // Else
@@ -301,6 +304,13 @@ namespace prefr
       }
     }
 
+    for( Cluster* cluster : _clusters )
+    {
+      this->_aliveParticles += cluster->aliveParticles;
+    }
+
+    this->sorter( )->_aliveParticles = _aliveParticles;
+
     // For each source...
     for( Source* source : _sources )
     {
@@ -308,7 +318,7 @@ namespace prefr
       source->CloseFrame( );
     }
 
-    this->_aliveParticles = i;
+//    this->_aliveParticles = i;
   }
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)

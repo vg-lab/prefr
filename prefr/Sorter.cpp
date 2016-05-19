@@ -7,6 +7,8 @@
 
 #include "Sorter.h"
 
+#include <parallel/algorithm>
+
 namespace prefr
 {
 
@@ -28,13 +30,13 @@ namespace prefr
     distances = new DistanceArray( _particles.size );
   }
 
-  void Sorter::Sort(SortOrder order)
+  void Sorter::Sort(SortOrder /*order*/)
   {
 
     tdcontainter::iterator end = distances->begin() + _aliveParticles;
 
-    std::sort(distances->begin(), end, order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
-
+//    std::sort(distances->begin(), end, DistanceArray::sortDescending );
+    __gnu_parallel::sort( distances->begin( ), end, DistanceArray::sortDescending );
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
@@ -56,10 +58,11 @@ namespace prefr
              particle++ )
         {
           UpdateCameraDistance( &particle, cameraPosition, renderDeadParticles );
-//          _aliveParticles++;
+
         }
       }
     }
+
   }
 
   void Sorter::UpdateCameraDistance( const tparticle_ptr current,
@@ -74,7 +77,6 @@ namespace prefr
     dist.Distance() = current->alive() || renderDeadParticles ?
                       length2(current->position( ) - cameraPosition) :
                       -1;
-
   }
 
 

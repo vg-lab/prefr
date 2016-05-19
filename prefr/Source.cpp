@@ -58,12 +58,13 @@ namespace prefr
       return _active;
     }
 
-    bool Source::Emits()
+    bool Source::Emits() const
     {
-      return _active && _particlesBudget > 0 && Continue();
+      return true;
+//      return _active && _particlesBudget > 0 && Continue();
     }
 
-    bool Source::Continue()
+    bool Source::Continue() const
     {
       return _continueEmission;
     }

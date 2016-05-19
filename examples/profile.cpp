@@ -41,8 +41,8 @@ glm::mat4 projectionM;
 glm::mat4 viewM;
 glm::mat4 modelViewProjM;
 
-glm::vec3 position = glm::vec3(0.0f, 4.0f, 50.0f);
-glm::vec3 vforward = glm::vec3(0.0f,0.0f,-1.0f);
+glm::vec3 position = glm::vec3(-10.0f, 4.0f, 0.0f);
+glm::vec3 vforward = glm::vec3(1.0f,0.0f,0.0f);
 glm::vec3 vup = glm::vec3(0.0f,1.0f,0.0f);
 
 glm::vec3 worldUp = glm::vec3(0.0f,1.0f,0.0f);

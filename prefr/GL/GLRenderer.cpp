@@ -7,7 +7,7 @@
 
 #include "GLRenderer.h"
 
-using namespace std;
+#include <iostream>
 
 namespace prefr
 {
@@ -25,9 +25,9 @@ namespace prefr
 
     GLfloat b[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f};
 
-    renderConfig->billboardVertices = new vector<GLfloat>(12);
-    renderConfig->particlePositions = new vector<GLfloat>(_particles.size * 4);
-    renderConfig->particleColors = new vector<GLfloat>(_particles.size * 4);
+    renderConfig->billboardVertices = new std::vector<GLfloat>(12);
+    renderConfig->particlePositions = new std::vector<GLfloat>(_particles.size * 4);
+    renderConfig->particleColors = new std::vector<GLfloat>(_particles.size * 4);
 
     for (unsigned int i = 0; i < renderConfig->billboardVertices->size(); i++)
     {
@@ -45,7 +45,6 @@ namespace prefr
     renderConfig->vboParticlesColors = buffersGL[2];
 
     // Assign billboard vertices
-    //glGenBuffers(1, &vboBillboardVertex);
     glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboBillboardVertex);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) *  renderConfig->billboardVertices->size()
                  , &renderConfig->billboardVertices->front(), GL_STATIC_DRAW);
