@@ -48,7 +48,17 @@ namespace prefr
     if (!source || !model)
       return;
 
-    current->life( std::max( 0.0f, current->life( ) - deltaTime ));
+    current->life( current->life( ) - deltaTime );
+
+        if( current->alive( ) && current->life( ) < 0.0f)
+    {
+      current->life( 0.0f );
+      #pragma omp critical
+      {
+        source->_deadParticles.push_back( current->id( ) );
+      }
+    }
+
     current->alive( ( current->life( ) > 0) );
 
     if (current->alive( ) /*&& !current->newborn( )*/)

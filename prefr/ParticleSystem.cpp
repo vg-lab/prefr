@@ -15,7 +15,7 @@
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
+  ParticleSystem::ParticleSystem( unsigned int _maxParticles, bool _loop)
   : _sorter( nullptr )
   , _renderer( nullptr )
   , maxParticles (_maxParticles)
@@ -23,9 +23,6 @@ namespace prefr
   , renderDeadParticles( false )
   , run( false )
   {
-
-    if (initialParticlesNumber > maxParticles)
-      initialParticlesNumber = maxParticles;
 
     _particles.resize( _maxParticles );
 
@@ -40,10 +37,10 @@ namespace prefr
 //      if( i < initialParticlesNumber )
 //        particle.alive( true );
 
-      particle++;
+      ++particle;
     }
 
-    _aliveParticles = initialParticlesNumber;
+    _aliveParticles = 0;
   }
 
 
@@ -97,6 +94,9 @@ namespace prefr
       *clusterIT = reference;
       ++clusterIT;
     }
+
+    if( cluster->source( ))
+      cluster->source( )->InitializeParticles( );
 
   }
 
@@ -168,6 +168,8 @@ namespace prefr
 //      current++;
 //    }
 
+
+
     run = true;
 
   }
@@ -183,6 +185,22 @@ namespace prefr
     for( Source* source : _sources )
     {
       source->PrepareFrame( deltaTime );
+    }
+
+    #pragma omp parallel for
+    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
+    {
+      Cluster* cluster = _clusters[ c ];
+      Source* source = cluster->source( );
+
+      if( cluster->active( ) && source->Emits( ))
+      {
+        for( auto emittedParticle : source->_particlesToEmit )
+        {
+          tparticle particle = _particles.at( emittedParticle );
+          cluster->updater( )->Emit( *cluster, &particle );
+        }
+      }
     }
 
     #pragma omp parallel for
@@ -260,6 +278,22 @@ namespace prefr
       source->PrepareFrame( deltaTime );
     }
 
+    #pragma omp parallel for
+    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
+    {
+      Cluster* cluster = _clusters[ c ];
+      Source* source = cluster->source( );
+
+      if( source->Emits( ))
+      {
+        for( auto emittedParticle : source->_particlesToEmit )
+        {
+          tparticle particle = _particles.at( emittedParticle );
+          cluster->updater( )->Emit( *cluster, &particle );
+        }
+      }
+    }
+
     // For each cluster....
 //    for( auto cluster : _clusters )
     #pragma omp parallel for
@@ -276,10 +310,10 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          if( !particle.alive( ) && cluster->source( )->Emits( ))
-          {
-            cluster->updater( )->Emit( *cluster, &particle );
-          }
+//          if( !particle.alive( ) && cluster->source( )->Emits( ))
+//          {
+//            cluster->updater( )->Emit( *cluster, &particle );
+//          }
 
           // Update
           cluster->updater( )->Update( *cluster, &particle, deltaTime );

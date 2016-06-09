@@ -454,7 +454,7 @@ int main(int argc, char** argv)
   else
     frameLimit = 0;
 
-  ps = new ParticleSystem(10, maxParticles, true);
+  ps = new ParticleSystem( maxParticles, true );
 
   Model* model = new Model( 3.0f, 5.0f );
   model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));

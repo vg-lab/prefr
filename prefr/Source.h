@@ -23,6 +23,7 @@ namespace prefr
   {
     friend class ParticleSystem;
     friend class Cluster;
+    friend class Updater;
 
   public:
 
@@ -55,28 +56,34 @@ namespace prefr
 
   protected:
 
-      Cluster* _cluster;
+    void InitializeParticles( void );
+    void PrepareParticles( void );
 
-      glm::vec3 _position;
+    Cluster* _cluster;
 
-      float _emissionRate;
-      unsigned int _totalParticles;
+    glm::vec3 _position;
 
-      float _emissionAcc;
-      int _particlesBudget;
-      bool _active;
-      bool _continueEmission;
-      bool _finished;
+    std::vector< unsigned int > _deadParticles;
+    std::vector< unsigned int > _particlesToEmit;
 
-      bool _autoDeactivateWhenFinished;
+    float _emissionRate;
+    unsigned int _totalParticles;
 
-      bool _killParticlesIfInactive;
+    float _emissionAcc;
+    int _particlesBudget;
+    bool _active;
+    bool _continueEmission;
+    bool _finished;
 
-      int _lastFrameAliveParticles;
+    bool _autoDeactivateWhenFinished;
 
-      unsigned int _emittedParticles;
-      unsigned int _maxEmissionCycles;
-      unsigned int _currentCycle;
+    bool _killParticlesIfInactive;
+
+    int _lastFrameAliveParticles;
+
+    unsigned int _emittedParticles;
+    unsigned int _maxEmissionCycles;
+    unsigned int _currentCycle;
 
   };
 
