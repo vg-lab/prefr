@@ -72,11 +72,11 @@ namespace prefr
 
     DistanceUnit& dist = distances->at( current->id( ) );
 
-    dist.Id() = current->id( );
+    dist.Id( current->id( ));
 
-    dist.Distance() = current->alive() || renderDeadParticles ?
-                      length2(current->position( ) - cameraPosition) :
-                      -1;
+    dist.Distance( current->alive() || renderDeadParticles ?
+                   length2(current->position( ) - cameraPosition) :
+                   -1);
   }
 
 

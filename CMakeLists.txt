@@ -6,8 +6,11 @@
 #   www.gmrv.es
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-cmake_minimum_required(VERSION 2.8)
-project(prefr)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+
+# prefr project and version
+project(prefr VERSION 0.1.0)
+set(prefr_VERSION_ABI 1)
 
 # Disable in source building
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -27,13 +30,6 @@ endif()
 
 include(GitExternal)
 
-# nsol version
-set(LAST_RELEASE 0.0.0)
-set(VERSION_MAJOR "0")
-set(VERSION_MINOR "1")
-set(VERSION_PATCH "0")
-set(VERSION_ABI 1)
-
 # description
 set(PREFR_DESCRIPTION "PREFR - Particle Framework")
 set(COMMON_PROJECT_DOMAIN gmrv.es)
@@ -45,21 +41,20 @@ option(MODERN_GPU_ARCH "GPU_ARCH" ON)
 option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)
-# include(FindPackages)
 
-common_package( OpenGL REQUIRED SYSTEM )
-common_package( nvidiaOpenGL SYSTEM )
-common_package( GLEW REQUIRED SYSTEM )
-common_package( GLUT REQUIRED SYSTEM )
-common_package( GLM REQUIRED )
-common_package( Boost REQUIRED )
-common_package( OpenMP SYSTEM )
+common_find_package( OpenGL REQUIRED SYSTEM )
+common_find_package( nvidiaOpenGL SYSTEM )
+common_find_package( GLEW REQUIRED SYSTEM )
+common_find_package( GLUT REQUIRED SYSTEM )
+common_find_package( GLM REQUIRED )
+common_find_package( Boost REQUIRED )
+common_find_package( OpenMP SYSTEM )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
 list( APPEND PREFR_DEPENDENT_LIBRARIES GLM Boost )
 
 if ( WITH_OPENSCENEGRAPH )
-	common_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)
+	common_find_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)
 	if ( OPENSCENEGRAPH_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )
 	endif()
@@ -71,22 +66,21 @@ if ( WITH_CUDA )
 	
 	include(CudaCommonLibrary)
 	
-	common_package( CUDA SYSTEM )
+	common_find_package( CUDA SYSTEM )
 		
 	if ( CUDA_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
 
-		common_package( CUDAThrust SYSTEM )
+		common_find_package( CUDAThrust SYSTEM )
 		if ( CUDAThrust_FOUND )
 			list( APPEND PREFR_DEPENDENT_LIBRARIES CUDAThrust )
 		endif()
 	endif()
 endif()
 
-common_package_post()
+common_find_package_post()
 
 set(PREFR_LIBRARY_BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/prefr)
-#message( ${PREFR_LIBRARY_BASE_PATH} )
 
 # library subdirectory
 add_subdirectory(prefr)

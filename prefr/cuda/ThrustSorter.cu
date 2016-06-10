@@ -88,7 +88,7 @@ namespace prefr
                                                const glm::vec3& cameraPosition,
                                                bool renderDeadParticles )
       {
-        DistanceUnit& dist = distances->next();
+        DistanceUnit* dist = distances->next();
         CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
         cda->translatedIDs[distances->current] = current->id( );
 
