@@ -41,8 +41,8 @@ glm::mat4 projectionM;
 glm::mat4 viewM;
 glm::mat4 modelViewProjM;
 
-glm::vec3 position = glm::vec3(0.0f, 4.0f, 50.0f);
-glm::vec3 vforward = glm::vec3(0.0f,0.0f,-1.0f);
+glm::vec3 position = glm::vec3(-10.0f, 4.0f, 0.0f);
+glm::vec3 vforward = glm::vec3(1.0f,0.0f,0.0f);
 glm::vec3 vup = glm::vec3(0.0f,1.0f,0.0f);
 
 glm::vec3 worldUp = glm::vec3(0.0f,1.0f,0.0f);
@@ -454,7 +454,7 @@ int main(int argc, char** argv)
   else
     frameLimit = 0;
 
-  ps = new ParticleSystem(10, maxParticles, true);
+  ps = new ParticleSystem( maxParticles, true );
 
   Model* model = new Model( 3.0f, 5.0f );
   model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
@@ -520,7 +520,7 @@ int main(int argc, char** argv)
   {
     std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
-    source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
+    source = new PointSource( 1.f, glm::vec3( i * 10, 0, 0 ));
     ps->AddEmissionNode(source);
 
     cluster = new Cluster( );

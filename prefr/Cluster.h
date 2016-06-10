@@ -59,6 +59,8 @@ namespace prefr
 
     virtual void KillParticles( void );
 
+    unsigned int aliveParticles;
+
   protected:
 
     ParticleRange _particlesArray;

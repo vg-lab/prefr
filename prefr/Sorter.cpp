@@ -7,6 +7,8 @@
 
 #include "Sorter.h"
 
+#include <parallel/algorithm>
+
 namespace prefr
 {
 
@@ -28,23 +30,27 @@ namespace prefr
     distances = new DistanceArray( _particles.size );
   }
 
-  void Sorter::Sort(SortOrder order)
+  void Sorter::Sort(SortOrder /*order*/)
   {
 
     tdcontainter::iterator end = distances->begin() + _aliveParticles;
 
-    std::sort(distances->begin(), end, order == SortOrder::Descending? DistanceArray::sortDescending : DistanceArray::sortAscending);
-
+//    std::sort(distances->begin(), end, DistanceArray::sortDescending );
+    __gnu_parallel::sort( distances->begin( ), end, DistanceArray::sortDescending );
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                              bool renderDeadParticles )
   {
-    _aliveParticles = 0;
+//    _aliveParticles = 0;
     distances->ResetCounter();
 
-    for( auto cluster : *_clusters )
+    #pragma omp parallel for
+    for( unsigned int i = 0; i < _clusters->size( ); ++i)
+//    for( auto cluster : *_clusters )
     {
+      Cluster* cluster = (*_clusters)[ i ];
+
       if( cluster->active( ) || renderDeadParticles )
       {
         for( tparticle particle = cluster->particles( ).begin( );
@@ -52,10 +58,11 @@ namespace prefr
              particle++ )
         {
           UpdateCameraDistance( &particle, cameraPosition, renderDeadParticles );
-          _aliveParticles++;
+
         }
       }
     }
+
   }
 
   void Sorter::UpdateCameraDistance( const tparticle_ptr current,
@@ -63,14 +70,13 @@ namespace prefr
                                      bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = distances->next();
+    DistanceUnit& dist = distances->at( current->id( ) );
 
     dist.Id() = current->id( );
 
     dist.Distance() = current->alive() || renderDeadParticles ?
                       length2(current->position( ) - cameraPosition) :
                       -1;
-
   }
 
 

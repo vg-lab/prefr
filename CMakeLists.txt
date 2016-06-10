@@ -53,6 +53,7 @@ common_package( GLEW REQUIRED SYSTEM )
 common_package( GLUT REQUIRED SYSTEM )
 common_package( GLM REQUIRED )
 common_package( Boost REQUIRED )
+common_package( OpenMP SYSTEM )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
 list( APPEND PREFR_DEPENDENT_LIBRARIES GLM Boost )

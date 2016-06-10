@@ -46,7 +46,9 @@ namespace prefr
     , _emittedParticles( 0 )
     , _maxEmissionCycles( 0 )
     , _currentCycle( 0 )
-    {}
+    {
+
+    }
 
     Source::~Source( void )
     {
@@ -58,12 +60,14 @@ namespace prefr
       return _active;
     }
 
-    bool Source::Emits()
+    bool Source::Emits() const
     {
-      return _active && _particlesBudget > 0 && Continue();
+//      return true;
+//      return _active && _particlesBudget > 0 && Continue();
+      return _active && _particlesToEmit.size( ) > 0 && Continue( );
     }
 
-    bool Source::Continue()
+    bool Source::Continue() const
     {
       return _continueEmission;
     }
@@ -83,6 +87,13 @@ namespace prefr
       _currentCycle = 0;
       _emittedParticles = 0;
       _continueEmission = true;
+
+      for( tparticle particle = _cluster->particles( ).begin( );
+           particle != _cluster->particles( ).end( ); ++particle)
+      {
+        _deadParticles.push_back( particle.id( ));
+        _particlesToEmit.clear( );
+      }
     }
 
     void Source::PrepareFrame( const float& deltaTime )
@@ -98,6 +109,19 @@ namespace prefr
       _emissionAcc -= _particlesBudget;
 
       _lastFrameAliveParticles = 0;
+
+      _emittedParticles = _particlesBudget - ( _particlesBudget - _deadParticles.size( ));
+
+      // Fill dead pool for the emission for this frame
+      while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
+      {
+        assert( _particlesBudget >= 0 );
+
+        _particlesToEmit.push_back( _deadParticles.back( ));
+        _deadParticles.pop_back( );
+
+        --_particlesBudget;
+      }
     }
 
     void Source::IncreaseAlive()
@@ -132,6 +156,7 @@ namespace prefr
     void Source::CloseFrame()
     {
       _particlesBudget = 0;
+      _particlesToEmit.clear( );
 
       CheckEmissionEnd();
 
@@ -151,9 +176,31 @@ namespace prefr
     {
       _cluster = cluster_;
 
-      _totalParticles = _cluster->particles( ).size;
+      if( _cluster->particles( ).size > 0 && _deadParticles.size( ) == 0)
+      {
+        InitializeParticles( );
+      }
     }
 
+    void Source::InitializeParticles( void )
+    {
+      if( !_cluster || _cluster->particles( ).size == 0)
+      {
+        std::cout << "Particles cannot be configured." << std::endl;
+        return;
+      }
+
+      _totalParticles = _cluster->particles( ).size;
+      _deadParticles.resize( _totalParticles );
+      _particlesToEmit.resize( _totalParticles );
+
+      for( tparticle particle = _cluster->particles( ).begin( );
+                   particle != _cluster->particles( ).end( ); ++particle )
+      {
+        if( !particle.alive( ))
+          _deadParticles.push_back( particle.id( ));
+      }
+    }
 
     //***********************************************************
     // TIMED EMISSION NODE

@@ -58,7 +58,7 @@ namespace prefr
 
 
     PREFR_API
-    ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop = true);
+    ParticleSystem( unsigned int _maxParticles, bool _loop = true );
 
     PREFR_API
     virtual ~ParticleSystem();

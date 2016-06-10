@@ -8,10 +8,14 @@
 #include "ParticleSystem.h"
 #include "log.h"
 
+ #ifdef _OPENMP
+ # include <omp.h>
+ #endif
+
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem(unsigned int initialParticlesNumber, unsigned int _maxParticles, bool _loop)
+  ParticleSystem::ParticleSystem( unsigned int _maxParticles, bool _loop)
   : _sorter( nullptr )
   , _renderer( nullptr )
   , maxParticles (_maxParticles)
@@ -19,9 +23,6 @@ namespace prefr
   , renderDeadParticles( false )
   , run( false )
   {
-
-    if (initialParticlesNumber > maxParticles)
-      initialParticlesNumber = maxParticles;
 
     _particles.resize( _maxParticles );
 
@@ -31,14 +32,15 @@ namespace prefr
     for( unsigned int i = 0; i < maxParticles; i++ )
     {
       particle.id( i );
+      particle.alive( false );
 
 //      if( i < initialParticlesNumber )
 //        particle.alive( true );
 
-      particle++;
+      ++particle;
     }
 
-    _aliveParticles = initialParticlesNumber;
+    _aliveParticles = 0;
   }
 
 
@@ -83,14 +85,18 @@ namespace prefr
 
     this->_clusters.push_back( cluster );
 
-    unsigned int reference = _clusters.size( );
+    unsigned int reference = _clusters.size( ) - 1;
 
     auto clusterIT = _clusterReference.begin( ) + start;
 
     for( unsigned int i = 0; i < size_; i++ )
     {
       *clusterIT = reference;
+      ++clusterIT;
     }
+
+    if( cluster->source( ))
+      cluster->source( )->InitializeParticles( );
 
   }
 
@@ -162,6 +168,8 @@ namespace prefr
 //      current++;
 //    }
 
+
+
     run = true;
 
   }
@@ -179,28 +187,56 @@ namespace prefr
       source->PrepareFrame( deltaTime );
     }
 
-    // For each particle...
-    for( tparticle particle = _particles.begin( );
-         particle != _particles.end( );
-         particle++ )
+    #pragma omp parallel for
+    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
+      Cluster* cluster = _clusters[ c ];
+      Source* source = cluster->source( );
+
+      if( cluster->active( ) && source->Emits( ))
+      {
+        for( auto emittedParticle : source->_particlesToEmit )
+        {
+          tparticle particle = _particles.at( emittedParticle );
+          cluster->updater( )->Emit( *cluster, &particle );
+        }
+      }
+    }
+
+    #pragma omp parallel for
+    // For each particle...
+    for( unsigned int c = 0; c < _particles.numParticles( ); ++c )
+    {
+      tparticle particle = _particles.at( c );
+
       int ref = _clusterReference[ particle.id( )];
       if( ref < 0 )
+      {
         continue;
-
+      }
       Cluster* cluster = _clusters[ ref ];
+
+      assert( cluster );
 
       if( cluster->active( ))
       {
 
+        #pragma omp critical
         if( !particle.alive( ) && cluster->source( )->Emits( ))
         {
           cluster->updater( )->Emit( *cluster, &particle );
+
+          if( particle.alive( ))
+          {
+            #pragma omp atomic
+            cluster->source( )->_particlesBudget -= 1;
+          }
         }
 
         // Update
         cluster->updater( )->Update( *cluster, &particle, deltaTime );
 
+        #pragma omp atomic
         i += particle.alive( );
 
       }
@@ -222,7 +258,7 @@ namespace prefr
       }
 
       this->_aliveParticles = i;
-
+      this->sorter( )->_aliveParticles = _aliveParticles;
     }
   }
 
@@ -231,17 +267,40 @@ namespace prefr
     if( !run )
       return;
 
-    unsigned int i = 0;
-
+//    unsigned int i = 0;
+    this->_aliveParticles = 0;
     // Set emitter delta time to calculate the number of particles to emit this frame
-    for( Source* source : _sources )
+//    for( Source* source : _sources )
+    #pragma omp parallel for
+    for( unsigned int s = 0; s < _sources.size( ); ++s )
     {
+      Source* source = _sources[ s ];
       source->PrepareFrame( deltaTime );
     }
 
-    // For each cluster....
-    for( auto cluster : _clusters )
+    #pragma omp parallel for
+    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
+      Cluster* cluster = _clusters[ c ];
+      Source* source = cluster->source( );
+
+      if( source->Emits( ))
+      {
+        for( auto emittedParticle : source->_particlesToEmit )
+        {
+          tparticle particle = _particles.at( emittedParticle );
+          cluster->updater( )->Emit( *cluster, &particle );
+        }
+      }
+    }
+
+    // For each cluster....
+//    for( auto cluster : _clusters )
+    #pragma omp parallel for
+    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
+    {
+      Cluster* cluster = _clusters[ c ];
+      cluster->aliveParticles = 0;
       // If active
       if( cluster->active( ))
       {
@@ -251,15 +310,18 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          if( !particle.alive( ) && cluster->source( )->Emits( ))
-          {
-            cluster->updater( )->Emit( *cluster, &particle );
-          }
+//          if( !particle.alive( ) && cluster->source( )->Emits( ))
+//          {
+//            cluster->updater( )->Emit( *cluster, &particle );
+//          }
 
           // Update
           cluster->updater( )->Update( *cluster, &particle, deltaTime );
 
-          i += particle.alive( );
+          cluster->aliveParticles += particle.alive( );
+
+//          #pragma omp atomic
+//          i += particle.alive( );
         }
       }
       // Else
@@ -276,6 +338,13 @@ namespace prefr
       }
     }
 
+    for( Cluster* cluster : _clusters )
+    {
+      this->_aliveParticles += cluster->aliveParticles;
+    }
+
+    this->sorter( )->_aliveParticles = _aliveParticles;
+
     // For each source...
     for( Source* source : _sources )
     {
@@ -283,7 +352,7 @@ namespace prefr
       source->CloseFrame( );
     }
 
-    this->_aliveParticles = i;
+//    this->_aliveParticles = i;
   }
 
   void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)

@@ -383,7 +383,7 @@ int main(int argc, char** argv)
   if (argc >= 3)
     maxClusters = atoi(argv[2]);
 
-  ps = new ParticleSystem(10, maxParticles, true);
+  ps = new ParticleSystem( maxParticles, true );
 
   Model* model = new Model( 3.0f, 5.0f );
 
