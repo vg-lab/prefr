@@ -12,70 +12,103 @@ namespace utils
   {
   public:
 
-    std::vector<ELEM*>* elements;
-    typename std::vector<ELEM*>::iterator start;
-    typename std::vector<ELEM*>::iterator end;
+    ELEM* elements;
+    typename ELEM::iterator _begin;
+    typename ELEM::iterator _end;
 
     int size;
 
-    ElementCollection(std::vector<ELEM*>* elementsArray, unsigned int _start, unsigned int _end)
+    ElementCollection( ELEM& elementsArray )
     {
-      this->elements = elementsArray;
-      this->start = elementsArray->begin() + _start;
-      this->end = elementsArray->begin() + _end;
-      this->size = _end - _start;
+      this->elements = &elementsArray;
+      this->_begin = elementsArray.begin( );
+      this->_end = elementsArray.end( );
+      this->size = end( ) - begin( );
     }
 
-    ElementCollection(std::vector<ELEM*>* elementsArray, typename std::vector<ELEM*>::iterator _start, typename std::vector<ELEM*>::iterator _end)
+
+    ElementCollection( ELEM& elementsArray,
+                       unsigned int start_,
+                       unsigned int end_ )
     {
-      this->elements = elementsArray;
-      this->start = _start;
-      this->end = _end;
-      this->size = _end - _start;
+      this->elements = &elementsArray;
+      this->_begin = elementsArray.begin( ) + start_;
+      this->_end = elementsArray.begin( ) + end_;
+      this->size = end_ - start_;
     }
 
-    ElementCollection(const ElementCollection& other)
+    ElementCollection( ELEM* elementsArray,
+                       unsigned int start_,
+                       unsigned int end_ )
+    {
+      this->elements = elementsArray;
+      this->_begin = elementsArray->begin( ) + start_;
+      this->_end = elementsArray->begin( ) + end_;
+      this->size = end_ - start_;
+    }
+
+    ElementCollection( ELEM* elementsArray,
+                       typename ELEM::iterator start_,
+                       typename ELEM::iterator end_ )
+    {
+      this->elements = elementsArray;
+      this->_begin = start_;
+      this->_end = end_ ;
+      this->size = end_  - start_;
+    }
+
+    ElementCollection( const ElementCollection& other )
     {
       this->elements = other.elements;
-      this->start = other.start;
-      this->end = other.end;
-      this->size = this->end - this->start;
+      this->_begin = other._begin;
+      this->_end = other._end;
+      this->size = this->_end - this->_begin;
     }
 
-    ElementCollection(const ElementCollection* other)
+    ElementCollection( const ElementCollection* other )
     {
       this->elements = other->elements;
-      this->start = other->start;
-      this->end = other->end;
-      this->size = this->end - this->start;
+      this->_begin = other->_begin;
+      this->_end = other->_end;
+      this->size = this->_end - this->_begin;
     }
 
-    ElementCollection(ElementCollection* other, unsigned int _start, unsigned int _end)
+    ElementCollection( ElementCollection* other,
+                       unsigned int start_,
+                       unsigned int end_ )
     {
       this->elements = other->elements;
-      this->start = other->elements->begin() + _start;
-      this->end = other->elements->begin() + _end;
-      this->size = _end - _start;
+      this->_begin = other->elements->begin( ) + start_;
+      this->_end = other->elements->begin( ) + end_;
+      this->size = end_ - start_;
     }
 
-    ElementCollection(ElementCollection* other, typename std::vector<ELEM*>::iterator _start, typename std::vector<ELEM*>::iterator _end)
+    ElementCollection( ElementCollection* other,
+                       typename ELEM::iterator start_,
+                       typename ELEM::iterator end_ )
     {
       this->elements = other->elements;
-      this->start = _start;
-      this->end = _end;
-      this->size = _end - _start;
+      this->_begin = start_;
+      this->_end = end_;
+      this->size = end_ - start_;
     }
 
-    inline ELEM* GetElementLocal (unsigned int i)
+    typename ELEM::iterator begin( void )
     {
-      return (*this->elements)[this->start + i];
+      return this->_begin;
     }
 
-    inline ELEM* GetElement( unsigned int i)
+    typename ELEM::iterator end( void )
     {
-      return (*this->elements)[i];
+      return this->_end;
     }
 
+    typename ELEM::iterator GetElement( unsigned int i )
+    {
+      typename ELEM::iterator result( _begin );
+
+      return result + i;
+    }
   };
 
 }

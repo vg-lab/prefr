@@ -41,16 +41,16 @@ option(MODERN_GPU_ARCH "GPU_ARCH" ON)
 option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)
-# include(FindPackages)
 
 common_find_package( OpenGL REQUIRED SYSTEM )
 common_find_package( nvidiaOpenGL SYSTEM )
 common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLUT REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
+common_find_package( Boost REQUIRED )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES OpenGL GLEW GLUT )
-list( APPEND PREFR_DEPENDENT_LIBRARIES GLM )
+list( APPEND PREFR_DEPENDENT_LIBRARIES GLM Boost )
 
 if ( WITH_OPENSCENEGRAPH )
 	common_find_package( OpenSceneGraph COMPONENTS osgViewer osgGA osgDB osgUtil osgQt SYSTEM)
@@ -80,7 +80,6 @@ endif()
 common_find_package_post()
 
 set(PREFR_LIBRARY_BASE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/prefr)
-#message( ${PREFR_LIBRARY_BASE_PATH} )
 
 # library subdirectory
 add_subdirectory(prefr)

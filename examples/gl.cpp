@@ -439,26 +439,26 @@ int main(int argc, char** argv)
     ps->AddEmissionNode(emissionNode);
   }
 
-  ParticleEmitter* emitter = new ParticleEmitter(*ps->particles, 0.3f, true);
+  ParticleEmitter* emitter = new ParticleEmitter( ParticleCollection( ps->particles ), 0.3f, true);
   ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  ParticleUpdater* updater = new ParticleUpdater(*ps->particles);
+  ParticleUpdater* updater = new ParticleUpdater( ParticleCollection( ps->particles ));
   std::cout << "Created updater" << std::endl;
 
   ParticleSorter* sorter;
 
 #if (PREFR_USE_CUDA)
   std::cout << "CUDA sorter" << std::endl;
-  sorter = new ThrustParticleSorter(*ps->particles);
+  sorter = new ThrustParticleSorter( ParticleCollection( ps->particles ));
 #else
-  sorter = new ParticleSorter(*ps->particles);
+  sorter = new ParticleSorter( ParticleCollection( ps->particles ));
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
   GLDefaultParticleRenderer* renderer =
-    new GLDefaultParticleRenderer(*ps->particles);
+    new GLDefaultParticleRenderer( ParticleCollection( ps->particles ));
 
   std::cout << "Created systems" << std::endl;
 

@@ -37,12 +37,12 @@ namespace prefr
 
     virtual inline int& getID(unsigned int i)
     {
-      return translatedIDs[(*ids)[i]];
+      return translatedIDs[ ids[ i ]];
     }
 
     virtual inline float& getDistance(unsigned int i)
     {
-      return (*distances)[i];
+      return distances[ i ];
     }
 
   };

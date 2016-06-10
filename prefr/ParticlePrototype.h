@@ -9,7 +9,7 @@
 #define PARTICLEPROTOTYPE_H_
 
 #include <prefr/api.h>
-#include "ElementCollection.hpp"
+#include "Particles.h"
 #include "InterpolationSet.hpp"
 
 

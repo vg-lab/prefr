@@ -48,10 +48,10 @@
 // type definitions
 namespace prefr
 {
-  typedef prefr::Particle tparticle;
-  typedef tparticle* tparticle_ptr;
-  typedef std::vector<tparticle_ptr> tparticleContainer;
-  typedef utils::ElementCollection<tparticle> ParticleCollection;
+//  typedef prefr::Particle tparticle;
+//  typedef tparticle* tparticle_ptr;
+//  typedef std::vector<tparticle_ptr> tparticleContainer;
+//  typedef utils::ElementCollection<tparticle> ParticleCollection;
 }
 
 #endif /* TYPES_H_ */

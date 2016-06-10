@@ -59,8 +59,6 @@ namespace prefr
       void ThrustParticleSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                                        bool renderDeadParticles )
       {
-        SerializeAttributes( );
-
         aliveParticles = 0;
         distances->ResetCounter();
 
@@ -79,13 +77,13 @@ namespace prefr
           if (!(*nodit) || !(*nodit)->Active())
             continue;
 
-          for (tparticleContainer::iterator it = (*nodit)->particles->start;
-               it != (*nodit)->particles->end;
+          for ( tparticle it = (*nodit)->particles->begin( );
+               it != (*nodit)->particles->end( );
                it++)
           {
-            if ((*it)->Alive())
+            if ( it.alive( ))
             {
-              UpdateCameraDistance((*it), cameraPosition, renderDeadParticles );
+              UpdateCameraDistance( &it, cameraPosition, renderDeadParticles );
               aliveParticles++;
             }
           }
@@ -97,13 +95,13 @@ namespace prefr
                                                        const glm::vec3& cameraPosition,
                                                        bool renderDeadParticles )
       {
-        DistanceUnit& dist = distances->next();
+        DistanceUnit* dist = distances->next();
         CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
-        cda->translatedIDs[distances->current] = current->id;
+        cda->translatedIDs[ distances->current ] = current->id( );
 
-        (*distances->distances)[distances->current] =
-            current->Alive()  || renderDeadParticles ?
-            length2(current->position - cameraPosition) : -1;
+        distances->distances[ distances->current ] =
+            current->alive()  || renderDeadParticles ?
+            length2(current->position( ) - cameraPosition) : -1;
     //        (*distances->distances)[current->id] = current->Alive() ?  length2(current->position - cameraPosition) : -1;
 
       }
