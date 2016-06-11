@@ -4,7 +4,7 @@ set(PREFR_PUBLIC_HEADERS
   # To ensure that Glew is included before GL this
   # should be the first file included by the library
   types.h
-  #  
+  #
   Cluster.h
   ElementCollection.hpp
   InterpolationSet.hpp
@@ -22,8 +22,8 @@ set(PREFR_PUBLIC_HEADERS
   Renderer.h
   Sorter.h
   Updater.h
-  GL/GLRenderer.h  
-  log.h
+  GL/GLRenderer.h
+  Log.h
   ParticleSystem.h
   Source.h
   GL/shd/GL-frag.glsl
@@ -42,6 +42,7 @@ set(PREFR_SOURCES
   Renderer.cpp
   OSG/OSGRenderer.cpp
   OSG/OSGDefaultParticleSystem.cpp
+  Log.cpp
   ParticleSystem.cpp
   cuda/ThrustSorter.cu
   Model.cpp
@@ -52,37 +53,37 @@ set(PREFR_SOURCES
 
 set(PREFR_LINK_LIBRARIES
   ${GLEW_LIBRARIES}
-  ${GLUT_LIBRARIES}
   ${BOOST_LIBRARIES}
 )
 
+if ( GLUT_FOUND )
+  set( PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${GLUT_LIBRARIES} )
+endif ( )
 
 if ( NVIDIAOPENGL_FOUND )
   link_directories(${NVIDIA_OPENGL_gl_LIBRARY_PATH})
-  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${NVIDIA_OPENGL_gl_LIBRARY}) 
+  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${NVIDIA_OPENGL_gl_LIBRARY})
 else( )
-  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENGL_LIBRARIES}) 
+  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENGL_LIBRARIES})
 endif( )
 
-
-
 if (OPENSCENEGRAPH_FOUND)
-  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES}) 
+  set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES})
 endif()
 
 if (CUDA_FOUND)
-
   set(CUDA_PROPAGATE_HOST_FLAGS OFF)
   list(APPEND CUDA_NVCC_FLAGS -std=c++11 )
-  
+
   if (MODERN_GPU_ARCH)
     list(APPEND CUDA_NVCC_FLAGS -arch=sm_20)
   else()
     list(APPEND CUDA_NVCC_FLAGS -arch=sm_11)
   endif()
-  
-  cuda_common_library(prefr)
-    
+
+  cuda_common_library( PReFr )
 else()
-  common_library(prefr)
+
+  common_library( PReFr )
+
 endif()

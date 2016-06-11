@@ -1,10 +1,24 @@
 /*
- * DefaultParticleRenderConfig.cpp
+ * Copyright (c) 2014-2016 GMRV/URJC.
  *
- *  Created on: 15/10/2014
- *      Author: sergio
+ * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ *
+ * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-
 #include "OSGRenderer.h"
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
@@ -79,14 +93,20 @@ namespace prefr
                  &osgrc->billboardVertices->front(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * osgrc->particlePositions->size(), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,
+                 sizeof(GLfloat) * osgrc->particlePositions->size(),
+                 nullptr, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * osgrc->particleColors->size(), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,
+                 sizeof(GLfloat) * osgrc->particleColors->size(),
+                 nullptr, GL_DYNAMIC_DRAW);
 
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, osgrc->billboardIndices->getTotalDataSize(), osgrc->billboardIndices->getDataPointer(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 osgrc->billboardIndices->getTotalDataSize(),
+                 osgrc->billboardIndices->getDataPointer(), GL_STATIC_DRAW);
 
     glBindVertexArray(osgrc->vao);
 
@@ -132,8 +152,10 @@ namespace prefr
       idx = i * 4;
 
       (*renderConfig->particlePositions)[idx] = currentParticle->position( ).x;
-      (*renderConfig->particlePositions)[idx+1] = currentParticle->position( ).y;
-      (*renderConfig->particlePositions)[idx+2] = currentParticle->position( ).z;
+      (*renderConfig->particlePositions)[idx+1] =
+        currentParticle->position( ).y;
+      (*renderConfig->particlePositions)[idx+2] =
+        currentParticle->position( ).z;
       (*renderConfig->particlePositions)[idx+3] = currentParticle->size( );
 
       osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle->position( ).x
@@ -163,15 +185,17 @@ namespace prefr
     glBindVertexArray(osgrc->vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particlePositions->front());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4,
+                    &osgrc->particlePositions->front());
 
     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4, &osgrc->particleColors->front());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4,
+                    &osgrc->particleColors->front());
 
-    glDrawElementsInstanced(osgrc->billboardIndices->getMode()
-                            , osgrc->billboardIndices->getNumIndices()
-                            , GL_UNSIGNED_BYTE, NULL
-                            , osgrc->billboardIndices->getNumInstances());
+    glDrawElementsInstanced(osgrc->billboardIndices->getMode(),
+                            osgrc->billboardIndices->getNumIndices(),
+                            GL_UNSIGNED_BYTE, nullptr,
+                            osgrc->billboardIndices->getNumInstances());
     glBindVertexArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

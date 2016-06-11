@@ -1,13 +1,27 @@
 /*
- * OSGDefaultParticleSystem.cpp
+ * Copyright (c) 2014-2016 GMRV/URJC.
  *
- *  Created on: 28/10/2014
- *      Author: sgalindo
+ * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ *
+ * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-
 #include "OSGDefaultParticleSystem.h"
 
-#include "../log.h"
+#include "../Log.h"
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
 
@@ -32,8 +46,8 @@ namespace prefr
   , osg::Drawable()
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunctionSrc( osg::BlendFunc::/*BlendFuncMode::*/SRC_ALPHA )
-  , blendFunctionDst( osg::BlendFunc::/*BlendFuncMode::*/ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -46,8 +60,8 @@ const osg::CopyOp& copyOp)
   , osg::Drawable(other, copyOp)
   , cameraManipulator( nullptr )
   , rootNode( nullptr )
-  , blendFunctionSrc( osg::BlendFunc::/*BlendFuncMode::*/SRC_ALPHA )
-  , blendFunctionDst( osg::BlendFunc::/*BlendFuncMode::*/ONE_MINUS_CONSTANT_ALPHA )
+  , blendFunctionSrc( osg::BlendFunc::SRC_ALPHA )
+  , blendFunctionDst( osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA )
   {
     setUseDisplayList(false);
     setUseVertexBufferObjects(true);
@@ -81,11 +95,16 @@ const osg::CopyOp& copyOp)
   OSGDefaultParticleSystem::~OSGDefaultParticleSystem()
   {}
 
-  void OSGDefaultParticleSystem::ConfigureProgram(const std::string& shaderPathVert, const std::string& shaderPathFrag)
+  void OSGDefaultParticleSystem::ConfigureProgram(
+    const std::string& shaderPathVert,
+    const std::string& shaderPathFrag)
   {
 
-    PREFR_DEBUG_CHECK( _renderer, "Configure executed before adding a renderer to the particle system.");
-    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(_renderer->renderConfig);
+    PREFR_DEBUG_CHECK( _renderer,
+                       "Configure executed before adding a "
+                       "renderer to the particle system.");
+    OSGRenderConfig* osgrc =
+      static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
 
     osg::StateSet* psState = rootNode->getOrCreateStateSet();
@@ -131,7 +150,8 @@ const osg::CopyOp& copyOp)
     program->addBindAttribLocation( "particlePosition", 1 );
     program->addBindAttribLocation( "particleColor", 2 );
 
-    psState->setRenderingHint(osg::StateSet::/*RenderingHint::*/TRANSPARENT_BIN);
+    psState->setRenderingHint(
+      osg::StateSet::/*RenderingHint::*/TRANSPARENT_BIN);
 
     psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 //
@@ -148,7 +168,9 @@ const osg::CopyOp& copyOp)
 
   }
 
-  void OSGDefaultParticleSystem::SetCameraManipulator(osgViewer::ViewerBase* _viewer, unsigned int contextNumber, unsigned int viewNumber)
+  void OSGDefaultParticleSystem::SetCameraManipulator(
+    osgViewer::ViewerBase* _viewer,
+    unsigned int contextNumber, unsigned int viewNumber)
   {
     osgViewer::ViewerBase::Contexts contexts;
     osgViewer::View* view;
@@ -159,11 +181,13 @@ const osg::CopyOp& copyOp)
 
 
     if (!view)
-      view = dynamic_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
+      view =
+        dynamic_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
 
     PREFR_DEBUG_CHECK(view, "View is nullptr");
 
-    cameraManipulator = dynamic_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+    cameraManipulator =
+      dynamic_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
 
     PREFR_DEBUG_CHECK(cameraManipulator, "camera manipulator is nullptr");
 
@@ -172,7 +196,8 @@ const osg::CopyOp& copyOp)
     AcquireGraphicsContext(contexts[contextNumber]);
   }
 
-  void OSGDefaultParticleSystem::AcquireGraphicsContext(osg::GraphicsContext* context)
+  void OSGDefaultParticleSystem::AcquireGraphicsContext(
+    osg::GraphicsContext* context)
   {
     context->realize();
     context->makeCurrent();
@@ -187,7 +212,8 @@ const osg::CopyOp& copyOp)
   {
     assert(cameraManipulator != nullptr);
 
-    OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(_renderer->renderConfig);
+    OSGRenderConfig* osgrc =
+      static_cast<OSGRenderConfig*>(_renderer->renderConfig);
 
     // Get camera position to calculate distances
     osg::Vec3d eye, center, up;
@@ -197,7 +223,8 @@ const osg::CopyOp& copyOp)
     osgrc->center = osg::Vec3f(center);
     osgrc->up = osg::Vec3f(up);
 
-    UpdateCameraDistances(glm::vec3(osgrc->eye.x(), osgrc->eye.y(), osgrc->eye.z()));
+    UpdateCameraDistances(glm::vec3(osgrc->eye.x(), osgrc->eye.y(),
+                                    osgrc->eye.z()));
 
     osg::Vec3f forward = (osgrc->center - osgrc->eye);
     forward.normalize();
@@ -227,35 +254,24 @@ const osg::CopyOp& copyOp)
   }
 
 
-//  void OSGDefaultParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
-//  {
-//
-//    unsigned int i = 0;
-//    for (tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-//    {
-//      PREFR_DEBUG_CHECK( *it , "null pointer access" );
-//
-//     i = ((tparticle_ptr) *it)->id;
-//
-//     sorter->UpdateCameraDistance(i, cameraPosition);
-//    }
-//
-//  }
 
   void OSGDefaultParticleSystem::UpdateRender()
   {
     this->_sorter->Sort();
 
-    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer), "casting failed" );
+    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer),
+                       "casting failed" );
 
-    static_cast<OSGRenderer*>(this->_renderer)->SetupRender(this->_aliveParticles);
+    static_cast<OSGRenderer*>(this->_renderer)->SetupRender(
+      this->_aliveParticles);
 
     dirtyBound();
   }
 
   void OSGDefaultParticleSystem::Render() const
   {
-    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer), "casting failed" );
+    PREFR_DEBUG_CHECK( static_cast<OSGRenderer*>(this->_renderer),
+                       "casting failed" );
 
     static_cast<OSGRenderer*>(this->_renderer)->Paint(_aliveParticles);
   }
@@ -312,11 +328,14 @@ const osg::CopyOp& copyOp)
       return;
 
     // add drawable to the stats
-    functor.setVertexArray(osgrc->vertexArray->size(), static_cast<const osg::Vec3*>(osgrc->vertexArray->getDataPointer()));
+    functor.setVertexArray(osgrc->vertexArray->size(),
+                           static_cast<const osg::Vec3*>(
+                             osgrc->vertexArray->getDataPointer()));
     osgrc->billboardIndices->accept(functor);
   }
 
-  void OSGDefaultParticleSystem::SetAlphaBlendingFunction(osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst)
+  void OSGDefaultParticleSystem::SetAlphaBlendingFunction(
+    osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst)
   {
     blendFunctionSrc = src;
     blendFunctionDst = dst;
