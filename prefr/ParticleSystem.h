@@ -63,15 +63,8 @@ namespace prefr
 
  public:
 
-
-//    PREFR_HANDLER( emissionNode, EmissionNode );
-//    PREFR_HANDLER( prototype, ParticlePrototype );
-//    PREFR_HANDLER( updater, ParticleUpdater );
-//    PREFR_HANDLER( emitter, ParticleEmitter );
-
-
     PREFR_API
-    ParticleSystem( unsigned int _maxParticles, bool _loop = true );
+    ParticleSystem( unsigned int _maxParticles );
 
     PREFR_API
     virtual ~ParticleSystem();
@@ -84,8 +77,6 @@ namespace prefr
     virtual void AddEmissionNode(Source* node);
     PREFR_API
     virtual void AddPrototype(Model* prototype);
-    PREFR_API
-    virtual void AddEmitter(Emitter* emitter);
     PREFR_API
     virtual void AddUpdater(Updater* updater);
     PREFR_API
@@ -101,13 +92,11 @@ namespace prefr
     PREFR_API
     virtual void Start();
 
-    // Particle updating methods
+    // Particle updating method
     PREFR_API
-    virtual void Update(float deltaTime);
+    virtual void Update( const float& deltaTime);
 
-    PREFR_API
-    virtual void UpdateUnified( const float& deltaTime);
-
+    // Compute particles distance to camera
     PREFR_API
     virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
 
@@ -150,21 +139,17 @@ namespace prefr
     //! Particles renderer (OpenGL, OSG, etc.)
     Renderer* _renderer;
 
-
-
+    //    std::vector<int> particleEmissionNodes;
+    //    std::vector<int> particlePrototype;
+    //    std::vector<int> particleEmitter;
+    //    std::vector<int> particleUpdater;
     std::vector< int > _clusterReference;
 
     unsigned int _aliveParticles;
     unsigned int maxParticles;
 
-    bool loop;
     bool renderDeadParticles;
     bool run;
-
-//    std::vector<int> particleEmissionNodes;
-//    std::vector<int> particlePrototype;
-//    std::vector<int> particleEmitter;
-//    std::vector<int> particleUpdater;
 
   };
 

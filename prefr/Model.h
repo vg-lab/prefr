@@ -47,6 +47,10 @@ namespace prefr
 
     PREFR_API void SetLife(float min, float max);
 
+    vectortfloat size;
+    vectortfloat velocity;
+    vectortvec4 color;
+
 protected:
 
     float minLife;
@@ -55,13 +59,6 @@ protected:
     float lifeInterval;
     float lifeNormalization;
     float dispersion;
-
-    vectortfloat size;
-
-    glm::vec3 positionOffset;
-
-    vectortfloat velocity;
-    vectortvec4 color;
 
   };
 

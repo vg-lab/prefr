@@ -307,7 +307,7 @@ void rescaleFunc (GLsizei w, GLsizei h)
 
 void sceneRender (void)
 {
-  ps->UpdateUnified(deltaTime);
+  ps->Update(deltaTime);
   ps->UpdateCameraDistances(position);
   ps->UpdateRender();
 
@@ -378,8 +378,7 @@ void initGlew()
   glewExperimental = GL_TRUE;
   GLenum err=glewInit();
   if (GLEW_OK != err){
-    printf("Error: %s
-", glewGetErrorString(err));
+    printf("Error: %s", glewGetErrorString(err));
   }
 }
 
@@ -405,7 +404,7 @@ int main(int argc, char** argv)
   if (argc >= 3)
     maxClusters = atoi(argv[2]);
 
-  ps = new ParticleSystem( maxParticles, true );
+  ps = new ParticleSystem( maxParticles );
 
   Model* model = new Model( 3.0f, 5.0f );
 
@@ -441,9 +440,6 @@ int main(int argc, char** argv)
 
   printPrototypeColor(0);
   printPrototypeColor(1);
-
-  Emitter* emitter = new Emitter( 0.3f, true);
-  ps->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
   Updater* updater = new Updater( );
@@ -486,7 +482,6 @@ int main(int argc, char** argv)
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( model );
-    cluster->emitter( emitter );
 
     ps->AddCluster( cluster,
                     i * particlesPerCluster,

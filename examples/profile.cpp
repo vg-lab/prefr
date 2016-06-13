@@ -294,7 +294,7 @@ void sceneRender (void)
   long double totalTime;
 
   gettimeofday(&startTime, NULL);
-  ps->UpdateUnified(deltaTime);
+  ps->Update(deltaTime);
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -436,8 +436,7 @@ void initGlew()
   glewExperimental = GL_TRUE;
   GLenum err=glewInit();
   if (GLEW_OK != err){
-    printf("Error: %s
-", glewGetErrorString(err));
+    printf("Error: %s", glewGetErrorString(err));
   }
 }
 
@@ -473,7 +472,7 @@ int main(int argc, char** argv)
   else
     frameLimit = 0;
 
-  ps = new ParticleSystem( maxParticles, true );
+  ps = new ParticleSystem( maxParticles );
 
   Model* model = new Model( 3.0f, 5.0f );
   model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
@@ -500,12 +499,6 @@ int main(int argc, char** argv)
 
   ps->AddPrototype(model);
 
-//  std::cout << "Created prototype." << std::endl;
-
-  Emitter* emitter = new Emitter( 0.3f, true);
-  ps->AddEmitter(emitter);
-
-  std::cout << "Created emitter" << std::endl;
   Updater* updater = new Updater( );
   std::cout << "Created updater" << std::endl;
 
@@ -546,7 +539,6 @@ int main(int argc, char** argv)
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( model );
-    cluster->emitter( emitter );
 
     ps->AddCluster( cluster,
                     i * particlesPerCluster,

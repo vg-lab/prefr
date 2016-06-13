@@ -23,17 +23,16 @@
 #include "Log.h"
 
 #ifdef PREFR_USE_OPENMP
-# include <omp.h>
+#include <omp.h>
 #endif
 
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem( unsigned int _maxParticles, bool _loop)
+  ParticleSystem::ParticleSystem( unsigned int _maxParticles )
   : _sorter( nullptr )
   , _renderer( nullptr )
   , maxParticles (_maxParticles)
-  , loop(_loop)
   , renderDeadParticles( false )
   , run( false )
   {
@@ -117,18 +116,6 @@ namespace prefr
     this->prototypes.push_back(prototype);
   }
 
-  void ParticleSystem::AddEmitter(Emitter* /*emitter*/)
-  {
-//    this->emitters->push_back(emitter);
-//
-//    for (int i = start; i < end; i++)
-//    {
-//      this->particleEmitter[i] = size-1;
-//    }
-
-
-  }
-
   void ParticleSystem::AddUpdater(Updater* updater)
   {
     this->updaters.push_back(updater);
@@ -181,95 +168,7 @@ namespace prefr
 
   }
 
-  void ParticleSystem::Update(float deltaTime )
-  {
-    if( !run )
-     return;
-
-    unsigned int i = 0;
-
-    // Set emitter delta time to calculate the number of particles to emit this frame
-    for( Source* source : _sources )
-    {
-      source->PrepareFrame( deltaTime );
-    }
-
-    #pragma omp parallel for
-    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
-    {
-      Cluster* cluster = _clusters[ c ];
-      Source* source = cluster->source( );
-
-      if( cluster->active( ) && source->Emits( ))
-      {
-        for( auto emittedParticle : source->_particlesToEmit )
-        {
-          tparticle particle = _particles.at( emittedParticle );
-          cluster->updater( )->Emit( *cluster, &particle );
-        }
-      }
-    }
-
-    #pragma omp parallel for
-    // For each particle...
-    for( unsigned int c = 0; c < _particles.numParticles( ); ++c )
-    {
-      tparticle particle = _particles.at( c );
-
-      int ref = _clusterReference[ particle.id( )];
-      if( ref < 0 )
-      {
-        continue;
-      }
-      Cluster* cluster = _clusters[ ref ];
-
-      assert( cluster );
-
-      if( cluster->active( ))
-      {
-
-        #pragma omp critical
-        if( !particle.alive( ) && cluster->source( )->Emits( ))
-        {
-          cluster->updater( )->Emit( *cluster, &particle );
-
-          if( particle.alive( ))
-          {
-            #pragma omp atomic
-            cluster->source( )->_particlesBudget -= 1;
-          }
-        }
-
-        // Update
-        cluster->updater( )->Update( *cluster, &particle, deltaTime );
-
-        #pragma omp atomic
-        i += particle.alive( );
-
-      }
-      else
-      {
-        // If kill particles...
-        if( cluster->inactiveKillParticles( ))
-        {
-          // Kill particles
-          cluster->KillParticles( );
-        }
-      }
-
-      // For each source...
-      for( Source* source : _sources )
-      {
-       // Finish frame
-       source->CloseFrame( );
-      }
-
-      this->_aliveParticles = i;
-      this->sorter( )->_aliveParticles = _aliveParticles;
-    }
-  }
-
-  void ParticleSystem::UpdateUnified( const float& deltaTime)
+  void ParticleSystem::Update( const float& deltaTime)
   {
     if( !run )
       return;
@@ -278,14 +177,18 @@ namespace prefr
     this->_aliveParticles = 0;
     // Set emitter delta time to calculate the number of particles to emit this frame
 //    for( Source* source : _sources )
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
+#endif
     for( unsigned int s = 0; s < _sources.size( ); ++s )
     {
       Source* source = _sources[ s ];
       source->PrepareFrame( deltaTime );
     }
 
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
+#endif
     for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
       Cluster* cluster = _clusters[ c ];
@@ -303,7 +206,9 @@ namespace prefr
 
     // For each cluster....
 //    for( auto cluster : _clusters )
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
+#endif
     for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
       Cluster* cluster = _clusters[ c ];

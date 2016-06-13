@@ -49,8 +49,7 @@ void FPS::updateAndPrint(void)
 
 void FPS::print(void)
 {
-	printf("FPS: %4.2f
-",fps);
+	printf("FPS: %4.2f",fps);
 }
 
 void FPS::printText(float /*_x*/, float /*_y*/, float /*_z*/, char * format, ...)
