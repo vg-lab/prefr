@@ -24,7 +24,6 @@
 
 #include "Particles.h"
 #include "Source.h"
-#include "Emitter.h"
 #include "ElementCollection.hpp"
 #include "Model.h"
 #include "Updater.h"
@@ -55,9 +54,6 @@ namespace prefr
     Model* model( void ) const;
     void model( Model* model );
 
-    Emitter* emitter( void ) const;
-    void emitter( Emitter* emitter );
-
     Updater* updater( void ) const;
     void updater( Updater* updater);
 
@@ -83,8 +79,6 @@ namespace prefr
     Source* _source;
 
     Model* _model;
-
-    Emitter* _emitter;
 
     Updater* _updater;
 

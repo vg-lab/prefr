@@ -33,7 +33,6 @@ namespace prefr
     class TimeFrame
     {
     public:
-      float period, offset, duration;
 
       TimeFrame( const float& period_,
                  const float& offset_,
@@ -52,6 +51,10 @@ namespace prefr
       {
         return (time >= offset && time <= offset + duration);
       }
+
+      float period;
+      float offset;
+      float duration;
     };
 
     class Timer

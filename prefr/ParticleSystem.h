@@ -32,7 +32,6 @@
 
 #include <vector>
 
-#include "Emitter.h"
 #include "Model.h"
 #include "Renderer.h"
 #include "Sorter.h"

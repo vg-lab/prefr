@@ -58,7 +58,6 @@
 
 // PREFR include for type definitions
 #include "ElementCollection.hpp"
-#include "Particle.h"
 
 
 #endif /* PREFR__TYPES__ */

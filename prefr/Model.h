@@ -36,7 +36,19 @@ namespace prefr
 
   class Model
   {
+    friend class Updater;
+
   public:
+
+    PREFR_API Model(void);
+    PREFR_API Model(float min, float max );
+
+    PREFR_API virtual ~Model();
+
+    PREFR_API void SetLife(float min, float max);
+
+protected:
+
     float minLife;
     float maxLife;
 
@@ -50,13 +62,6 @@ namespace prefr
 
     vectortfloat velocity;
     vectortvec4 color;
-
-    PREFR_API Model(void);
-    PREFR_API Model(float min, float max );
-
-    PREFR_API virtual ~Model();
-
-    PREFR_API void SetLife(float min, float max);
 
   };
 

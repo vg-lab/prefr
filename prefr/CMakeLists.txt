@@ -18,7 +18,6 @@ set(PREFR_PUBLIC_HEADERS
   RenderConfig.h
   cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh
-  Emitter.h
   Renderer.h
   Sorter.h
   Updater.h
@@ -36,7 +35,6 @@ set(PREFR_HEADERS )
 set(PREFR_SOURCES
   Cluster.cpp
   Particles.cpp
-  Emitter.cpp
   Sorter.cpp
   Updater.cpp
   Renderer.cpp

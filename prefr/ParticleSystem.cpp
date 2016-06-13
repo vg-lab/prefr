@@ -68,13 +68,6 @@ namespace prefr
     for( Model* prototype : prototypes )
       delete( prototype );
 
-//    delete( prototypes);
-
-    for( Emitter* emitter : emitters )
-      delete( emitter );
-
-//    delete( emitters );
-
     for( Updater* updater : updaters )
       delete( updater );
 

@@ -29,7 +29,6 @@ namespace prefr
   , _size( 0 )
   , _source( nullptr )
   , _model( nullptr )
-  , _emitter( nullptr )
   , _updater( nullptr )
   , _active( true )
   , _inactiveKillParticles( false )
@@ -59,17 +58,6 @@ namespace prefr
   void Cluster::model( Model* model_ )
   {
     _model = model_;
-  }
-
-
-  Emitter* Cluster::emitter( void ) const
-  {
-    return _emitter;
-  }
-
-  void Cluster::emitter( Emitter* emitter_ )
-  {
-    _emitter = emitter_;
   }
 
   Updater* Cluster::updater( void ) const
