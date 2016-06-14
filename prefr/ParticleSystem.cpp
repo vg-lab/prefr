@@ -264,6 +264,7 @@ namespace prefr
       source->CloseFrame( );
     }
 
+    this->renderer( )->renderConfig->aliveParticles = _aliveParticles;
 //    this->_aliveParticles = i;
   }
 

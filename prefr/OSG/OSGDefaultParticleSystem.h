@@ -44,7 +44,7 @@
 #include <osg/GL>
 #include <osg/BlendFunc>
 
-#include "OSGDefaultParticleRenderer.h"
+#include "OSGRenderer.h"
 
 namespace prefr
 {
@@ -87,9 +87,7 @@ namespace prefr
     META_Object(particles::defaultParticleSystem::OSGParticleSystem,
                 OSGDefaultParticleSystem)
 
-    PREFR_API virtual void SetCameraManipulator(osgViewer::ViewerBase* _viewer,
-                                                unsigned int contextNumber = 0,
-                                                unsigned int viewNumber = 0);
+
     PREFR_API virtual void ConfigureProgram(const std::string& shaderPathVert,
                                             const std::string& shaderPathFrag);
 
@@ -99,21 +97,13 @@ namespace prefr
     PREFR_API virtual void UpdateRender();
     PREFR_API virtual void Render() const;
 
-    PREFR_API virtual osg::BoundingBox computeBound() const;
-    PREFR_API virtual void compileGLObjects(osg::RenderInfo& renderInfo) const;
-    PREFR_API virtual void drawImplementation(
-      osg::RenderInfo& renderInfo) const;
-    PREFR_API virtual void releaseGLObjects(osg::State* state) const;
-    PREFR_API virtual void accept(osg::PrimitiveFunctor& functor) const;
-
     PREFR_API virtual void SetAlphaBlendingFunction(
       osg::BlendFunc::BlendFuncMode src, osg::BlendFunc::BlendFuncMode dst);
 
   protected:
 
     PREFR_API virtual void UpdateUniformVariables(float deltaTime);
-    PREFR_API virtual void AcquireGraphicsContext(
-      osg::GraphicsContext* context);
+
 
   };
 

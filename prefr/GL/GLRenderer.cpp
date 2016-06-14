@@ -30,7 +30,7 @@ namespace prefr
   : Renderer( )
   { }
 
-  GLRenderer::~GLRenderer()
+  GLRenderer::~GLRenderer( )
   { }
 
   void GLRenderer::init( void )
@@ -104,11 +104,13 @@ namespace prefr
     glVertexAttribDivisor(2, 1);
   }
 
-  void GLRenderer::SetupRender(unsigned int aliveParticles)
+  void GLRenderer::SetupRender( void )
   {
-
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
-    for (unsigned int i = 0; i < aliveParticles; ++i )
+#endif
+
+    for (unsigned int i = 0; i < renderConfig->aliveParticles; ++i )
     {
       tparticle currentParticle = _particles.GetElement(distances->getID(i));
 
@@ -146,26 +148,33 @@ namespace prefr
 
     }
 
-    glBindVertexArray(renderConfig->vao);
+    glBindVertexArray( renderConfig->vao );
 
     // Update positions buffer
-    glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4,
-                    &renderConfig->particlePositions->front());
+    glBindBuffer( GL_ARRAY_BUFFER, renderConfig->vboParticlesPositions );
+
+    glBufferSubData( GL_ARRAY_BUFFER,
+                     0,
+                     sizeof( GLfloat ) * renderConfig->aliveParticles * 4,
+                     &renderConfig->particlePositions->front( ));
 
     // Update colors buffer
-    glBindBuffer(GL_ARRAY_BUFFER, renderConfig->vboParticlesColors);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * aliveParticles * 4,
-                    &renderConfig->particleColors->front());
+    glBindBuffer( GL_ARRAY_BUFFER, renderConfig->vboParticlesColors );
 
-    glBindVertexArray(0);
+    glBufferSubData( GL_ARRAY_BUFFER,
+                     0,
+                     sizeof( GLfloat ) * renderConfig->aliveParticles * 4,
+                     &renderConfig->particleColors->front( ));
+
+    glBindVertexArray( 0 );
   }
 
-  void GLRenderer::Paint(unsigned int aliveParticles) const
+  void GLRenderer::Paint( void ) const
   {
-    glBindVertexArray(renderConfig->vao);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, aliveParticles);
-    glBindVertexArray(0);
+    glBindVertexArray( renderConfig->vao );
+    glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
+                           renderConfig->aliveParticles );
+    glBindVertexArray( 0 );
   }
 
 }

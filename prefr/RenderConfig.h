@@ -34,19 +34,10 @@ namespace prefr
   {
   public:
 
-    // Triangles vertices
-    std::vector<GLfloat>* billboardVertices;
-    std::vector<GLfloat>* particlePositions;
-    std::vector<GLfloat>* particleColors;
-
-    // OpenGL pointers
-    GLuint vao;
-    GLuint vboBillboardVertex;
-    GLuint vboParticlesPositions;
-    GLuint vboParticlesColors;
 
     RenderConfig(unsigned int size)
-    : billboardVertices( new std::vector<GLfloat>( size ) )
+    : aliveParticles( 0 )
+    , billboardVertices( new std::vector<GLfloat>( size ) )
     , particlePositions( new std::vector<GLfloat>( size ) )
     , particleColors( new std::vector<GLfloat>( size ))
     , vao( 0 )
@@ -65,6 +56,20 @@ namespace prefr
       vboParticlesPositions = 0;
       vboParticlesColors = 0;
     }
+
+    unsigned int aliveParticles;
+
+    // Triangles vertices
+    std::vector<GLfloat>* billboardVertices;
+    std::vector<GLfloat>* particlePositions;
+    std::vector<GLfloat>* particleColors;
+
+    // OpenGL pointers
+    GLuint vao;
+    GLuint vboBillboardVertex;
+    GLuint vboParticlesPositions;
+    GLuint vboParticlesColors;
+
 
   };
 
