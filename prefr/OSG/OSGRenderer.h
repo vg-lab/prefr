@@ -51,7 +51,7 @@
 namespace prefr
 {
 
-  class OSGRenderer : public Renderer, public osg::Drawable
+  class OSGRenderer : public Renderer
   {
   public:
 
@@ -73,25 +73,9 @@ namespace prefr
 
     // OSG specific methods
 
-    PREFR_API
-    OSGRenderer( const OSGRenderer& other, const osg::CopyOp& copyop );
 
-    META_Object( prefr::OSGRenderer, OSGRenderer )
 
-    PREFR_API
-    void compileGLObjects( osg::RenderInfo& renderInfo ) const;
-    PREFR_API
-    virtual void releaseGLObjects(osg::State* state) const;
 
-    PREFR_API
-//    virtual osg::BoundingBox computeBound( ) const;
-    virtual osg::BoundingSphere computeBound( ) const;
-
-    PREFR_API
-    virtual void accept(osg::PrimitiveFunctor& functor) const;
-
-    PREFR_API
-    virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;
 
 
   protected:

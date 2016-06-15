@@ -47,6 +47,8 @@ namespace prefr
 
     virtual void Paint( void ) const = 0;
 
+    RenderConfig* renderConfig( void ) const;
+
   protected:
 
     virtual void init( void ) = 0;
@@ -55,8 +57,8 @@ namespace prefr
 
     ParticleCollection _particles;
 
-    DistanceArray* distances;
-    RenderConfig* renderConfig;
+    DistanceArray* _distances;
+    RenderConfig* _renderConfig;
 
   };
 

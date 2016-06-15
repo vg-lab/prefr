@@ -27,30 +27,30 @@ namespace prefr
 {
 
   Sorter::Sorter( )
-  : emissionNodes( nullptr )
-  , distances( nullptr )
+  : _emissionNodes( nullptr )
+  , _distances( nullptr )
   , _aliveParticles( 0 )
   {}
 
   Sorter::~Sorter()
   {
 
-    if ( distances )
-      delete( distances );
+    if ( _distances )
+      delete( _distances );
   }
 
   void Sorter::InitDistanceArray()
   {
-    distances = new DistanceArray( _particles.size );
+    _distances = new DistanceArray( _particles.size );
   }
 
   void Sorter::Sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = distances->begin() + _aliveParticles;
+    TDistUnitContainer::iterator end = _distances->begin() + _aliveParticles;
 
 //    std::sort(distances->begin(), end, DistanceArray::sortDescending );
-    __gnu_parallel::sort( distances->begin( ), end,
+    __gnu_parallel::sort( _distances->begin( ), end,
                           DistanceArray::sortDescending );
   }
 
@@ -58,9 +58,9 @@ namespace prefr
                                      bool renderDeadParticles )
   {
 //    _aliveParticles = 0;
-    distances->ResetCounter();
+    _distances->ResetCounter();
 
-    #pragma omp parallel for
+//    #pragma omp parallel for
     for( unsigned int i = 0; i < _clusters->size( ); ++i)
 //    for( auto cluster : *_clusters )
     {
@@ -86,7 +86,7 @@ namespace prefr
                                      bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = distances->at( current->id( ) );
+    DistanceUnit& dist = _distances->at( current->id( ) );
 
     dist.Id( current->id( ));
 

@@ -67,56 +67,74 @@ namespace prefr
     ParticleSystem( unsigned int _maxParticles );
 
     PREFR_API
-    virtual ~ParticleSystem();
+    virtual ~ParticleSystem( );
 
+    // Configuration methods
+
+    PREFR_API
     virtual void AddCluster( Cluster* cluster,
                              unsigned int start,
                              unsigned int size_ );
 
     PREFR_API
-    virtual void AddEmissionNode(Source* node);
+    virtual void AddSource( Source* node );
     PREFR_API
-    virtual void AddPrototype(Model* prototype);
+    virtual void AddModel( Model* prototype );
     PREFR_API
-    virtual void AddUpdater(Updater* updater);
+    virtual void AddUpdater( Updater* updater );
     PREFR_API
-    virtual void sorter(Sorter* _sorter);
-    PREFR_API
-    virtual Sorter* sorter( void );
+    virtual void sorter( Sorter* _sorter );
 
     PREFR_API
-    virtual void renderer(Renderer* _renderConfig);
-
-    PREFR_API Renderer* renderer( void );
+    virtual Sorter* sorter( void ) const;
 
     PREFR_API
-    virtual void Start();
+    virtual void renderer( Renderer* _renderConfig );
+
+    PREFR_API
+    Renderer* renderer( void ) const;
+
+
+    // Pipeline methods
+
+
+    PREFR_API
+    virtual void Start( void );
 
     // Particle updating method
     PREFR_API
-    virtual void Update( const float& deltaTime);
+    virtual void Update( const float& deltaTime );
 
     // Compute particles distance to camera
     PREFR_API
-    virtual void UpdateCameraDistances(const glm::vec3& cameraPosition);
+    virtual void UpdateCameraDistances( const glm::vec3& cameraPosition );
 
     // Particle render updating method
     PREFR_API
-    virtual void UpdateRender();
+    virtual void UpdateRender( void );
 
     // Render method
     PREFR_API
-    virtual void Render() const;
+    virtual void Render( void ) const;
 
-    virtual void Run( bool run_ );
-    virtual bool Run( void );
+    // Getters/Setters
 
-    virtual unsigned int aliveParticles( void );
+    PREFR_API
+    virtual void run( bool run_ );
+
+    PREFR_API
+    virtual bool run( void ) const ;
+
+    PREFR_API
+    virtual unsigned int aliveParticles( void ) const;
+
+#ifdef PREFR_USE_OPENMP
+    void parallel( bool parallelProcessing );
+#endif
 
   protected:
 
     //! Particles collection the system will manage.
-//    ParticleCollection* particles;
     Particles _particles;
 
     ClustersArray _clusters;
@@ -125,13 +143,13 @@ namespace prefr
     SourcesArray _sources;
 
     //! Particle prototypes of the particle set.
-    ModelsArray prototypes;
+    ModelsArray _models;
 
     //! Emitter objects collection of the system.
-    std::vector<Emitter*> emitters;
+    std::vector< Emitter* > emitters;
 
     //! Updater objects collection of the system.
-    std::vector<Updater*> updaters;
+    std::vector< Updater* > _updaters;
 
     //! Particle sorter for alpha rendering.
     Sorter* _sorter;
@@ -139,18 +157,17 @@ namespace prefr
     //! Particles renderer (OpenGL, OSG, etc.)
     Renderer* _renderer;
 
-    //    std::vector<int> particleEmissionNodes;
-    //    std::vector<int> particlePrototype;
-    //    std::vector<int> particleEmitter;
-    //    std::vector<int> particleUpdater;
     std::vector< int > _clusterReference;
 
     unsigned int _aliveParticles;
-    unsigned int maxParticles;
+    unsigned int _maxParticles;
 
-    bool renderDeadParticles;
-    bool run;
+    bool _renderDeadParticles;
+    bool _run;
 
+#ifdef PREFR_USE_OPENMP
+    bool _parallel;
+#endif
   };
 
 }

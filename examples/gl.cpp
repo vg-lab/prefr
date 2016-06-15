@@ -84,7 +84,7 @@ float mouseYThreshold;
 CShader* particlesShader;
 
 
-ParticleSystem* ps;
+ParticleSystem* particleSystem;
 
 bool emit = true;
 
@@ -307,9 +307,9 @@ void rescaleFunc (GLsizei w, GLsizei h)
 
 void sceneRender (void)
 {
-  ps->Update(deltaTime);
-  ps->UpdateCameraDistances(position);
-  ps->UpdateRender();
+  particleSystem->Update(deltaTime);
+  particleSystem->UpdateCameraDistances(position);
+  particleSystem->UpdateRender();
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
@@ -342,7 +342,7 @@ void sceneRender (void)
   glUniform3f(cameraRight, viewM[0][0], viewM[1][0], viewM[2][0]);
 
 
-  ps->Render();
+  particleSystem->Render();
 
   ResolveMouseThreshold(0);
 
@@ -404,7 +404,7 @@ int main(int argc, char** argv)
   if (argc >= 3)
     maxClusters = atoi(argv[2]);
 
-  ps = new ParticleSystem( maxParticles );
+  particleSystem = new ParticleSystem( maxParticles );
 
   Model* model = new Model( 3.0f, 5.0f );
 
@@ -421,7 +421,7 @@ int main(int argc, char** argv)
 
   model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(model);
+  particleSystem->AddModel(model);
 
   model = new Model( 3.0f, 5.0f );
 
@@ -434,7 +434,7 @@ int main(int argc, char** argv)
 
   model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(model);
+  particleSystem->AddModel(model);
 
   std::cout << "Created prototype." << std::endl;
 
@@ -460,9 +460,9 @@ int main(int argc, char** argv)
 
   std::cout << "Created systems" << std::endl;
 
-  ps->AddUpdater(updater);
-  ps->sorter(sorter);
-  ps->renderer(renderer);
+  particleSystem->AddUpdater(updater);
+  particleSystem->sorter(sorter);
+  particleSystem->renderer(renderer);
 
   PointSource* source;
   Cluster* cluster;
@@ -476,20 +476,20 @@ int main(int argc, char** argv)
     std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
     source = new PointSource( 0.3f, glm::vec3( i * 10, 0, 0 ));
-    ps->AddEmissionNode(source);
+    particleSystem->AddSource(source);
 
     cluster = new Cluster( );
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( model );
 
-    ps->AddCluster( cluster,
+    particleSystem->AddCluster( cluster,
                     i * particlesPerCluster,
                     particlesPerCluster);
 
   }
 
-  ps->Start();
+  particleSystem->Start();
 
   glutMainLoop();
 

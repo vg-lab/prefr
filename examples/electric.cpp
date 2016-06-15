@@ -69,7 +69,7 @@ using namespace prefr;
 //  OSGDefaultParticleSystem* ps;
 //#endif
 
-OSGDefaultParticleSystem* ps;
+OSGDefaultParticleSystem* particleSystem;
 
 void initOpenGL(osg::GraphicsContext* context,
                 GLint& maxNumUniforms,
@@ -188,16 +188,16 @@ int main(int argc, char** argv)
 //#else
 //  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
 
-  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
+  particleSystem = new OSGDefaultParticleSystem(10, maxParticles, true);
 
   std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
 
 
-  ps->SetCameraManipulator(viewer);
+  particleSystem->SetCameraManipulator(viewer);
 
 
 
-  Model* prototype = new Model(5.0f, 7.0f, ParticleCollection(ps->particles, 0, maxParticles));
+  Model* prototype = new Model(5.0f, 7.0f, ParticleCollection(particleSystem->particles, 0, maxParticles));
   prototype->color.Insert(0.0f, (glm::vec4(0.5, 0.5, 1, 0.7)));
   prototype->color.Insert(0.75f, (glm::vec4(0, 0, 0.5, 0.2)));
   prototype->color.Insert(1.0f, (glm::vec4(0, 0, 1, 0)));
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
   prototype->size.Insert(0.0f, 15.0f);
   prototype->size.Insert(1.0f, 5.f);
 
-  ps->AddPrototype(prototype);
+  particleSystem->AddModel(prototype);
 
 //  prototype = new ParticlePrototype(3.0f, 5.0f, ParticleCollection(ps->particles, maxParticles / 2, maxParticles));
 //
@@ -239,7 +239,7 @@ int main(int argc, char** argv)
     std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
 
     emissionNode =
-        new SphereSource(ParticleCollection(ps->particles,
+        new SphereSource(ParticleCollection(particleSystem->particles,
                                                  i * particlesPerEmitter,
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, abs(int(i % 20) - 10) * 5, 0), 3);
@@ -250,41 +250,41 @@ int main(int argc, char** argv)
     float offset = (1 + i) * step;
     emissionNode->SetFrame(period, offset, 2);
 //    std::cout << offset << std::endl;
-    ps->AddEmissionNode(emissionNode);
+    particleSystem->AddSource(emissionNode);
   }
 
-  Emitter* emitter = new Emitter(*ps->particles, 0.6f, true);
-  ps->AddEmitter(emitter);
+  Emitter* emitter = new Emitter(*particleSystem->particles, 0.6f, true);
+  particleSystem->AddEmitter(emitter);
 
   std::cout << "Created emitter" << std::endl;
-  Updater* updater = new Updater(*ps->particles);
+  Updater* updater = new Updater(*particleSystem->particles);
   std::cout << "Created updater" << std::endl;
 
   Sorter* sorter;
 
 #if (PREFR_USE_CUDA)
-  sorter = new ThrustParticleSorter(*ps->particles);
+  sorter = new ThrustParticleSorter(*particleSystem->particles);
 #else
-  sorter = new Sorter(*ps->particles);
+  sorter = new Sorter(*particleSystem->particles);
 #endif
 
   std::cout << "Created sorter" << std::endl;
 
-  OSGRenderer* renderer = new OSGRenderer(*ps->particles);
+  OSGRenderer* renderer = new OSGRenderer(*particleSystem->particles);
 
   std::cout << "Created systems" << std::endl;
 
-  ps->AddUpdater(updater);
-  ps->Sorter(sorter);
-  ps->renderer(renderer);
+  particleSystem->AddUpdater(updater);
+  particleSystem->Sorter(sorter);
+  particleSystem->renderer(renderer);
 
   std::string vertPath, fragPath;
   fragPath = vertPath = std::string(PREFR_LIBRARY_BASE_PATH);
   vertPath.append("OSG/shd/osg-vert.glsl");
   fragPath.append("OSG/shd/osg-frag.glsl");
-  ps->ConfigureProgram(vertPath, fragPath);
+  particleSystem->ConfigureProgram(vertPath, fragPath);
 
-  ps->Start();
+  particleSystem->Start();
 
   osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 1));
   osg::Geode* sdg = new osg::Geode;
@@ -302,7 +302,7 @@ int main(int argc, char** argv)
   osg::Group* groupNode = new osg::Group;
 
   groupNode->addChild(sdg);
-  groupNode->addChild(ps->rootNode);
+  groupNode->addChild(particleSystem->rootNode);
 
 
   if (argc >= 4)

@@ -29,26 +29,26 @@
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem( unsigned int _maxParticles )
+  ParticleSystem::ParticleSystem( unsigned int maxParticles )
   : _sorter( nullptr )
   , _renderer( nullptr )
-  , maxParticles (_maxParticles)
-  , renderDeadParticles( false )
-  , run( false )
+  , _maxParticles ( maxParticles )
+  , _renderDeadParticles( false )
+  , _run( false )
+#ifdef PREFR_USE_OPENMP
+  , _parallel( false )
+#endif
   {
 
     _particles.resize( _maxParticles );
 
-    _clusterReference.resize( maxParticles, -1 );
+    _clusterReference.resize( _maxParticles, -1 );
 
     auto particle = _particles.begin( );
-    for( unsigned int i = 0; i < maxParticles; i++ )
+    for( unsigned int i = 0; i < _maxParticles; i++ )
     {
       particle.id( i );
       particle.alive( false );
-
-//      if( i < initialParticlesNumber )
-//        particle.alive( true );
 
       ++particle;
     }
@@ -59,25 +59,21 @@ namespace prefr
 
   ParticleSystem::~ParticleSystem()
   {
-    for( Source* emissionNode : _sources )
-      delete( emissionNode );
+    for( Source* source : _sources )
+      delete( source );
 
-//    delete( _sources );
+    for( Model* model : _models )
+      delete( model );
 
-    for( Model* prototype : prototypes )
-      delete( prototype );
-
-    for( Updater* updater : updaters )
+    for( Updater* updater : _updaters )
       delete( updater );
 
-//    delete( updaters );
+    for( Cluster* cluster : _clusters )
+      delete( cluster );
+
     delete( _sorter );
     delete( _renderer );
 
-//    for( tparticleContainer::iterator it = particles->start; it != particles->end; it++)
-//      delete( *it );
-
-//    delete( particles );
   }
 
   void ParticleSystem::AddCluster( Cluster* cluster,
@@ -85,11 +81,11 @@ namespace prefr
                                    unsigned int size_ )
   {
 
-    assert( start + size_ <= maxParticles );
+    assert( start + size_ <= _maxParticles );
 
-    cluster->particles( ParticleRange( this->_particles, start, start + size_ ));
+    cluster->particles( ParticleRange( _particles, start, start + size_ ));
 
-    this->_clusters.push_back( cluster );
+    _clusters.push_back( cluster );
 
     unsigned int reference = _clusters.size( ) - 1;
 
@@ -106,49 +102,55 @@ namespace prefr
 
   }
 
-  void ParticleSystem::AddEmissionNode( Source* node )
+  void ParticleSystem::AddSource( Source* source )
   {
-    this->_sources.push_back( node );
+    assert( source );
+    _sources.push_back( source );
   }
 
-  void ParticleSystem::AddPrototype(Model* prototype)
+  void ParticleSystem::AddModel( Model* model )
   {
-    this->prototypes.push_back(prototype);
+    assert( model );
+    _models.push_back( model );
   }
 
-  void ParticleSystem::AddUpdater(Updater* updater)
+  void ParticleSystem::AddUpdater( Updater* updater )
   {
-    this->updaters.push_back(updater);
+    assert( updater );
+    _updaters.push_back(updater);
   }
 
   void ParticleSystem::sorter( Sorter* sorter_ )
   {
-    this->_sorter = sorter_;
+    assert( sorter_ );
+    _sorter = sorter_;
 
-    this->_sorter->clusters( &_clusters );
-    this->_sorter->particles( ParticleRange( _particles ));
+    _sorter->clusters( &_clusters );
+    _sorter->particles( ParticleRange( _particles ));
 
-    this->_sorter->InitDistanceArray( );
+    _sorter->InitDistanceArray( );
 
   }
 
-  Sorter* ParticleSystem::sorter( void )
+  Sorter* ParticleSystem::sorter( void ) const
   {
     return _sorter;
   }
 
   void ParticleSystem::renderer( Renderer* renderer_ )
   {
-    this->_renderer = renderer_ ;
-    this->_renderer->particles( ParticleRange( _particles ));
+    assert( renderer_ );
+    _renderer = renderer_ ;
 
-    PREFR_DEBUG_CHECK( this->_sorter->distances, "distances is null" );
-    this->_renderer->distances = this->_sorter->distances;
+    _renderer->particles( ParticleRange( _particles ));
 
-    this->_renderer->init( );
+    PREFR_DEBUG_CHECK( _sorter->_distances, "distances is null" );
+    _renderer->_distances = _sorter->_distances;
+
+    _renderer->init( );
   }
 
-  Renderer* ParticleSystem::renderer( void )
+  Renderer* ParticleSystem::renderer( void ) const
   {
     return _renderer;
   }
@@ -164,30 +166,30 @@ namespace prefr
 
 
 
-    run = true;
+    _run = true;
 
   }
 
-  void ParticleSystem::Update( const float& deltaTime)
+  void ParticleSystem::Update( const float& deltaTime )
   {
-    if( !run )
+    if( !_run )
       return;
 
-//    unsigned int i = 0;
-    this->_aliveParticles = 0;
-    // Set emitter delta time to calculate the number of particles to emit this frame
-//    for( Source* source : _sources )
+    _aliveParticles = 0;
+
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for
+    #pragma omp parallel for if( _parallel )
 #endif
     for( unsigned int s = 0; s < _sources.size( ); ++s )
     {
       Source* source = _sources[ s ];
+
+      // Set source's elapsed delta
       source->PrepareFrame( deltaTime );
     }
 
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for
+    #pragma omp parallel for if( _parallel )
 #endif
     for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
@@ -207,7 +209,7 @@ namespace prefr
     // For each cluster....
 //    for( auto cluster : _clusters )
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for
+    #pragma omp parallel for if( _parallel )
 #endif
     for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
     {
@@ -222,40 +224,29 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-//          if( !particle.alive( ) && cluster->source( )->Emits( ))
-//          {
-//            cluster->updater( )->Emit( *cluster, &particle );
-//          }
-
           // Update
           cluster->updater( )->Update( *cluster, &particle, deltaTime );
 
           cluster->aliveParticles += particle.alive( );
 
-//          #pragma omp atomic
-//          i += particle.alive( );
         }
       }
       // Else
       else
       {
-
         // If kill particles...
         if( cluster->inactiveKillParticles( ))
         {
           // Kill particles
           cluster->KillParticles( );
         }
-
       }
     }
 
     for( Cluster* cluster : _clusters )
     {
-      this->_aliveParticles += cluster->aliveParticles;
+      _aliveParticles += cluster->aliveParticles;
     }
-
-    this->sorter( )->_aliveParticles = _aliveParticles;
 
     // For each source...
     for( Source* source : _sources )
@@ -264,43 +255,49 @@ namespace prefr
       source->CloseFrame( );
     }
 
-    this->renderer( )->renderConfig->aliveParticles = _aliveParticles;
-//    this->_aliveParticles = i;
+    _sorter->_aliveParticles = _aliveParticles;
+    _renderer->renderConfig( )->aliveParticles = _aliveParticles;
+
+    std::cout << "Alive particles: " << _aliveParticles << std::endl;
   }
 
-  void ParticleSystem::UpdateCameraDistances(const glm::vec3& cameraPosition)
+  void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
   {
-
-    this->_sorter->UpdateCameraDistance( cameraPosition, renderDeadParticles );
-
+    _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
   }
 
-  void ParticleSystem::UpdateRender()
+  void ParticleSystem::UpdateRender( )
   {
-   this->_sorter->Sort();
-
-   this->_renderer->SetupRender(this->_aliveParticles);
+    _sorter->Sort();
+    _renderer->SetupRender( );
   }
 
-  void ParticleSystem::Render() const
+  void ParticleSystem::Render( ) const
   {
-   this->_renderer->Paint(_aliveParticles);
+    _renderer->Paint( );
   }
 
-  void ParticleSystem::Run( bool run_ )
+  void ParticleSystem::run( bool run_ )
   {
-    run = run_;
+    _run = run_;
   }
 
-  bool ParticleSystem::Run( void )
+  bool ParticleSystem::run( void ) const
   {
-    return run;
+    return _run;
   }
 
-  unsigned int ParticleSystem::aliveParticles( void )
+  unsigned int ParticleSystem::aliveParticles( void ) const
   {
     return _aliveParticles;
   }
+
+#ifdef PREFR_USE_OPENMP
+    void ParticleSystem::parallel( bool parallelProcessing )
+    {
+      _parallel = parallelProcessing;
+    }
+#endif
 
 }
 

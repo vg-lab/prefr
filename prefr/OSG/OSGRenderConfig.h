@@ -34,6 +34,7 @@ namespace prefr
     osg::Vec3f eye, center, up, right;
 
     osg::BoundingBox boundingBox;
+    osg::BoundingSphere boundingSphere;
 
     bool init;
 

@@ -61,15 +61,45 @@ namespace prefr
 
   };
 
-  class OSGManager : public osg::Node
+  class OSGManager : public osg::Drawable
   {
   public:
 
     PREFR_API
-    OSGManager( const ParticleSystem* ps );
+    OSGManager( ParticleSystem& ps );
 //    PREFR_API OSGManager( const OSGManager& other, const osg::CopyOp& copyop );
 
     PREFR_API virtual ~OSGManager( );
+
+
+    // OSG Methods
+
+    PREFR_API
+    OSGManager( void );
+
+    PREFR_API
+    OSGManager( const OSGManager& other, const osg::CopyOp& copyop );
+
+    META_Object( prefr::OSGManager, OSGManager )
+
+    PREFR_API
+    void compileGLObjects( osg::RenderInfo& renderInfo ) const;
+    PREFR_API
+    virtual void releaseGLObjects( osg::State* state ) const;
+
+    PREFR_API
+//    virtual osg::BoundingBox computeBound( ) const;
+    virtual osg::BoundingSphere computeBound( ) const;
+
+    PREFR_API
+    virtual void accept(osg::PrimitiveFunctor& functor) const;
+
+    PREFR_API
+    virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;
+
+
+
+
 
     PREFR_API
     virtual void ConfigureProgram( const std::string& shaderPathVert,
@@ -79,6 +109,11 @@ namespace prefr
     virtual void SetCameraManipulator( osgViewer::ViewerBase* _viewer,
                                        unsigned int contextNumber = 0,
                                        unsigned int viewNumber = 0 );
+
+    PREFR_API ParticleSystem* particleSystem( void ) const;
+
+    PREFR_API osg::Geode* node( void ) const;
+
   protected:
 
     PREFR_API
@@ -88,10 +123,11 @@ namespace prefr
     virtual void UpdateUniformVariables(float deltaTime);
 
     ParticleSystem* _particleSystem;
+    OSGRenderConfig* _renderConfig;
 
-    osgGA::StandardManipulator* cameraManipulator;
+    osgGA::StandardManipulator* _cameraManipulator;
 
-//    osg::Geode* rootNode;
+    osg::Geode* _geode;
   };
 
 }
