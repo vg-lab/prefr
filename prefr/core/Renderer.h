@@ -23,7 +23,7 @@
 #define __PREFR__RENDERER__
 
 // #include <particles/config.h>
-#include "types.h"
+#include "../utils/types.h"
 
 #include "Particles.h"
 

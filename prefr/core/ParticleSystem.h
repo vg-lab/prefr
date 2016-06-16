@@ -22,22 +22,22 @@
 #ifndef __PREFR__PARTICLE_SYSTEM__
 #define __PREFR__PARTICLE_SYSTEM__
 
-
 #include <prefr/api.h>
-#include "ElementCollection.hpp"
+
+#include <vector>
+
+#include "../utils/ElementCollection.hpp"
+
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 
 #include "Particles.h"
-
-#include <vector>
 
 #include "Model.h"
 #include "Renderer.h"
 #include "Sorter.h"
 #include "Source.h"
 #include "Updater.h"
-
 
 namespace prefr
 {

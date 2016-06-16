@@ -23,10 +23,13 @@
 #define __PREFR__SOURCE__
 
 #include <prefr/api.h>
-#include "types.h"
+
+#include "../utils/types.h"
+
 #include "Particles.h"
 #include "Cluster.h"
-#include "Timer.hpp"
+
+#include "../utils/Timer.hpp"
 
 namespace prefr
 {

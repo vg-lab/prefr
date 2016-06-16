@@ -21,9 +21,32 @@
  */
 #include "OSGRenderer.h"
 
-#include "../Log.h"
+#ifndef PREFR_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
+#endif
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
+
+#include <osg/Array>
+#include <osg/Geometry>
+
+#include <osg/NodeVisitor>
+
+#include <osgGA/StandardManipulator>
+#include <osgGA/TrackballManipulator>
+
+#include <osgDB/FileUtils>
+
+#include <osgViewer/View>
+#include <osgViewer/Viewer>
+#include <osgViewer/CompositeViewer>
+#include <osg/State>
+#include <osg/GL>
+#include <osg/BlendFunc>
+
+#include "../utils/Log.h"
+
+#include "OSGRenderConfig.h"
 
 namespace prefr
 {

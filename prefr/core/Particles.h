@@ -24,8 +24,8 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "types.h"
-#include "ElementCollection.hpp"
+#include "../utils/types.h"
+#include "../utils/ElementCollection.hpp"
 
 #include <vector>
 

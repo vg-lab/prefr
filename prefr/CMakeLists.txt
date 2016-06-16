@@ -1,52 +1,62 @@
 source_group(\\ FILES CMakeLists.txt)
 
 set(PREFR_PUBLIC_HEADERS
+
   # To ensure that Glew is included before GL this
-  # should be the first file included by the library
-  types.h
-  #
-  Cluster.h
-  ElementCollection.hpp
-  InterpolationSet.hpp
-  DistanceArray.hpp
-  Timer.hpp
-  Particles.h
-  Model.h
+  # should be the first file included by the library    
+  utils/types.h
+  
+  utils/Log.h
+  utils/Config.h
+  utils/Timer.hpp
+  utils/InterpolationSet.hpp
+  utils/ElementCollection.hpp   
+  
+  core/ParticleSystem.h
+  core/Particles.h
+  core/Cluster.h
+  core/Updater.h
+  core/Source.h
+  core/Model.h
+  core/DistanceArray.hpp
+  core/Sorter.h
+  core/RenderConfig.h
+  core/Renderer.h
+  
+  GL/GLRenderer.h
+  #GL/shd/GL-frag.glsl
+  #GL/shd/GL-vert.glsl
+  
   OSG/OSGRenderConfig.h
   OSG/OSGManager.h
   OSG/OSGRenderer.h
-  RenderConfig.h
+  
   cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh
-  Renderer.h
-  Sorter.h
-  Updater.h
-  GL/GLRenderer.h
-  Log.h
-  ParticleSystem.h
-  Source.h
-  GL/shd/GL-frag.glsl
-  GL/shd/GL-vert.glsl
-  Config.h
 )
 
 set(PREFR_HEADERS )
 
 set(PREFR_SOURCES
-  Cluster.cpp
-  Particles.cpp
-  Sorter.cpp
-  Updater.cpp
-  Renderer.cpp
-  OSG/OSGRenderer.cpp
-  OSG/OSGManager.cpp  
-  Log.cpp
-  ParticleSystem.cpp
-  cuda/ThrustSorter.cu
-  Model.cpp
+    
+  utils/Log.cpp
+  utils/Config.cpp
+  
+  core/ParticleSystem.cpp
+  core/Particles.cpp
+  core/Cluster.cpp
+  core/Updater.cpp
+  core/Source.cpp
+  core/Model.cpp  
+  core/Sorter.cpp  
+  core/Renderer.cpp
+  
   GL/GLRenderer.cpp
-  Source.cpp
-  Config.cpp
+      
+  OSG/OSGManager.cpp
+  OSG/OSGRenderer.cpp
+  
+  cuda/ThrustSorter.cu
 )
 
 set(PREFR_LINK_LIBRARIES

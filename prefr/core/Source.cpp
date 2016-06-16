@@ -19,8 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 #include "Source.h"
-#include "types.h"
+
+#include "../utils/types.h"
 
 namespace prefr
 {

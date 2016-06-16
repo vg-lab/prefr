@@ -24,7 +24,7 @@
 
 #include <vector>
 
-#include "types.h"
+#include "../utils/types.h"
 
 #include <iostream>
 

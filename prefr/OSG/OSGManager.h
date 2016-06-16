@@ -25,7 +25,7 @@
 
 #include <prefr/api.h>
 
-#include "../ParticleSystem.h"
+#include "../core/ParticleSystem.h"
 #include "OSGRenderConfig.h"
 
 #ifdef PREFR_USE_OPENSCENEGRAPH

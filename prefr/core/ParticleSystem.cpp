@@ -19,8 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 #include "ParticleSystem.h"
-#include "Log.h"
+
+#include "../utils/Log.h"
 
 #ifdef PREFR_USE_OPENMP
 #include <omp.h>

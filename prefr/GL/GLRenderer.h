@@ -23,7 +23,8 @@
 #define __PREFR__GL_RENDERER__
 
 #include <prefr/api.h>
-#include "../Renderer.h"
+
+#include "../core/Renderer.h"
 
 namespace prefr
 {

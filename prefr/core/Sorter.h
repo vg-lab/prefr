@@ -19,15 +19,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__PARTICLE_SORTER__
-#define __PREFR__PARTICLE_SORTER__
+
+#ifndef __PREFR__SORTER__
+#define __PREFR__SORTER__
 
 #include <prefr/api.h>
-#include "types.h"
-#include "Particles.h"
-#include "DistanceArray.hpp"
+
 #include <iostream>
 
+#include "../utils/types.h"
+
+#include "Particles.h"
+#include "DistanceArray.hpp"
 #include "Source.h"
 
 namespace prefr
@@ -86,4 +89,4 @@ protected:
 
 
 
-#endif /* __PREFR__PARTICLE_SORTER__ */
+#endif /* __PREFR__SORTER__ */

@@ -23,8 +23,9 @@
 #define __PREFR__MODEL__
 
 #include <prefr/api.h>
+
 #include "Particles.h"
-#include "InterpolationSet.hpp"
+#include "../utils/InterpolationSet.hpp"
 
 
 namespace prefr
