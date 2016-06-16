@@ -31,9 +31,9 @@ namespace prefr
 
       void ThrustSorter::InitDistanceArray()
       {
-        distances = new CUDADistanceArray( _particles.size );
+        _distances = new CUDADistanceArray( _particles.size );
 
-        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(_distances);
 
         cda->deviceID.resize( _particles.size );
         cda->deviceDistances.resize( _particles.size );
@@ -47,12 +47,12 @@ namespace prefr
       void ThrustSorter::Sort(SortOrder order)
       {
 
-        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(_distances);
 
-        std::vector<int>::iterator hostidbegin = distances->ids->begin();
+        std::vector<int>::iterator hostidbegin = _distances->ids->begin();
         std::vector<int>::iterator hostidend = hostidbegin + _aliveParticles;
         std::vector<float>::iterator hostdistbegin =
-          distances->distances->begin();
+          _distances->distances->begin();
         std::vector<float>::iterator hostdistend =
           hostdistbegin  + _aliveParticles;
         thrust::device_vector<int>::iterator deviceidbegin =
@@ -84,10 +84,10 @@ namespace prefr
                                                bool renderDeadParticles )
       {
         _aliveParticles = 0;
-        distances->ResetCounter();
+        _distances->ResetCounter();
 
     #ifdef DEBUG
-        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(_distances);
         for (auto it = cda->translatedIDs.begin();
              it != cda->translatedIDs.end(); ++it)
         {
@@ -116,11 +116,11 @@ namespace prefr
                                                const glm::vec3& cameraPosition,
                                                bool renderDeadParticles )
       {
-        DistanceUnit* dist = distances->next();
-        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(distances);
-        cda->translatedIDs[distances->current] = current->id( );
+        DistanceUnit* dist = _distances->next();
+        CUDADistanceArray* cda = static_cast<CUDADistanceArray*>(_distances);
+        cda->translatedIDs[_distances->current] = current->id( );
 
-        (*distances->distances)[distances->current] =
+        (*_distances->distances)[_distances->current] =
             current->alive( )  || renderDeadParticles ?
             length2(current->position( ) - cameraPosition) : -1;
        // (*distances->distances)[current->id] = current->Alive() ?

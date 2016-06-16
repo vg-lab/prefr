@@ -13,7 +13,7 @@ set(PREFR_PUBLIC_HEADERS
   Particles.h
   Model.h
   OSG/OSGRenderConfig.h
-  OSG/OSGDefaultParticleSystem.h
+  OSG/OSGManager.h
   OSG/OSGRenderer.h
   RenderConfig.h
   cuda/ThrustSorter.cuh
@@ -39,7 +39,7 @@ set(PREFR_SOURCES
   Updater.cpp
   Renderer.cpp
   OSG/OSGRenderer.cpp
-  OSG/OSGDefaultParticleSystem.cpp
+  OSG/OSGManager.cpp  
   Log.cpp
   ParticleSystem.cpp
   cuda/ThrustSorter.cu

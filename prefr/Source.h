@@ -111,7 +111,7 @@ namespace prefr
     PREFR_API TimedSource( float emissionRate_, glm::vec3 position_,
                            float period, float offset, float duration );
 
-    PREFR_API virtual bool Emits();
+    PREFR_API virtual bool Emits( ) const;
 
     PREFR_API virtual void CheckEmissionEnd();
 

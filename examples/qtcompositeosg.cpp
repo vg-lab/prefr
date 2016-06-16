@@ -218,7 +218,7 @@ int main( int argc, char** argv )
 
   prototype->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddModel(prototype);
 
   prototype = new Model(3.0f, 5.0f, ParticleCollection(ps->_particles, maxParticles / 2, maxParticles));
 
@@ -231,7 +231,7 @@ int main( int argc, char** argv )
 
   prototype->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(prototype);
+  ps->AddModel(prototype);
 
   std::cout << "Created prototype." << std::endl;
 
@@ -251,7 +251,7 @@ int main( int argc, char** argv )
                                                  i * particlesPerEmitter + particlesPerEmitter),
                               glm::vec3(i * 10, 0, 0));
 
-    ps->AddEmissionNode(emissionNode);
+    ps->AddSource(emissionNode);
   }
 
   Emitter* emitter = new Emitter(*ps->_particles, 0.3f, true);

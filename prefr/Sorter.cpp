@@ -21,50 +21,69 @@
  */
 #include "Sorter.h"
 
+#ifdef PREFR_USE_OPENMP
+#ifdef _WINDOWS
+#include <ppl.h>
+#else
 #include <parallel/algorithm>
+#endif
+#endif
 
 namespace prefr
 {
 
   Sorter::Sorter( )
-  : emissionNodes( nullptr )
-  , distances( nullptr )
+  : _emissionNodes( nullptr )
+  , _distances( nullptr )
   , _aliveParticles( 0 )
   {}
 
   Sorter::~Sorter()
   {
 
-    if ( distances )
-      delete( distances );
+    if ( _distances )
+      delete( _distances );
   }
 
   void Sorter::InitDistanceArray()
   {
-    distances = new DistanceArray( _particles.size );
+    _distances = new DistanceArray( _particles.size );
   }
 
   void Sorter::Sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = distances->begin() + _aliveParticles;
+    TDistUnitContainer::iterator end = _distances->begin() + _aliveParticles;
 
-//    std::sort(distances->begin(), end, DistanceArray::sortDescending );
-    __gnu_parallel::sort( distances->begin( ), end,
+#ifdef PREFR_USE_OPENMP
+#ifdef _WINDOWS
+    concurrency::parallel_sort(_distances->begin( ), end,
+                                  DistanceArray::sortDescending );
+#else
+    __gnu_parallel::sort( _distances->begin( ), end,
                           DistanceArray::sortDescending );
+#endif
+#else
+    std::sort( _distances->begin(), end, DistanceArray::sortDescending );
+#endif
+
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {
 //    _aliveParticles = 0;
-    distances->ResetCounter();
+    _distances->ResetCounter();
 
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
-    for( unsigned int i = 0; i < _clusters->size( ); ++i)
-//    for( auto cluster : *_clusters )
+    for( int i = 0; i < ( int ) _clusters->size( ); ++i)
     {
       Cluster* cluster = (*_clusters)[ i ];
+#else
+    for( auto cluster : *_clusters )
+    {
+#endif
 
       if( cluster->active( ) || renderDeadParticles )
       {
@@ -86,7 +105,7 @@ namespace prefr
                                      bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = distances->at( current->id( ) );
+    DistanceUnit& dist = _distances->at( current->id( ) );
 
     dist.Id( current->id( ));
 

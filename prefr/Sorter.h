@@ -76,9 +76,9 @@ protected:
 
     ClustersArray* _clusters;
 
-    SourcesArray* emissionNodes;
+    SourcesArray* _emissionNodes;
 
-    DistanceArray* distances;
+    DistanceArray* _distances;
 
     unsigned int _aliveParticles;
   };

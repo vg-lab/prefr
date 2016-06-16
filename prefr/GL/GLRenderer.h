@@ -39,10 +39,10 @@ namespace prefr
     virtual ~GLRenderer();
 
     PREFR_API
-    virtual void SetupRender(unsigned int aliveParticles = 0);
+    virtual void SetupRender( void );
 
     PREFR_API
-    virtual void Paint(unsigned int aliveParticles = 0) const;
+    virtual void Paint( void ) const;
 
   protected:
 

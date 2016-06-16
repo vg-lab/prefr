@@ -26,25 +26,25 @@ if( PREFR_WITH_EXAMPLES )
   if( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND )
 
     #TODO: fix build and change to common app
-    add_executable(defaultosg osg.cpp)
-    target_link_libraries(defaultosg prefr)
+    add_executable(prefrOSG osg.cpp)
+    target_link_libraries(prefrOSG PReFr)
 
-    add_executable(compositeosg compositeosg.cpp)
-    target_link_libraries(compositeosg prefr)
+#    add_executable(compositeosg compositeosg.cpp)
+#    target_link_libraries(compositeosg prefr)
 
-    add_executable(animation animation.cpp)
-    target_link_libraries(animation prefr)
+#    add_executable(animation animation.cpp)
+#    target_link_libraries(animation prefr)
 
-    add_executable(electric electric.cpp)
-    target_link_libraries(electric prefr)
+#    add_executable(electric electric.cpp)
+#    target_link_libraries(electric prefr)
 
   endif( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND)
 
 
   if (QT_FOUND)
     #TODO: fix build and change to common app
-    add_executable(qtosg qtcompositeosg.cpp)
-    target_link_libraries(qtosg ${QT_LIBRARIES} prefr)
+#    add_executable(qtosg qtcompositeosg.cpp)
+#    target_link_libraries(qtosg ${QT_LIBRARIES} prefr)
   endif()
 
 endif()

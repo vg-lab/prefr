@@ -89,7 +89,7 @@ float mouseYThreshold;
 CShader* particlesShader;
 
 
-ParticleSystem* ps;
+ParticleSystem* particleSystem;
 
 bool emit = true;
 
@@ -294,7 +294,7 @@ void sceneRender (void)
   long double totalTime;
 
   gettimeofday(&startTime, NULL);
-  ps->Update(deltaTime);
+  particleSystem->Update(deltaTime);
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -302,7 +302,7 @@ void sceneRender (void)
   times[0] += totalTime;
 
   gettimeofday(&startTime, NULL);
-  ps->UpdateCameraDistances(position);
+  particleSystem->UpdateCameraDistances(position);
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -312,7 +312,7 @@ void sceneRender (void)
 //  ps->UpdateRender();
 
   gettimeofday(&startTime, NULL);
-  ps->sorter( )->Sort();
+  particleSystem->sorter( )->Sort();
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -320,7 +320,7 @@ void sceneRender (void)
   times[2] += totalTime;
 
   gettimeofday(&startTime, NULL);
-  ps->renderer( )->SetupRender( ps->aliveParticles( ) );
+  particleSystem->renderer( )->SetupRender( );
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -360,7 +360,7 @@ void sceneRender (void)
   glUniform3f(cameraRight, viewM[0][0], viewM[1][0], viewM[2][0]);
 
   gettimeofday(&startTime, NULL);
-  ps->Render();
+  particleSystem->Render( );
   gettimeofday(&endTime, NULL);
 
   totalTime =  (endTime.tv_sec - startTime.tv_sec); //* 1000000L;
@@ -472,7 +472,7 @@ int main(int argc, char** argv)
   else
     frameLimit = 0;
 
-  ps = new ParticleSystem( maxParticles );
+  particleSystem = new ParticleSystem( maxParticles );
 
   Model* model = new Model( 3.0f, 5.0f );
   model->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
@@ -484,7 +484,7 @@ int main(int argc, char** argv)
 
   model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(model);
+  particleSystem->AddModel(model);
 
   model = new Model(3.0f, 5.0f );
 
@@ -497,7 +497,7 @@ int main(int argc, char** argv)
 
   model->size.Insert(0.0f, 1.0f);
 
-  ps->AddPrototype(model);
+  particleSystem->AddModel(model);
 
   Updater* updater = new Updater( );
   std::cout << "Created updater" << std::endl;
@@ -517,36 +517,36 @@ int main(int argc, char** argv)
 
   std::cout << "Created systems" << std::endl;
 
-  ps->AddUpdater(updater);
-  ps->sorter(sorter);
-  ps->renderer(renderer);
+  particleSystem->AddUpdater(updater);
+  particleSystem->sorter(sorter);
+  particleSystem->renderer(renderer);
 
   PointSource* source;
   Cluster* cluster;
 
   int particlesPerCluster = maxParticles / maxClusters;
 
-  std::cout << "Creating " << maxClusters << " emitters with " << particlesPerCluster << std::endl;
+  std::cout << "Creating " << maxClusters << " clusters with " << particlesPerCluster << std::endl;
 
   for (unsigned int i = 0; i < maxClusters; i++)
   {
     std::cout << "Creating cluster " << i << " from " << i * particlesPerCluster << " to " << i * particlesPerCluster + particlesPerCluster << std::endl;
 
     source = new PointSource( 1.f, glm::vec3( i * 10, 0, 0 ));
-    ps->AddEmissionNode(source);
+    particleSystem->AddSource(source);
 
     cluster = new Cluster( );
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( model );
 
-    ps->AddCluster( cluster,
+    particleSystem->AddCluster( cluster,
                     i * particlesPerCluster,
                     particlesPerCluster);
 
   }
 
-  ps->Start();
+  particleSystem->Start();
 
   glutMainLoop();
 

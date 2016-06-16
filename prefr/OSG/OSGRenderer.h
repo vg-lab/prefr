@@ -31,6 +31,23 @@
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
 
+#include <osg/Array>
+#include <osg/Geometry>
+
+#include <osg/NodeVisitor>
+
+#include <osgGA/StandardManipulator>
+#include <osgGA/TrackballManipulator>
+
+#include <osgDB/FileUtils>
+
+#include <osgViewer/View>
+#include <osgViewer/Viewer>
+#include <osgViewer/CompositeViewer>
+#include <osg/State>
+#include <osg/GL>
+#include <osg/BlendFunc>
+
 namespace prefr
 {
 
@@ -38,17 +55,32 @@ namespace prefr
   {
   public:
 
-    int currentAliveParticles;
+    PREFR_API
+    OSGRenderer( );
 
-    PREFR_API OSGRenderer( );
+    PREFR_API
+    virtual ~OSGRenderer();
 
-    PREFR_API virtual ~OSGRenderer();
+    PREFR_API
+    void init( );
 
-    PREFR_API void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
+    PREFR_API
+    virtual void SetupRender( void );
 
-    PREFR_API virtual void SetupRender(unsigned int aliveParticles = 0);
+    PREFR_API
+    virtual void Paint( void ) const;
 
-    PREFR_API virtual void Paint(unsigned int aliveParticles = 0) const;
+
+    // OSG specific methods
+
+
+
+
+
+
+  protected:
+
+
 
   };
 

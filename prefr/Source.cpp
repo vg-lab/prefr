@@ -124,7 +124,8 @@ namespace prefr
 
       _lastFrameAliveParticles = 0;
 
-      _emittedParticles = _particlesBudget - ( _particlesBudget - _deadParticles.size( ));
+      _emittedParticles = _particlesBudget -
+          ( _particlesBudget - ( unsigned int ) _deadParticles.size( ));
 
       // Fill dead pool for the emission for this frame
       while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
@@ -231,7 +232,7 @@ namespace prefr
     , SingleFrameTimer( period, offset, duration )
     {}
 
-    bool TimedSource::Emits()
+    bool TimedSource::Emits( ) const
     {
       return InTime() && Source::Emits();
     }

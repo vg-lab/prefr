@@ -25,21 +25,26 @@ namespace prefr
 {
 
   Renderer::Renderer( )
-  : distances( nullptr )
-  , renderConfig( nullptr )
+  : _distances( nullptr )
+  , _renderConfig( nullptr )
   {
 
   }
 
   Renderer::~Renderer()
   {
-    if (renderConfig)
-      delete( renderConfig );
+    if (_renderConfig)
+      delete( _renderConfig );
   }
 
   void Renderer::particles( const ParticleRange& particles_ )
   {
     _particles = particles_;
+  }
+
+  RenderConfig* Renderer::renderConfig( void ) const
+  {
+    return _renderConfig;
   }
 
 }

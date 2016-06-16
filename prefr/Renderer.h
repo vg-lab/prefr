@@ -43,20 +43,22 @@ namespace prefr
 
     virtual ~Renderer();
 
-    virtual void SetupRender(unsigned int aliveParticles = 0) = 0;
+    virtual void SetupRender( void ) = 0;
 
-    virtual void Paint(unsigned int aliveParticles = 0) const = 0;
+    virtual void Paint( void ) const = 0;
+
+    RenderConfig* renderConfig( void ) const;
 
   protected:
 
-    virtual void init( ) = 0;
+    virtual void init( void ) = 0;
 
     void particles( const ParticleRange& particles );
 
     ParticleCollection _particles;
 
-    DistanceArray* distances;
-    RenderConfig* renderConfig;
+    DistanceArray* _distances;
+    RenderConfig* _renderConfig;
 
   };
 
