@@ -21,7 +21,13 @@
  */
 #include "Sorter.h"
 
+#ifdef PREFR_USE_OPENMP
+#ifdef _WINDOWS
+#include <ppl.h>
+#else
 #include <parallel/algorithm>
+#endif
+#endif
 
 namespace prefr
 {
@@ -49,9 +55,18 @@ namespace prefr
 
     TDistUnitContainer::iterator end = _distances->begin() + _aliveParticles;
 
-//    std::sort(distances->begin(), end, DistanceArray::sortDescending );
+#ifdef PREFR_USE_OPENMP
+#ifdef _WINDOWS
+    concurrency::parallel_sort(_distances->begin( ), end,
+                                  DistanceArray::sortDescending );
+#else
     __gnu_parallel::sort( _distances->begin( ), end,
                           DistanceArray::sortDescending );
+#endif
+#else
+    std::sort( _distances->begin(), end, DistanceArray::sortDescending );
+#endif
+
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
@@ -60,11 +75,15 @@ namespace prefr
 //    _aliveParticles = 0;
     _distances->ResetCounter();
 
-//    #pragma omp parallel for
-    for( unsigned int i = 0; i < _clusters->size( ); ++i)
-//    for( auto cluster : *_clusters )
+#ifdef PREFR_USE_OPENMP
+    #pragma omp parallel for
+    for( int i = 0; i < ( int ) _clusters->size( ); ++i)
     {
       Cluster* cluster = (*_clusters)[ i ];
+#else
+    for( auto cluster : *_clusters )
+    {
+#endif
 
       if( cluster->active( ) || renderDeadParticles )
       {

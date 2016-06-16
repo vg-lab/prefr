@@ -109,10 +109,9 @@ namespace prefr
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
 #endif
-
-    for (unsigned int i = 0; i < _renderConfig->aliveParticles; ++i )
+    for( int i = 0; i < ( int ) _renderConfig->aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.GetElement(_distances->getID(i));
+      tparticle currentParticle = _particles.GetElement( _distances->getID( i ));
 
       unsigned int idx = i * 4;
 

@@ -24,17 +24,21 @@
 
 #include "OSGRenderer.h"
 
+#ifdef PREFR_USE_OPENSCENEGRAPH
+
 namespace prefr
 {
   void OSGNodeCallBack::operator( )( osg::Node* node,
                                      osg::NodeVisitor* /* nv */ )
   {
-    osg::ref_ptr< OSGManager > osgps =
+    osg::ref_ptr< OSGManager > osgMng =
         static_cast< OSGManager* >( node->asGeode()->getDrawable(0) );
 
-    if( osgps )
+    if( osgMng )
     {
-      osgps->particleSystem( )->Update(0.1f);
+      osgMng->particleSystem( )->Update(0.1f);
+      osgMng->UpdateUniformVariables( );
+      osgMng->particleSystem( )->UpdateRender( );
     }
   }
 
@@ -133,27 +137,27 @@ namespace prefr
 
     PREFR_DEBUG_CHECK(_cameraManipulator, "camera manipulator is nullptr");
 
-    _viewer->getContexts(contexts, true);
+    _viewer->getContexts( contexts, true);
 
-    AcquireGraphicsContext(contexts[contextNumber]);
+    AcquireGraphicsContext( contexts[ contextNumber ] );
   }
 
   void OSGManager::AcquireGraphicsContext(
     osg::GraphicsContext* context)
   {
-    context->realize();
-    context->makeCurrent();
+    context->realize( );
+    context->makeCurrent( );
 
     // init glew
-    glewInit();
+    glewInit( );
 
-    context->releaseContext();
+    context->releaseContext( );
   }
 
   void OSGManager::compileGLObjects(
      osg::RenderInfo& /* renderInfo */ ) const
    {
-     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>(_renderConfig);
+     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
      glGenVertexArrays( 1, &osgrc->vao );
 
@@ -168,43 +172,43 @@ namespace prefr
      osgrc->init = true;
 
      // Assign billboard vertices
-     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboBillboardVertex);
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
 
-     glBufferData(GL_ARRAY_BUFFER,
-                  sizeof(GLfloat) * osgrc->billboardVertices->size(),
-                  &osgrc->billboardVertices->front(), GL_STATIC_DRAW);
+     glBufferData( GL_ARRAY_BUFFER,
+                   sizeof( GLfloat ) * osgrc->billboardVertices->size( ),
+                   &osgrc->billboardVertices->front( ), GL_STATIC_DRAW );
 
-     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
 
-     glBufferData(GL_ARRAY_BUFFER,
-                  sizeof(GLfloat) * osgrc->particlePositions->size(),
-                  nullptr, GL_DYNAMIC_DRAW);
+     glBufferData( GL_ARRAY_BUFFER,
+                   sizeof( GLfloat ) * osgrc->particlePositions->size( ),
+                   nullptr, GL_DYNAMIC_DRAW );
 
-     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
 
-     glBufferData(GL_ARRAY_BUFFER,
-                  sizeof(GLfloat) * osgrc->particleColors->size(),
-                  nullptr, GL_DYNAMIC_DRAW);
+     glBufferData( GL_ARRAY_BUFFER,
+                   sizeof( GLfloat ) * osgrc->particleColors->size( ),
+                   nullptr, GL_DYNAMIC_DRAW );
 
 
-     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements);
+     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
 
      glBufferData( GL_ELEMENT_ARRAY_BUFFER,
                    osgrc->billboardIndices->getTotalDataSize( ),
-                   osgrc->billboardIndices->getDataPointer( ), GL_STATIC_DRAW) ;
+                   osgrc->billboardIndices->getDataPointer( ), GL_STATIC_DRAW );
 
      glBindVertexArray( osgrc->vao );
 
      glEnableVertexAttribArray( 0 );
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex);
-     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
+     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-     glEnableVertexAttribArray(1);
-     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesPositions);
-     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+     glEnableVertexAttribArray( 1 );
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
+     glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-     glEnableVertexAttribArray(2);
-     glBindBuffer(GL_ARRAY_BUFFER, osgrc->vboParticlesColors);
+     glEnableVertexAttribArray( 2 );
+     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
      glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0);
 
  //        glVertexAttribDivisor(0, 0);
@@ -219,11 +223,11 @@ namespace prefr
      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
    }
-  osg::BoundingSphere OSGManager::computeBound() const
+  osg::BoundingBox OSGManager::computeBound() const
    {
  //    PREFR_DEBUG_CHECK( _renderer->_renderConfig, "renderConfig is nullptr" );
 
-     return dynamic_cast<OSGRenderConfig*>( _renderConfig )->boundingSphere;
+     return dynamic_cast<OSGRenderConfig*>( _renderConfig )->boundingBox;
 
    }
 
@@ -331,7 +335,7 @@ namespace prefr
 
   }
 
-  void OSGManager::UpdateUniformVariables(float /*deltaTime*/)
+  void OSGManager::UpdateUniformVariables( void )
   {
     assert(_cameraManipulator != nullptr);
 
@@ -358,5 +362,6 @@ namespace prefr
     osgrc->uCameraRight->set( osgrc->right );
   }
 
-
 }
+
+#endif

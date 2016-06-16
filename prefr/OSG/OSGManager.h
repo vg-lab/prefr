@@ -88,8 +88,8 @@ namespace prefr
     virtual void releaseGLObjects( osg::State* state ) const;
 
     PREFR_API
-//    virtual osg::BoundingBox computeBound( ) const;
-    virtual osg::BoundingSphere computeBound( ) const;
+    virtual osg::BoundingBox computeBound( ) const;
+//    virtual osg::BoundingSphere computeBound( ) const;
 
     PREFR_API
     virtual void accept(osg::PrimitiveFunctor& functor) const;
@@ -110,6 +110,9 @@ namespace prefr
                                        unsigned int contextNumber = 0,
                                        unsigned int viewNumber = 0 );
 
+    PREFR_API
+    virtual void UpdateUniformVariables( void );
+
     PREFR_API ParticleSystem* particleSystem( void ) const;
 
     PREFR_API osg::Geode* node( void ) const;
@@ -118,9 +121,6 @@ namespace prefr
 
     PREFR_API
     virtual void AcquireGraphicsContext( osg::GraphicsContext* context );
-
-    PREFR_API
-    virtual void UpdateUniformVariables(float deltaTime);
 
     ParticleSystem* _particleSystem;
     OSGRenderConfig* _renderConfig;

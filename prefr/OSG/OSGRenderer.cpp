@@ -28,13 +28,9 @@
 namespace prefr
 {
 
-
-
   OSGRenderer::OSGRenderer( )
   : Renderer( )
-  {
-
-  }
+  { }
 
   OSGRenderer::~OSGRenderer()
   { }
@@ -43,10 +39,10 @@ namespace prefr
   {
     _renderConfig = new OSGRenderConfig( _particles.size );
 
-     GLfloat b[] = {-0.5f, -0.5f, 0.0f,
-                    0.5f,  -0.5f, 0.0f,
-                    -0.5f, 0.5f, 0.0f,
-                    0.5f, 0.5f, 0.0f};
+     GLfloat b[ ] = { -0.5f, -0.5f, 0.0f,
+                       0.5f, -0.5f, 0.0f,
+                      -0.5f,  0.5f, 0.0f,
+                       0.5f,  0.5f, 0.0f };
 
      OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
@@ -65,9 +61,9 @@ namespace prefr
                                                  b[ i*3 + 1 ],
                                                  b[ i*3 + 2 ] ));
 
-       osgrc->billboardVertices->push_back(b[ i*3 ]);
-       osgrc->billboardVertices->push_back(b[ i*3 + 1 ]);
-       osgrc->billboardVertices->push_back(b[ i*3 + 2 ]);
+       osgrc->billboardVertices->push_back( b[ i*3 ]);
+       osgrc->billboardVertices->push_back( b[ i*3 + 1 ]);
+       osgrc->billboardVertices->push_back( b[ i*3 + 2 ]);
 
        osgrc->billboardIndices->push_back( i );
 
@@ -82,9 +78,12 @@ namespace prefr
 
     osgrc->boundingBox.init( );
 
-    for (unsigned int i = 0; i < _renderConfig->aliveParticles; i++)
+#ifdef PREFR_USE_OPENMP
+    #pragma omp parallel for
+#endif
+    for( int i = 0; i < ( int ) _renderConfig->aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.GetElement(_distances->getID(i));
+      tparticle currentParticle = _particles.GetElement( _distances->getID( i ));
 
       unsigned int idx = i * 4;
 
@@ -123,8 +122,8 @@ namespace prefr
       ++colorit;
     }
 
-    if (osgrc->boundingBox.radius() == 0)
-      osgrc->boundingBox.expandBy(osg::Vec3(1,1,1));
+    if( osgrc->boundingBox.radius( ) == 0 )
+      osgrc->boundingBox.expandBy( osg::Vec3( 1,1,1 ));
 
     osgrc->boundingSphere.expandBy( osgrc->boundingBox );
 
@@ -137,40 +136,31 @@ namespace prefr
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    glBindVertexArray(osgrc->vao);
+    glBindVertexArray( osgrc->vao );
 
     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof(GLfloat) * _renderConfig->aliveParticles * 4,
-                     &osgrc->particlePositions->front());
+                     sizeof( GLfloat ) * _renderConfig->aliveParticles * 4,
+                     &osgrc->particlePositions->front( ));
 
     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof(GLfloat) * _renderConfig->aliveParticles * 4,
-                     &osgrc->particleColors->front());
+                     sizeof( GLfloat ) * _renderConfig->aliveParticles * 4,
+                     &osgrc->particleColors->front( ));
 
-    glDrawElementsInstanced(osgrc->billboardIndices->getMode(),
-                            osgrc->billboardIndices->getNumIndices(),
-                            GL_UNSIGNED_BYTE, nullptr,
-                            osgrc->billboardIndices->getNumInstances());
-    glBindVertexArray(0);
+    glDrawElementsInstanced( osgrc->billboardIndices->getMode( ),
+                             osgrc->billboardIndices->getNumIndices( ),
+                             GL_UNSIGNED_BYTE, nullptr,
+                             osgrc->billboardIndices->getNumInstances( ));
+    glBindVertexArray( 0 );
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   }
-
-
-
-
-
-
-
-
-
 
 }
 #endif

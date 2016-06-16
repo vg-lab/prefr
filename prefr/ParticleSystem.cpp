@@ -36,7 +36,7 @@ namespace prefr
   , _renderDeadParticles( false )
   , _run( false )
 #ifdef PREFR_USE_OPENMP
-  , _parallel( false )
+  , _parallel( true )
 #endif
   {
 
@@ -87,7 +87,7 @@ namespace prefr
 
     _clusters.push_back( cluster );
 
-    unsigned int reference = _clusters.size( ) - 1;
+    unsigned int reference = ( unsigned int ) _clusters.size( ) - 1;
 
     auto clusterIT = _clusterReference.begin( ) + start;
 
@@ -144,7 +144,7 @@ namespace prefr
 
     _renderer->particles( ParticleRange( _particles ));
 
-    PREFR_DEBUG_CHECK( _sorter->_distances, "distances is null" );
+    assert( _sorter->_distances );
     _renderer->_distances = _sorter->_distances;
 
     _renderer->init( );
@@ -157,15 +157,6 @@ namespace prefr
 
   void ParticleSystem::Start()
   {
-//    tparticle current = _particles.begin( );
-//    for (unsigned int i = 0; i < aliveParticles; i++)
-//    {
-//      (*emitters)[particleEmitter[i]]->EmitFunction( &current, true);
-//      current++;
-//    }
-
-
-
     _run = true;
 
   }
@@ -177,23 +168,29 @@ namespace prefr
 
     _aliveParticles = 0;
 
-#ifdef PREFR_USE_OPENMP
+#ifndef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-#endif
-    for( unsigned int s = 0; s < _sources.size( ); ++s )
+
+    for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
       Source* source = _sources[ s ];
-
+#else
+    for( auto source : _sources )
+    {
+#endif
       // Set source's elapsed delta
       source->PrepareFrame( deltaTime );
     }
 
-#ifdef PREFR_USE_OPENMP
+#ifndef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-#endif
-    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
+    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
     {
       Cluster* cluster = _clusters[ c ];
+#else
+    for( auto cluster : _clusters )
+    {
+#endif
       Source* source = cluster->source( );
 
       if( source->Emits( ))
@@ -207,13 +204,15 @@ namespace prefr
     }
 
     // For each cluster....
-//    for( auto cluster : _clusters )
-#ifdef PREFR_USE_OPENMP
+#ifndef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-#endif
-    for( unsigned int c = 0 ; c < _clusters.size( ); ++c )
+    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
     {
       Cluster* cluster = _clusters[ c ];
+#else
+    for( auto cluster : _clusters )
+    {
+#endif
       cluster->aliveParticles = 0;
       // If active
       if( cluster->active( ))
@@ -249,8 +248,16 @@ namespace prefr
     }
 
     // For each source...
-    for( Source* source : _sources )
+#ifndef PREFR_USE_OPENMP
+    #pragma omp parallel for if( _parallel )
+
+    for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
+      Source* source = _sources[ s ];
+#else
+    for( auto source : _sources )
+    {
+#endif
       // Finish frame
       source->CloseFrame( );
     }
@@ -258,7 +265,6 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->aliveParticles = _aliveParticles;
 
-    std::cout << "Alive particles: " << _aliveParticles << std::endl;
   }
 
   void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
