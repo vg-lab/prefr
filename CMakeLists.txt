@@ -42,8 +42,8 @@ option(WITH_EXAMPLES "WITH_EXAMPLES" OFF)
 
 include(Common)
 
+common_find_package( nvidiaOpenGL )
 common_find_package( OpenGL REQUIRED SYSTEM )
-common_find_package( nvidiaOpenGL SYSTEM )
 common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLUT REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
