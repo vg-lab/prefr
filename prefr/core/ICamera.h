@@ -19,45 +19,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
 
-#include <prefr/api.h>
-
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#ifndef __PREFR__ICAMERA__
+#define __PREFR__ICAMERA__
 
 namespace prefr
 {
-
-  class GLRenderer : public Renderer
+  class ICamera
   {
-
   public:
 
-    PREFR_API
-    GLRenderer( );
+    virtual ~ICamera( ){ }
 
-    PREFR_API
-    virtual ~GLRenderer();
-
-    PREFR_API
-    virtual void SetupRender( void );
-
-    PREFR_API
-    virtual void Paint( void ) const;
-
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
-
-  protected:
-
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
+    virtual glm::vec3 PReFrCameraPosition( void ) = 0;
+    virtual glm::mat4x4 PReFrCameraViewMatrix( void ) = 0;
+    virtual glm::mat4x4 PReFrCameraViewProjectionMatrix( void ) = 0;
   };
 
 
@@ -65,5 +41,4 @@ namespace prefr
 
 
 
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* __PREFR__ICAMERA__ */

@@ -31,12 +31,15 @@
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem( unsigned int maxParticles )
+  ParticleSystem::ParticleSystem( unsigned int maxParticles,
+                                  ICamera* camera )
   : _sorter( nullptr )
   , _renderer( nullptr )
   , _maxParticles ( maxParticles )
   , _renderDeadParticles( false )
   , _run( false )
+  , _camera( camera )
+  , _useExternalCamera( camera ? true : false )
 #ifdef PREFR_USE_OPENMP
   , _parallel( true )
 #endif
@@ -274,9 +277,20 @@ namespace prefr
     _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
   }
 
+  void ParticleSystem::UpdateCameraDistances( void )
+  {
+//    assert( _camera );
+//    glm::vec3& cameraPosition = std::move( _camera->PReFrCameraPosition( ));
+//    _sorter->UpdateCameraDistance( glm::vec3( cameraPosition.x,
+//                                              cameraPosition.y,
+//                                              cameraPosition.z ),
+//                                   _renderDeadParticles );
+    _sorter->UpdateCameraDistance( _renderDeadParticles );
+  }
+
   void ParticleSystem::UpdateRender( )
   {
-    _sorter->Sort();
+    _sorter->Sort( );
     _renderer->SetupRender( );
   }
 

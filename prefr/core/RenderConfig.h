@@ -21,12 +21,6 @@
 #ifndef __PREFR__RENDER_CONFIG__
 #define __PREFR__RENDER_CONFIG__
 
-#ifndef PREFR_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
-#endif
-
-#include <vector>
-
 namespace prefr
 {
 
@@ -34,46 +28,15 @@ namespace prefr
   {
   public:
 
-
-    RenderConfig(unsigned int size)
+    RenderConfig( unsigned int )
     : aliveParticles( 0 )
-    , billboardVertices( new std::vector<GLfloat>( size ) )
-    , particlePositions( new std::vector<GLfloat>( size ) )
-    , particleColors( new std::vector<GLfloat>( size ))
-    , vao( 0 )
-    , vboBillboardVertex( 0 )
-    , vboParticlesPositions( 0 )
-    , vboParticlesColors( 0 )
-    {}
+    { }
 
-    virtual ~RenderConfig()
-    {
-      delete( billboardVertices );
-      delete( particlePositions );
-      delete( particleColors );
-      vao = 0;
-      vboBillboardVertex = 0;
-      vboParticlesPositions = 0;
-      vboParticlesColors = 0;
-    }
+    virtual ~RenderConfig( ){ }
 
     unsigned int aliveParticles;
 
-    // Triangles vertices
-    std::vector<GLfloat>* billboardVertices;
-    std::vector<GLfloat>* particlePositions;
-    std::vector<GLfloat>* particleColors;
-
-    // OpenGL pointers
-    GLuint vao;
-    GLuint vboBillboardVertex;
-    GLuint vboParticlesPositions;
-    GLuint vboParticlesColors;
-
-
   };
-
-
 
 }
 

@@ -23,10 +23,10 @@
 #define __PREFR__DISTANCE_ARRAY__
 
 #include <vector>
+#include <iostream>
 
 #include "../utils/types.h"
-
-#include <iostream>
+#include "ICamera.h"
 
 #define SERIALIZE_BEFORE_SORT 1
 
@@ -67,7 +67,9 @@ namespace prefr
   {
   public:
 
-    DistanceArray(unsigned int size)
+    DistanceArray( unsigned int size,
+                   ICamera* camera = nullptr )
+    : _camera( camera )
     {
       ids.resize( size );
       distances.resize( size );
@@ -161,6 +163,7 @@ namespace prefr
 
     int current;
 
+    ICamera* _camera;
   };
 }
 #endif /* __PREFR__DISTANCEARRAY__ */

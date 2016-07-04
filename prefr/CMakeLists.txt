@@ -22,10 +22,11 @@ set(PREFR_PUBLIC_HEADERS
   core/Sorter.h
   core/RenderConfig.h
   core/Renderer.h
+  core/ICamera.h
   
   GL/GLRenderer.h
-  #GL/shd/GL-frag.glsl
-  #GL/shd/GL-vert.glsl
+  GL/GLRenderConfig.h
+  GL/IGLRenderProgram.h
   
   OSG/OSGRenderConfig.h
   OSG/OSGManager.h
@@ -60,6 +61,7 @@ set(PREFR_SOURCES
 )
 
 set(PREFR_LINK_LIBRARIES
+  ReTo
   ${GLEW_LIBRARIES}
   ${BOOST_LIBRARIES}
 )

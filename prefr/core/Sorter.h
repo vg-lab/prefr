@@ -62,10 +62,12 @@ namespace prefr
       const glm::vec3& cameraPosition,
       bool renderDeadParticles = false );
 
-    PREFR_API virtual void UpdateCameraDistance(
+    PREFR_API virtual void UpdateParticleDistance(
       const tparticle_ptr current,
       const glm::vec3& cameraPosition,
       bool renderDeadParticles = false );
+
+    PREFR_API virtual void UpdateCameraDistance( bool renderDeadParticles );
 
     PREFR_API virtual void InitDistanceArray();
 

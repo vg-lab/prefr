@@ -19,6 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
+
 #ifndef __PREFR__PARTICLE_SYSTEM__
 #define __PREFR__PARTICLE_SYSTEM__
 
@@ -38,6 +39,8 @@
 #include "Sorter.h"
 #include "Source.h"
 #include "Updater.h"
+
+#include <reto/reto.h>
 
 namespace prefr
 {
@@ -64,7 +67,8 @@ namespace prefr
  public:
 
     PREFR_API
-    ParticleSystem( unsigned int _maxParticles );
+    ParticleSystem( unsigned int _maxParticles,
+                    ICamera* camera = nullptr );
 
     PREFR_API
     virtual ~ParticleSystem( );
@@ -108,6 +112,8 @@ namespace prefr
     // Compute particles distance to camera
     PREFR_API
     virtual void UpdateCameraDistances( const glm::vec3& cameraPosition );
+
+    virtual void UpdateCameraDistances( void );
 
     // Particle render updating method
     PREFR_API
@@ -164,6 +170,10 @@ namespace prefr
 
     bool _renderDeadParticles;
     bool _run;
+
+    ICamera* _camera;
+
+    bool _useExternalCamera;
 
 #ifdef PREFR_USE_OPENMP
     bool _parallel;

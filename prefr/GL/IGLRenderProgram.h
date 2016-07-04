@@ -19,51 +19,52 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
+
+#ifndef __PREFR__IRENDERPROGRAM___
+#define __PREFR__IRENDERPROGRAM___
 
 #include <prefr/api.h>
 
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
-
 namespace prefr
 {
-
-  class GLRenderer : public Renderer
+  class IGLRenderProgram
   {
-
   public:
 
     PREFR_API
-    GLRenderer( );
+    virtual ~IGLRenderProgram( ){ }
 
     PREFR_API
-    virtual ~GLRenderer();
+    virtual void PReFrActivateGLProgram( void ) = 0;
 
     PREFR_API
-    virtual void SetupRender( void );
+    virtual unsigned int PReFrGLProgramID( void ) = 0;
+    
+    PREFR_API virtual inline
+    const char* PReFrViewProjectionMatrixAlias( void ) const
+    {
+      return _viewProjectionMatrixAlias.c_str( );
+    }
 
-    PREFR_API
-    virtual void Paint( void ) const;
+    PREFR_API virtual inline
+    const char* PReFrViewMatrixUpComponentAlias( void ) const
+    {
+      return _viewMatrixUpComponentAlias.c_str( );
+    }
 
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
+    PREFR_API virtual inline
+    const char* PReFrViewMatrixRightComponentAlias( void ) const
+    {
+      return _viewMatrixRightComponentAlias.c_str( );
+    }
 
   protected:
 
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
+    std::string _viewProjectionMatrixAlias;
+    std::string _viewMatrixUpComponentAlias;
+    std::string _viewMatrixRightComponentAlias;
   };
-
-
 }
 
 
-
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* __PREFR__IRENDERPROGRAM___ */

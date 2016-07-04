@@ -33,7 +33,8 @@ namespace prefr
 {
 
   Sorter::Sorter( )
-  : _emissionNodes( nullptr )
+  : _clusters( nullptr )
+  , _emissionNodes( nullptr )
   , _distances( nullptr )
   , _aliveParticles( 0 )
   {}
@@ -91,7 +92,7 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          UpdateCameraDistance( &particle, cameraPosition,
+          UpdateParticleDistance( &particle, cameraPosition,
                                 renderDeadParticles );
 
         }
@@ -100,7 +101,16 @@ namespace prefr
 
   }
 
-  void Sorter::UpdateCameraDistance( const tparticle_ptr current,
+  void Sorter::UpdateCameraDistance( bool renderDeadParticles )
+  {
+    assert( _distances->_camera );
+
+    UpdateCameraDistance( _distances->_camera->PReFrCameraPosition( ),
+                          renderDeadParticles );
+
+  }
+
+  void Sorter::UpdateParticleDistance( const tparticle_ptr current,
                                      const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {

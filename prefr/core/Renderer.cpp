@@ -47,4 +47,9 @@ namespace prefr
     return _renderConfig;
   }
 
+  void Renderer::distanceArray( DistanceArray* distArray )
+  {
+    _distances = distArray;
+  }
+
 }
