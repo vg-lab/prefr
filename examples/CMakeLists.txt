@@ -21,6 +21,11 @@ if( PREFR_WITH_EXAMPLES )
     set( PREFRPROFILEGL_LINK_LIBRARIES PReFr )
     common_application( prefrProfileGL )
 
+    set( PREFROGL_HEADERS )
+    set( PREFROGL_SOURCES ogl.cpp )
+    set( PREFROGL_LINK_LIBRARIES PReFr )
+    common_application( prefrOGL )
+
   endif( GLUT_FOUND )
 
   if( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND )
