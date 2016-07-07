@@ -25,10 +25,12 @@
 
 #include <prefr/api.h>
 
+#ifdef PREFR_USE_OPENSCENEGRAPH
+
 #include "../core/ParticleSystem.h"
 #include "OSGRenderConfig.h"
 
-#ifdef PREFR_USE_OPENSCENEGRAPH
+
 
 #include <osg/Array>
 #include <osg/Geometry>
@@ -96,10 +98,6 @@ namespace prefr
 
     PREFR_API
     virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;
-
-
-
-
 
     PREFR_API
     virtual void ConfigureProgram( const std::string& shaderPathVert,

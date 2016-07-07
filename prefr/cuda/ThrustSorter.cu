@@ -103,7 +103,7 @@ namespace prefr
                  particle != cluster->particles( ).end( );
                  particle++ )
             {
-              UpdateCameraDistance( &particle, cameraPosition,
+              UpdateParticleDistance( &particle, cameraPosition,
                                     renderDeadParticles );
               _aliveParticles++;
             }
@@ -112,7 +112,7 @@ namespace prefr
 
 
       }
-      void ThrustSorter::UpdateCameraDistance( const tparticle_ptr current,
+      void ThrustSorter::UpdateParticleDistance( const tparticle_ptr current,
                                                const glm::vec3& cameraPosition,
                                                bool renderDeadParticles )
       {

@@ -20,27 +20,28 @@
  *
  */
 
-#ifndef OSGRENDERCONFIG_H_
-#define OSGRENDERCONFIG_H_
+#ifndef __PREFR__GLRENDERCONFIG__
+#define __PREFR__GLRENDERCONFIG__
+
+#ifndef PREFR_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
+#endif
+
+#include <vector>
 
 #include "../core/RenderConfig.h"
-
-#ifdef PREFR_USE_OPENSCENEGRAPH
-
-#include <osg/Array>
-#include <osg/Drawable>
+#include "IGLRenderProgram.h"
 
 namespace prefr
 {
-  class OSGRenderConfig : public RenderConfig
+  class GLRenderConfig : public RenderConfig
   {
-    friend class OSGRenderer;
-    friend class OSGManager;
+    friend class GLRenderer;
 
   public:
 
-    OSGRenderConfig(unsigned int size)
-    : RenderConfig(size)
+    GLRenderConfig( unsigned int size )
+    : RenderConfig( size )
     , billboardVertices( new std::vector<GLfloat>( size ) )
     , particlePositions( new std::vector<GLfloat>( size ) )
     , particleColors( new std::vector<GLfloat>( size ))
@@ -48,18 +49,19 @@ namespace prefr
     , vboBillboardVertex( 0 )
     , vboParticlesPositions( 0 )
     , vboParticlesColors( 0 )
-    , vertexArray( nullptr )
-    , billboardIndices( nullptr )
-    , vboDrawElements( 0 )
-    , uCameraUp( nullptr )
-    , uCameraRight( nullptr )
-    , init( false )
+    , _camera( nullptr )
+    , _glRenderProgram( nullptr )
     {}
 
-    virtual ~OSGRenderConfig()
+    virtual ~GLRenderConfig()
     {
-     vboDrawElements = 0;
-     init = false;
+      delete( billboardVertices );
+      delete( particlePositions );
+      delete( particleColors );
+      vao = 0;
+      vboBillboardVertex = 0;
+      vboParticlesPositions = 0;
+      vboParticlesColors = 0;
     }
 
   protected:
@@ -75,27 +77,13 @@ namespace prefr
     GLuint vboParticlesPositions;
     GLuint vboParticlesColors;
 
-    osg::Vec3Array* vertexArray;
-    osg::DrawElementsUByte* billboardIndices;
-
-    // OpenGL pointers
-    GLuint vboDrawElements;
-
-    osg::Uniform* uCameraUp;
-    osg::Uniform* uCameraRight;
-
-    osg::Vec3f eye, center, up, right;
-
-    osg::BoundingBox boundingBox;
-    osg::BoundingSphere boundingSphere;
-
-    bool init;
-
+    ICamera* _camera;
+    IGLRenderProgram* _glRenderProgram;
   };
 
 
 }
 
-#endif
 
-#endif /* OSGRENDERCONFIG_H_ */
+
+#endif /* __PREFR__GLRENDERCONFIG__ */

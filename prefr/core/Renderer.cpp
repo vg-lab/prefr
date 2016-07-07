@@ -27,6 +27,9 @@ namespace prefr
   Renderer::Renderer( )
   : _distances( nullptr )
   , _renderConfig( nullptr )
+#ifdef PREFR_USE_OPENMP
+  , _parallel( false )
+#endif
   {
 
   }
@@ -45,6 +48,11 @@ namespace prefr
   RenderConfig* Renderer::renderConfig( void ) const
   {
     return _renderConfig;
+  }
+
+  void Renderer::distanceArray( DistanceArray* distArray )
+  {
+    _distances = distArray;
   }
 
 }

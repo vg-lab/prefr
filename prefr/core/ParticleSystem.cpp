@@ -31,14 +31,17 @@
 namespace prefr
 {
 
-  ParticleSystem::ParticleSystem( unsigned int maxParticles )
+  ParticleSystem::ParticleSystem( unsigned int maxParticles,
+                                  ICamera* camera )
   : _sorter( nullptr )
   , _renderer( nullptr )
   , _maxParticles ( maxParticles )
   , _renderDeadParticles( false )
   , _run( false )
+  , _camera( camera )
+  , _useExternalCamera( camera ? true : false )
 #ifdef PREFR_USE_OPENMP
-  , _parallel( true )
+  , _parallel( false )
 #endif
   {
 
@@ -130,7 +133,11 @@ namespace prefr
     _sorter->clusters( &_clusters );
     _sorter->particles( ParticleRange( _particles ));
 
-    _sorter->InitDistanceArray( );
+    _sorter->InitDistanceArray( _camera );
+
+#ifdef PREFR_USE_OPENMP
+    _sorter->_parallel = _parallel;
+#endif
 
   }
 
@@ -146,10 +153,14 @@ namespace prefr
 
     _renderer->particles( ParticleRange( _particles ));
 
-    assert( _sorter->_distances );
-    _renderer->_distances = _sorter->_distances;
-
     _renderer->init( );
+
+    assert( _sorter->_distances );
+    _renderer->distanceArray( _sorter->_distances );
+
+#ifdef PREFR_USE_OPENMP
+    _renderer->_parallel = _parallel;
+#endif
   }
 
   Renderer* ParticleSystem::renderer( void ) const
@@ -271,18 +282,35 @@ namespace prefr
 
   void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
   {
-    _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
+    if( _run )
+      _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
+  }
+
+  void ParticleSystem::UpdateCameraDistances( void )
+  {
+//    assert( _camera );
+//    glm::vec3& cameraPosition = std::move( _camera->PReFrCameraPosition( ));
+//    _sorter->UpdateCameraDistance( glm::vec3( cameraPosition.x,
+//                                              cameraPosition.y,
+//                                              cameraPosition.z ),
+//                                   _renderDeadParticles );
+    if( _run )
+        _sorter->UpdateCameraDistance( _renderDeadParticles );
   }
 
   void ParticleSystem::UpdateRender( )
   {
-    _sorter->Sort();
-    _renderer->SetupRender( );
+    if( _run )
+    {
+      _sorter->Sort( );
+      _renderer->SetupRender( );
+    }
   }
 
   void ParticleSystem::Render( ) const
   {
-    _renderer->Paint( );
+    if( _run )
+      _renderer->Paint( );
   }
 
   void ParticleSystem::run( bool run_ )
@@ -304,6 +332,12 @@ namespace prefr
     void ParticleSystem::parallel( bool parallelProcessing )
     {
       _parallel = parallelProcessing;
+
+      if( _sorter )
+        _sorter->_parallel = parallelProcessing;
+
+      if( _renderer )
+        _renderer->_parallel = parallelProcessing;
     }
 #endif
 

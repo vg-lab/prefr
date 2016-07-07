@@ -41,7 +41,7 @@ namespace prefr
     virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
                                        bool discardDeadParticles = true );
 
-    virtual void UpdateCameraDistance( const tparticle_ptr current,
+    virtual void UpdateParticleDistance( const tparticle_ptr current,
                                        const glm::vec3& cameraPosition,
                                        bool discardDeadParticles = true );
 

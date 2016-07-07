@@ -49,6 +49,9 @@ namespace prefr
 
     RenderConfig* renderConfig( void ) const;
 
+    virtual void distanceArray( DistanceArray* distanceArray );
+
+
   protected:
 
     virtual void init( void ) = 0;
@@ -59,6 +62,10 @@ namespace prefr
 
     DistanceArray* _distances;
     RenderConfig* _renderConfig;
+
+#ifdef PREFR_USE_OPENMP
+    bool _parallel;
+#endif
 
   };
 
