@@ -63,6 +63,10 @@ namespace prefr
     DistanceArray* _distances;
     RenderConfig* _renderConfig;
 
+#ifdef PREFR_USE_OPENMP
+    bool _parallel;
+#endif
+
   };
 
 }

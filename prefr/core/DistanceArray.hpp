@@ -86,9 +86,6 @@ namespace prefr
       {
         ( *element ).id = &( *currentId );
         ( *element ).distance = &( *currentDist );
-
-        std::cout << ( *element ).id << " -> "
-                  << ( *element ).distance << std::endl;
       }
 
     }

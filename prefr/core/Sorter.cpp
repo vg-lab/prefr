@@ -37,6 +37,9 @@ namespace prefr
   , _emissionNodes( nullptr )
   , _distances( nullptr )
   , _aliveParticles( 0 )
+#ifdef PREFR_USE_OPENMP
+  , _parallel( false )
+#endif
   {}
 
   Sorter::~Sorter()
@@ -46,9 +49,9 @@ namespace prefr
       delete( _distances );
   }
 
-  void Sorter::InitDistanceArray()
+  void Sorter::InitDistanceArray( ICamera* camera )
   {
-    _distances = new DistanceArray( _particles.size );
+    _distances = new DistanceArray( _particles.size, camera );
   }
 
   void Sorter::Sort(SortOrder /*order*/)
@@ -57,6 +60,8 @@ namespace prefr
     TDistUnitContainer::iterator end = _distances->begin() + _aliveParticles;
 
 #ifdef PREFR_USE_OPENMP
+    if( _parallel )
+    {
 #ifdef _WINDOWS
     concurrency::parallel_sort(_distances->begin( ), end,
                                   DistanceArray::sortDescending );
@@ -64,9 +69,11 @@ namespace prefr
     __gnu_parallel::sort( _distances->begin( ), end,
                           DistanceArray::sortDescending );
 #endif
-#else
-    std::sort( _distances->begin(), end, DistanceArray::sortDescending );
+    }
+    else
 #endif
+    std::sort( _distances->begin(), end, DistanceArray::sortDescending );
+
 
   }
 
@@ -77,7 +84,7 @@ namespace prefr
     _distances->ResetCounter();
 
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for
+    #pragma omp parallel for if( _parallel )
     for( int i = 0; i < ( int ) _clusters->size( ); ++i)
     {
       Cluster* cluster = (*_clusters)[ i ];

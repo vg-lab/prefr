@@ -67,9 +67,9 @@ namespace prefr
       const glm::vec3& cameraPosition,
       bool renderDeadParticles = false );
 
-    PREFR_API virtual void UpdateCameraDistance( bool renderDeadParticles );
+    PREFR_API virtual void UpdateCameraDistance( bool renderDeadParticles = false );
 
-    PREFR_API virtual void InitDistanceArray();
+    PREFR_API virtual void InitDistanceArray( ICamera* camera );
 
 protected:
 
@@ -86,6 +86,10 @@ protected:
     DistanceArray* _distances;
 
     unsigned int _aliveParticles;
+
+#ifdef PREFR_USE_OPENMP
+    bool _parallel;
+#endif
   };
 }
 

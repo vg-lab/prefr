@@ -111,7 +111,7 @@ namespace prefr
       unsigned int idx = i * 4;
 
       std::vector< GLfloat >::iterator posit =
-          _renderConfig->particlePositions->begin( ) + idx;
+          osgrc->particlePositions->begin( ) + idx;
 
       *posit = currentParticle.position( ).x;
       ++posit;
@@ -130,7 +130,7 @@ namespace prefr
                                               currentParticle.position( ).z));
 
       std::vector< GLfloat >::iterator colorit =
-          _renderConfig->particleColors->begin( ) + idx;
+          osgrc->particleColors->begin( ) + idx;
 
       *colorit = currentParticle.color( ).x;
       ++colorit;

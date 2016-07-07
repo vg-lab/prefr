@@ -132,7 +132,7 @@ namespace prefr
   void GLRenderer::SetupRender( void )
   {
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for
+    #pragma omp parallel for if( _parallel )
 #endif
     for( int i = 0; i < ( int ) _glRenderConfig->aliveParticles; ++i )
     {
@@ -210,8 +210,9 @@ namespace prefr
       unsigned int mvpID = glGetUniformLocation(
           programID, _glRenderProgram->PReFrViewProjectionMatrixAlias( ));
 
+      glm::mat4x4 tmp = _glRenderConfig->_camera->PReFrCameraViewProjectionMatrix( );
       glUniformMatrix4fv( mvpID, 1, GL_FALSE, glm::value_ptr(
-          _glRenderConfig->_camera->PReFrCameraViewProjectionMatrix( )));
+          tmp ));
 
       unsigned int cameraUpID = glGetUniformLocation(
           programID, _glRenderProgram->PReFrViewMatrixUpComponentAlias( ));

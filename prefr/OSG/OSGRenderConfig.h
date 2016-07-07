@@ -34,8 +34,46 @@ namespace prefr
 {
   class OSGRenderConfig : public RenderConfig
   {
+    friend class OSGRenderer;
+    friend class OSGManager;
+
   public:
+
+    OSGRenderConfig(unsigned int size)
+    : RenderConfig(size)
+    , billboardVertices( new std::vector<GLfloat>( size ) )
+    , particlePositions( new std::vector<GLfloat>( size ) )
+    , particleColors( new std::vector<GLfloat>( size ))
+    , vao( 0 )
+    , vboBillboardVertex( 0 )
+    , vboParticlesPositions( 0 )
+    , vboParticlesColors( 0 )
+    , vertexArray( nullptr )
+    , billboardIndices( nullptr )
+    , vboDrawElements( 0 )
+    , uCameraUp( nullptr )
+    , uCameraRight( nullptr )
+    , init( false )
+    {}
+
+    virtual ~OSGRenderConfig()
+    {
+     vboDrawElements = 0;
+     init = false;
+    }
+
+  protected:
+
     // Triangles vertices
+    std::vector<GLfloat>* billboardVertices;
+    std::vector<GLfloat>* particlePositions;
+    std::vector<GLfloat>* particleColors;
+
+    // OpenGL pointers
+    GLuint vao;
+    GLuint vboBillboardVertex;
+    GLuint vboParticlesPositions;
+    GLuint vboParticlesColors;
 
     osg::Vec3Array* vertexArray;
     osg::DrawElementsUByte* billboardIndices;
@@ -52,22 +90,6 @@ namespace prefr
     osg::BoundingSphere boundingSphere;
 
     bool init;
-
-    OSGRenderConfig(unsigned int size)
-    : RenderConfig(size)
-    , vertexArray( nullptr )
-    , billboardIndices( nullptr )
-    , vboDrawElements( 0 )
-    , uCameraUp( nullptr )
-    , uCameraRight( nullptr )
-    , init( false )
-    {}
-
-    virtual ~OSGRenderConfig()
-    {
-     vboDrawElements = 0;
-     init = false;
-    }
 
   };
 

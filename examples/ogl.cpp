@@ -50,52 +50,59 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters );
 void destroy( void);
 
 
+glm::vec3 floatPtrToVec3( float* floatPos )
+{
+  return glm::vec3( floatPos[ 0 ],
+                    floatPos[ 1 ],
+                    floatPos[ 2 ]);
+}
+
+glm::mat4x4 floatPtrToMat4( float* floatPos )
+{
+  return glm::mat4x4( floatPos[ 0 ], floatPos[ 1 ],
+                      floatPos[ 2 ], floatPos[ 3 ],
+                      floatPos[ 4 ], floatPos[ 5 ],
+                      floatPos[ 6 ], floatPos[ 7 ],
+                      floatPos[ 8 ], floatPos[ 9 ],
+                      floatPos[ 10 ], floatPos[ 11 ],
+                      floatPos[ 12 ], floatPos[ 13 ],
+                      floatPos[ 14 ], floatPos[ 15 ]);
+}
+
+
 // PReFr Interface classes inheritance
 
 class Camera : public prefr::ICamera, public reto::Camera
 {
   glm::vec3 PReFrCameraPosition( void )
   {
-    return glm::vec3( Position( )[ 0 ],
-                      Position( )[ 1 ],
-                      Position( )[ 2 ]);
+    return floatPtrToVec3( Position( ));
   }
 
   glm::mat4x4 PReFrCameraViewMatrix( void )
   {
-    return glm::mat4x4( ViewMatrix( )[ 0 ], ViewMatrix( )[ 1 ],
-                        ViewMatrix( )[ 2 ], ViewMatrix( )[ 3 ],
-                        ViewMatrix( )[ 4 ], ViewMatrix( )[ 5 ],
-                        ViewMatrix( )[ 6 ], ViewMatrix( )[ 7 ],
-                        ViewMatrix( )[ 8 ], ViewMatrix( )[ 9 ],
-                        ViewMatrix( )[ 10 ], ViewMatrix( )[ 11 ],
-                        ViewMatrix( )[ 12 ], ViewMatrix( )[ 13 ],
-                        ViewMatrix( )[ 14 ], ViewMatrix( )[ 15 ]);
+    return floatPtrToMat4( ViewMatrix( ));
   }
 
   glm::mat4x4 PReFrCameraViewProjectionMatrix( void )
   {
-    return glm::mat4x4( ViewProjectionMatrix( )[ 0 ],
-                        ViewProjectionMatrix( )[ 1 ],
-                        ViewProjectionMatrix( )[ 2 ],
-                        ViewProjectionMatrix( )[ 3 ],
-                        ViewProjectionMatrix( )[ 4 ],
-                        ViewProjectionMatrix( )[ 5 ],
-                        ViewProjectionMatrix( )[ 6 ],
-                        ViewProjectionMatrix( )[ 7 ],
-                        ViewProjectionMatrix( )[ 8 ],
-                        ViewProjectionMatrix( )[ 9 ],
-                        ViewProjectionMatrix( )[ 10 ],
-                        ViewProjectionMatrix( )[ 11 ],
-                        ViewProjectionMatrix( )[ 12 ],
-                        ViewProjectionMatrix( )[ 13 ],
-                        ViewProjectionMatrix( )[ 14 ],
-                        ViewProjectionMatrix( )[ 15 ]);
+    return floatPtrToMat4( ViewProjectionMatrix( ));
   }
 };
 
 class RenderProgram : public prefr::IGLRenderProgram, public reto::ShaderProgram
 {
+public:
+
+  RenderProgram( )
+  : prefr::IGLRenderProgram( )
+  , reto::ShaderProgram( )
+  {
+    _viewProjectionMatrixAlias = std::string( "modelViewProjM" );
+    _viewMatrixUpComponentAlias = std::string( "cameraUp" );
+    _viewMatrixRightComponentAlias = std::string( "cameraRight" );
+  }
+
   void PReFrActivateGLProgram( void ){ use( );}
 
   unsigned int PReFrGLProgramID( void ){ return program( ); }
@@ -149,7 +156,7 @@ void initContext( int argc, char** argv )
 void initOGL( void )
 {
   glEnable( GL_DEPTH_TEST );
-  glClearColor( 0.2f, 0.2f, 0.2f, 0.0f );
+  glClearColor( 1.0f, 1.f, 1.f, 0.0f );
 
   glFrontFace( GL_CCW );
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -180,77 +187,13 @@ void ExpandBoundingBox( Eigen::Vector3f& minBounds,
   }
 }
 
-using namespace prefr;
-void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
-{
-  particleSystem = new ParticleSystem( maxParticles, &camera );
 
-  Model model( 3.0f, 10.0f );
-  model.color.Insert( 0.0f, glm::vec4( 1.0f, 1.0f, 0.0f, 0.15f ));
-  model.color.Insert( 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 0.05f ));
-
-  model.size.Insert( 0.0f, 3.0f );
-  model.size.Insert( 1.0f, 3.0f );
-
-  model.velocity.Insert( 0.0f, 5.0f);
-  model.velocity.Insert( 1.0f, 8.0f);
-  particleSystem->AddModel( &model );
-
-
-  Updater updater;
-  particleSystem->AddUpdater( &updater );
-
-  Cluster* cluster;
-  SphereSource* source;
-
-  unsigned int particlesPerCluster = maxParticles / maxClusters;
-
-
-
-  Eigen::Vector3f boundingBoxMin( std::numeric_limits< float >::max( ),
-                                  std::numeric_limits< float >::max( ),
-                                  std::numeric_limits< float >::max( ));
-  Eigen::Vector3f boundingBoxMax( std::numeric_limits< float >::min( ),
-                                  std::numeric_limits< float >::min( ),
-                                  std::numeric_limits< float >::min( ));
-
-  for( unsigned int i = 0; i < maxClusters; ++i )
-  {
-    glm::vec3 position( sin( i ), cos( i ), i * 3 );
-
-    cluster = new Cluster( );
-    source = new SphereSource( 0.3f, position );
-    cluster->source( source );
-    cluster->updater( &updater );
-    cluster->model( &model );
-
-    particleSystem->AddSource( source );
-    particleSystem->AddCluster( cluster,
-                                particlesPerCluster * i,
-                                particlesPerCluster );
-
-    ExpandBoundingBox( boundingBoxMin, boundingBoxMax, position );
-  }
-
-
-  Eigen::Vector3f center = ( boundingBoxMax + boundingBoxMin ) * 0.5f;
-  float radius = ( boundingBoxMax - center ).norm( );
-
-  camera.TargetPivotRadius( center, radius );
-
-
-  Sorter sorter;
-  particleSystem->sorter( &sorter );
-
-  GLRenderer renderer;
-  renderer.glRenderProgram( &program );
-  particleSystem->renderer( &renderer );
-
-}
 
 void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+  camera.Anim( );
 
   particleSystem->Update( 0.1f );
   particleSystem->UpdateCameraDistances( );
@@ -326,6 +269,94 @@ void mouseMoveFunc( int xCoord, int yCoord )
     mxCoord = xCoord;
     myCoord = yCoord;
   }
+}
+
+using namespace prefr;
+void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
+{
+  particleSystem = new ParticleSystem( maxParticles, &camera );
+
+  Model* model1 = new Model( 3.0f, 10.0f );
+  model1->color.Insert( 0.0f, glm::vec4( 1.0f, 1.0f, 0.0f, 0.15f ));
+  model1->color.Insert( 0.70f, glm::vec4( 1.0f, 0.0f, 0.0f, 0.05f ));
+  model1->color.Insert( 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 0.0f ));
+
+  model1->size.Insert( 0.0f, 15.0f );
+  model1->size.Insert( 1.0f, 3.0f );
+
+  model1->velocity.Insert( 0.0f, 5.0f);
+  model1->velocity.Insert( 1.0f, 8.0f);
+  particleSystem->AddModel( model1 );
+
+  Model* model2 = new Model( 5.0f, 10.0f );
+  model2->color.Insert( 0.0f, glm::vec4( 0.0f, 1.0f, 1.0f, 0.15f ));
+  model2->color.Insert( 1.0f, glm::vec4( 0.0f, 0.0f, 1.0f, 0.05f ));
+
+  model2->size.Insert( 0.0f, 10.0f );
+  model2->size.Insert( 1.0f, 3.0f );
+
+  model2->velocity.Insert( 0.0f, 5.0f);
+  model2->velocity.Insert( 1.0f, 30.0f);
+  particleSystem->AddModel( model2 );
+
+  Updater* updater = new Updater( );
+  particleSystem->AddUpdater( updater );
+
+  Cluster* cluster;
+  SphereSource* source;
+
+  unsigned int particlesPerCluster = maxParticles / maxClusters;
+
+
+
+  Eigen::Vector3f boundingBoxMin( std::numeric_limits< float >::max( ),
+                                  std::numeric_limits< float >::max( ),
+                                  std::numeric_limits< float >::max( ));
+  Eigen::Vector3f boundingBoxMax( std::numeric_limits< float >::min( ),
+                                  std::numeric_limits< float >::min( ),
+                                  std::numeric_limits< float >::min( ));
+
+  for( unsigned int i = 0; i < maxClusters; ++i )
+  {
+    glm::vec3 position( 100 *  sinf( ( i ) / 10.0f ),
+                        100 *  sinf( ( i + 5 ) / 20.0f ),
+                        i * 10 );
+
+    cluster = new Cluster( );
+    source = new SphereSource( 0.3f, position );
+    cluster->source( source );
+    cluster->updater( updater );
+    cluster->model( i % 2 == 0 ? model1 : model2 );
+
+    particleSystem->AddSource( source );
+    particleSystem->AddCluster( cluster,
+                                particlesPerCluster * i,
+                                particlesPerCluster );
+
+    ExpandBoundingBox( boundingBoxMin, boundingBoxMax, position );
+  }
+
+
+  Eigen::Vector3f center = ( boundingBoxMax + boundingBoxMin ) * 0.5f;
+  float radius = ( boundingBoxMax - center ).norm( );
+  radius += 50;
+
+  camera.TargetPivotRadius( center, radius );
+
+
+  Sorter* sorter = new Sorter( );
+  particleSystem->sorter( sorter );
+
+  GLRenderer* renderer = new GLRenderer( );
+  renderer->glRenderProgram( &program );
+  particleSystem->renderer( renderer );
+
+#ifdef PREFR_USE_OPENMP
+  particleSystem->parallel( true );
+#endif
+
+  particleSystem->run( true );
+
 }
 
 
