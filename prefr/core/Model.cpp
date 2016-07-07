@@ -19,51 +19,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
-
-#include <prefr/api.h>
-
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#include "Model.h"
 
 namespace prefr
 {
+  Model::Model()
+  : minLife( 0.0f )
+  , maxLife( 0.0f )
+  , lifeInterval( 0.0f )
+  , lifeNormalization( 1.0f )
+  , dispersion( 0.0f )
+  {
+  }
 
-  class GLRenderer : public Renderer
+  Model::Model(float min, float max )
+  : dispersion( 0.0f )
+  {
+    SetLife(min, max);
+  }
+
+  Model::~Model()
   {
 
-  public:
+  }
 
-    PREFR_API
-    GLRenderer( );
-
-    PREFR_API
-    virtual ~GLRenderer();
-
-    PREFR_API
-    virtual void SetupRender( void );
-
-    PREFR_API
-    virtual void Paint( void ) const;
-
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
-
-  protected:
-
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
-  };
-
-
+  void Model::SetLife(float min, float max)
+  {
+    minLife = min;
+    maxLife = max;
+    lifeInterval = maxLife - minLife;
+    lifeNormalization = 1.0f/maxLife;
+  }
 }
-
-
-
-
-#endif /* __PREFR__GL_RENDERER__ */

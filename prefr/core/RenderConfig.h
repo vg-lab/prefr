@@ -17,53 +17,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
-
-#include <prefr/api.h>
-
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#ifndef __PREFR__RENDER_CONFIG__
+#define __PREFR__RENDER_CONFIG__
 
 namespace prefr
 {
 
-  class GLRenderer : public Renderer
+  class RenderConfig
   {
-
   public:
 
-    PREFR_API
-    GLRenderer( );
+    RenderConfig( unsigned int )
+    : aliveParticles( 0 )
+    { }
 
-    PREFR_API
-    virtual ~GLRenderer();
+    virtual ~RenderConfig( ){ }
 
-    PREFR_API
-    virtual void SetupRender( void );
+    unsigned int aliveParticles;
 
-    PREFR_API
-    virtual void Paint( void ) const;
-
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
-
-  protected:
-
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
   };
-
 
 }
 
 
-
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* RENDERCONFIG_H_ */

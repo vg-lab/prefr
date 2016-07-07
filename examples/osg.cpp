@@ -1,30 +1,28 @@
 /*
- * osg.cpp
+ * Copyright (c) 2014-2016 GMRV/URJC.
  *
- *  Created on: 12/11/2014
- *      Author: sgalindo
+ * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ *
+ * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-
 
 #include <shaderPath.h>
 
-#include <prefr/ParticleSystem.h>
-#include <prefr/OSG/OSGDefaultParticleSystem.h>
-#include "../prefr/Model.h"
-#include "../prefr/OSG/OSGRenderer.h"
-#include "../prefr/Sorter.h"
-#include "../prefr/Source.h"
-#include "../prefr/Updater.h"
-
-#if (PREFR_USE_CUDA)
-#include <prefr/cuda/ThrustParticleSorter.cuh>
-//  #include <prefr/cuda/CUDAParticleSystem.cuh>
-//  #include <prefr/cuda/GLCUDAParticleRenderer.cuh>
-#else
-//  #include <prefr/OSG/OSGDefaultParticleSystem.h>
-//  #include <prefr/OSG/OSGDefaultParticleSorter.h>
-//  #include <prefr/OSG/OSGDefaultParticleRenderer.h>
-#endif
+#include <prefr/prefr.h>
 
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/Viewer>
@@ -36,225 +34,133 @@
 #include <osgDB/FileUtils>
 
 
-using namespace prefr;
-
-//#if (particles_WITH_CUDA)
-//  CUDAParticleSystem* ps;
-//#else
-//  OSGDefaultParticleSystem* ps;
-//#endif
-
-OSGDefaultParticleSystem* ps;
-
-void initOpenGL(osg::GraphicsContext* context,
-                GLint& maxNumUniforms,
-                GLint& maxUniformBlockSize)
+int main( int argc, char** argv )
 {
+  prefr::OSGManager* manager;
+  prefr::ParticleSystem* particleSystem;
 
-  context->realize();
-  context->makeCurrent();
-  maxNumUniforms = 0;
-  glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &maxNumUniforms);
-  maxUniformBlockSize = 0;
-  glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
+  prefr::Cluster* cluster;
+  prefr::Model* model;
+  prefr::PointSource* source;
 
-  // init glew
-  glewInit();
-  context->releaseContext();
+  prefr::Updater* updater;
+  prefr::Sorter* sorter;
+  prefr::Renderer* renderer;
 
-}
+  unsigned int maxParticles = 10;
+  unsigned int maxClusters = 1;
 
-int main(int argc, char** argv)
-{
-  osg::ref_ptr<osgViewer::Viewer> viewer = new osgViewer::Viewer;
+  std::string vertPath;
+  std::string fragPath;
 
-  viewer->setUpViewInWindow(100, 100, 800, 600);
+  if( argc >= 2 )
+    maxParticles = atoi( argv[ 1 ] );
 
-  // get window and set name
+  if( argc >= 3 )
+    maxClusters = atoi( argv[ 2 ] );
+
+  particleSystem = new prefr::ParticleSystem( maxParticles );
+
+  // Configure particle system
+
+  // Create model and define particles behavior
+  model = new prefr::Model( 3.0f, 5.0f );
+  model->color.Insert( 0.0f, (glm::vec4(0, 0, 1, 0.2)));
+  model->color.Insert( 0.65f, (glm::vec4(0, 1, 0, 0.2)));
+  model->color.Insert( 1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
+
+  model->velocity.Insert( 0.0f, 3.0f );
+  model->velocity.Insert( 1.0f, 5.0f );
+
+  model->size.Insert( 0.0f, 1.0f );
+  std::cout << "Created model." << std::endl;
+
+  particleSystem->AddModel( model );
+
+  updater = new prefr::Updater( );
+  std::cout << "Created updater." << std::endl;
+
+  sorter = new prefr::Sorter( );
+  std::cout << "Created sorter." << std::endl;
+
+  renderer = new prefr::OSGRenderer( );
+  std::cout << "Created OSG renderer." << std::endl;
+
+  particleSystem->AddUpdater(updater);
+  particleSystem->sorter(sorter);
+  particleSystem->renderer(renderer);
+
+
+  unsigned int particlesPerCluster = maxParticles / maxClusters;
+
+  std::cout << "Creating " << maxClusters
+            << " clusters with " << particlesPerCluster << std::endl;
+
+  for ( unsigned int i = 0; i < maxClusters; i++ )
+  {
+    source = new prefr::PointSource( 1.f, glm::vec3( i * 10, 0, 0 ));
+    particleSystem->AddSource(source);
+
+    cluster = new prefr::Cluster( );
+    cluster->source( source );
+    cluster->updater( updater );
+    cluster->model( model );
+
+    particleSystem->AddCluster( cluster,
+                                i * particlesPerCluster,
+                                particlesPerCluster );
+  }
+
+
+
+  // Configure OSG viewer and camera
+  osg::ref_ptr< osgViewer::Viewer > viewer = new osgViewer::Viewer;
+  viewer->setUpViewInWindow( 100, 100, 800, 600 );
+
+  // Get window and set name
   osgViewer::ViewerBase::Windows windows;
   viewer->getWindows(windows);
-  windows[0]->setWindowName("OpenSceneGraph Instancing Example");
+  windows[ 0 ]->setWindowName( "OpenSceneGraph Instancing Example" );
 
-  // get context to determine max number of uniforms in vertex shader
+  // Get context to determine max number of uniforms in vertex shader
   osgViewer::ViewerBase::Contexts contexts;
-  viewer->getContexts(contexts);
-//  GLint maxNumUniforms = 0;
-//  GLint maxUniformBlockSize = 0;
-//  initOpenGL(contexts[0], maxNumUniforms, maxUniformBlockSize);
+  viewer->getContexts( contexts );
 
-
-  int maxParticles = 10;
-  unsigned int maxEmitters = 1;
-
-  if (argc >= 2)
-    maxParticles = atoi(argv[1]);
-
-  if (argc >= 3)
-    maxEmitters = atoi(argv[2]);
-
-
-//#if (particles_WITH_CUDA == 1)
-//  ps = new CUDAParticleSystem(10, maxParticles, true);
-//#else
-//  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
-
-  ps = new OSGDefaultParticleSystem(10, maxParticles, true);
-
-  if (!viewer->getCameraManipulator())
-    viewer->setCameraManipulator(new osgGA::TrackballManipulator, true);
-
-  std::cout << "No se ha encontrado el manipulador de cámara" << std::endl;
-
-
-  ps->SetCameraManipulator(viewer);
-
-
-
-  Model* prototype = new Model(3.0f, 5.0f, ParticleCollection(ps->particles, 0, maxParticles / 2));
-  prototype->color.Insert(0.0f, (glm::vec4(0, 0, 1, 0.2)));
-  prototype->color.Insert(0.65f, (glm::vec4(0, 1, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(0, 0.5, 0.5, 0)));
-
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
-
-  prototype->size.Insert(0.0f, 1.0f);
-
-  ps->AddPrototype(prototype);
-
-  prototype = new Model(3.0f, 5.0f, ParticleCollection(ps->particles, maxParticles / 2, maxParticles));
-
-  prototype->color.Insert(0.0f, (glm::vec4(1, 1, 0, 0.2)));
-  prototype->color.Insert(0.75f, (glm::vec4(1, 0, 0, 0.2)));
-  prototype->color.Insert(1.0f, (glm::vec4(1, 1, 1, 0)));
-
-  prototype->velocity.Insert(0.0f, 3.0f);
-  prototype->velocity.Insert(1.0f, 5.0f);
-
-  prototype->size.Insert(0.0f, 1.0f);
-
-  ps->AddPrototype(prototype);
-
-  std::cout << "Created prototype." << std::endl;
-
-
-  PointSource* emissionNode;
-
-  int particlesPerEmitter = maxParticles / maxEmitters;
-
-  std::cout << "Creating " << maxEmitters << " emitters with " << particlesPerEmitter << std::endl;
-
-  for (unsigned int i = 0; i < maxEmitters; i++)
-  {
-    std::cout << "Creating emission node " << i << " from " << i * particlesPerEmitter << " to " << i * particlesPerEmitter + particlesPerEmitter << std::endl;
-
-    emissionNode =
-        new PointSource(ParticleCollection(ps->particles,
-                                                 i * particlesPerEmitter,
-                                                 i * particlesPerEmitter + particlesPerEmitter),
-                              glm::vec3(i * 10, 0, 0));
-
-    ps->AddEmissionNode(emissionNode);
-  }
-
-  Emitter* emitter = new Emitter(*ps->particles, 0.3f, true);
-  ps->AddEmitter(emitter);
-
-  std::cout << "Created emitter" << std::endl;
-  Updater* updater = new Updater(*ps->particles);
-  std::cout << "Created updater" << std::endl;
-
-  Sorter* sorter;
-
-#if (PREFR_USE_CUDA)
-  sorter = new ThrustParticleSorter(*ps->particles);
-#else
-  sorter = new Sorter(*ps->particles);
-#endif
-
-  std::cout << "Created sorter" << std::endl;
-
-  OSGRenderer* renderer = new OSGRenderer(*ps->particles);
-
-  std::cout << "Created systems" << std::endl;
-
-  ps->AddUpdater(updater);
-  ps->Sorter(sorter);
-  ps->renderer(renderer);
-
-  std::string vertPath, fragPath;
-  fragPath = vertPath = std::string(PREFR_LIBRARY_BASE_PATH);
-  vertPath.append("OSG/shd/osg-vert.glsl");
-  fragPath.append("OSG/shd/osg-frag.glsl");
-  ps->ConfigureProgram(vertPath, fragPath);
-
-  ps->Start();
-
-  osg::ShapeDrawable* sd = new osg::ShapeDrawable(new osg::Box(osg::Vec3(0,0,0), 100));
-  osg::Geode* sdg = new osg::Geode;
-  sdg->addDrawable(sd);
-  sd->setColor(osg::Vec4(1,1,1,1));
-
-  osg::StateSet* ss = sdg->getOrCreateStateSet();
-  ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-  ss->setAttributeAndModes(
-    new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
-                         osg::PolygonMode::LINE));
-
-
-
-  osg::Group* groupNode = new osg::Group;
-
-  groupNode->addChild(ps->rootNode);
-  groupNode->addChild(sdg);
-
-  if (argc >= 4)
-  {
-    std::string filespath = std::string(argv[3]);
-    osgDB::DirectoryContents files = osgDB::getDirectoryContents(filespath);
-
-    osg::Group* meshes = new osg::Group;
-    osg::Node* node;
-
-    for (unsigned int i = 2; i < 10 /*files.size()/2*/; i++)
-    {
-      node = osgDB::readNodeFile(osgDB::findFileInDirectory(files[i], filespath));
-
-      std::cout << files[i] << std::endl;
-      if (!node)
-        std::cout << "null node" << std::endl;
-      else
-        meshes->addChild(node);
-    }
-
-    ss = meshes->getOrCreateStateSet();
-    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    ss->setAttributeAndModes(
-      new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,
-                           osg::PolygonMode::LINE));
-
-    groupNode->addChild(meshes);
-  }
-
-  std::cout << "Finished loading." << std::endl;
-//  osg::Geode* geode = new osg::Geode;
-//  geode->addDrawable(ps);
-
-#define PRINT_VEC3F( VEC )                                              \
-  std::cout << "(" <<  VEC.x() << "," << VEC.y() << "," << VEC.z() << ")" << std::endl;
-
-  viewer->setSceneData(groupNode);
-
-  viewer->getCameraManipulator()->setAutoComputeHomePosition(true);
-  viewer->getCameraManipulator()->home(0.0);
+  if( !viewer->getCameraManipulator( ))
+    viewer->setCameraManipulator( new osgGA::TrackballManipulator, true );
 
   viewer->addEventHandler( new osgViewer::StatsHandler );
 
-  osg::State* cameraState = viewer->getCamera()->getGraphicsContext()->getState();
-  cameraState->setUseModelViewAndProjectionUniforms(true);
+  osg::State* cameraState =
+      viewer->getCamera( )->getGraphicsContext( )->getState( );
+
+  cameraState->setUseModelViewAndProjectionUniforms( true );
 //  cameraState->setUseVertexAttributeAliasing(true);
+
+  // Configure OSG Manager
+  manager = new prefr::OSGManager( *particleSystem );
+
+  // Set camera manipulator for automatically consider OSG camera
+  manager->SetCameraManipulator( viewer );
+
+  // Configure scene
+  osg::Group* groupNode = new osg::Group;
+  std::cout << manager->node( ) << std::endl;
+  groupNode->addChild( manager->node( ));
+  viewer->setSceneData( groupNode );
+
+  // Adjust camera to content
+  viewer->getCameraManipulator( )->setAutoComputeHomePosition( true );
+  viewer->getCameraManipulator( )->home( 0.0 );
+
+  // Load shaders
+  fragPath = vertPath = std::string( PREFR_LIBRARY_BASE_PATH );
+  vertPath.append( "OSG/shd/osg-vert.glsl" );
+  fragPath.append( "OSG/shd/osg-frag.glsl" );
+  manager->ConfigureProgram( vertPath, fragPath );
+
+  particleSystem->Start( );
 
   return viewer->run();
 
 }
-

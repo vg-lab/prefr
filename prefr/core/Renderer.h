@@ -19,51 +19,58 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
+#ifndef __PREFR__RENDERER__
+#define __PREFR__RENDERER__
 
-#include <prefr/api.h>
+// #include <particles/config.h>
+#include "../utils/types.h"
 
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#include "Particles.h"
+
+#include "DistanceArray.hpp"
+#include "RenderConfig.h"
 
 namespace prefr
 {
 
-  class GLRenderer : public Renderer
+  class Renderer
   {
+    friend class ParticleSystem;
 
   public:
 
-    PREFR_API
-    GLRenderer( );
+    Renderer( );
 
-    PREFR_API
-    virtual ~GLRenderer();
+    virtual ~Renderer();
 
-    PREFR_API
-    virtual void SetupRender( void );
+    virtual void SetupRender( void ) = 0;
 
-    PREFR_API
-    virtual void Paint( void ) const;
+    virtual void Paint( void ) const = 0;
 
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
+    RenderConfig* renderConfig( void ) const;
 
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
+    virtual void distanceArray( DistanceArray* distanceArray );
+
 
   protected:
 
-    void init( void );
+    virtual void init( void ) = 0;
 
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
+    void particles( const ParticleRange& particles );
+
+    ParticleCollection _particles;
+
+    DistanceArray* _distances;
+    RenderConfig* _renderConfig;
+
+#ifdef PREFR_USE_OPENMP
+    bool _parallel;
+#endif
+
   };
-
 
 }
 
 
 
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* __PREFR__RENDERER__ */

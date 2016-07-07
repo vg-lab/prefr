@@ -19,51 +19,55 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
+#ifndef __PREFR__MODEL__
+#define __PREFR__MODEL__
 
 #include <prefr/api.h>
 
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#include "Particles.h"
+#include "../utils/InterpolationSet.hpp"
+
 
 namespace prefr
 {
 
-  class GLRenderer : public Renderer
+  typedef ::utils::InterpolationSet<float> vectortfloat;
+  typedef ::utils::InterpolationSet<glm::vec3> vectortvec3;
+  typedef ::utils::InterpolationSet<glm::vec4> vectortvec4;
+
+  class Model
   {
+    friend class Updater;
 
   public:
 
-    PREFR_API
-    GLRenderer( );
+    PREFR_API Model(void);
+    PREFR_API Model(float min, float max );
 
-    PREFR_API
-    virtual ~GLRenderer();
+    PREFR_API virtual ~Model();
 
-    PREFR_API
-    virtual void SetupRender( void );
+    PREFR_API void SetLife(float min, float max);
 
-    PREFR_API
-    virtual void Paint( void ) const;
+    vectortfloat size;
+    vectortfloat velocity;
+    vectortvec4 color;
 
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
+protected:
 
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
+    float minLife;
+    float maxLife;
 
-  protected:
+    float lifeInterval;
+    float lifeNormalization;
+    float dispersion;
 
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
   };
+
+  typedef Model tprototype;
+  typedef tprototype* tprototype_ptr;
+  typedef std::vector<tprototype_ptr> ModelsArray;
 
 
 }
 
-
-
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* __PREFR__MODEL__ */

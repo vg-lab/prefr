@@ -1,19 +1,31 @@
 /*
- * DefaultParticleRenderConfig.h
+ * Copyright (c) 2014-2016 GMRV/URJC.
  *
- *  Created on: 15/10/2014
- *      Author: sergio
+ * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ *
+ * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3.0 as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
-
-#ifndef OSGDEFAULTPARTICLERENDERCONFIG_H_
-#define OSGDEFAULTPARTICLERENDERCONFIG_H_
+#ifndef __PREFR__OSG_RENDERER__
+#define __PREFR__OSG_RENDERER__
 
 #include <prefr/api.h>
-#include "../Renderer.h"
+
+#include "../core/Renderer.h"
 #include "OSGRenderConfig.h"
-#ifndef PREFR_SKIP_GLEW_INCLUDE
-#include <GL/glew.h>
-#endif
 
 #ifdef PREFR_USE_OPENSCENEGRAPH
 
@@ -24,17 +36,20 @@ namespace prefr
   {
   public:
 
-    int currentAliveParticles;
+    PREFR_API
+    OSGRenderer( );
 
-    PREFR_API OSGRenderer( );
+    PREFR_API
+    virtual ~OSGRenderer();
 
-    PREFR_API virtual ~OSGRenderer();
+    PREFR_API
+    void init( );
 
-    PREFR_API void osgCompileGLObjects(osg::RenderInfo& renderInfo) const;
+    PREFR_API
+    virtual void SetupRender( void );
 
-    PREFR_API virtual void SetupRender(unsigned int aliveParticles = 0);
-
-    PREFR_API virtual void Paint(unsigned int aliveParticles = 0) const;
+    PREFR_API
+    virtual void Paint( void ) const;
 
   };
 
@@ -44,4 +59,4 @@ namespace prefr
 #endif
 
 
-#endif /* DEFAULTPARTICLERENDERCONFIG_H_ */
+#endif /* __PREFR__OSG_RENDERER__ */

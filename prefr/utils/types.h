@@ -19,51 +19,45 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
+#ifndef __PREFR__TYPES__
+#define __PREFR__TYPES__
 
-#include <prefr/api.h>
+// types.h should be the first file included to ensure
+// GLEW is included before any other GL file
+#ifndef PREFR_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
+#endif
 
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+// CUDA include
+#include <prefr/defines.h>
+#if (PREFR_USE_CUDA)
+  #include <cuda.h>
+#endif
 
-namespace prefr
-{
-
-  class GLRenderer : public Renderer
-  {
-
-  public:
-
-    PREFR_API
-    GLRenderer( );
-
-    PREFR_API
-    virtual ~GLRenderer();
-
-    PREFR_API
-    virtual void SetupRender( void );
-
-    PREFR_API
-    virtual void Paint( void ) const;
-
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
-
-  protected:
-
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
-  };
+// std includes
+#include <vector>
+#include <algorithm>
 
 
-}
+// math for windows includes
+#ifdef WIN32
+#define _USE_MATH_DEFINES
+#include <cmath>
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+// GLM includes
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+// PREFR include for type definitions
+#include "ElementCollection.hpp"
 
 
-
-
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* PREFR__TYPES__ */

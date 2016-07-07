@@ -19,51 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
-
-#include <prefr/api.h>
-
-#include "../core/Renderer.h"
-#include "GLRenderConfig.h"
+#include "Config.h"
+#include "GL/glew.h"
 
 namespace prefr
 {
 
-  class GLRenderer : public Renderer
+  bool Config::_initialized = false;
+
+  void Config::init( void )
   {
+    if ( !_initialized )
+    {
+      glewExperimental = GL_TRUE;
+      glewInit( );
+      _initialized = true;
+    }
+  }
 
-  public:
+  bool Config::isInitialized( void )
+  {
+    return _initialized;
+  }
 
-    PREFR_API
-    GLRenderer( );
-
-    PREFR_API
-    virtual ~GLRenderer();
-
-    PREFR_API
-    virtual void SetupRender( void );
-
-    PREFR_API
-    virtual void Paint( void ) const;
-
-    virtual void glRenderProgram( IGLRenderProgram* renderProgram );
-
-    PREFR_API
-    virtual void distanceArray( DistanceArray* distances );
-
-  protected:
-
-    void init( void );
-
-    GLRenderConfig* _glRenderConfig;
-    IGLRenderProgram* _glRenderProgram;
-  };
-
-
-}
-
-
-
-
-#endif /* __PREFR__GL_RENDERER__ */
+} // namespace prefr
