@@ -63,7 +63,7 @@ if ( OPENMP_FOUND )
 endif ( )
 
 if ( PREFR_WITH_OPENSCENEGRAPH )
-	common_find_package( OpenSceneGraph COMPONENTS
+	common_find_package( OpenSceneGraph 3.2 EXACT COMPONENTS
     osgViewer osgGA osgDB osgUtil osgQt SYSTEM )
 	if ( OPENSCENEGRAPH_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )

@@ -113,6 +113,7 @@ namespace prefr
     PREFR_API
     virtual void UpdateCameraDistances( const glm::vec3& cameraPosition );
 
+    PREFR_API
     virtual void UpdateCameraDistances( void );
 
     // Particle render updating method
@@ -135,6 +136,7 @@ namespace prefr
     virtual unsigned int aliveParticles( void ) const;
 
 #ifdef PREFR_USE_OPENMP
+    PREFR_API
     void parallel( bool parallelProcessing );
 #endif
 
