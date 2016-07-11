@@ -181,7 +181,7 @@ namespace prefr
 
     _aliveParticles = 0;
 
-#ifndef PREFR_USE_OPENMP
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
 
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
@@ -195,7 +195,7 @@ namespace prefr
       source->PrepareFrame( deltaTime );
     }
 
-#ifndef PREFR_USE_OPENMP
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
     for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
     {
@@ -217,7 +217,7 @@ namespace prefr
     }
 
     // For each cluster....
-#ifndef PREFR_USE_OPENMP
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
     for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
     {
@@ -261,7 +261,7 @@ namespace prefr
     }
 
     // For each source...
-#ifndef PREFR_USE_OPENMP
+#ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
 
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
@@ -278,6 +278,7 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->aliveParticles = _aliveParticles;
 
+    Log::log( std::string( "UPDATE - Alive particles: ") + std::to_string( _aliveParticles ));
   }
 
   void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
@@ -328,18 +329,26 @@ namespace prefr
     return _aliveParticles;
   }
 
-#ifdef PREFR_USE_OPENMP
-    void ParticleSystem::parallel( bool parallelProcessing )
-    {
-      _parallel = parallelProcessing;
+  void ParticleSystem::renderDeadParticles( bool renderDead )
+  {
+    _renderDeadParticles = renderDead;
+  }
 
-      if( _sorter )
-        _sorter->_parallel = parallelProcessing;
+  void ParticleSystem::parallel( bool parallelProcessing )
+  {
+    _parallel = parallelProcessing;
 
-      if( _renderer )
-        _renderer->_parallel = parallelProcessing;
-    }
-#endif
+    if( _sorter )
+      _sorter->_parallel = parallelProcessing;
+
+    if( _renderer )
+      _renderer->_parallel = parallelProcessing;
+  }
+
+  const ClustersArray& ParticleSystem::clusters( void ) const
+  {
+    return _clusters;
+  }
 
 }
 

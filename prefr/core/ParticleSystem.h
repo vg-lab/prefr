@@ -42,6 +42,8 @@
 
 #include <reto/reto.h>
 
+#include "../utils/Log.h"
+
 namespace prefr
 {
 
@@ -135,10 +137,11 @@ namespace prefr
     PREFR_API
     virtual unsigned int aliveParticles( void ) const;
 
-#ifdef PREFR_USE_OPENMP
-    PREFR_API
-    void parallel( bool parallelProcessing );
-#endif
+    virtual void renderDeadParticles( bool renderDead );
+
+    PREFR_API void parallel( bool parallelProcessing );
+
+    const ClustersArray& clusters( void ) const;
 
   protected:
 
@@ -177,9 +180,7 @@ namespace prefr
 
     bool _useExternalCamera;
 
-#ifdef PREFR_USE_OPENMP
     bool _parallel;
-#endif
   };
 
 }

@@ -68,13 +68,13 @@ namespace prefr
     PREFR_API bool inactiveKillParticles( void ) const;
     PREFR_API void inactiveKillParticles( bool killParticles );
 
-    virtual void killParticles( void );
+    virtual void killParticles( bool changeState = true );
 
     unsigned int aliveParticles;
 
   protected:
 
-    ParticleRange _particlesArray;
+    ParticleRange _particles;
 
     unsigned int _size;
 

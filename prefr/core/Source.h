@@ -68,13 +68,15 @@ namespace prefr
     PREFR_API virtual glm::vec3 GetEmissionPosition() = 0;
     PREFR_API virtual glm::vec3 GetEmissionVelocityDirection() = 0;
 
-    Cluster* cluster( void );
-    void cluster( Cluster* cluster_ );
+    PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
+
+    PREFR_API Cluster* cluster( void );
+    PREFR_API void cluster( Cluster* cluster_ );
 
   protected:
 
-    void InitializeParticles( void );
-    void PrepareParticles( void );
+    virtual void InitializeParticles( void );
+    virtual void PrepareParticles( void );
 
     Cluster* _cluster;
 
@@ -116,10 +118,10 @@ namespace prefr
 
     PREFR_API virtual bool Emits( ) const;
 
-    PREFR_API virtual void CheckEmissionEnd();
+    PREFR_API virtual void CheckEmissionEnd( );
 
     PREFR_API virtual void PrepareFrame( const float& deltaTime );
-    PREFR_API virtual void CloseFrame();
+    PREFR_API virtual void CloseFrame( );
 
   };
 
@@ -129,14 +131,14 @@ namespace prefr
   {
   public:
 
-    PREFR_API PointSource( float emissionRate_, glm::vec3 position_ );
+    PREFR_API PointSource( float emissionRate_, const glm::vec3& position_ );
 
     PREFR_API virtual ~PointSource();
 
-    PREFR_API virtual void SetEmissionPosition(float x, float y, float z);
+    PREFR_API virtual void SetEmissionPosition( float x, float y, float z );
 
-    PREFR_API virtual glm::vec3 GetEmissionPosition();
-    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual glm::vec3 GetEmissionPosition( );
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
   };
 
   class SphereSource : public PointSource
@@ -148,13 +150,13 @@ namespace prefr
 
     glm::vec3 velocity;
 
-    PREFR_API SphereSource( float emissionRate_, glm::vec3 position_,
-                                  float radius_ = 0, float angle_ = 360 );
+    PREFR_API SphereSource( float emissionRate_, const glm::vec3& position_,
+                            float radius_ = 0, float angle_ = 360 );
 
-    PREFR_API virtual ~SphereSource();
+    PREFR_API virtual ~SphereSource( );
 
-    PREFR_API virtual glm::vec3 GetEmissionPosition();
-    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection();
+    PREFR_API virtual glm::vec3 GetEmissionPosition( );
+    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
 
   };
 

@@ -10,7 +10,7 @@ if( PREFR_WITH_EXAMPLES )
 
     set( PREFROGL_HEADERS )
     set( PREFROGL_SOURCES ogl.cpp )
-    set( PREFROGL_LINK_LIBRARIES PReFr )
+    set( PREFROGL_LINK_LIBRARIES prefr )
     common_application( prefrOGL )
 
   endif( GLUT_FOUND )
@@ -19,7 +19,7 @@ if( PREFR_WITH_EXAMPLES )
 
     set( PREFROSG_HEADERS )
     set( PREFROSG_SOURCES osg.cpp )
-    set( PREFROSG_LINK_LIBRARIES PReFr )
+    set( PREFROSG_LINK_LIBRARIES prefr )
     common_application( prefrOSG )
 
   endif( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND)

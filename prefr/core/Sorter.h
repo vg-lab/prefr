@@ -87,9 +87,8 @@ protected:
 
     unsigned int _aliveParticles;
 
-#ifdef PREFR_USE_OPENMP
     bool _parallel;
-#endif
+
   };
 }
 

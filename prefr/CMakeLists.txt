@@ -81,6 +81,9 @@ if (OPENSCENEGRAPH_FOUND)
   set(PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES})
 endif()
 
+set( PREFR_INCLUDE_NAME prefr )
+set( PREFR_NAMESPACE prefr )
+
 if (CUDA_FOUND)
   set(CUDA_PROPAGATE_HOST_FLAGS OFF)
   list(APPEND CUDA_NVCC_FLAGS -std=c++11 )
@@ -91,9 +94,9 @@ if (CUDA_FOUND)
     list(APPEND CUDA_NVCC_FLAGS -arch=sm_11)
   endif()
 
-  cuda_common_library( PReFr )
+  cuda_common_library( prefr )
 else()
 
-  common_library( PReFr )
+  common_library( prefr )
 
 endif()

@@ -46,6 +46,11 @@ namespace prefr
     PREFR_API virtual ~Model( );
 
     PREFR_API void setLife( float min, float max );
+    PREFR_API float minLife( void ) const;
+    PREFR_API float maxLife( void ) const;
+
+    PREFR_API float lifeInterval( void );
+    PREFR_API float inverseMaxLife( void );
 
     vectortfloat size;
     vectortfloat velocity;

@@ -26,7 +26,7 @@ namespace prefr
 
   Cluster::Cluster( )
   : aliveParticles( 0 )
-  , _particlesArray( )
+  , _particles( )
   , _size( 0 )
   , _source( nullptr )
   , _model( nullptr )
@@ -73,12 +73,12 @@ namespace prefr
 
   ParticleRange Cluster::particles( void ) const
   {
-    return _particlesArray;
+    return _particles;
   }
 
   void Cluster::particles( const ParticleRange& particleArray )
   {
-    _particlesArray = particleArray;
+    _particles = particleArray;
   }
 
   bool Cluster::active( void ) const
@@ -101,14 +101,28 @@ namespace prefr
     _inactiveKillParticles = killParticles_;
   }
 
-  void Cluster::killParticles( void )
+  void Cluster::killParticles( bool changeState )
   {
-    for( tparticle particle = _particlesArray.begin( );
-         particle != _particlesArray.end( );
+    _source->_deadParticles.clear( );
+
+    for( tparticle particle = _particles.begin( );
+         particle != _particles.end( );
          particle++ )
     {
+//      if( !particle.alive( ) )
+//        continue;
+
       particle.life( 0.0f );
-      particle.alive( false );
+
+      if( changeState )
+      {
+        particle.alive( false );
+
+        #pragma omp critical
+        {
+          _source->_deadParticles.push_back( particle.id( ));
+        }
+      }
     }
   }
 

@@ -392,6 +392,10 @@ int main( int argc, char** argv )
   if ( argc >= 3 )
     maxClusters = atoi( argv[ 2 ] );
 
+  bool parallel = false;
+  if( argc >= 4 && strcmp( argv[ 3 ], "-p"  ) == 0)
+    parallel = true;
+
   std::string vertPath;
   std::string fragPath;
   vertPath = fragPath = std::string( PREFR_LIBRARY_BASE_PATH );
@@ -400,6 +404,8 @@ int main( int argc, char** argv )
   initShader( vertPath.c_str( ), fragPath.c_str( ));
 
   InitParticleSystem( maxParticles, maxClusters );
+
+  particleSystem->parallel( parallel );
 
   glutMainLoop( );
 

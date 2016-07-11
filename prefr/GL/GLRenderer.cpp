@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+#include "../utils/Log.h"
+
 namespace prefr
 {
 
@@ -191,6 +193,8 @@ namespace prefr
                      &_glRenderConfig->_particleColors->front( ));
 
     glBindVertexArray( 0 );
+
+    Log::log( std::string( "SETUP - Alive particles: ") + std::to_string( _glRenderConfig->aliveParticles ));
   }
 
   void GLRenderer::Paint( void ) const

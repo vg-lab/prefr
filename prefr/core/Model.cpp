@@ -50,4 +50,25 @@ namespace prefr
     _lifeInterval = _maxLife - _minLife;
     _lifeNormalization = 1.0f/_maxLife;
   }
+
+  float Model::minLife( void ) const
+  {
+    return _minLife;
+  }
+
+  float Model::maxLife( void ) const
+  {
+    return _maxLife;
+  }
+
+  float Model::inverseMaxLife( void )
+  {
+    return _lifeNormalization;
+  }
+
+  float Model::lifeInterval( void )
+  {
+    return _lifeInterval;
+  }
 }
+

@@ -37,9 +37,7 @@ namespace prefr
   , _emissionNodes( nullptr )
   , _distances( nullptr )
   , _aliveParticles( 0 )
-#ifdef PREFR_USE_OPENMP
   , _parallel( false )
-#endif
   {}
 
   Sorter::~Sorter()
@@ -75,6 +73,7 @@ namespace prefr
     std::sort( _distances->begin(), end, DistanceArray::sortDescending );
 
 
+    Log::log( std::string( "SORT - Alive particles: ") + std::to_string( _aliveParticles ));
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
@@ -105,6 +104,8 @@ namespace prefr
         }
       }
     }
+
+    Log::log( std::string( "CAMERA DIST - Alive particles: ") + std::to_string( _aliveParticles ));
 
   }
 

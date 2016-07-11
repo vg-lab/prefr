@@ -117,7 +117,7 @@ namespace prefr
       assert( _cluster );
 
       // Compute raw budget, as it can be zero along several consecutive frames
-      float rawBudget = deltaTime * _cluster->particles( ).size * _emissionRate;
+      float rawBudget = deltaTime * (float)_cluster->particles( ).size * _emissionRate;
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;
@@ -129,16 +129,7 @@ namespace prefr
       _emittedParticles = _particlesBudget -
           ( _particlesBudget - ( unsigned int ) _deadParticles.size( ));
 
-      // Fill dead pool for the emission for this frame
-      while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
-      {
-        assert( _particlesBudget >= 0 );
-
-        _particlesToEmit.push_back( _deadParticles.back( ));
-        _deadParticles.pop_back( );
-
-        --_particlesBudget;
-      }
+      PrepareParticles( );
     }
 
     void Source::IncreaseAlive()
@@ -167,6 +158,11 @@ namespace prefr
     {
       _particlesBudget -= decrement;
       _emittedParticles += decrement;
+    }
+
+    void Source::maxEmissionCycles( unsigned int cycles )
+    {
+      _maxEmissionCycles = cycles;
     }
 
 
@@ -216,6 +212,30 @@ namespace prefr
       {
         if( !particle.alive( ))
           _deadParticles.push_back( particle.id( ));
+      }
+    }
+
+    void Source::PrepareParticles( void )
+    {
+      if( _emissionRate <= 0.0f )
+      {
+        for( auto particle : _deadParticles )
+          _particlesToEmit.push_back( particle );
+
+        _deadParticles.clear( );
+      }
+      else
+      {
+        // Fill dead pool for the emission for this frame
+        while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
+        {
+          assert( _particlesBudget >= 0 );
+
+          _particlesToEmit.push_back( _deadParticles.back( ));
+          _deadParticles.pop_back( );
+
+          --_particlesBudget;
+        }
       }
     }
 
@@ -282,8 +302,7 @@ namespace prefr
     //***********************************************************
 
 
-    PointSource::PointSource( float emissionRate_,
-                                          glm::vec3 position_)
+    PointSource::PointSource( float emissionRate_, const glm::vec3& position_)
     : TimedSource( emissionRate_, position_ )
     {}
 
@@ -307,8 +326,8 @@ namespace prefr
 
 
 
-    SphereSource::SphereSource( float emissionRate_, glm::vec3 position_,
-                                            float radius_, float angle_)
+    SphereSource::SphereSource( float emissionRate_, const glm::vec3& position_,
+                                float radius_, float angle_)
     : PointSource( emissionRate_, position_ )
     , radius( radius_ )
     , angle( glm::radians(angle_) )

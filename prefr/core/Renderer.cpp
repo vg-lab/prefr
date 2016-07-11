@@ -27,9 +27,7 @@ namespace prefr
   Renderer::Renderer( )
   : _distances( nullptr )
   , _renderConfig( nullptr )
-#ifdef PREFR_USE_OPENMP
   , _parallel( false )
-#endif
   {
 
   }
