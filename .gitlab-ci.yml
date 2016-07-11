@@ -7,8 +7,8 @@ Ubuntu:
   - date
   - hostname
   - uname -a
-  - export CMAKE_EXTRA_ARGS=-DPREFR_WITH_EXAMPLES=ON
-  - export CMAKE_EXTRA_TARGETS="test"
+  - export CMAKE_EXTRA_ARGS="-DPREFR_WITH_EXAMPLES=ON -DPREFR_WITH_OPENSCENEGRAPH=ON"
+  # - export CMAKE_EXTRA_TARGETS="test"
   - export BUILD_GENERATOR="Unix Makefiles"
   - bash .gitlabci.sh
  tags:
@@ -20,8 +20,9 @@ OSX:
   - date
   - hostname
   - uname -a
-  - export CMAKE_EXTRA_ARGS=-DPREFR_WITH_EXAMPLES=ON
-  - export CMAKE_EXTRA_TARGETS="test"
+  - module load OpenSceneGraph-3.2.1
+  - export CMAKE_EXTRA_ARGS="-DPREFR_WITH_EXAMPLES=ON -DPREFR_WITH_OPENSCENEGRAPH=ON -DGLUT_glut_LIBRARY=/usr/local/Cellar/freeglut/2.8.1/lib/libglut.dylib"
+  # - export CMAKE_EXTRA_TARGETS="test"
   - export BUILD_GENERATOR="Unix Makefiles"
   - bash .gitlabci.sh
  tags:
@@ -31,9 +32,11 @@ Win7:
  stage: build
  script:
   - call %ENVFILESDIR%\Boost-1.56-vs12-x64.bat
-  - set CMAKE_EXTRA_ARGS=-DGLEW_INCLUDE_DIR=c:\libs\glew-1.11.0\include -DGLEW_LIBRARY=c:\libs\glew-1.11.0\lib\Release/x64/glew32.lib -DGLM_ROOT_DIR=c:\libs\glm -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include -DPREFR_WITH_EXAMPLES=ON
-  - set CMAKE_EXTRA_TARGETS=RUN_TESTS
-  - set RUN_TESTS=1
+  - call %ENVFILESDIR%\eigen-3.1.2-vs12-x64.bat
+  - call %ENVFILESDIR%\OpenSceneGraph-3.2.1.bat
+  - set CMAKE_EXTRA_ARGS=-DGLEW_INCLUDE_DIR=c:\libs\glew-1.11.0\include -DGLEW_LIBRARY=c:\libs\glew-1.11.0\lib\Release/x64/glew32.lib -DGLM_ROOT_DIR=c:\libs\glm -DGLUT_glut_LIBRARY=c:\libs\freeglut\lib\x64\freeglut.lib -DGLUT_INCLUDE_DIR=c:\libs\freeglut\include -DPREFR_WITH_EXAMPLES=ON -DPREFR_WITH_OPENSCENEGRAPH=ON
+  # - set CMAKE_EXTRA_TARGETS=RUN_TESTS
+  # - set RUN_TESTS=1
   - set BUILD_GENERATOR=Visual Studio 12 Win64
   - set PATH=%PATH%;"c:\\Program Files (x86)\\Git\\bin"
   - bash.exe --login .gitlabci.sh

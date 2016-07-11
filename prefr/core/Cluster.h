@@ -22,6 +22,7 @@
 #ifndef __PREFR__CLUSTER__
 #define __PREFR__CLUSTER__
 
+#include <prefr/api.h>
 #include "Particles.h"
 #include "Source.h"
 #include "Model.h"
@@ -45,27 +46,27 @@ namespace prefr
     typedef std::pair< unsigned int, unsigned int > TBoundsUI;
     typedef std::pair< Particles::iterator, Particles::iterator > TBoundsIt;
 
-    Cluster( );
+    PREFR_API Cluster( );
 
-    virtual ~Cluster( void );
+    PREFR_API virtual ~Cluster( void );
 
-    Source* source( void ) const;
-    void source( Source* source );
+    PREFR_API Source* source( void ) const;
+    PREFR_API void source( Source* source );
 
-    Model* model( void ) const;
-    void model( Model* model );
+    PREFR_API Model* model( void ) const;
+    PREFR_API void model( Model* model );
 
-    Updater* updater( void ) const;
-    void updater( Updater* updater);
+    PREFR_API Updater* updater( void ) const;
+    PREFR_API void updater( Updater* updater);
 
-    ParticleRange particles( void ) const;
-    void particles( const ParticleRange& particleArray );
+    PREFR_API ParticleRange particles( void ) const;
+    PREFR_API void particles( const ParticleRange& particleArray );
 
-    bool active( void ) const;
-    void active( bool active_ );
+    PREFR_API bool active( void ) const;
+    PREFR_API void active( bool active_ );
 
-    bool inactiveKillParticles( void ) const;
-    void inactiveKillParticles( bool killParticles );
+    PREFR_API bool inactiveKillParticles( void ) const;
+    PREFR_API void inactiveKillParticles( bool killParticles );
 
     virtual void killParticles( void );
 

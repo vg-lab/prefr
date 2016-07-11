@@ -7,7 +7,7 @@ if( PREFR_WITH_EXAMPLES )
   include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
   if ( GLUT_FOUND )
-  
+
     set( PREFROGL_HEADERS )
     set( PREFROGL_SOURCES ogl.cpp )
     set( PREFROGL_LINK_LIBRARIES PReFr )
