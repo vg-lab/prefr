@@ -29,7 +29,7 @@ namespace prefr
   Updater::Updater( void )
   {}
 
-  Updater::~Updater()
+  Updater::~Updater( )
   {
 
   }
@@ -40,8 +40,8 @@ namespace prefr
     Source* source = cluster.source( );
     Model* model = cluster.model( );
 
-    current->life( glm::clamp(rand() * invRandMax, 0.0f, 1.0f) *
-                   model->lifeInterval + model->minLife );
+    current->life( glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) *
+                   model->_lifeInterval + model->_minLife );
 
     current->alive( true );
     current->newborn( true );
@@ -59,26 +59,28 @@ namespace prefr
     Source* source = cluster.source( );
     Model* model = cluster.model( );
 
-    if (!source || !model)
+    if( !source || !model )
       return;
 
     current->life( current->life( ) - deltaTime );
 
-        if( current->alive( ) && current->life( ) < 0.0f)
+    if( current->alive( ) && current->life( ) < 0.0f )
     {
       current->life( 0.0f );
       #pragma omp critical
       {
-        source->_deadParticles.push_back( current->id( ) );
+        source->_deadParticles.push_back( current->id( ));
       }
     }
 
-    current->alive( ( current->life( ) > 0) );
+    current->alive( current->life( ) > 0 );
 
-    if (current->alive( ) /*&& !current->newborn( )*/)
+    if( current->alive( ) /*&& !current->newborn( )*/)
     {
 
-      float refLife = 1.0f - glm::clamp(( current->life( ) ) * (model->lifeNormalization), 0.0f, 1.0f);
+      float refLife = 1.0f -
+          glm::clamp( current->life( ) * ( model->_lifeNormalization),
+                      0.0f, 1.0f );
 
       current->color( model->color.GetValue( refLife ));
 

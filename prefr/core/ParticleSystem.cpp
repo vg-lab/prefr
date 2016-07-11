@@ -250,7 +250,7 @@ namespace prefr
         if( cluster->inactiveKillParticles( ))
         {
           // Kill particles
-          cluster->KillParticles( );
+          cluster->killParticles( );
         }
       }
     }

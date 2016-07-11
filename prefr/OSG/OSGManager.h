@@ -69,10 +69,8 @@ namespace prefr
 
     PREFR_API
     OSGManager( ParticleSystem& ps );
-//    PREFR_API OSGManager( const OSGManager& other, const osg::CopyOp& copyop );
 
     PREFR_API virtual ~OSGManager( );
-
 
     // OSG Methods
 
@@ -86,12 +84,12 @@ namespace prefr
 
     PREFR_API
     void compileGLObjects( osg::RenderInfo& renderInfo ) const;
+
     PREFR_API
     virtual void releaseGLObjects( osg::State* state ) const;
 
     PREFR_API
     virtual osg::BoundingBox computeBound( ) const;
-//    virtual osg::BoundingSphere computeBound( ) const;
 
     PREFR_API
     virtual void accept(osg::PrimitiveFunctor& functor) const;
@@ -100,16 +98,16 @@ namespace prefr
     virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;
 
     PREFR_API
-    virtual void ConfigureProgram( const std::string& shaderPathVert,
+    virtual void configureProgram( const std::string& shaderPathVert,
                                    const std::string& shaderPathFrag );
 
     PREFR_API
-    virtual void SetCameraManipulator( osgViewer::ViewerBase* _viewer,
+    virtual void setCameraManipulator( osgViewer::ViewerBase* _viewer,
                                        unsigned int contextNumber = 0,
                                        unsigned int viewNumber = 0 );
 
     PREFR_API
-    virtual void UpdateUniformVariables( void );
+    virtual void updateUniformVariables( void );
 
     PREFR_API ParticleSystem* particleSystem( void ) const;
 
@@ -118,7 +116,7 @@ namespace prefr
   protected:
 
     PREFR_API
-    virtual void AcquireGraphicsContext( osg::GraphicsContext* context );
+    virtual void _acquireGraphicsContext( osg::GraphicsContext* context );
 
     ParticleSystem* _particleSystem;
     OSGRenderConfig* _renderConfig;

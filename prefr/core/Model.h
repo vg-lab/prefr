@@ -27,13 +27,12 @@
 #include "Particles.h"
 #include "../utils/InterpolationSet.hpp"
 
-
 namespace prefr
 {
 
-  typedef ::utils::InterpolationSet<float> vectortfloat;
-  typedef ::utils::InterpolationSet<glm::vec3> vectortvec3;
-  typedef ::utils::InterpolationSet<glm::vec4> vectortvec4;
+  typedef ::utils::InterpolationSet< float > vectortfloat;
+  typedef ::utils::InterpolationSet< glm::vec3 > vectortvec3;
+  typedef ::utils::InterpolationSet< glm::vec4 > vectortvec4;
 
   class Model
   {
@@ -41,12 +40,12 @@ namespace prefr
 
   public:
 
-    PREFR_API Model(void);
-    PREFR_API Model(float min, float max );
+    PREFR_API Model( void );
+    PREFR_API Model( float min, float max );
 
-    PREFR_API virtual ~Model();
+    PREFR_API virtual ~Model( );
 
-    PREFR_API void SetLife(float min, float max);
+    PREFR_API void setLife( float min, float max );
 
     vectortfloat size;
     vectortfloat velocity;
@@ -54,12 +53,12 @@ namespace prefr
 
 protected:
 
-    float minLife;
-    float maxLife;
+    float _minLife;
+    float _maxLife;
 
-    float lifeInterval;
-    float lifeNormalization;
-    float dispersion;
+    float _lifeInterval;
+    float _lifeNormalization;
+    float _dispersion;
 
   };
 

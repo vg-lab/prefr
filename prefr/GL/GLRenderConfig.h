@@ -42,40 +42,40 @@ namespace prefr
 
     GLRenderConfig( unsigned int size )
     : RenderConfig( size )
-    , billboardVertices( new std::vector<GLfloat>( size ) )
-    , particlePositions( new std::vector<GLfloat>( size ) )
-    , particleColors( new std::vector<GLfloat>( size ))
-    , vao( 0 )
-    , vboBillboardVertex( 0 )
-    , vboParticlesPositions( 0 )
-    , vboParticlesColors( 0 )
+    , _billboardVertices( new std::vector<GLfloat>( size ) )
+    , _particlePositions( new std::vector<GLfloat>( size ) )
+    , _particleColors( new std::vector<GLfloat>( size ))
+    , _vao( 0 )
+    , _boBillboardVertex( 0 )
+    , _vboParticlesPositions( 0 )
+    , _vboParticlesColors( 0 )
     , _camera( nullptr )
     , _glRenderProgram( nullptr )
     {}
 
     virtual ~GLRenderConfig()
     {
-      delete( billboardVertices );
-      delete( particlePositions );
-      delete( particleColors );
-      vao = 0;
-      vboBillboardVertex = 0;
-      vboParticlesPositions = 0;
-      vboParticlesColors = 0;
+      delete( _billboardVertices );
+      delete( _particlePositions );
+      delete( _particleColors );
+      _vao = 0;
+      _boBillboardVertex = 0;
+      _vboParticlesPositions = 0;
+      _vboParticlesColors = 0;
     }
 
   protected:
 
     // Triangles vertices
-    std::vector<GLfloat>* billboardVertices;
-    std::vector<GLfloat>* particlePositions;
-    std::vector<GLfloat>* particleColors;
+    std::vector< GLfloat >* _billboardVertices;
+    std::vector< GLfloat >* _particlePositions;
+    std::vector< GLfloat >* _particleColors;
 
     // OpenGL pointers
-    GLuint vao;
-    GLuint vboBillboardVertex;
-    GLuint vboParticlesPositions;
-    GLuint vboParticlesColors;
+    GLuint _vao;
+    GLuint _boBillboardVertex;
+    GLuint _vboParticlesPositions;
+    GLuint _vboParticlesColors;
 
     ICamera* _camera;
     IGLRenderProgram* _glRenderProgram;

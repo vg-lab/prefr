@@ -141,7 +141,7 @@ int main( int argc, char** argv )
   manager = new prefr::OSGManager( *particleSystem );
 
   // Set camera manipulator for automatically consider OSG camera
-  manager->SetCameraManipulator( viewer );
+  manager->setCameraManipulator( viewer );
 
   // Configure scene
   osg::Group* groupNode = new osg::Group;
@@ -157,7 +157,7 @@ int main( int argc, char** argv )
   fragPath = vertPath = std::string( PREFR_LIBRARY_BASE_PATH );
   vertPath.append( "OSG/shd/osg-vert.glsl" );
   fragPath.append( "OSG/shd/osg-frag.glsl" );
-  manager->ConfigureProgram( vertPath, fragPath );
+  manager->configureProgram( vertPath, fragPath );
 
   particleSystem->Start( );
 

@@ -25,7 +25,8 @@ namespace prefr
 {
 
   Cluster::Cluster( )
-  : _particlesArray( )
+  : aliveParticles( 0 )
+  , _particlesArray( )
   , _size( 0 )
   , _source( nullptr )
   , _model( nullptr )
@@ -95,12 +96,12 @@ namespace prefr
     return _inactiveKillParticles;
   }
 
-  void Cluster::inactiveKillParticles( bool killParticles )
+  void Cluster::inactiveKillParticles( bool killParticles_ )
   {
-    _inactiveKillParticles = killParticles;
+    _inactiveKillParticles = killParticles_;
   }
 
-  void Cluster::KillParticles( void )
+  void Cluster::killParticles( void )
   {
     for( tparticle particle = _particlesArray.begin( );
          particle != _particlesArray.end( );

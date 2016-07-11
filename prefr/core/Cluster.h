@@ -67,7 +67,7 @@ namespace prefr
     bool inactiveKillParticles( void ) const;
     void inactiveKillParticles( bool killParticles );
 
-    virtual void KillParticles( void );
+    virtual void killParticles( void );
 
     unsigned int aliveParticles;
 

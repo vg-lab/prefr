@@ -125,9 +125,9 @@ namespace prefr
       *posit = currentParticle.size( );
       ++posit;
 
-      osgrc->boundingBox.expandBy(osg::Vec3(  currentParticle.position( ).x,
-                                              currentParticle.position( ).y,
-                                              currentParticle.position( ).z));
+      osgrc->boundingBox.expandBy( osg::Vec3(  currentParticle.position( ).x,
+                                               currentParticle.position( ).y,
+                                               currentParticle.position( ).z));
 
       std::vector< GLfloat >::iterator colorit =
           osgrc->particleColors->begin( ) + idx;
@@ -146,7 +146,7 @@ namespace prefr
     }
 
     if( osgrc->boundingBox.radius( ) == 0 )
-      osgrc->boundingBox.expandBy( osg::Vec3( 1,1,1 ));
+      osgrc->boundingBox.expandBy( osg::Vec3( 1, 1, 1 ));
 
     osgrc->boundingSphere.expandBy( osgrc->boundingBox );
 

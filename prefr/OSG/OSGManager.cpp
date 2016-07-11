@@ -37,7 +37,7 @@ namespace prefr
     if( osgMng )
     {
       osgMng->particleSystem( )->Update(0.1f);
-      osgMng->UpdateUniformVariables( );
+      osgMng->updateUniformVariables( );
       osgMng->particleSystem( )->UpdateRender( );
     }
   }
@@ -116,34 +116,33 @@ namespace prefr
     return _geode;
   }
 
-  void OSGManager::SetCameraManipulator( osgViewer::ViewerBase* _viewer,
+  void OSGManager::setCameraManipulator( osgViewer::ViewerBase* _viewer,
                                          unsigned int contextNumber,
                                          unsigned int viewNumber )
   {
     osgViewer::ViewerBase::Contexts contexts;
     osgViewer::View* view;
-    osgViewer::Viewer* viewer= dynamic_cast<osgViewer::Viewer*>(_viewer);
+    osgViewer::Viewer* viewer = dynamic_cast< osgViewer::Viewer* >( _viewer );
 
     view = dynamic_cast< osgViewer::View* >( viewer );
 
     if ( !view )
-      view =
-        dynamic_cast<osgViewer::CompositeViewer*>(_viewer)->getView(viewNumber);
+      view = dynamic_cast< osgViewer::CompositeViewer* >
+        ( _viewer )->getView( viewNumber );
 
-    PREFR_DEBUG_CHECK(view, "View is nullptr");
+    PREFR_DEBUG_CHECK( view, "View is nullptr");
 
-    _cameraManipulator =
-      dynamic_cast<osgGA::StandardManipulator*>(view->getCameraManipulator());
+    _cameraManipulator = dynamic_cast< osgGA::StandardManipulator* >
+      ( view->getCameraManipulator( ));
 
-    PREFR_DEBUG_CHECK(_cameraManipulator, "camera manipulator is nullptr");
+    PREFR_DEBUG_CHECK( _cameraManipulator, "camera manipulator is nullptr" );
 
-    _viewer->getContexts( contexts, true);
+    _viewer->getContexts( contexts, true );
 
-    AcquireGraphicsContext( contexts[ contextNumber ] );
+    _acquireGraphicsContext( contexts[ contextNumber ] );
   }
 
-  void OSGManager::AcquireGraphicsContext(
-    osg::GraphicsContext* context)
+  void OSGManager::_acquireGraphicsContext( osg::GraphicsContext* context )
   {
     context->realize( );
     context->makeCurrent( );
@@ -154,128 +153,120 @@ namespace prefr
     context->releaseContext( );
   }
 
-  void OSGManager::compileGLObjects(
-     osg::RenderInfo& /* renderInfo */ ) const
-   {
-     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
+  void OSGManager::compileGLObjects( osg::RenderInfo& /* renderInfo */ ) const
+  {
+    OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-     glGenVertexArrays( 1, &osgrc->vao );
+    glGenVertexArrays( 1, &osgrc->vao );
 
-     GLuint buffersGL[ 4 ];
-     glGenBuffers( 4, buffersGL );
+    GLuint buffersGL[ 4 ];
+    glGenBuffers( 4, buffersGL );
 
-     osgrc->vboBillboardVertex = buffersGL[ 0 ];
-     osgrc->vboParticlesPositions = buffersGL[ 1 ];
-     osgrc->vboParticlesColors = buffersGL[ 2 ];
-     osgrc->vboDrawElements = buffersGL[ 3 ];
+    osgrc->vboBillboardVertex = buffersGL[ 0 ];
+    osgrc->vboParticlesPositions = buffersGL[ 1 ];
+    osgrc->vboParticlesColors = buffersGL[ 2 ];
+    osgrc->vboDrawElements = buffersGL[ 3 ];
 
-     osgrc->init = true;
+    osgrc->init = true;
 
-     // Assign billboard vertices
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
+    // Assign billboard vertices
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
 
-     glBufferData( GL_ARRAY_BUFFER,
-                   sizeof( GLfloat ) * osgrc->billboardVertices->size( ),
-                   &osgrc->billboardVertices->front( ), GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER,
+                  sizeof( GLfloat ) * osgrc->billboardVertices->size( ),
+                  &osgrc->billboardVertices->front( ), GL_STATIC_DRAW );
 
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
 
-     glBufferData( GL_ARRAY_BUFFER,
-                   sizeof( GLfloat ) * osgrc->particlePositions->size( ),
-                   nullptr, GL_DYNAMIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER,
+                  sizeof( GLfloat ) * osgrc->particlePositions->size( ),
+                  nullptr, GL_DYNAMIC_DRAW );
 
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
 
-     glBufferData( GL_ARRAY_BUFFER,
-                   sizeof( GLfloat ) * osgrc->particleColors->size( ),
-                   nullptr, GL_DYNAMIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER,
+                  sizeof( GLfloat ) * osgrc->particleColors->size( ),
+                  nullptr, GL_DYNAMIC_DRAW );
 
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
 
-     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER,
+                  osgrc->billboardIndices->getTotalDataSize( ),
+                  osgrc->billboardIndices->getDataPointer( ), GL_STATIC_DRAW );
 
-     glBufferData( GL_ELEMENT_ARRAY_BUFFER,
-                   osgrc->billboardIndices->getTotalDataSize( ),
-                   osgrc->billboardIndices->getDataPointer( ), GL_STATIC_DRAW );
+    glBindVertexArray( osgrc->vao );
 
-     glBindVertexArray( osgrc->vao );
+    glEnableVertexAttribArray( 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-     glEnableVertexAttribArray( 0 );
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
-     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
+    glEnableVertexAttribArray( 1 );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
+    glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-     glEnableVertexAttribArray( 1 );
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
-     glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
+    glEnableVertexAttribArray( 2 );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
+    glVertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0 );
 
-     glEnableVertexAttribArray( 2 );
-     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
-     glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0);
+    glVertexAttribDivisor( 1, 1 );
+    glVertexAttribDivisor( 2, 1 );
 
- //        glVertexAttribDivisor(0, 0);
-     glVertexAttribDivisor(1, 1);
-     glVertexAttribDivisor(2, 1);
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
 
-     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements);
+    glBindVertexArray( 0 );
 
-     glBindVertexArray(0);
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-     glBindBuffer(GL_ARRAY_BUFFER, 0);
-     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
 
-   }
-  osg::BoundingBox OSGManager::computeBound() const
-   {
- //    PREFR_DEBUG_CHECK( _renderer->_renderConfig, "renderConfig is nullptr" );
+  osg::BoundingBox OSGManager::computeBound( ) const
+  {
+    return dynamic_cast<OSGRenderConfig*>( _renderConfig )->boundingBox;
+  }
 
-     return dynamic_cast<OSGRenderConfig*>( _renderConfig )->boundingBox;
+  void OSGManager::drawImplementation( osg::RenderInfo& renderInfo ) const
+  {
+    osg::State* state = renderInfo.getState( );
+    state->setUseVertexAttributeAliasing( true );
+    state->setUseModelViewAndProjectionUniforms( true );
 
-   }
+    _particleSystem->Render( );
+  }
 
-   void OSGManager::drawImplementation(
-     osg::RenderInfo& renderInfo) const
-   {
-     osg::State* state = renderInfo.getState();
-     state->setUseVertexAttributeAliasing(true);
-     state->setUseModelViewAndProjectionUniforms(true);
+  void OSGManager::releaseGLObjects( osg::State* /* state */ ) const
+  {
+    OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-     _particleSystem->Render( );
-   }
+    glDeleteBuffers( 1, &osgrc->vboBillboardVertex );
+    glDeleteBuffers( 1, &osgrc->vboDrawElements );
+    glDeleteBuffers( 1, &osgrc->vboParticlesPositions );
+    glDeleteBuffers( 1, &osgrc->vboParticlesColors );
+    glDeleteVertexArrays( 1, &osgrc->vao );
+  }
 
-   void OSGManager::releaseGLObjects(osg::State* /* state */ )
-     const
-   {
-     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>( _renderConfig );
+  void OSGManager::accept( osg::PrimitiveFunctor& functor ) const
+  {
+    OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-     glDeleteBuffers(1, &osgrc->vboBillboardVertex);
-     glDeleteBuffers(1, &osgrc->vboDrawElements);
-     glDeleteBuffers(1, &osgrc->vboParticlesPositions);
-     glDeleteBuffers(1, &osgrc->vboParticlesColors);
-     glDeleteVertexArrays(1, &osgrc->vao);
-   }
+    if ( !osgrc->vertexArray || !osgrc->billboardIndices )
+      return;
 
-   void OSGManager::accept( osg::PrimitiveFunctor& functor ) const
-   {
-     OSGRenderConfig* osgrc = static_cast<OSGRenderConfig*>( _renderConfig );
-
-     if (!osgrc->vertexArray|| !osgrc->billboardIndices)
-       return;
-
-     // add drawable to the stats
-     functor.setVertexArray( osgrc->vertexArray->size(),
-                             static_cast<const osg::Vec3*>(
-                                 osgrc->vertexArray->getDataPointer( )));
-     osgrc->billboardIndices->accept( functor );
-   }
+    // add drawable to the stats
+    functor.setVertexArray( osgrc->vertexArray->size( ),
+                            static_cast< const osg::Vec3* >(
+                                osgrc->vertexArray->getDataPointer( )));
+    osgrc->billboardIndices->accept( functor );
+  }
 
 
-  void OSGManager::ConfigureProgram(
-          const std::string& shaderPathVert,
-          const std::string& shaderPathFrag)
+  void OSGManager::configureProgram( const std::string& shaderPathVert,
+                                     const std::string& shaderPathFrag )
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >(
         _particleSystem->renderer( )->renderConfig( ) );
 
-    osg::StateSet* psState = getOrCreateStateSet();
+    osg::StateSet* psState = getOrCreateStateSet( );
 
     osg::Program* program = new osg::Program;
     osg::Shader* vertexShader = new osg::Shader( osg::Shader::VERTEX );
@@ -288,8 +279,8 @@ namespace prefr
     // Load vertex shader
     fullPath = osgDB::findDataFile( shaderPathVert );
 
-    if ( fullPath.empty() )
-      PREFR_THROW("Vertex file not found at: " + shaderPathVert)
+    if ( fullPath.empty( ))
+      PREFR_THROW( "Vertex file not found at: " + shaderPathVert )
 
     assert(vertexShader->loadShaderSourceFromFile( fullPath ));
 
@@ -298,44 +289,43 @@ namespace prefr
     // Load fragment shader
     fullPath = osgDB::findDataFile( shaderPathFrag );
 
-    if ( fullPath.empty() )
-      PREFR_THROW("Fragment shader file not found at: " + shaderPathVert)
+    if ( fullPath.empty( ))
+      PREFR_THROW( "Fragment shader file not found at: " + shaderPathVert )
 
     assert(fragmentShader->loadShaderSourceFromFile( fullPath ));
 
     program->addShader( vertexShader );
     program->addShader( fragmentShader );
 
-    osgrc->uCameraUp = new osg::Uniform("cameraUp", osg::Vec3f());
-    osgrc->uCameraRight = new osg::Uniform("cameraRight", osg::Vec3f());
+    osgrc->uCameraUp = new osg::Uniform( "cameraUp", osg::Vec3f( ));
+    osgrc->uCameraRight = new osg::Uniform( "cameraRight", osg::Vec3f( ));
 
-    psState->addUniform(osgrc->uCameraUp);
-    psState->addUniform(osgrc->uCameraRight);
+    psState->addUniform( osgrc->uCameraUp );
+    psState->addUniform( osgrc->uCameraRight );
 
     program->addBindAttribLocation( "vertexPosition", 0 );
     program->addBindAttribLocation( "particlePosition", 1 );
     program->addBindAttribLocation( "particleColor", 2 );
 
     psState->setRenderingHint(
-      osg::StateSet::/*RenderingHint::*/TRANSPARENT_BIN);
+      osg::StateSet::/*RenderingHint::*/TRANSPARENT_BIN );
 
-    psState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
-  //
-    psState->setMode(GL_BLEND, osg::StateAttribute::ON);
+    psState->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
-    osg::BlendFunc* blendFunc = new osg::BlendFunc();
-//    blendFunc->setSource(blendFunctionSrc);
-//    blendFunc->setDestination(blendFunctionDst);
+    psState->setMode( GL_BLEND, osg::StateAttribute::ON );
+
+    osg::BlendFunc* blendFunc = new osg::BlendFunc( );
+
     blendFunc->setSource( osg::BlendFunc::SRC_ALPHA );
-    blendFunc->setDestination(osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
+    blendFunc->setDestination( osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
 
-    psState->setAttributeAndModes(blendFunc, osg::StateAttribute::ON);
+    psState->setAttributeAndModes( blendFunc, osg::StateAttribute::ON );
 
-    psState->setAttributeAndModes(program, osg::StateAttribute::ON);
+    psState->setAttributeAndModes( program, osg::StateAttribute::ON );
 
   }
 
-  void OSGManager::UpdateUniformVariables( void )
+  void OSGManager::updateUniformVariables( void )
   {
     assert(_cameraManipulator != nullptr);
 

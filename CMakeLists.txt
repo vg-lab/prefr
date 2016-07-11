@@ -42,15 +42,15 @@ endif( )
 
 include( Common )
 
-common_find_package( ReTo REQUIRED )
-common_find_package( OpenGL REQUIRED SYSTEM )
 common_find_package( nvidiaOpenGL SYSTEM )
+common_find_package( OpenGL REQUIRED SYSTEM )
 common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
 common_find_package( GLUT SYSTEM )
 common_find_package( Boost REQUIRED )
 common_find_package( OpenMP )
 common_find_package( Eigen3 SYSTEM )
+common_find_package( ReTo REQUIRED )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES ReTo OpenGL GLEW GLM Boost )
 

@@ -40,15 +40,12 @@
 void renderFunc( void );
 void resizeFunc( int width, int height );
 void idleFunc( void );
-void keyboardFunc( unsigned char key, int x, int y );
 void mouseFunc( int button, int state, int x, int y );
 void mouseMoveFunc( int xCoord, int yCoord );
 void initContext( int argc, char** argv );
 void initOGL( void );
 void initShader( const char *vname, const char *fname );
 void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters );
-void destroy( void);
-
 
 glm::vec3 floatPtrToVec3( float* floatPos )
 {
@@ -76,17 +73,17 @@ class Camera : public prefr::ICamera, public reto::Camera
 {
   glm::vec3 PReFrCameraPosition( void )
   {
-    return floatPtrToVec3( Position( ));
+    return floatPtrToVec3( position( ));
   }
 
   glm::mat4x4 PReFrCameraViewMatrix( void )
   {
-    return floatPtrToMat4( ViewMatrix( ));
+    return floatPtrToMat4( viewMatrix( ));
   }
 
   glm::mat4x4 PReFrCameraViewProjectionMatrix( void )
   {
-    return floatPtrToMat4( ViewProjectionMatrix( ));
+    return floatPtrToMat4( viewProjectionMatrix( ));
   }
 };
 
@@ -148,7 +145,6 @@ void initContext( int argc, char** argv )
   glutReshapeFunc( resizeFunc );
   glutDisplayFunc( renderFunc );
   glutIdleFunc( idleFunc );
-  glutKeyboardFunc( keyboardFunc );
   glutMouseFunc( mouseFunc );
   glutMotionFunc( mouseMoveFunc );
 }
@@ -164,11 +160,6 @@ void initOGL( void )
 
 }
 
-void destroy( void )
-{
-
-}
-
 void initShader( const char *vname, const char *fname )
 {
   program.load( vname, fname );
@@ -176,9 +167,9 @@ void initShader( const char *vname, const char *fname )
   program.link( );
 }
 
-void ExpandBoundingBox( Eigen::Vector3f& minBounds,
+void expandBoundingBox( Eigen::Vector3f& minBounds,
                         Eigen::Vector3f& maxBounds,
-                        glm::vec3 position)
+                        const glm::vec3& position)
 {
   for( unsigned int i = 0; i < 3; ++i )
   {
@@ -193,7 +184,7 @@ void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  camera.Anim( );
+  camera.anim( );
 
   particleSystem->Update( 0.1f );
   particleSystem->UpdateCameraDistances( );
@@ -207,7 +198,7 @@ void renderFunc( void )
 
 void resizeFunc( int width, int height )
 {
-  camera.Ratio((( double ) width ) / height );
+  camera.ratio((( double ) width ) / height );
   glViewport( 0, 0, width, height );
 }
 
@@ -218,10 +209,6 @@ void idleFunc( void )
   angle = ( angle > 2.0f * float( M_PI )) ? 0 : angle + 0.01f;
   glutPostRedisplay( );
 
-}
-
-void keyboardFunc( unsigned char, int, int )
-{
 }
 
 void mouseFunc( int button, int state, int xCoord, int yCoord )
@@ -248,11 +235,11 @@ void mouseFunc( int button, int state, int xCoord, int yCoord )
   }
   if ( button == 3 && state == GLUT_DOWN )
   {
-    camera.Radius( camera.Radius( ) / 1.1f );
+    camera.radius( camera.radius( ) / 1.1f );
   }
   if ( button == 4 && state == GLUT_DOWN )
   {
-    camera.Radius( camera.Radius( ) * 1.1f );
+    camera.radius( camera.radius( ) * 1.1f );
   }
 }
 
@@ -260,7 +247,7 @@ void mouseMoveFunc( int xCoord, int yCoord )
 {
   if( rotation )
   {
-    camera.LocalRotation( -( mxCoord - xCoord ) * 0.01, -( myCoord - yCoord ) * 0.01 );
+    camera.localRotation( -( mxCoord - xCoord ) * 0.01, -( myCoord - yCoord ) * 0.01 );
     mxCoord = xCoord;
     myCoord = yCoord;
   }
@@ -333,7 +320,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
                                 particlesPerCluster * i,
                                 particlesPerCluster );
 
-    ExpandBoundingBox( boundingBoxMin, boundingBoxMax, position );
+    expandBoundingBox( boundingBoxMin, boundingBoxMax, position );
   }
 
 
@@ -341,7 +328,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   float radius = ( boundingBoxMax - center ).norm( );
   radius += 50;
 
-  camera.TargetPivotRadius( center, radius );
+  camera.targetPivotRadius( center, radius );
 
 
   Sorter* sorter = new Sorter( );
@@ -360,6 +347,19 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 }
 
 
+void usage( void )
+{
+  std::cout << "PReFr OpenGL-Glut example. " << std::endl
+            << "Usage: " << std::endl
+            << " prefrOGL [ Max_Particles ][ Num_Clusters ]" << std::endl
+            << " where Max_Particles is the maximum number of the particles used on the example"
+            << " and Num_Clusters is the total number of particle clusters. In this example "
+            << " the number of total particles will be split uniformly over the clusters, as "
+            << " for example 1000 particles and 20 clusters will lead to 50 particles per cluster."
+            << " Note: by default example will use 1000 particles and a single cluster."
+            << std::endl;
+}
+
 int main( int argc, char** argv )
 {
   initContext( argc, argv );
@@ -368,11 +368,20 @@ int main( int argc, char** argv )
   unsigned int maxParticles = 1000;
   unsigned int maxClusters = 1;
 
-  if (argc >= 2)
-    maxParticles = atoi(argv[1]);
+  if ( argc >= 2 )
+  {
+    if( strcmp( argv[ 1 ], "-h") == 0 )
+    {
+      usage( );
+      exit( 0 );
+    }
+    else
+      maxParticles = atoi( argv[ 1 ] );
+  }
 
-  if (argc >= 3)
-    maxClusters = atoi(argv[2]);
+
+  if ( argc >= 3 )
+    maxClusters = atoi( argv[ 2 ] );
 
   std::string vertPath;
   std::string fragPath;
@@ -384,7 +393,6 @@ int main( int argc, char** argv )
   InitParticleSystem( maxParticles, maxClusters );
 
   glutMainLoop( );
-  destroy( );
 
   return 0;
 }
