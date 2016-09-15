@@ -46,10 +46,12 @@ namespace prefr
     current->alive( true );
     current->newborn( true );
 
-    current->position( source->GetEmissionPosition( ));
-    current->velocity( source->GetEmissionVelocityDirection( ));
+    SampledValues values;
+    source->sample( &values );
 
-//    source->ReduceBudgetBy( 1 );
+    current->position( values.position );
+    current->velocity( values.direction );
+
   }
 
   void Updater::Update( const Cluster& cluster,

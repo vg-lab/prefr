@@ -299,7 +299,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   particleSystem->AddUpdater( updater );
 
   Cluster* cluster;
-  SphereSource* source;
+  Source* source;
+  Sampler* sampler = new SphereSampler( 1.0f, 360 );
 
   unsigned int particlesPerCluster = maxParticles / maxClusters;
 
@@ -319,7 +320,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
                         i * 10 );
 
     cluster = new Cluster( );
-    source = new SphereSource( 0.3f, position );
+    source = new Source( 0.3f, position, sampler );
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( i % 2 == 0 ? model1 : model2 );

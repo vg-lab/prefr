@@ -41,7 +41,7 @@ int main( int argc, char** argv )
 
   prefr::Cluster* cluster;
   prefr::Model* model;
-  prefr::PointSource* source;
+  prefr::Source* source;
 
   prefr::Updater* updater;
   prefr::Sorter* sorter;
@@ -96,9 +96,11 @@ int main( int argc, char** argv )
   std::cout << "Creating " << maxClusters
             << " clusters with " << particlesPerCluster << std::endl;
 
+  prefr::Sampler* sampler = new prefr::SphereSampler( 1.0f, 360 );
+
   for ( unsigned int i = 0; i < maxClusters; i++ )
   {
-    source = new prefr::PointSource( 1.f, glm::vec3( i * 10, 0, 0 ));
+    source = new prefr::Source( 1.f, glm::vec3( i * 10, 0, 0 ), sampler);
     particleSystem->AddSource(source);
 
     cluster = new prefr::Cluster( );

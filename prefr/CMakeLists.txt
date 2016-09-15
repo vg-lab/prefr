@@ -17,6 +17,7 @@ set(PREFR_PUBLIC_HEADERS
   core/Cluster.h
   core/Updater.h
   core/Source.h
+  core/Sampler.h
   core/Model.h
   core/DistanceArray.hpp
   core/Sorter.h
@@ -48,6 +49,7 @@ set(PREFR_SOURCES
   core/Cluster.cpp
   core/Updater.cpp
   core/Source.cpp
+  core/Sampler.cpp
   core/Model.cpp  
   core/Sorter.cpp  
   core/Renderer.cpp

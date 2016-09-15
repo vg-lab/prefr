@@ -28,6 +28,7 @@
 
 #include "Particles.h"
 #include "Cluster.h"
+#include "Sampler.h"
 
 #include "../utils/Timer.hpp"
 
@@ -35,6 +36,16 @@ namespace prefr
 {
 
   class Cluster;
+  class Sampler;
+
+  class SampledValues
+  {
+  public:
+
+    glm::vec3 position;
+    glm::vec3 direction;
+    glm::mat4 rotation;
+  };
 
   class Source
   {
@@ -45,7 +56,9 @@ namespace prefr
   public:
 
     PREFR_API
-    Source( float emissionRate_, const glm::vec3& position_ );
+    Source( float emissionRate,
+            const glm::vec3& position,
+            Sampler* sampler = nullptr );
 
     PREFR_API
     virtual ~Source( void );
@@ -65,13 +78,16 @@ namespace prefr
 
     PREFR_API virtual void ReduceBudgetBy(const unsigned int& decrement = 1);
 
-    PREFR_API virtual glm::vec3 GetEmissionPosition() = 0;
-    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection() = 0;
-
     PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
 
     PREFR_API Cluster* cluster( void );
     PREFR_API void cluster( Cluster* cluster_ );
+
+    PREFR_API void sampler( Sampler* sampler );
+    PREFR_API const Sampler* sampler( void ) const;
+
+    PREFR_API glm::vec3 position( void ) const;
+    PREFR_API void sample( SampledValues* ) const;
 
   protected:
 
@@ -79,6 +95,8 @@ namespace prefr
     virtual void PrepareParticles( void );
 
     Cluster* _cluster;
+
+    Sampler* _sampler;
 
     glm::vec3 _position;
 
@@ -127,38 +145,38 @@ namespace prefr
 
   //TODO class MultiTimedEmissionNode : public utils::MultiFrameTimer
 
-  class PointSource : public TimedSource
-  {
-  public:
-
-    PREFR_API PointSource( float emissionRate_, const glm::vec3& position_ );
-
-    PREFR_API virtual ~PointSource();
-
-    PREFR_API virtual void SetEmissionPosition( float x, float y, float z );
-
-    PREFR_API virtual glm::vec3 GetEmissionPosition( );
-    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
-  };
-
-  class SphereSource : public PointSource
-  {
-  public:
-
-    float radius;
-    float angle;
-
-    glm::vec3 velocity;
-
-    PREFR_API SphereSource( float emissionRate_, const glm::vec3& position_,
-                            float radius_ = 0, float angle_ = 360 );
-
-    PREFR_API virtual ~SphereSource( );
-
-    PREFR_API virtual glm::vec3 GetEmissionPosition( );
-    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
-
-  };
+//  class PointSource : public TimedSource
+//  {
+//  public:
+//
+//    PREFR_API PointSource( float emissionRate_, const glm::vec3& position_ );
+//
+//    PREFR_API virtual ~PointSource();
+//
+//    PREFR_API virtual void SetEmissionPosition( float x, float y, float z );
+//
+//    PREFR_API virtual glm::vec3 GetEmissionPosition( );
+//    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
+//  };
+//
+//  class SphereSource : public PointSource
+//  {
+//  public:
+//
+//    float radius;
+//    float angle;
+//
+//    glm::vec3 velocity;
+//
+//    PREFR_API SphereSource( float emissionRate_, const glm::vec3& position_,
+//                            float radius_ = 0, float angle_ = 360 );
+//
+//    PREFR_API virtual ~SphereSource( );
+//
+//    PREFR_API virtual glm::vec3 GetEmissionPosition( );
+//    PREFR_API virtual glm::vec3 GetEmissionVelocityDirection( );
+//
+//  };
 
 
 

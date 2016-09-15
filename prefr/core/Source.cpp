@@ -46,8 +46,11 @@ namespace prefr
     // EMISSION NODE
     //***********************************************************
 
-    Source::Source( float emissionRate_, const glm::vec3& position_ )
+    Source::Source( float emissionRate_,
+                    const glm::vec3& position_,
+                    Sampler* sampler_ )
     : _cluster( nullptr )
+    , _sampler( sampler_ )
     , _position( position_ )
     , _emissionRate( emissionRate_ )
     , _totalParticles( 0 )
@@ -195,6 +198,30 @@ namespace prefr
       }
     }
 
+    void Source::sampler( Sampler* sampler_ )
+    {
+      _sampler = sampler_;
+    }
+
+    const Sampler* Source::sampler( void ) const
+    {
+      return _sampler;
+    }
+
+
+    glm::vec3 Source::position( void ) const
+    {
+      return _position;
+    }
+
+    void Source::sample( SampledValues* sampledValues ) const
+    {
+      assert( _sampler );
+
+      _sampler->sample( *this, sampledValues );
+
+    }
+
     void Source::InitializeParticles( void )
     {
       if( !_cluster || _cluster->particles( ).size == 0)
@@ -256,26 +283,26 @@ namespace prefr
 
     bool TimedSource::Emits( ) const
     {
-      return InTime() && Source::Emits();
+      return InTime( ) && Source::Emits( );
     }
 
-    void TimedSource::CheckEmissionEnd()
+    void TimedSource::CheckEmissionEnd( )
     {
-      if (_maxEmissionCycles > 0)
+      if ( _maxEmissionCycles > 0 )
       {
 
-        if (_emittedParticles >= _totalParticles)
+        if ( _emittedParticles >= _totalParticles )
         {
           _currentCycle++;
           _emittedParticles -= _totalParticles;
         }
-        else if (AfterTime())
+        else if ( AfterTime( ))
         {
           _currentCycle++;
           _emittedParticles = 0;
         }
 
-        this->_continueEmission = !(_currentCycle >= _maxEmissionCycles);
+        this->_continueEmission = !( _currentCycle >= _maxEmissionCycles );
 
       }
     }
@@ -293,60 +320,7 @@ namespace prefr
 
       RestoreTimer();
 
-//      this->finished = !continueEmission && lastFrameAliveParticles == 0 ;
-
     }
-
-    //***********************************************************
-    // POINT EMISSION NODE
-    //***********************************************************
-
-
-    PointSource::PointSource( float emissionRate_, const glm::vec3& position_)
-    : TimedSource( emissionRate_, position_ )
-    {}
-
-    PointSource::~PointSource()
-    {}
-
-    void PointSource::SetEmissionPosition(float x, float y, float z)
-    {
-      _position = glm::vec3(x, y, z);
-    }
-
-    glm::vec3 PointSource::GetEmissionPosition()
-    {
-      return _position;
-    }
-
-    glm::vec3 PointSource::GetEmissionVelocityDirection()
-    {
-      return GetRandomDirection();
-    }
-
-
-
-    SphereSource::SphereSource( float emissionRate_, const glm::vec3& position_,
-                                float radius_, float angle_)
-    : PointSource( emissionRate_, position_ )
-    , radius( radius_ )
-    , angle( glm::radians(angle_) )
-    {}
-
-    SphereSource::~SphereSource()
-    {}
-
-    glm::vec3 SphereSource::GetEmissionPosition()
-    {
-      return _position + (radius * velocity);
-    }
-
-    glm::vec3 SphereSource::GetEmissionVelocityDirection()
-    {
-      velocity = GetRandomDirection();
-      return velocity;
-    }
-
 }
 
 

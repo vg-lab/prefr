@@ -24,6 +24,7 @@
 #include <iostream>
 
 #include "../utils/Log.h"
+#include <string>
 
 namespace prefr
 {
