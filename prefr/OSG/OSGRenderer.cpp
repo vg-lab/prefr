@@ -55,7 +55,7 @@ namespace prefr
   : Renderer( )
   { }
 
-  OSGRenderer::~OSGRenderer()
+  OSGRenderer::~OSGRenderer( )
   { }
 
   void OSGRenderer::init( void )
@@ -78,15 +78,15 @@ namespace prefr
 
      osgrc->particleColors = new std::vector< GLfloat >( _particles.size * 4 );
 
-     for (unsigned int i = 0; i < 4; i++)
+     for( unsigned int i = 0; i < 4; i++ )
      {
-       osgrc->vertexArray->push_back( osg::Vec3( b[ i*3 ],
-                                                 b[ i*3 + 1 ],
-                                                 b[ i*3 + 2 ] ));
+       osgrc->vertexArray->push_back( osg::Vec3( b[ i * 3 ],
+                                                 b[ i * 3 + 1 ],
+                                                 b[ i * 3 + 2 ] ));
 
-       osgrc->billboardVertices->push_back( b[ i*3 ]);
-       osgrc->billboardVertices->push_back( b[ i*3 + 1 ]);
-       osgrc->billboardVertices->push_back( b[ i*3 + 2 ]);
+       osgrc->billboardVertices->push_back( b[ i * 3 ]);
+       osgrc->billboardVertices->push_back( b[ i * 3 + 1 ]);
+       osgrc->billboardVertices->push_back( b[ i * 3 + 2 ]);
 
        osgrc->billboardIndices->push_back( i );
 
@@ -106,7 +106,8 @@ namespace prefr
 #endif
     for( int i = 0; i < ( int ) _renderConfig->aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.GetElement( _distances->getID( i ));
+      tparticle currentParticle =
+          _particles.GetElement( _distances->getID( i ));
 
       unsigned int idx = i * 4;
 
@@ -125,9 +126,9 @@ namespace prefr
       *posit = currentParticle.size( );
       ++posit;
 
-      osgrc->boundingBox.expandBy( osg::Vec3(  currentParticle.position( ).x,
-                                               currentParticle.position( ).y,
-                                               currentParticle.position( ).z));
+      osgrc->boundingBox.expandBy( osg::Vec3( currentParticle.position( ).x,
+                                              currentParticle.position( ).y,
+                                              currentParticle.position( ).z ));
 
       std::vector< GLfloat >::iterator colorit =
           osgrc->particleColors->begin( ) + idx;

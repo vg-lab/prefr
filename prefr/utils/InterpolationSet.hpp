@@ -35,231 +35,231 @@
 
 namespace utils
 {
-  template <class T>
+  template< class T >
   class InterpolationSet
   {
   public:
 
-    std::vector<float> times;
-    std::vector<T> values;
+    std::vector< float > times;
+    std::vector< T > values;
 
-    std::vector<unsigned int> precisionValues;
+    std::vector< unsigned int > precisionValues;
 
-    std::vector<int> quickReference;
-    std::vector<float> invIntervals;
+    std::vector< int > quickReference;
+    std::vector< float > invIntervals;
     float step;
-
 
     unsigned int size;
 
-    InterpolationSet(void): step(1), size(0){}
+    InterpolationSet( void ): step( 1 ), size( 0 ){ }
 
   public:
 
-    inline void Insert(float time, T value)
+    inline void Insert( float time, T value )
     {
-      assert(time >= 0 && time <= 1.0f);
+      assert( time >= 0 && time <= 1.0f );
 
       unsigned int i = 0;
       unsigned int precision;
 
       // Iterate over time values till the last minus one
-      while (i < size && size > 0)
+      while( i < size && size > 0 )
       {
         // Overwrite value
-        if (time == times[i])
+        if( time == times[ i ])
         {
-          values[i] = value;
+          values[ i ] = value;
           return;
         }
         // New intermediate value
-        else if (time < times[i])
+        else if( time < times[ i ])
         {
-          times.emplace(times.begin() + i, time);
-          values.emplace(values.begin() + i, value);
+          times.emplace( times.begin( ) + i, time );
+          values.emplace( values.begin( ) + i, value );
 
-          precision = GetPrecision(time);
-          precisionValues.emplace(precisionValues.begin() + i,
-                                  precision);
+          precision = GetPrecision( time );
+          precisionValues.emplace( precisionValues.begin( ) + i,
+                                   precision );
 
-          size = (unsigned int) times.size();
-          UpdateQuickReference(precision);
+          size = ( unsigned int ) times.size( );
+          UpdateQuickReference( precision );
           return;
         }
         i++;
       }
 
       // New highest value
-      times.push_back(time);
-      values.push_back(value);
+      times.push_back( time );
+      values.push_back( value );
 
-      precision = GetPrecision(time);
-      precisionValues.push_back(precision);
+      precision = GetPrecision( time );
+      precisionValues.push_back( precision );
 
-      size = (unsigned int) times.size();
+      size = ( unsigned int ) times.size( );
 
-      UpdateQuickReference(precision);
+      UpdateQuickReference( precision );
     }
 
-    inline void Clear()
+    inline void Clear( )
     {
-      times.clear();
-      values.clear();
-      precisionValues.clear();
-      quickReference.clear();
-      invIntervals.clear();
+      times.clear( );
+      values.clear( );
+      precisionValues.clear( );
+      quickReference.clear( );
+      invIntervals.clear( );
       step = 0;
       size = 0;
 
     }
 
-    inline void Remove(unsigned int i)
+    inline void Remove( unsigned int i )
     {
-      if (i >= size || size == 1)
+      if( i >= size || size == 1 )
         return;
 
-      times.erase(times.begin()+i);
-      values.erase(values.begin()+i);
-      precisionValues.erase(precisionValues.begin()+i);
-      size = times.size();
+      times.erase( times.begin( ) + i );
+      values.erase( values.begin( ) + i );
+      precisionValues.erase( precisionValues.begin( ) + i );
+      size = times.size( );
 
-      UpdateQuickReference(GetMaxPrecision());
+      UpdateQuickReference( GetMaxPrecision( ));
 
     }
 
-    inline const T& GetFirstValue()
+    inline const T& GetFirstValue( )
     {
-        return values[0];
+        return values[ 0 ];
     }
 
     // Implementation exportable to kernel due to avoiding loops
-    inline T GetValueKernel(float time)
+    inline T GetValueKernel( float time )
     {
-      if (size > 1 && time > 0.0f)
+      if( size > 1 && time > 0.0f )
       {
-        assert(time >= 0 && time <= 1.0f);
+        assert( time >= 0 && time <= 1.0f );
 
-        int ref = quickReference[floor(time * (quickReference.size()-1))];
+        int ref = quickReference[ floor( time * ( quickReference.size( ) - 1 ))];
 
-        float relTime = glm::clamp((time - times[ref]) * invIntervals[ref],
-                                   0.f, 1.f);
+        float relTime = glm::clamp(( time - times[ ref ]) * invIntervals[ ref ],
+                                     0.f, 1.f );
 
-        T res = ((1.0f - relTime) * values[ref] + relTime * values[ref+1]);
+        T res =
+            (( 1.0f - relTime ) * values[ ref ] + relTime * values[ ref + 1 ]);
 
         return res;
       }
       else
       {
-        return values[0];
+        return values[ 0 ];
       }
 
     }
 
     // Faster implementation for CPU interpolation.
-    inline T GetValue(float time)
+    inline T GetValue( float time )
     {
-      assert(time >= 0 && time <= 1.0f);
+      assert( time >= 0 && time <= 1.0f );
 
-      if (size > 1 && time > 0.0f)
+      if( size > 1 && time > 0.0f )
       {
        unsigned int i = 0;
 
-       while (time > times[i+1])
+       while( time > times[ i + 1 ])
        {
          i++;
        }
 
-       float relTime = (time - times[i]) * invIntervals[i];
+       float relTime = ( time - times[ i ]) * invIntervals[ i ];
 
-       T res = ((1.0f - relTime) * values[i] + relTime * values[i+1]);
+       T res = (( 1.0f - relTime ) * values[ i ] + relTime * values[ i + 1 ]);
 
        return res;
 
       }
       else
       {
-        return values[0];
+        return values[ 0 ];
       }
     }
 
   private:
 
-    unsigned int GetMaxPrecision()
+    unsigned int GetMaxPrecision( )
     {
       unsigned int maxPrecision = 0;
-      std::vector<unsigned int>::const_iterator it;
-      for (it = precisionValues.begin(); it != precisionValues.end(); it++)
+      std::vector< unsigned int >::const_iterator it;
+      for( it = precisionValues.begin( ); it != precisionValues.end( ); it++ )
       {
-        if (*it > maxPrecision)
+        if( *it > maxPrecision )
           maxPrecision = *it;
       }
       return maxPrecision;
     }
 
-    int GetPrecision(float time)
+    int GetPrecision( float time )
     {
       int precision = 0;
 
-      std::string str = std::to_string( (long double) (time));
+      std::string str = std::to_string(( long double )( time ));
 
       //@sgalindo: this may yield to an underflow value
-      unsigned int pos = (unsigned int) str.length()-1;
-      while (pos > 0)
+      unsigned int pos = ( unsigned int ) str.length( ) - 1;
+      while( pos > 0 )
       {
-        if (str[pos] != '0')
+        if( str[ pos ] != '0' )
           break;
         pos--;
       }
-      str = str.substr(0, pos+1);
+      str = str.substr( 0, pos + 1 );
 
-      precision = int(str.rfind('.'));
-      precision = precision > 0 ? int(str.length()) - precision - 1 : 0;
-      precision = pow(10.f, precision);
+      precision = int( str.rfind( '.' ));
+      precision = precision > 0 ? int( str.length( )) - precision - 1 : 0;
+      precision = pow( 10.f, precision );
 
       return precision;
     }
 
-    void UpdateQuickReference(unsigned int newSize)
+    void UpdateQuickReference( unsigned int newSize )
     {
-      if (newSize == 0)
+      if( newSize == 0 )
       {
         std::cerr << "Error: Given quick reference size cannot be zero."
                   << std::endl;
         return;
       }
-      else if (newSize != quickReference.size())
+      else if( newSize != quickReference.size( ))
       {
-        quickReference.resize(newSize);
+        quickReference.resize( newSize );
       }
 
-      quickReference.clear();
-      invIntervals.clear();
+      quickReference.clear( );
+      invIntervals.clear( );
 
-      step = 1.0f / quickReference.size();
+      step = 1.0f / quickReference.size( );
 
-      invIntervals.resize(times.size(), 1.0f);
+      invIntervals.resize( times.size( ), 1.0f );
 
-      if (times.size() > 1)
-        for (unsigned int i = 0; i < times.size()-1; i++)
+      if( times.size( ) > 1 )
+        for( unsigned int i = 0; i < times.size( ) - 1; i++ )
         {
-          invIntervals[i] = 1.0f / (times[i+1] - times[i]);
+          invIntervals[ i ] = 1.0f / ( times[ i + 1 ] - times[ i ]);
         }
 
-      std::vector<int> limits(times.size());
+      std::vector< int > limits( times.size( ));
 
-      for (unsigned int i = 0; i < limits.size()-1; i++)
+      for( unsigned int i = 0; i < limits.size( ) - 1; i++ )
       {
-        limits[i] = int(floor(times[i+1] * quickReference.size()));
+        limits[ i ] = int( floor( times[ i + 1 ] * quickReference.size( )));
       }
 
-      limits[limits.size()-1] = int(quickReference.size());
+      limits[ limits.size( ) - 1 ] = int( quickReference.size( ));
 
       unsigned int pos = 0;
-      for (unsigned int i = 0; i < quickReference.size(); i++)
+      for( unsigned int i = 0; i < quickReference.size( ); i++ )
       {
-        if (i >= (unsigned int )limits[pos])
+        if( i >= ( unsigned int ) limits[ pos ])
           pos++;
-        quickReference[i] = pos;
+        quickReference[ i ] = pos;
       }
     }
 

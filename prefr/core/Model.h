@@ -69,7 +69,7 @@ protected:
 
   typedef Model tprototype;
   typedef tprototype* tprototype_ptr;
-  typedef std::vector<tprototype_ptr> ModelsArray;
+  typedef std::vector< tprototype_ptr > ModelsArray;
 
 
 }

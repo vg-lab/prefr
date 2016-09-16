@@ -54,7 +54,6 @@ namespace prefr
     _velocityVector.resize( newSize );
     _accelerationVector.resize( newSize );
     _aliveVector.resize( newSize, false );
-    _newbornVector.resize( newSize, false );
 
     _size = newSize;
   }
@@ -70,7 +69,6 @@ namespace prefr
     _velocityVector.clear( );
     _accelerationVector.clear( );
     _aliveVector.clear( );
-    _newbornVector.clear( );
 
     _size = 0;
   }
@@ -107,7 +105,7 @@ namespace prefr
     return CreateIterator( i );
   }
 
-  Particles::const_iterator Particles::at( unsigned int i) const
+  Particles::const_iterator Particles::at( unsigned int i ) const
   {
     return CreateConstIterator( i );
   }
@@ -129,7 +127,6 @@ namespace prefr
     it.velocityIterator = _velocityVector.begin( ) + i;
     it.accelerationIterator = _accelerationVector.begin( ) + i;
     it.aliveIterator = _aliveVector.begin( ) + i;
-    it.newbornIterator = _newbornVector.begin( ) + i;
 
     it._position = i;
     it._size = _size;
@@ -154,7 +151,6 @@ namespace prefr
     it.velocityConstIterator = _velocityVector.begin( ) + i;
     it.accelerationConstIterator = _accelerationVector.begin( )+ i;
     it.aliveConstIterator = _aliveVector.begin( ) + i;
-    it.newbornConstIterator = _newbornVector.begin( ) + i;
 
     it._position = i;
     it._size = _size;
@@ -162,36 +158,6 @@ namespace prefr
     return it;
   }
 
-
-
-//  Particles::base_iterator::base_iterator( void )
-//  : _position( 0 )
-//  , _size( 0 )
-//  , _data( nullptr )
-//  { }
-//
-//  Particles::base_iterator::base_iterator( const base_iterator& other )
-//  : _position( other._position )
-//  , _size( other._size )
-//  , _data( other._data )
-//  { }
-//
-//  Particles::base_iterator::~base_iterator( )
-//  { }
-//
-//  bool Particles::base_iterator::operator== (
-//      const Particles::base_iterator& other )
-//  {
-//    return ( other._data == this->_data &&
-//             other._size == this->_size &&
-//             other._position == this->_position );
-//  }
-//
-//  bool Particles::base_iterator::operator!= (
-//        const Particles::base_iterator& other )
-//  {
-//    return !(*this == other);
-//  }
 
   Particles::iterator::iterator( void )
   : _position( 0 )
@@ -213,8 +179,6 @@ namespace prefr
   , velocityIterator( other.velocityIterator )
   , accelerationIterator( other.accelerationIterator )
   , aliveIterator( other.aliveIterator )
-  , newbornIterator( other.newbornIterator )
-
   { }
 
   Particles::iterator& Particles::iterator::operator++( void )
@@ -228,7 +192,6 @@ namespace prefr
     velocityIterator++;
     accelerationIterator++;
     aliveIterator++;
-    newbornIterator++;
 
     _position++;
 
@@ -248,7 +211,6 @@ namespace prefr
     velocityIterator++;
     accelerationIterator++;
     aliveIterator++;
-    newbornIterator++;
 
     _position++;
 
@@ -266,7 +228,6 @@ namespace prefr
     velocityIterator--;
     accelerationIterator--;
     aliveIterator--;
-    newbornIterator--;
 
     _position--;
 
@@ -286,7 +247,6 @@ namespace prefr
     velocityIterator--;
     accelerationIterator--;
     aliveIterator--;
-    newbornIterator--;
 
     _position--;
 
@@ -306,7 +266,6 @@ namespace prefr
     result.velocityIterator += increase;
     result.accelerationIterator += increase;
     result.aliveIterator += increase;
-    result.newbornIterator += increase;
 
     result._position += increase;
 
@@ -326,22 +285,11 @@ namespace prefr
     result.velocityIterator -= decrease;
     result.accelerationIterator -= decrease;
     result.aliveIterator -= decrease;
-    result.newbornIterator -= decrease;
 
     result._position -= decrease;
 
     return result;
   }
-
-//  Particles::iterator& Particles::iterator::operator*( void ) const
-//  {
-//    return *this;
-//  }
-//
-//  Particles::iterator* Particles::iterator::operator->( void ) const
-//  {
-//    return this;
-//  }
 
   bool Particles::iterator::operator==( const Particles::iterator& other )
   {
@@ -385,7 +333,6 @@ namespace prefr
   , velocityConstIterator( other.velocityConstIterator )
   , accelerationConstIterator( other.accelerationConstIterator )
   , aliveConstIterator( other.aliveConstIterator )
-  , newbornConstIterator( other.newbornConstIterator )
   { }
 
   Particles::const_iterator::const_iterator(
@@ -402,24 +349,22 @@ namespace prefr
   , velocityConstIterator( other.velocityIterator )
   , accelerationConstIterator( other.accelerationIterator )
   , aliveConstIterator( other.aliveIterator )
-  , newbornConstIterator( other.newbornIterator )
   { }
 
   Particles::const_iterator& Particles::const_iterator::operator++( void )
   {
 
-    idConstIterator++;
-    lifeConstIterator++;
-    sizeConstIterator++;
-    positionConstIterator++;
-    colorConstIterator++;
-    velocityModuleConstIterator++;
-    velocityConstIterator++;
-    accelerationConstIterator++;
-    aliveConstIterator++;
-    newbornConstIterator++;
+    ++idConstIterator;
+    ++lifeConstIterator;
+    ++sizeConstIterator;
+    ++positionConstIterator;
+    ++colorConstIterator;
+    ++velocityModuleConstIterator;
+    ++velocityConstIterator;
+    ++accelerationConstIterator;
+    ++aliveConstIterator;
 
-    _position++;
+    ++_position;
 
     return *this;
   }
@@ -428,18 +373,17 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    idConstIterator++;
-    lifeConstIterator++;
-    sizeConstIterator++;
-    positionConstIterator++;
-    colorConstIterator++;
-    velocityModuleConstIterator++;
-    velocityConstIterator++;
-    accelerationConstIterator++;
-    aliveConstIterator++;
-    newbornConstIterator++;
+    ++idConstIterator;
+    ++lifeConstIterator;
+    ++sizeConstIterator;
+    ++positionConstIterator;
+    ++colorConstIterator;
+    ++velocityModuleConstIterator;
+    ++velocityConstIterator;
+    ++accelerationConstIterator;
+    ++aliveConstIterator;
 
-    _position++;
+    ++_position;
 
     return result;
   }
@@ -447,18 +391,17 @@ namespace prefr
   Particles::const_iterator& Particles::const_iterator::operator--( void )
   {
 
-    idConstIterator--;
-    lifeConstIterator--;
-    sizeConstIterator--;
-    positionConstIterator--;
-    colorConstIterator--;
-    velocityModuleConstIterator--;
-    velocityConstIterator--;
-    accelerationConstIterator--;
-    aliveConstIterator--;
-    newbornConstIterator--;
+    --idConstIterator;
+    --lifeConstIterator;
+    --sizeConstIterator;
+    --positionConstIterator;
+    --colorConstIterator;
+    --velocityModuleConstIterator;
+    --velocityConstIterator;
+    --accelerationConstIterator;
+    --aliveConstIterator;
 
-    _position--;
+    --_position;
 
     return *this;
   }
@@ -467,18 +410,17 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    idConstIterator--;
-    lifeConstIterator--;
-    sizeConstIterator--;
-    positionConstIterator--;
-    colorConstIterator--;
-    velocityModuleConstIterator--;
-    velocityConstIterator--;
-    accelerationConstIterator--;
-    aliveConstIterator--;
-    newbornConstIterator--;
+    --idConstIterator;
+    --lifeConstIterator;
+    --sizeConstIterator;
+    --positionConstIterator;
+    --colorConstIterator;
+    --velocityModuleConstIterator;
+    --velocityConstIterator;
+    --accelerationConstIterator;
+    --aliveConstIterator;
 
-    _position--;
+    --_position;
 
     return result;
   }
@@ -497,7 +439,6 @@ namespace prefr
     result.velocityConstIterator += increase;
     result.accelerationConstIterator += increase;
     result.aliveConstIterator += increase;
-    result.newbornConstIterator += increase;
 
     result._position += increase;
 
@@ -518,22 +459,11 @@ namespace prefr
     result.velocityConstIterator -= decrease;
     result.accelerationConstIterator -= decrease;
     result.aliveConstIterator -= decrease;
-    result.newbornConstIterator -= decrease;
 
     result._position -= decrease;
 
     return result;
   }
-
-//  Particles::const_iterator& Particles::const_iterator::operator*( void )
-//  {
-//    return *this;
-//  }
-//
-//  Particles::const_iterator* Particles::const_iterator::operator->( void )
-//  {
-//    return this;
-//  }
 
   bool
   Particles::const_iterator::operator==( const Particles::const_iterator& other )
@@ -546,7 +476,7 @@ namespace prefr
   bool
   Particles::const_iterator::operator!=( const Particles::const_iterator& other )
   {
-    return !(*this == other);
+    return !( *this == other );
   }
 
 }

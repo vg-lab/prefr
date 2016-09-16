@@ -32,11 +32,11 @@ namespace prefr
                                      osg::NodeVisitor* /* nv */ )
   {
     osg::ref_ptr< OSGManager > osgMng =
-        static_cast< OSGManager* >( node->asGeode()->getDrawable(0) );
+        static_cast< OSGManager* >( node->asGeode( )->getDrawable( 0 ) );
 
     if( osgMng )
     {
-      osgMng->particleSystem( )->Update(0.1f);
+      osgMng->particleSystem( )->Update( 0.1f );
       osgMng->updateUniformVariables( );
       osgMng->particleSystem( )->UpdateRender( );
     }
@@ -139,7 +139,7 @@ namespace prefr
 
     _viewer->getContexts( contexts, true );
 
-    _acquireGraphicsContext( contexts[ contextNumber ] );
+    _acquireGraphicsContext( contexts[ contextNumber ]);
   }
 
   void OSGManager::_acquireGraphicsContext( osg::GraphicsContext* context )
@@ -206,7 +206,7 @@ namespace prefr
 
     glEnableVertexAttribArray( 2 );
     glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
-    glVertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0 );
+    glVertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, 0, ( void* ) 0 );
 
     glVertexAttribDivisor( 1, 1 );
     glVertexAttribDivisor( 2, 1 );
@@ -222,7 +222,7 @@ namespace prefr
 
   osg::BoundingBox OSGManager::computeBound( ) const
   {
-    return dynamic_cast<OSGRenderConfig*>( _renderConfig )->boundingBox;
+    return dynamic_cast< OSGRenderConfig* >( _renderConfig )->boundingBox;
   }
 
   void OSGManager::drawImplementation( osg::RenderInfo& renderInfo ) const
@@ -264,7 +264,7 @@ namespace prefr
                                      const std::string& shaderPathFrag )
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >(
-        _particleSystem->renderer( )->renderConfig( ) );
+        _particleSystem->renderer( )->renderConfig( ));
 
     osg::StateSet* psState = getOrCreateStateSet( );
 
@@ -329,15 +329,17 @@ namespace prefr
   {
     assert(_cameraManipulator != nullptr);
 
-    OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _particleSystem->renderer( )->renderConfig( ));
+    OSGRenderConfig* osgrc =
+        static_cast< OSGRenderConfig* >(
+            _particleSystem->renderer( )->renderConfig( ));
 
     // Get camera position to calculate distances
     osg::Vec3d eye, center, up;
     _cameraManipulator->getTransformation( eye, center, up );
 
-    osgrc->eye = osg::Vec3f(eye);
-    osgrc->center = osg::Vec3f(center);
-    osgrc->up = osg::Vec3f(up);
+    osgrc->eye = osg::Vec3f( eye );
+    osgrc->center = osg::Vec3f( center );
+    osgrc->up = osg::Vec3f( up );
 
     _particleSystem->UpdateCameraDistances(
         glm::vec3( osgrc->eye.x( ), osgrc->eye.y( ), osgrc->eye.z( )));

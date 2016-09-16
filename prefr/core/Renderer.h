@@ -51,7 +51,6 @@ namespace prefr
 
     virtual void distanceArray( DistanceArray* distanceArray );
 
-
   protected:
 
     virtual void init( void ) = 0;

@@ -42,9 +42,9 @@ namespace prefr
 
     GLRenderConfig( unsigned int size )
     : RenderConfig( size )
-    , _billboardVertices( new std::vector<GLfloat>( size ) )
-    , _particlePositions( new std::vector<GLfloat>( size ) )
-    , _particleColors( new std::vector<GLfloat>( size ))
+    , _billboardVertices( new std::vector< GLfloat >( size ) )
+    , _particlePositions( new std::vector< GLfloat >( size ) )
+    , _particleColors( new std::vector< GLfloat >( size ))
     , _vao( 0 )
     , _boBillboardVertex( 0 )
     , _vboParticlesPositions( 0 )
@@ -53,7 +53,7 @@ namespace prefr
     , _glRenderProgram( nullptr )
     {}
 
-    virtual ~GLRenderConfig()
+    virtual ~GLRenderConfig( )
     {
       delete( _billboardVertices );
       delete( _particlePositions );

@@ -61,7 +61,7 @@ namespace prefr
   };
 
   typedef DistanceUnit TDistUnit;
-  typedef std::vector<TDistUnit> TDistUnitContainer;
+  typedef std::vector< TDistUnit > TDistUnitContainer;
 
   class DistanceArray
   {
@@ -104,12 +104,12 @@ namespace prefr
       return elements.end( );
     }
 
-    inline DistanceUnit& at(unsigned int i)
+    inline DistanceUnit& at( unsigned int i )
     {
       return elements[ i ];
     }
 
-    inline DistanceUnit& operator[](unsigned int i)
+    inline DistanceUnit& operator[]( unsigned int i )
     {
       return elements[ i ];
     }

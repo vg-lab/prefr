@@ -55,7 +55,7 @@ namespace prefr
   void Sorter::Sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = _distances->begin() + _aliveParticles;
+    TDistUnitContainer::iterator end = _distances->begin( ) + _aliveParticles;
 
 #ifdef PREFR_USE_OPENMP
     if( _parallel )
@@ -70,26 +70,28 @@ namespace prefr
     }
     else
 #endif
-    std::sort( _distances->begin(), end, DistanceArray::sortDescending );
-
-
-    Log::log( std::string( "SORT - Alive particles: ") + std::to_string( _aliveParticles ));
+    std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
   }
 
   void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {
 //    _aliveParticles = 0;
-    _distances->ResetCounter();
+    _distances->ResetCounter( );
 
 #ifdef PREFR_USE_OPENMP
+
     #pragma omp parallel for if( _parallel )
     for( int i = 0; i < ( int ) _clusters->size( ); ++i)
     {
-      Cluster* cluster = (*_clusters)[ i ];
+      Cluster* cluster = ( *_clusters )[ i ];
+
 #else
+
     for( auto cluster : *_clusters )
     {
+
+    }
 #endif
 
       if( cluster->active( ) || renderDeadParticles )
@@ -99,13 +101,11 @@ namespace prefr
              particle++ )
         {
           UpdateParticleDistance( &particle, cameraPosition,
-                                renderDeadParticles );
+                                  renderDeadParticles );
 
         }
       }
     }
-
-    Log::log( std::string( "CAMERA DIST - Alive particles: ") + std::to_string( _aliveParticles ));
 
   }
 
@@ -119,17 +119,17 @@ namespace prefr
   }
 
   void Sorter::UpdateParticleDistance( const tparticle_ptr current,
-                                     const glm::vec3& cameraPosition,
-                                     bool renderDeadParticles )
+                                       const glm::vec3& cameraPosition,
+                                       bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = _distances->at( current->id( ) );
+    DistanceUnit& dist = _distances->at( current->id( ));
 
     dist.Id( current->id( ));
 
     dist.Distance( current->alive() || renderDeadParticles ?
-                   length2(current->position( ) - cameraPosition) :
-                   -1);
+                   length2(current->position( ) - cameraPosition ) :
+                   -1 );
   }
 
 

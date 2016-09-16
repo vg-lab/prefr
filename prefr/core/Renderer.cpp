@@ -28,9 +28,7 @@ namespace prefr
   : _distances( nullptr )
   , _renderConfig( nullptr )
   , _parallel( false )
-  {
-
-  }
+  { }
 
   Renderer::~Renderer()
   {

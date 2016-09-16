@@ -37,10 +37,12 @@ namespace prefr
   public:
 
 #ifdef PREFR_USE_CUDA
-    thrust::device_vector<int> deviceID;
-    thrust::device_vector<float> deviceDistances;
 
-    std::vector<int> translatedIDs;
+    thrust::device_vector< int > deviceID;
+    thrust::device_vector< float > deviceDistances;
+
+    std::vector< int > translatedIDs;
+
 #endif
 
     CUDADistanceArray ( unsigned int size)
@@ -49,12 +51,12 @@ namespace prefr
       translatedIDs.resize( size );
     }
 
-    virtual inline int& getID(unsigned int i)
+    virtual inline int& getID( unsigned int i )
     {
       return translatedIDs[ ids[ i ]];
     }
 
-    virtual inline float& getDistance(unsigned int i)
+    virtual inline float& getDistance( unsigned int i )
     {
       return distances[ i ];
     }

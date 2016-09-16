@@ -35,9 +35,9 @@
 
 namespace prefr
 {
-  static inline float length2(const glm::vec3& elem)
+  static inline float length2( const glm::vec3& elem )
   {
-    return (elem.x * elem.x + elem.y * elem.y + elem.z * elem.z);
+    return( elem.x * elem.x + elem.y * elem.y + elem.z * elem.z );
   }
 
   class Sorter
@@ -54,20 +54,21 @@ namespace prefr
 
     PREFR_API Sorter( );
 
-    PREFR_API virtual ~Sorter();
+    PREFR_API virtual ~Sorter( );
 
-    PREFR_API virtual void Sort(SortOrder order = Descending);
+    PREFR_API virtual void Sort( SortOrder order = Descending );
 
-    PREFR_API virtual void UpdateCameraDistance(
-      const glm::vec3& cameraPosition,
-      bool renderDeadParticles = false );
+    PREFR_API
+    virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
+                                       bool renderDeadParticles = false );
 
-    PREFR_API virtual void UpdateParticleDistance(
-      const tparticle_ptr current,
-      const glm::vec3& cameraPosition,
-      bool renderDeadParticles = false );
+    PREFR_API
+    virtual void UpdateParticleDistance( const tparticle_ptr current,
+                                         const glm::vec3& cameraPosition,
+                                         bool renderDeadParticles = false );
 
-    PREFR_API virtual void UpdateCameraDistance( bool renderDeadParticles = false );
+    PREFR_API
+    virtual void UpdateCameraDistance( bool renderDeadParticles = false );
 
     PREFR_API virtual void InitDistanceArray( ICamera* camera );
 

@@ -77,11 +77,13 @@ namespace prefr
 
     PREFR_API
     void angleTheta( float angle );
+
     PREFR_API
     float angleTheta( void ) const;
 
     PREFR_API
     void radius( float radiusDegrees );
+
     PREFR_API
     float radius( void ) const;
 

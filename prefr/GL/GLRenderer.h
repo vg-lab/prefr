@@ -39,7 +39,7 @@ namespace prefr
     GLRenderer( );
 
     PREFR_API
-    virtual ~GLRenderer();
+    virtual ~GLRenderer( );
 
     PREFR_API
     virtual void SetupRender( void );
@@ -47,6 +47,7 @@ namespace prefr
     PREFR_API
     virtual void Paint( void ) const;
 
+    PREFR_API
     virtual void glRenderProgram( IGLRenderProgram* renderProgram );
 
     PREFR_API

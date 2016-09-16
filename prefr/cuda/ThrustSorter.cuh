@@ -34,18 +34,18 @@ namespace prefr
   public:
 
     PREFR_API ThrustSorter(  );
-    PREFR_API virtual ~ThrustSorter();
+    PREFR_API virtual ~ThrustSorter( );
 
-    PREFR_API void Sort(SortOrder order);
+    PREFR_API void Sort( SortOrder order );
 
     virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
                                        bool discardDeadParticles = true );
 
     virtual void UpdateParticleDistance( const tparticle_ptr current,
-                                       const glm::vec3& cameraPosition,
-                                       bool discardDeadParticles = true );
+                                         const glm::vec3& cameraPosition,
+                                         bool discardDeadParticles = true );
 
-    virtual void InitDistanceArray();
+    virtual void InitDistanceArray( );
   };
 
 } // namespace prefr

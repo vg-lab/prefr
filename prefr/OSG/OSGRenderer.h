@@ -40,7 +40,7 @@ namespace prefr
     OSGRenderer( );
 
     PREFR_API
-    virtual ~OSGRenderer();
+    virtual ~OSGRenderer( );
 
     PREFR_API
     void init( );

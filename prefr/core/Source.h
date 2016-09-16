@@ -63,20 +63,20 @@ namespace prefr
     PREFR_API
     virtual ~Source( void );
 
-    PREFR_API virtual bool Active();
-    PREFR_API virtual bool Emits() const;
-    PREFR_API virtual bool Continue() const;
-    PREFR_API virtual bool Finished();
-    PREFR_API virtual void Restart();
+    PREFR_API virtual bool Active( );
+    PREFR_API virtual bool Emits( ) const;
+    PREFR_API virtual bool Continue( ) const;
+    PREFR_API virtual bool Finished( );
+    PREFR_API virtual void Restart( );
 
-    PREFR_API virtual const int& GetBudget();
+    PREFR_API virtual const int& GetBudget( );
     PREFR_API virtual void PrepareFrame( const float& deltaTime );
-    PREFR_API virtual void CloseFrame();
+    PREFR_API virtual void CloseFrame( );
 
-    PREFR_API virtual void IncreaseAlive();
-    PREFR_API virtual void CheckEmissionEnd();
+    PREFR_API virtual void IncreaseAlive( );
+    PREFR_API virtual void CheckEmissionEnd( );
 
-    PREFR_API virtual void ReduceBudgetBy(const unsigned int& decrement = 1);
+    PREFR_API virtual void ReduceBudgetBy( const unsigned int& decrement = 1 );
 
     PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
 
@@ -124,7 +124,7 @@ namespace prefr
 
   };
 
-  typedef std::vector<Source*> SourcesArray;
+  typedef std::vector< Source* > SourcesArray;
 
   class TimedSource : public Source, public utils::SingleFrameTimer
   {

@@ -39,11 +39,11 @@ namespace prefr
 
   public:
 
-    OSGRenderConfig(unsigned int size)
-    : RenderConfig(size)
-    , billboardVertices( new std::vector<GLfloat>( size ) )
-    , particlePositions( new std::vector<GLfloat>( size ) )
-    , particleColors( new std::vector<GLfloat>( size ))
+    OSGRenderConfig( unsigned int size )
+    : RenderConfig( size )
+    , billboardVertices( new std::vector< GLfloat >( size ) )
+    , particlePositions( new std::vector< GLfloat >( size ) )
+    , particleColors( new std::vector< GLfloat >( size ))
     , vao( 0 )
     , vboBillboardVertex( 0 )
     , vboParticlesPositions( 0 )
@@ -54,20 +54,20 @@ namespace prefr
     , uCameraUp( nullptr )
     , uCameraRight( nullptr )
     , init( false )
-    {}
+    { }
 
-    virtual ~OSGRenderConfig()
+    virtual ~OSGRenderConfig( )
     {
-     vboDrawElements = 0;
-     init = false;
+      vboDrawElements = 0;
+      init = false;
     }
 
   protected:
 
     // Triangles vertices
-    std::vector<GLfloat>* billboardVertices;
-    std::vector<GLfloat>* particlePositions;
-    std::vector<GLfloat>* particleColors;
+    std::vector< GLfloat >* billboardVertices;
+    std::vector< GLfloat >* particlePositions;
+    std::vector< GLfloat >* particleColors;
 
     // OpenGL pointers
     GLuint vao;

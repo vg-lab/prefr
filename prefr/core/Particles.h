@@ -36,46 +36,48 @@
     std::vector< type > _##name##Vector; \
   public: \
     type& p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
-    void p##name( unsigned int i, const type& value ){ _##name##Vector[ i ] = value; }
+    void p##name( unsigned int i, const type& value ) \
+      { _##name##Vector[ i ] = value; }
 
 #define PREFR_ATRIB_BOOL( name, type ) \
   protected: \
     std::vector< type > _##name##Vector; \
   public: \
     type p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
-    void p##name( unsigned int i, const type& value ){ _##name##Vector[ i ] = value; }
+    void p##name( unsigned int i, const type& value ) \
+      { _##name##Vector[ i ] = value; }
 
 #define PREFR_HANDLER( name, type ) \
-    protected: \
-      std::vector< type* > _##name##s; \
-      std::vector< unsigned int > _##particles##name; \
-    public: \
-      type* name( unsigned int i ){ return _##name##s[ i ]; } \
-      void add##name( type* handler ){ _##name##s.push_back( handler ); } \
-      void remove##name( unsigned int i ) \
-        { _##name##s.erase( _##name##s.begin( ) + i, \
-                            _##name##s.begin( ) + i + 1 );}
+  protected: \
+    std::vector< type* > _##name##s; \
+    std::vector< unsigned int > _##particles##name; \
+  public: \
+    type* name( unsigned int i ){ return _##name##s[ i ]; } \
+    void add##name( type* handler ){ _##name##s.push_back( handler ); } \
+    void remove##name( unsigned int i ) \
+      { _##name##s.erase( _##name##s.begin( ) + i, \
+                          _##name##s.begin( ) + i + 1 );}
 
 
 #define PREFR_ATRIB_IT( name, type ) \
-    protected: \
-      std::vector< type >::iterator name##Iterator; \
-    public: \
-      type name( void ) const { return *name##Iterator; } \
-      void name( const type& value ){ *name##Iterator = value; }
+  protected: \
+    std::vector< type >::iterator name##Iterator; \
+  public: \
+    type name( void ) const { return *name##Iterator; } \
+    void name( const type& value ){ *name##Iterator = value; }
 
 #define PREFR_ATRIB_BOOL_IT( name, type ) \
-    protected: \
-      std::vector< type >::iterator name##Iterator; \
-    public: \
-      type name( void ) const { return *name##Iterator; } \
-      void name( const type& value ){ *name##Iterator = value; }
+  protected: \
+    std::vector< type >::iterator name##Iterator; \
+  public: \
+    type name( void ) const { return *name##Iterator; } \
+    void name( const type& value ){ *name##Iterator = value; }
 
 #define PREFR_ATRIB_CONST_IT( name, type ) \
-    protected: \
-      std::vector< type >::const_iterator name##ConstIterator; \
-    public: \
-      type name( void ) const { return *name##ConstIterator; }
+  protected: \
+    std::vector< type >::const_iterator name##ConstIterator; \
+  public: \
+    type name( void ) const { return *name##ConstIterator; }
 
 namespace prefr
 {
@@ -87,7 +89,6 @@ typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
 
 namespace prefr
 {
-
 
   class Particles : public boost::noncopyable
   {
@@ -104,7 +105,6 @@ namespace prefr
       VELOCITY,
       ACCELERATION,
       ALIVE,
-      NEWBORN,
       DISTANCE
     };
 
@@ -130,7 +130,7 @@ namespace prefr
     ParticleRange range( void );
 
     iterator at( unsigned int i );
-    const_iterator at( unsigned int i) const;
+    const_iterator at( unsigned int i ) const;
 
   protected:
 
@@ -138,19 +138,6 @@ namespace prefr
 
     iterator CreateIterator( unsigned int i );
     const_iterator CreateConstIterator( unsigned int i ) const;
-
-//    std::vector< unsigned int > idVector;
-//    std::vector< float > lifeVector;
-//    std::vector< float > sizeVector;
-//    std::vector< glm::vec3 > positionVector;
-//    std::vector< glm::vec4 > colorVector;
-//    std::vector< glm::vec3 > velocityVector;
-//    std::vector< glm::vec3 > accelerationVector;
-//
-//    std::vector< bool > aliveVector;
-//    std::vector< bool > newbornVector;
-//
-//    std::vector< float > distanceVector;
 
     PREFR_ATRIB( id, unsigned int )
     PREFR_ATRIB( life, float )
@@ -162,46 +149,13 @@ namespace prefr
     PREFR_ATRIB( acceleration, glm::vec3 )
 
     PREFR_ATRIB_BOOL( alive, bool )
-    PREFR_ATRIB_BOOL( newborn, bool )
-
-
 
     unsigned int _size;
 
   };
 
-//  class Particles::base_iterator
-//  {
-//
-//  protected:
-//
-//    base_iterator( void );
-//    base_iterator( const base_iterator& other );
-//    virtual ~base_iterator( );
-//
-//    virtual base_iterator& operator++( void ) = 0;
-//    virtual base_iterator& operator--( void ) = 0;
-//
-//    virtual base_iterator operator+( int increase ) = 0;
-//    virtual base_iterator operator-( int decrease ) = 0;
-//
-//    int operator+( const base_iterator& other );
-//    int operator-( const base_iterator& other );
-//
-//
-//
-//    virtual bool operator== ( const base_iterator& other );
-//    virtual bool operator!= ( const base_iterator& other );
-//
-//    long _position;
-//    unsigned int _size;
-//
-//    const Particles* _data;
-//
-//  };
-
   class Particles::iterator
-  : public std::iterator<std::bidirectional_iterator_tag, Particles>
+  : public std::iterator< std::bidirectional_iterator_tag, Particles >
   {
     friend class Particles;
     friend class Particles::const_iterator;
@@ -219,9 +173,6 @@ namespace prefr
 
     iterator operator+( int increase );
     iterator operator-( int decrease );
-
-//    iterator* operator->( void ) const;
-//    iterator& operator*( void ) const;
 
     int operator+( const iterator& other );
     int operator-( const iterator& other );
@@ -246,12 +197,11 @@ namespace prefr
     PREFR_ATRIB_IT( acceleration, glm::vec3 )
 
     PREFR_ATRIB_BOOL_IT( alive, bool )
-    PREFR_ATRIB_BOOL_IT( newborn, bool )
 
   };
 
   class Particles::const_iterator
-  : public std::iterator<std::bidirectional_iterator_tag, Particles>
+  : public std::iterator< std::bidirectional_iterator_tag, Particles >
   {
     friend class Particles;
     friend class Particles::iterator;
@@ -270,9 +220,6 @@ namespace prefr
 
     const_iterator operator+( int increase );
     const_iterator operator-( int decrease );
-
-//    const_iterator* operator->( void );
-//    const_iterator& operator*( void );
 
     bool operator== ( const const_iterator& other );
     bool operator!= ( const const_iterator& other );
@@ -294,7 +241,6 @@ namespace prefr
     PREFR_ATRIB_CONST_IT( acceleration, glm::vec3 )
 
     PREFR_ATRIB_CONST_IT( alive, bool )
-    PREFR_ATRIB_CONST_IT( newborn, bool )
 
   };
 

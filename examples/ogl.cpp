@@ -178,12 +178,12 @@ void initShader( const char *vname, const char *fname )
 
 void expandBoundingBox( Eigen::Vector3f& minBounds,
                         Eigen::Vector3f& maxBounds,
-                        const glm::vec3& position)
+                        const glm::vec3& position )
 {
   for( unsigned int i = 0; i < 3; ++i )
   {
-    minBounds( i ) = std::min( minBounds( i ), position[ i ] );
-    maxBounds( i ) = std::max( maxBounds( i ), position[ i ] );
+    minBounds( i ) = std::min( minBounds( i ), position[ i ]);
+    maxBounds( i ) = std::max( maxBounds( i ), position[ i ]);
   }
 }
 
@@ -222,31 +222,36 @@ void idleFunc( void )
 
 void mouseFunc( int button, int state, int xCoord, int yCoord )
 {
-  if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
+  if( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
   {
     rotation = true;
     mxCoord = xCoord;
     myCoord = yCoord;
   }
-  if ( button == GLUT_LEFT_BUTTON && state == GLUT_UP )
+
+  if( button == GLUT_LEFT_BUTTON && state == GLUT_UP )
   {
     rotation=false;
   }
-  if ( button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN )
+
+  if( button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN )
   {
     translation = true;
     mxCoord = xCoord;
     myCoord = yCoord;
   }
-  if ( button == GLUT_MIDDLE_BUTTON && state == GLUT_UP )
+
+  if( button == GLUT_MIDDLE_BUTTON && state == GLUT_UP )
   {
     translation = false;
   }
-  if ( button == 3 && state == GLUT_DOWN )
+
+  if( button == 3 && state == GLUT_DOWN )
   {
     camera.radius( camera.radius( ) / 1.1f );
   }
-  if ( button == 4 && state == GLUT_DOWN )
+
+  if( button == 4 && state == GLUT_DOWN )
   {
     camera.radius( camera.radius( ) * 1.1f );
   }
@@ -256,7 +261,8 @@ void mouseMoveFunc( int xCoord, int yCoord )
 {
   if( rotation )
   {
-    camera.localRotation( -( mxCoord - xCoord ) * 0.01, -( myCoord - yCoord ) * 0.01 );
+    camera.localRotation( - ( mxCoord - xCoord ) * 0.01,
+                          - ( myCoord - yCoord ) * 0.01 );
     mxCoord = xCoord;
     myCoord = yCoord;
   }
@@ -280,8 +286,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   model1->size.Insert( 0.0f, 15.0f );
   model1->size.Insert( 1.0f, 3.0f );
 
-  model1->velocity.Insert( 0.0f, 5.0f);
-  model1->velocity.Insert( 1.0f, 8.0f);
+  model1->velocity.Insert( 0.0f, 5.0f );
+  model1->velocity.Insert( 1.0f, 8.0f );
   particleSystem->AddModel( model1 );
 
   Model* model2 = new Model( 5.0f, 10.0f );
@@ -291,8 +297,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   model2->size.Insert( 0.0f, 10.0f );
   model2->size.Insert( 1.0f, 3.0f );
 
-  model2->velocity.Insert( 0.0f, 5.0f);
-  model2->velocity.Insert( 1.0f, 30.0f);
+  model2->velocity.Insert( 0.0f, 5.0f );
+  model2->velocity.Insert( 1.0f, 30.0f );
   particleSystem->AddModel( model2 );
 
   Updater* updater = new Updater( );
@@ -304,8 +310,6 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 
   unsigned int particlesPerCluster = maxParticles / maxClusters;
 
-
-
   Eigen::Vector3f boundingBoxMin( std::numeric_limits< float >::max( ),
                                   std::numeric_limits< float >::max( ),
                                   std::numeric_limits< float >::max( ));
@@ -315,8 +319,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 
   for( unsigned int i = 0; i < maxClusters; ++i )
   {
-    glm::vec3 position( 100 *  sinf( ( i ) / 10.0f ),
-                        100 *  sinf( ( i + 5 ) / 20.0f ),
+    glm::vec3 position( 100 * sinf(( i ) / 10.0f ),
+                        100 * sinf(( i + 5 ) / 20.0f ),
                         i * 10 );
 
     cluster = new Cluster( );
@@ -333,13 +337,11 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
     expandBoundingBox( boundingBoxMin, boundingBoxMax, position );
   }
 
-
   Eigen::Vector3f center = ( boundingBoxMax + boundingBoxMin ) * 0.5f;
   float radius = ( boundingBoxMax - center ).norm( );
   radius += 50;
 
   camera.targetPivotRadius( center, radius );
-
 
   Sorter* sorter = new Sorter( );
   particleSystem->sorter( sorter );
@@ -380,7 +382,7 @@ int main( int argc, char** argv )
 
   if ( argc >= 2 )
   {
-    if( strcmp( argv[ 1 ], "-h") == 0 )
+    if( strcmp( argv[ 1 ], "-h" ) == 0 )
     {
       usage( );
       exit( 0 );
@@ -394,7 +396,7 @@ int main( int argc, char** argv )
     maxClusters = atoi( argv[ 2 ] );
 
   bool parallel = false;
-  if( argc >= 4 && strcmp( argv[ 3 ], "-p"  ) == 0)
+  if( argc >= 4 && strcmp( argv[ 3 ], "-p" ) == 0 )
     parallel = true;
 
   std::string vertPath;

@@ -28,15 +28,15 @@ namespace prefr
   static float invRandMax = 1.0f / RAND_MAX;
   static float pi2 = 2.0f * float( M_PI );
 
-  glm::vec3 randomSphericalDirection(float thetaAngle = pi2)
+  glm::vec3 randomSphericalDirection( float thetaAngle = pi2 )
   {
     float theta, phi, vxz;
 
     theta = glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) * thetaAngle;
-    phi = glm::clamp( rand( )*invRandMax, 0.0f, 1.0f ) * pi2;
-    vxz = sinf(theta);
+    phi = glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) * pi2;
+    vxz = sinf( theta );
 
-    return glm::vec3 (cosf(phi)*vxz, cosf(theta), sinf(phi)*vxz);
+    return glm::vec3( cosf( phi ) * vxz, cosf( theta ), sinf( phi ) * vxz );
   }
 
   void PointSampler::sample( const Source& source,

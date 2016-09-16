@@ -27,12 +27,10 @@ namespace prefr
   static float invRandMax = 1.0f / RAND_MAX;
 
   Updater::Updater( void )
-  {}
+  { }
 
   Updater::~Updater( )
-  {
-
-  }
+  { }
 
   void Updater::Emit( const Cluster& cluster,
                       const tparticle_ptr current )
@@ -44,7 +42,6 @@ namespace prefr
                    model->_lifeInterval + model->_minLife );
 
     current->alive( true );
-    current->newborn( true );
 
     SampledValues values;
     source->sample( &values );
@@ -77,11 +74,11 @@ namespace prefr
 
     current->alive( current->life( ) > 0 );
 
-    if( current->alive( ) /*&& !current->newborn( )*/)
+    if( current->alive( ))
     {
 
       float refLife = 1.0f -
-          glm::clamp( current->life( ) * ( model->_lifeNormalization),
+          glm::clamp( current->life( ) * ( model->_lifeNormalization ),
                       0.0f, 1.0f );
 
       current->color( model->color.GetValue( refLife ));
@@ -94,8 +91,6 @@ namespace prefr
                          current->velocityModule( ) * deltaTime );
 
     }
-
-    current->newborn( false );
 
   }
 

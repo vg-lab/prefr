@@ -278,7 +278,6 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->aliveParticles = _aliveParticles;
 
-    Log::log( std::string( "UPDATE - Alive particles: ") + std::to_string( _aliveParticles ));
   }
 
   void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
@@ -289,12 +288,6 @@ namespace prefr
 
   void ParticleSystem::UpdateCameraDistances( void )
   {
-//    assert( _camera );
-//    glm::vec3& cameraPosition = std::move( _camera->PReFrCameraPosition( ));
-//    _sorter->UpdateCameraDistance( glm::vec3( cameraPosition.x,
-//                                              cameraPosition.y,
-//                                              cameraPosition.z ),
-//                                   _renderDeadParticles );
     if( _run )
         _sorter->UpdateCameraDistance( _renderDeadParticles );
   }

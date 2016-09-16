@@ -48,68 +48,69 @@ namespace prefr
     GLfloat b[] = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f,
                     -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f };
 
-    _glRenderConfig->_billboardVertices = new std::vector<GLfloat>(12);
+    _glRenderConfig->_billboardVertices = new std::vector< GLfloat >( 12 );
     _glRenderConfig->_particlePositions =
-      new std::vector<GLfloat>(_particles.size * 4);
+        new std::vector< GLfloat >( _particles.size * 4 );
     _glRenderConfig->_particleColors =
-      new std::vector<GLfloat>(_particles.size * 4);
+        new std::vector< GLfloat >( _particles.size * 4 );
 
-    for (unsigned int i = 0; i < _glRenderConfig->_billboardVertices->size(); i++)
+    for ( unsigned int i = 0;
+          i < _glRenderConfig->_billboardVertices->size( );
+          i++)
     {
-      _glRenderConfig->_billboardVertices->at(i) = b[i];
+      _glRenderConfig->_billboardVertices->at( i ) = b[ i ];
     }
 
-    glGenVertexArrays(1, &_glRenderConfig->_vao);
-    glBindVertexArray(_glRenderConfig->_vao);
+    glGenVertexArrays( 1, &_glRenderConfig->_vao );
+    glBindVertexArray( _glRenderConfig->_vao );
 
-    GLuint buffersGL[3];
-    glGenBuffers(3, buffersGL);
+    GLuint buffersGL[ 3 ];
+    glGenBuffers( 3, buffersGL );
 
-    _glRenderConfig->_boBillboardVertex = buffersGL[0];
-    _glRenderConfig->_vboParticlesPositions = buffersGL[1];
-    _glRenderConfig->_vboParticlesColors = buffersGL[2];
+    _glRenderConfig->_boBillboardVertex = buffersGL[ 0 ];
+    _glRenderConfig->_vboParticlesPositions = buffersGL[ 1 ];
+    _glRenderConfig->_vboParticlesColors = buffersGL[ 2 ];
 
     // Assign billboard vertices
-    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_boBillboardVertex);
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_boBillboardVertex );
     glBufferData( GL_ARRAY_BUFFER,
-                  sizeof(GLfloat) *
-                  _glRenderConfig->_billboardVertices->size(),
-                  &_glRenderConfig->_billboardVertices->front(),
-                  GL_STATIC_DRAW);
+                  sizeof( GLfloat ) *
+                  _glRenderConfig->_billboardVertices->size( ),
+                  &_glRenderConfig->_billboardVertices->front( ),
+                  GL_STATIC_DRAW );
 
 
-    glBindBuffer(GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesPositions);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(GLfloat) *
-                 _glRenderConfig->_particlePositions->size(),
-                 nullptr,
-                 GL_DYNAMIC_DRAW);
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesPositions );
+    glBufferData( GL_ARRAY_BUFFER,
+                  sizeof( GLfloat ) *
+                  _glRenderConfig->_particlePositions->size( ),
+                  nullptr,
+                  GL_DYNAMIC_DRAW );
 
 
-    glBindBuffer(GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesColors);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(GLfloat) *
-                 _glRenderConfig->_particleColors->size(),
-                 nullptr,
-                 GL_DYNAMIC_DRAW);
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesColors );
+    glBufferData( GL_ARRAY_BUFFER,
+                  sizeof( GLfloat ) *
+                  _glRenderConfig->_particleColors->size( ),
+                  nullptr,
+                  GL_DYNAMIC_DRAW );
 
     // Bind vertices
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, _glRenderConfig->_boBillboardVertex);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    glEnableVertexAttribArray( 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_boBillboardVertex );
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesPositions);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    glEnableVertexAttribArray( 1 );
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesPositions );
+    glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesColors);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void *) 0);
+    glEnableVertexAttribArray( 2 );
+    glBindBuffer( GL_ARRAY_BUFFER, _glRenderConfig->_vboParticlesColors );
+    glVertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, 0, ( void * ) 0 );
 
-
-    glVertexAttribDivisor(0, 0);
-    glVertexAttribDivisor(1, 1);
-    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor( 0, 0 );
+    glVertexAttribDivisor( 1, 1 );
+    glVertexAttribDivisor( 2, 1 );
   }
 
   void GLRenderer::glRenderProgram( IGLRenderProgram* renderProgram )
@@ -135,7 +136,9 @@ namespace prefr
   void GLRenderer::SetupRender( void )
   {
 #ifdef PREFR_USE_OPENMP
+
     #pragma omp parallel for if( _parallel )
+
 #endif
     for( int i = 0; i < ( int ) _glRenderConfig->aliveParticles; ++i )
     {
@@ -195,7 +198,6 @@ namespace prefr
 
     glBindVertexArray( 0 );
 
-    Log::log( std::string( "SETUP - Alive particles: ") + std::to_string( _glRenderConfig->aliveParticles ));
   }
 
   void GLRenderer::Paint( void ) const
@@ -204,10 +206,10 @@ namespace prefr
 
     if( _glRenderConfig->_glRenderProgram && _glRenderConfig->_camera )
     {
-      glDisable(GL_DEPTH_TEST);
-      glDisable(GL_CULL_FACE);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glDisable( GL_DEPTH_TEST );
+      glDisable( GL_CULL_FACE );
+      glEnable( GL_BLEND );
+      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
       _glRenderProgram->PReFrActivateGLProgram( );
       unsigned int programID = _glRenderProgram->PReFrGLProgramID( );
@@ -215,9 +217,10 @@ namespace prefr
       unsigned int mvpID = glGetUniformLocation(
           programID, _glRenderProgram->PReFrViewProjectionMatrixAlias( ));
 
-      glm::mat4x4 tmp = _glRenderConfig->_camera->PReFrCameraViewProjectionMatrix( );
-      glUniformMatrix4fv( mvpID, 1, GL_FALSE, glm::value_ptr(
-          tmp ));
+      glm::mat4x4 tmp =
+          _glRenderConfig->_camera->PReFrCameraViewProjectionMatrix( );
+
+      glUniformMatrix4fv( mvpID, 1, GL_FALSE, glm::value_ptr( tmp ));
 
       unsigned int cameraUpID = glGetUniformLocation(
           programID, _glRenderProgram->PReFrViewMatrixUpComponentAlias( ));
@@ -242,6 +245,7 @@ namespace prefr
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
                            _glRenderConfig->aliveParticles );
+
     glBindVertexArray( 0 );
   }
 

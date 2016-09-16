@@ -92,7 +92,7 @@ namespace prefr
     virtual osg::BoundingBox computeBound( ) const;
 
     PREFR_API
-    virtual void accept(osg::PrimitiveFunctor& functor) const;
+    virtual void accept( osg::PrimitiveFunctor& functor ) const;
 
     PREFR_API
     virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;

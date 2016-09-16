@@ -27,7 +27,7 @@
 namespace utils
 {
 
-  template <class ELEM>
+  template< class ELEM >
   class ElementCollection
   {
   public:
