@@ -210,13 +210,13 @@ namespace prefr
 
       _totalParticles = _cluster->particles( ).size;
       _deadParticles.resize( _totalParticles );
-      _particlesToEmit.resize( _totalParticles );
 
+      std::vector< unsigned int >::iterator deadIt = _deadParticles.begin( );
       for( tparticle particle = _cluster->particles( ).begin( );
-          particle != _cluster->particles( ).end( ); ++particle )
+          particle != _cluster->particles( ).end( ); ++particle, ++deadIt )
       {
         if( !particle.alive( ))
-          _deadParticles.push_back( particle.id( ));
+          *deadIt = particle.id( );
       }
     }
 
@@ -243,6 +243,17 @@ namespace prefr
         }
       }
     }
+
+    std::vector< unsigned int >& Source::deadParticles( void )
+    {
+      return _deadParticles;
+    }
+
+    std::vector< unsigned int >& Source::particlesToEmit( void )
+    {
+      return _particlesToEmit;
+    }
+
 
     TimedSource::TimedSource( float emissionRate_, glm::vec3 position_ )
     : Source( emissionRate_, position_ )

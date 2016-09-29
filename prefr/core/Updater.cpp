@@ -39,7 +39,7 @@ namespace prefr
     Model* model = cluster.model( );
 
     current->life( glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) *
-                   model->_lifeInterval + model->_minLife );
+                   model->_lifeRange + model->_minLife );
 
     current->alive( true );
 

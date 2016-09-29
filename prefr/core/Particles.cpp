@@ -118,15 +118,15 @@ namespace prefr
     iterator it;
     it._data = this;
 
-    it.idIterator = _idVector.begin( ) + i;
-    it.lifeIterator = _lifeVector.begin( ) + i;
-    it.sizeIterator = _sizeVector.begin( ) + i;
-    it.positionIterator = _positionVector.begin( ) + i;
-    it.colorIterator = _colorVector.begin( ) + i;
-    it.velocityModuleIterator = _velocityModuleVector.begin( ) + i;
-    it.velocityIterator = _velocityVector.begin( ) + i;
-    it.accelerationIterator = _accelerationVector.begin( ) + i;
-    it.aliveIterator = _aliveVector.begin( ) + i;
+    it._idIterator = _idVector.begin( ) + i;
+    it._lifeIterator = _lifeVector.begin( ) + i;
+    it._sizeIterator = _sizeVector.begin( ) + i;
+    it._positionIterator = _positionVector.begin( ) + i;
+    it._colorIterator = _colorVector.begin( ) + i;
+    it._velocityModuleIterator = _velocityModuleVector.begin( ) + i;
+    it._velocityIterator = _velocityVector.begin( ) + i;
+    it._accelerationIterator = _accelerationVector.begin( ) + i;
+    it._aliveIterator = _aliveVector.begin( ) + i;
 
     it._position = i;
     it._size = _size;
@@ -142,15 +142,15 @@ namespace prefr
     const_iterator it;
     it._data = this;
 
-    it.idConstIterator = _idVector.begin( ) + i;
-    it.lifeConstIterator = _lifeVector.begin( ) + i;
-    it.sizeConstIterator = _sizeVector.begin( ) + i;
-    it.positionConstIterator = _positionVector.begin( ) + i;
-    it.colorConstIterator = _colorVector.begin( ) + i;
-    it.velocityModuleConstIterator = _velocityModuleVector.begin( ) + i;
-    it.velocityConstIterator = _velocityVector.begin( ) + i;
-    it.accelerationConstIterator = _accelerationVector.begin( )+ i;
-    it.aliveConstIterator = _aliveVector.begin( ) + i;
+    it._idConstIterator = _idVector.begin( ) + i;
+    it._lifeConstIterator = _lifeVector.begin( ) + i;
+    it._sizeConstIterator = _sizeVector.begin( ) + i;
+    it._positionConstIterator = _positionVector.begin( ) + i;
+    it._colorConstIterator = _colorVector.begin( ) + i;
+    it._velocityModuleConstIterator = _velocityModuleVector.begin( ) + i;
+    it._velocityConstIterator = _velocityVector.begin( ) + i;
+    it._accelerationConstIterator = _accelerationVector.begin( )+ i;
+    it._aliveConstIterator = _aliveVector.begin( ) + i;
 
     it._position = i;
     it._size = _size;
@@ -170,28 +170,28 @@ namespace prefr
   : _position( other._position )
   , _size( other._size )
   , _data( other._data )
-  , idIterator( other.idIterator )
-  , lifeIterator( other.lifeIterator )
-  , sizeIterator( other.sizeIterator )
-  , positionIterator( other.positionIterator )
-  , colorIterator( other.colorIterator )
-  , velocityModuleIterator( other.velocityModuleIterator )
-  , velocityIterator( other.velocityIterator )
-  , accelerationIterator( other.accelerationIterator )
-  , aliveIterator( other.aliveIterator )
+  , _idIterator( other._idIterator )
+  , _lifeIterator( other._lifeIterator )
+  , _sizeIterator( other._sizeIterator )
+  , _positionIterator( other._positionIterator )
+  , _colorIterator( other._colorIterator )
+  , _velocityModuleIterator( other._velocityModuleIterator )
+  , _velocityIterator( other._velocityIterator )
+  , _accelerationIterator( other._accelerationIterator )
+  , _aliveIterator( other._aliveIterator )
   { }
 
   Particles::iterator& Particles::iterator::operator++( void )
   {
-    idIterator++;
-    lifeIterator++;
-    sizeIterator++;
-    positionIterator++;
-    colorIterator++;
-    velocityModuleIterator++;
-    velocityIterator++;
-    accelerationIterator++;
-    aliveIterator++;
+    _idIterator++;
+    _lifeIterator++;
+    _sizeIterator++;
+    _positionIterator++;
+    _colorIterator++;
+    _velocityModuleIterator++;
+    _velocityIterator++;
+    _accelerationIterator++;
+    _aliveIterator++;
 
     _position++;
 
@@ -202,15 +202,15 @@ namespace prefr
   {
     Particles::iterator result( *this );
 
-    idIterator++;
-    lifeIterator++;
-    sizeIterator++;
-    positionIterator++;
-    colorIterator++;
-    velocityModuleIterator++;
-    velocityIterator++;
-    accelerationIterator++;
-    aliveIterator++;
+    _idIterator++;
+    _lifeIterator++;
+    _sizeIterator++;
+    _positionIterator++;
+    _colorIterator++;
+    _velocityModuleIterator++;
+    _velocityIterator++;
+    _accelerationIterator++;
+    _aliveIterator++;
 
     _position++;
 
@@ -219,15 +219,15 @@ namespace prefr
 
   Particles::iterator& Particles::iterator::operator--( void )
   {
-    idIterator--;
-    lifeIterator--;
-    sizeIterator--;
-    positionIterator--;
-    colorIterator--;
-    velocityModuleIterator--;
-    velocityIterator--;
-    accelerationIterator--;
-    aliveIterator--;
+    _idIterator--;
+    _lifeIterator--;
+    _sizeIterator--;
+    _positionIterator--;
+    _colorIterator--;
+    _velocityModuleIterator--;
+    _velocityIterator--;
+    _accelerationIterator--;
+    _aliveIterator--;
 
     _position--;
 
@@ -238,15 +238,15 @@ namespace prefr
   {
     Particles::iterator result( *this );
 
-    idIterator--;
-    lifeIterator--;
-    sizeIterator--;
-    positionIterator--;
-    colorIterator--;
-    velocityModuleIterator--;
-    velocityIterator--;
-    accelerationIterator--;
-    aliveIterator--;
+    _idIterator--;
+    _lifeIterator--;
+    _sizeIterator--;
+    _positionIterator--;
+    _colorIterator--;
+    _velocityModuleIterator--;
+    _velocityIterator--;
+    _accelerationIterator--;
+    _aliveIterator--;
 
     _position--;
 
@@ -257,15 +257,15 @@ namespace prefr
   {
     Particles::iterator result( *this );
 
-    result.idIterator += increase;
-    result.lifeIterator += increase;
-    result.sizeIterator += increase;
-    result.positionIterator += increase;
-    result.colorIterator += increase;
-    result.velocityModuleIterator += increase;
-    result.velocityIterator += increase;
-    result.accelerationIterator += increase;
-    result.aliveIterator += increase;
+    result._idIterator += increase;
+    result._lifeIterator += increase;
+    result._sizeIterator += increase;
+    result._positionIterator += increase;
+    result._colorIterator += increase;
+    result._velocityModuleIterator += increase;
+    result._velocityIterator += increase;
+    result._accelerationIterator += increase;
+    result._aliveIterator += increase;
 
     result._position += increase;
 
@@ -276,15 +276,15 @@ namespace prefr
   {
     Particles::iterator result( *this );
 
-    result.idIterator -= decrease;
-    result.lifeIterator -= decrease;
-    result.sizeIterator -= decrease;
-    result.positionIterator -= decrease;
-    result.colorIterator -= decrease;
-    result.velocityModuleIterator -= decrease;
-    result.velocityIterator -= decrease;
-    result.accelerationIterator -= decrease;
-    result.aliveIterator -= decrease;
+    result._idIterator -= decrease;
+    result._lifeIterator -= decrease;
+    result._sizeIterator -= decrease;
+    result._positionIterator -= decrease;
+    result._colorIterator -= decrease;
+    result._velocityModuleIterator -= decrease;
+    result._velocityIterator -= decrease;
+    result._accelerationIterator -= decrease;
+    result._aliveIterator -= decrease;
 
     result._position -= decrease;
 
@@ -324,15 +324,15 @@ namespace prefr
   : _position( other._position )
   , _size( other._size )
   , _data( other._data )
-  , idConstIterator( other.idConstIterator )
-  , lifeConstIterator( other.lifeConstIterator )
-  , sizeConstIterator( other.sizeConstIterator )
-  , positionConstIterator( other.positionConstIterator )
-  , colorConstIterator( other.colorConstIterator )
-  , velocityModuleConstIterator( other.velocityModuleConstIterator )
-  , velocityConstIterator( other.velocityConstIterator )
-  , accelerationConstIterator( other.accelerationConstIterator )
-  , aliveConstIterator( other.aliveConstIterator )
+  , _idConstIterator( other._idConstIterator )
+  , _lifeConstIterator( other._lifeConstIterator )
+  , _sizeConstIterator( other._sizeConstIterator )
+  , _positionConstIterator( other._positionConstIterator )
+  , _colorConstIterator( other._colorConstIterator )
+  , _velocityModuleConstIterator( other._velocityModuleConstIterator )
+  , _velocityConstIterator( other._velocityConstIterator )
+  , _accelerationConstIterator( other._accelerationConstIterator )
+  , _aliveConstIterator( other._aliveConstIterator )
   { }
 
   Particles::const_iterator::const_iterator(
@@ -340,29 +340,29 @@ namespace prefr
   : _position( other._position )
   , _size( other._size )
   , _data( other._data )
-  , idConstIterator( other.idIterator )
-  , lifeConstIterator( other.lifeIterator )
-  , sizeConstIterator( other.sizeIterator )
-  , positionConstIterator( other.positionIterator )
-  , colorConstIterator( other.colorIterator )
-  , velocityModuleConstIterator( other.velocityModuleIterator )
-  , velocityConstIterator( other.velocityIterator )
-  , accelerationConstIterator( other.accelerationIterator )
-  , aliveConstIterator( other.aliveIterator )
+  , _idConstIterator( other._idIterator )
+  , _lifeConstIterator( other._lifeIterator )
+  , _sizeConstIterator( other._sizeIterator )
+  , _positionConstIterator( other._positionIterator )
+  , _colorConstIterator( other._colorIterator )
+  , _velocityModuleConstIterator( other._velocityModuleIterator )
+  , _velocityConstIterator( other._velocityIterator )
+  , _accelerationConstIterator( other._accelerationIterator )
+  , _aliveConstIterator( other._aliveIterator )
   { }
 
   Particles::const_iterator& Particles::const_iterator::operator++( void )
   {
 
-    ++idConstIterator;
-    ++lifeConstIterator;
-    ++sizeConstIterator;
-    ++positionConstIterator;
-    ++colorConstIterator;
-    ++velocityModuleConstIterator;
-    ++velocityConstIterator;
-    ++accelerationConstIterator;
-    ++aliveConstIterator;
+    ++_idConstIterator;
+    ++_lifeConstIterator;
+    ++_sizeConstIterator;
+    ++_positionConstIterator;
+    ++_colorConstIterator;
+    ++_velocityModuleConstIterator;
+    ++_velocityConstIterator;
+    ++_accelerationConstIterator;
+    ++_aliveConstIterator;
 
     ++_position;
 
@@ -373,15 +373,15 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    ++idConstIterator;
-    ++lifeConstIterator;
-    ++sizeConstIterator;
-    ++positionConstIterator;
-    ++colorConstIterator;
-    ++velocityModuleConstIterator;
-    ++velocityConstIterator;
-    ++accelerationConstIterator;
-    ++aliveConstIterator;
+    ++_idConstIterator;
+    ++_lifeConstIterator;
+    ++_sizeConstIterator;
+    ++_positionConstIterator;
+    ++_colorConstIterator;
+    ++_velocityModuleConstIterator;
+    ++_velocityConstIterator;
+    ++_accelerationConstIterator;
+    ++_aliveConstIterator;
 
     ++_position;
 
@@ -391,15 +391,15 @@ namespace prefr
   Particles::const_iterator& Particles::const_iterator::operator--( void )
   {
 
-    --idConstIterator;
-    --lifeConstIterator;
-    --sizeConstIterator;
-    --positionConstIterator;
-    --colorConstIterator;
-    --velocityModuleConstIterator;
-    --velocityConstIterator;
-    --accelerationConstIterator;
-    --aliveConstIterator;
+    --_idConstIterator;
+    --_lifeConstIterator;
+    --_sizeConstIterator;
+    --_positionConstIterator;
+    --_colorConstIterator;
+    --_velocityModuleConstIterator;
+    --_velocityConstIterator;
+    --_accelerationConstIterator;
+    --_aliveConstIterator;
 
     --_position;
 
@@ -410,15 +410,15 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    --idConstIterator;
-    --lifeConstIterator;
-    --sizeConstIterator;
-    --positionConstIterator;
-    --colorConstIterator;
-    --velocityModuleConstIterator;
-    --velocityConstIterator;
-    --accelerationConstIterator;
-    --aliveConstIterator;
+    --_idConstIterator;
+    --_lifeConstIterator;
+    --_sizeConstIterator;
+    --_positionConstIterator;
+    --_colorConstIterator;
+    --_velocityModuleConstIterator;
+    --_velocityConstIterator;
+    --_accelerationConstIterator;
+    --_aliveConstIterator;
 
     --_position;
 
@@ -430,15 +430,15 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    result.idConstIterator += increase;
-    result.lifeConstIterator += increase;
-    result.sizeConstIterator += increase;
-    result.positionConstIterator += increase;
-    result.colorConstIterator += increase;
-    result.velocityModuleConstIterator += increase;
-    result.velocityConstIterator += increase;
-    result.accelerationConstIterator += increase;
-    result.aliveConstIterator += increase;
+    result._idConstIterator += increase;
+    result._lifeConstIterator += increase;
+    result._sizeConstIterator += increase;
+    result._positionConstIterator += increase;
+    result._colorConstIterator += increase;
+    result._velocityModuleConstIterator += increase;
+    result._velocityConstIterator += increase;
+    result._accelerationConstIterator += increase;
+    result._aliveConstIterator += increase;
 
     result._position += increase;
 
@@ -450,15 +450,15 @@ namespace prefr
   {
     Particles::const_iterator result( *this );
 
-    result.idConstIterator -= decrease;
-    result.lifeConstIterator -= decrease;
-    result.sizeConstIterator -= decrease;
-    result.positionConstIterator -= decrease;
-    result.colorConstIterator -= decrease;
-    result.velocityModuleConstIterator -= decrease;
-    result.velocityConstIterator -= decrease;
-    result.accelerationConstIterator -= decrease;
-    result.aliveConstIterator -= decrease;
+    result._idConstIterator -= decrease;
+    result._lifeConstIterator -= decrease;
+    result._sizeConstIterator -= decrease;
+    result._positionConstIterator -= decrease;
+    result._colorConstIterator -= decrease;
+    result._velocityModuleConstIterator -= decrease;
+    result._velocityConstIterator -= decrease;
+    result._accelerationConstIterator -= decrease;
+    result._aliveConstIterator -= decrease;
 
     result._position -= decrease;
 

@@ -26,13 +26,11 @@ namespace prefr
   Model::Model()
   : _minLife( 0.0f )
   , _maxLife( 0.0f )
-  , _lifeInterval( 0.0f )
+  , _lifeRange( 0.0f )
   , _lifeNormalization( 1.0f )
-  , _dispersion( 0.0f )
   { }
 
   Model::Model( float min, float max )
-  : _dispersion( 0.0f )
   {
     setLife( min, max );
   }
@@ -44,7 +42,7 @@ namespace prefr
   {
     _minLife = min;
     _maxLife = max;
-    _lifeInterval = _maxLife - _minLife;
+    _lifeRange = _maxLife - _minLife;
     _lifeNormalization = 1.0f / _maxLife;
   }
 
@@ -65,7 +63,7 @@ namespace prefr
 
   float Model::lifeInterval( void )
   {
-    return _lifeInterval;
+    return _lifeRange;
   }
 }
 
