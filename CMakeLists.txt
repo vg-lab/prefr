@@ -32,10 +32,12 @@ set( PREFR_DESCRIPTION "PREFR - Particle Framework" )
 set( COMMON_PROJECT_DOMAIN gmrv.es )
 
 option( PREFR_WITH_OPENSCENEGRAPH "PREFR_WITH_OPENSCENEGRAPH" OFF )
-option( PREFR_WITH_CUDA "PREFR_WITH_CUDA" OFF )
+#option( PREFR_WITH_CUDA "PREFR_WITH_CUDA" OFF )
 option( MODERN_GPU_ARCH "GPU_ARCH" ON )
 option( PREFR_WITH_EXAMPLES "PREFR_WITH_EXAMPLES" OFF )
 option( PREFR_WITH_LOGGING "PREFR_WITH_LOGGING" OFF )
+option( PREFR_PARALLEL "PREFR_PARALLEL" ON )
+
 if ( PREFR_WITH_LOGGING )
   add_definitions( -DPREFR_WITH_LOGGING )
 endif( )
@@ -48,7 +50,6 @@ common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
 common_find_package( GLUT SYSTEM )
 common_find_package( Boost REQUIRED )
-common_find_package( OpenMP )
 common_find_package( Eigen3 SYSTEM )
 common_find_package( ReTo REQUIRED )
 
@@ -58,9 +59,13 @@ if ( GLUT_FOUND )
   list( APPEND PREFR_DEPENDENT_LIBRARIES GLUT )
 endif ( )
 
-if ( OPENMP_FOUND )
-  list( APPEND PREFR_DEPENDENT_LIBRARIES OpenMP )
-endif ( )
+if( PREFR_PARALLEL )
+  common_find_package( OpenMP )
+  if ( OPENMP_FOUND )
+    list( APPEND PREFR_DEPENDENT_LIBRARIES OpenMP )
+  endif ( )
+endif( )
+
 
 if ( PREFR_WITH_OPENSCENEGRAPH )
 	common_find_package( OpenSceneGraph 3.2 EXACT COMPONENTS

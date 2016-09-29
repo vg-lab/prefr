@@ -36,9 +36,9 @@ namespace prefr
 
     if( osgMng )
     {
-      osgMng->particleSystem( )->Update( 0.1f );
+      osgMng->particleSystem( )->update( 0.1f );
       osgMng->updateUniformVariables( );
-      osgMng->particleSystem( )->UpdateRender( );
+      osgMng->particleSystem( )->updateRender( );
     }
   }
 
@@ -231,7 +231,7 @@ namespace prefr
     state->setUseVertexAttributeAliasing( true );
     state->setUseModelViewAndProjectionUniforms( true );
 
-    _particleSystem->Render( );
+    _particleSystem->render( );
   }
 
   void OSGManager::releaseGLObjects( osg::State* /* state */ ) const
@@ -341,7 +341,7 @@ namespace prefr
     osgrc->center = osg::Vec3f( center );
     osgrc->up = osg::Vec3f( up );
 
-    _particleSystem->UpdateCameraDistances(
+    _particleSystem->updateCameraDistances(
         glm::vec3( osgrc->eye.x( ), osgrc->eye.y( ), osgrc->eye.z( )));
 
     osg::Vec3f forward = ( osgrc->center - osgrc->eye );

@@ -91,7 +91,6 @@ namespace prefr
     for( auto cluster : *_clusters )
     {
 
-    }
 #endif
 
       if( cluster->active( ) || renderDeadParticles )

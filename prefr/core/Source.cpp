@@ -244,6 +244,17 @@ namespace prefr
       }
     }
 
+    std::vector< unsigned int >& Source::deadParticles( void )
+    {
+      return _deadParticles;
+    }
+
+    std::vector< unsigned int >& Source::particlesToEmit( void )
+    {
+      return _particlesToEmit;
+    }
+
+
     TimedSource::TimedSource( float emissionRate_, glm::vec3 position_ )
     : Source( emissionRate_, position_ )
     , SingleFrameTimer( 0, 0, 0 )

@@ -81,20 +81,20 @@ namespace prefr
 
   }
 
-  void ParticleSystem::AddCluster( Cluster* cluster,
-                                   unsigned int start,
+  void ParticleSystem::addCluster( Cluster* cluster,
+                                   unsigned int start_,
                                    unsigned int size_ )
   {
 
-    assert( start + size_ <= _maxParticles );
+    assert( start_ + size_ <= _maxParticles );
 
-    cluster->particles( ParticleRange( _particles, start, start + size_ ));
+    cluster->particles( ParticleRange( _particles, start_, start_ + size_ ));
 
     _clusters.push_back( cluster );
 
     unsigned int reference = ( unsigned int ) _clusters.size( ) - 1;
 
-    auto clusterIT = _clusterReference.begin( ) + start;
+    auto clusterIT = _clusterReference.begin( ) + start_;
 
     for( unsigned int i = 0; i < size_; i++ )
     {
@@ -107,19 +107,19 @@ namespace prefr
 
   }
 
-  void ParticleSystem::AddSource( Source* source )
+  void ParticleSystem::addSource( Source* source )
   {
     assert( source );
     _sources.push_back( source );
   }
 
-  void ParticleSystem::AddModel( Model* model )
+  void ParticleSystem::addModel( Model* model )
   {
     assert( model );
     _models.push_back( model );
   }
 
-  void ParticleSystem::AddUpdater( Updater* updater )
+  void ParticleSystem::addUpdater( Updater* updater )
   {
     assert( updater );
     _updaters.push_back(updater);
@@ -168,13 +168,13 @@ namespace prefr
     return _renderer;
   }
 
-  void ParticleSystem::Start()
+  void ParticleSystem::start()
   {
     _run = true;
 
   }
 
-  void ParticleSystem::Update( const float& deltaTime )
+  void ParticleSystem::update( const float& deltaTime )
   {
     if( !_run )
       return;
@@ -280,19 +280,19 @@ namespace prefr
 
   }
 
-  void ParticleSystem::UpdateCameraDistances( const glm::vec3& cameraPosition )
+  void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
   {
     if( _run )
       _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
   }
 
-  void ParticleSystem::UpdateCameraDistances( void )
+  void ParticleSystem::updateCameraDistances( void )
   {
     if( _run )
         _sorter->UpdateCameraDistance( _renderDeadParticles );
   }
 
-  void ParticleSystem::UpdateRender( )
+  void ParticleSystem::updateRender( )
   {
     if( _run )
     {
@@ -301,7 +301,7 @@ namespace prefr
     }
   }
 
-  void ParticleSystem::Render( ) const
+  void ParticleSystem::render( ) const
   {
     if( _run )
       _renderer->Paint( );

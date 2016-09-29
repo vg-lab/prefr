@@ -75,7 +75,7 @@ int main( int argc, char** argv )
   model->size.Insert( 0.0f, 1.0f );
   std::cout << "Created model." << std::endl;
 
-  particleSystem->AddModel( model );
+  particleSystem->addModel( model );
 
   updater = new prefr::Updater( );
   std::cout << "Created updater." << std::endl;
@@ -86,7 +86,7 @@ int main( int argc, char** argv )
   renderer = new prefr::OSGRenderer( );
   std::cout << "Created OSG renderer." << std::endl;
 
-  particleSystem->AddUpdater( updater );
+  particleSystem->addUpdater( updater );
   particleSystem->sorter( sorter );
   particleSystem->renderer( renderer );
 
@@ -100,14 +100,14 @@ int main( int argc, char** argv )
   for( unsigned int i = 0; i < maxClusters; i++ )
   {
     source = new prefr::Source( 1.f, glm::vec3( i * 10, 0, 0 ), sampler );
-    particleSystem->AddSource( source );
+    particleSystem->addSource( source );
 
     cluster = new prefr::Cluster( );
     cluster->source( source );
     cluster->updater( updater );
     cluster->model( model );
 
-    particleSystem->AddCluster( cluster,
+    particleSystem->addCluster( cluster,
                                 i * particlesPerCluster,
                                 particlesPerCluster );
   }
@@ -157,7 +157,7 @@ int main( int argc, char** argv )
   fragPath.append( "OSG/shd/osg-frag.glsl" );
   manager->configureProgram( vertPath, fragPath );
 
-  particleSystem->Start( );
+  particleSystem->start( );
 
   return viewer->run( );
 

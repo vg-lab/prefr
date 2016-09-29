@@ -109,6 +109,8 @@ public:
     _viewMatrixRightComponentAlias = std::string( "cameraRight" );
   }
 
+  virtual ~RenderProgram( ){ }
+
   void PReFrActivateGLProgram( void ){ use( );}
 
   unsigned int PReFrGLProgramID( void ){ return program( ); }
@@ -195,10 +197,10 @@ void renderFunc( void )
 
   camera.anim( );
 
-  particleSystem->Update( 0.1f );
-  particleSystem->UpdateCameraDistances( );
-  particleSystem->UpdateRender( );
-  particleSystem->Render( );
+  particleSystem->update( 0.1f );
+  particleSystem->updateCameraDistances( );
+  particleSystem->updateRender( );
+  particleSystem->render( );
 
 
   glutSwapBuffers( );
@@ -288,7 +290,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 
   model1->velocity.Insert( 0.0f, 5.0f );
   model1->velocity.Insert( 1.0f, 8.0f );
-  particleSystem->AddModel( model1 );
+  particleSystem->addModel( model1 );
 
   Model* model2 = new Model( 5.0f, 10.0f );
   model2->color.Insert( 0.0f, glm::vec4( 0.0f, 1.0f, 1.0f, 0.15f ));
@@ -299,10 +301,10 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 
   model2->velocity.Insert( 0.0f, 5.0f );
   model2->velocity.Insert( 1.0f, 30.0f );
-  particleSystem->AddModel( model2 );
+  particleSystem->addModel( model2 );
 
   Updater* updater = new Updater( );
-  particleSystem->AddUpdater( updater );
+  particleSystem->addUpdater( updater );
 
   Cluster* cluster;
   Source* source;
@@ -329,8 +331,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
     cluster->updater( updater );
     cluster->model( i % 2 == 0 ? model1 : model2 );
 
-    particleSystem->AddSource( source );
-    particleSystem->AddCluster( cluster,
+    particleSystem->addSource( source );
+    particleSystem->addCluster( cluster,
                                 particlesPerCluster * i,
                                 particlesPerCluster );
 
