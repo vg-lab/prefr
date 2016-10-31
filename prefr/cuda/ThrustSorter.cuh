@@ -22,8 +22,8 @@
 #ifndef __PREFR__THRUST_SORTER__
 #define __PREFR__THRUST_SORTER__
 
-#include "../Sorter.h"
-#include "../types.h"
+#include "../core/Sorter.h"
+#include "../utils/types.h"
 #include "CUDADistanceArray.cuh"
 
 namespace prefr
@@ -45,7 +45,7 @@ namespace prefr
                                          const glm::vec3& cameraPosition,
                                          bool discardDeadParticles = true );
 
-    virtual void InitDistanceArray( );
+    virtual void InitDistanceArray( ICamera* camera );
   };
 
 } // namespace prefr

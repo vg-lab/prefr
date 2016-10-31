@@ -44,7 +44,7 @@ endif( )
 
 include( Common )
 
-common_find_package( nvidiaOpenGL SYSTEM )
+#common_find_package( nvidiaOpenGL SYSTEM )
 common_find_package( OpenGL REQUIRED SYSTEM )
 common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
@@ -77,7 +77,8 @@ endif( )
 
 if ( PREFR_WITH_CUDA )
 	include(CudaCommonLibrary)
-	common_find_package( CUDA SYSTEM )
+	find_package( CUDA REQUIRED )
+	common_find_package( CUDA SYSTEM REQUIRED )
   if ( CUDA_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
 

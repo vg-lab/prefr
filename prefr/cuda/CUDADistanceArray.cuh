@@ -22,7 +22,7 @@
 #ifndef __PREFR__CUDA_DISTANCE_ARRAY__
 #define __PREFR__CUDA_DISTANCE_ARRAY__
 
-#include "../DistanceArray.hpp"
+#include "../core/DistanceArray.hpp"
 
 #ifdef PREFR_USE_CUDA
 #include <thrust/device_vector.h>
@@ -51,7 +51,7 @@ namespace prefr
       translatedIDs.resize( size );
     }
 
-    virtual inline int& getID( unsigned int i )
+    virtual inline const int& getID( unsigned int i ) const
     {
       return translatedIDs[ ids[ i ]];
     }

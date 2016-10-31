@@ -32,7 +32,7 @@ namespace prefr
   ThrustSorter::~ThrustSorter( )
   { }
 
-  void ThrustSorter::InitDistanceArray( )
+  void ThrustSorter::InitDistanceArray( ICamera* /* camera */  )
   {
     _distances = new CUDADistanceArray( _particles.size );
 
@@ -47,11 +47,11 @@ namespace prefr
 
     CUDADistanceArray* cda = static_cast< CUDADistanceArray* >( _distances );
 
-    std::vector< int >::iterator hostidbegin = _distances->ids->begin( );
+    std::vector< int >::iterator hostidbegin = _distances->ids.begin( );
     std::vector< int >::iterator hostidend = hostidbegin + _aliveParticles;
 
     std::vector< float >::iterator hostdistbegin =
-        _distances->distances->begin( );
+        _distances->distances.begin( );
 
     std::vector< float >::iterator hostdistend =
         hostdistbegin  + _aliveParticles;
@@ -113,7 +113,7 @@ namespace prefr
     CUDADistanceArray* cda = static_cast< CUDADistanceArray* >( _distances );
     cda->translatedIDs[ _distances->current ] = current->id( );
 
-    ( *_distances->distances )[ _distances->current ] =
+    ( *_distances->distances )[ _distances.current ] =
         current->alive( )  || renderDeadParticles ?
         length2( current->position( ) - cameraPosition ) :
         -1;
