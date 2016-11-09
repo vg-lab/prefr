@@ -56,27 +56,27 @@ namespace prefr
 
     PREFR_API virtual ~Sorter( );
 
-    PREFR_API virtual void Sort( SortOrder order = Descending );
+    PREFR_API virtual void sort( SortOrder order = Descending );
 
     PREFR_API
-    virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
+    virtual void updateCameraDistance( const glm::vec3& cameraPosition,
                                        bool renderDeadParticles = false );
 
     PREFR_API
-    virtual void UpdateParticleDistance( const tparticle_ptr current,
+    virtual void updateCameraDistance( bool renderDeadParticles = false );
+
+    PREFR_API
+    virtual void updateParticleDistance( const tparticle_ptr current,
                                          const glm::vec3& cameraPosition,
                                          bool renderDeadParticles = false );
 
-    PREFR_API
-    virtual void UpdateCameraDistance( bool renderDeadParticles = false );
+    PREFR_API virtual void initDistanceArray( ICamera* camera );
 
-    PREFR_API virtual void InitDistanceArray( ICamera* camera );
+    PREFR_API void clusters( ClustersArray* clusters );
+
+    PREFR_API void particles( const ParticleRange& particles );
 
 protected:
-
-    void clusters( ClustersArray* clusters );
-
-    void particles( const ParticleRange& particles );
 
     ParticleCollection _particles;
 

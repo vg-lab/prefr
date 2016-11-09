@@ -42,10 +42,10 @@ namespace prefr
     virtual ~GLRenderer( );
 
     PREFR_API
-    virtual void SetupRender( void );
+    virtual void setupRender( void );
 
     PREFR_API
-    virtual void Paint( void ) const;
+    virtual void paint( void ) const;
 
     PREFR_API
     virtual void glRenderProgram( IGLRenderProgram* renderProgram );
@@ -55,7 +55,7 @@ namespace prefr
 
   protected:
 
-    void init( void );
+    void _init( void );
 
     GLRenderConfig* _glRenderConfig;
     IGLRenderProgram* _glRenderProgram;

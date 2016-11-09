@@ -54,32 +54,32 @@ namespace prefr
 
     }
 
-    bool Source::Active( )
+    bool Source::active( )
     {
       return _active;
     }
 
-    bool Source::Emits( ) const
+    bool Source::emits( ) const
     {
-      return _active && _particlesToEmit.size( ) > 0 && Continue( );
+      return _active && _particlesToEmit.size( ) > 0 && continuing( );
     }
 
-    bool Source::Continue( ) const
+    bool Source::continuing( ) const
     {
       return _continueEmission;
     }
 
-    bool Source::Finished( )
+    bool Source::finished( )
     {
       return _finished;
     }
 
-    const int& Source::GetBudget( )
+    const int& Source::budget( )
     {
       return _particlesBudget;
     }
 
-    void Source::Restart( )
+    void Source::restart( )
     {
       _currentCycle = 0;
       _emittedParticles = 0;
@@ -93,7 +93,7 @@ namespace prefr
       }
     }
 
-    void Source::PrepareFrame( const float& deltaTime )
+    void Source::prepareFrame( const float& deltaTime )
     {
       assert( _cluster );
 
@@ -108,18 +108,15 @@ namespace prefr
 
       _lastFrameAliveParticles = 0;
 
-      _emittedParticles = _particlesBudget -
-          ( _particlesBudget - ( unsigned int ) _deadParticles.size( ));
-
-      PrepareParticles( );
+      _prepareParticles( );
     }
 
-    void Source::IncreaseAlive( )
+    void Source::increaseAlive( )
     {
       _lastFrameAliveParticles++;
     }
 
-    void Source::CheckEmissionEnd( )
+    void Source::checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
@@ -135,25 +132,18 @@ namespace prefr
       }
     }
 
-
-    void Source::ReduceBudgetBy( const unsigned int& decrement )
-    {
-      _particlesBudget -= decrement;
-      _emittedParticles += decrement;
-    }
-
     void Source::maxEmissionCycles( unsigned int cycles )
     {
       _maxEmissionCycles = cycles;
     }
 
 
-    void Source::CloseFrame( )
+    void Source::closeFrame( )
     {
       _particlesBudget = 0;
       _particlesToEmit.clear( );
 
-      CheckEmissionEnd( );
+      checkEmissionEnd( );
 
       this->_finished = !_continueEmission && _lastFrameAliveParticles == 0 ;
 
@@ -173,7 +163,7 @@ namespace prefr
 
       if( _cluster->particles( ).size > 0 && _deadParticles.size( ) == 0)
       {
-        InitializeParticles( );
+        _initializeParticles( );
       }
     }
 
@@ -200,7 +190,7 @@ namespace prefr
 
     }
 
-    void Source::InitializeParticles( void )
+    void Source::_initializeParticles( void )
     {
       if( !_cluster || _cluster->particles( ).size == 0 )
       {
@@ -220,12 +210,15 @@ namespace prefr
       }
     }
 
-    void Source::PrepareParticles( void )
+    void Source::_prepareParticles( void )
     {
       if( _emissionRate <= 0.0f )
       {
         for( auto particle : _deadParticles )
+        {
           _particlesToEmit.push_back( particle );
+          ++_lastFrameAliveParticles;
+        }
 
         _deadParticles.clear( );
       }
@@ -240,8 +233,11 @@ namespace prefr
           _deadParticles.pop_back( );
 
           --_particlesBudget;
+          ++_lastFrameAliveParticles;
         }
       }
+
+      _emittedParticles += _lastFrameAliveParticles;
     }
 
     std::vector< unsigned int >& Source::deadParticles( void )
@@ -266,12 +262,12 @@ namespace prefr
     , SingleFrameTimer( period, offset, duration )
     { }
 
-    bool TimedSource::Emits( ) const
+    bool TimedSource::emits( ) const
     {
-      return InTime( ) && Source::Emits( );
+      return InTime( ) && Source::emits( );
     }
 
-    void TimedSource::CheckEmissionEnd( )
+    void TimedSource::checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
@@ -292,16 +288,16 @@ namespace prefr
       }
     }
 
-    void TimedSource::PrepareFrame( const float& deltaTime )
+    void TimedSource::prepareFrame( const float& deltaTime )
     {
-      Source::PrepareFrame( deltaTime );
+      Source::prepareFrame( deltaTime );
 
       UpdateTimer( deltaTime );
     }
 
-    void TimedSource::CloseFrame( )
+    void TimedSource::closeFrame( )
     {
-      Source::CloseFrame( );
+      Source::closeFrame( );
 
       RestoreTimer( );
     }

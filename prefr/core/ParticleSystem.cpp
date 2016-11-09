@@ -103,7 +103,7 @@ namespace prefr
     }
 
     if( cluster->source( ))
-      cluster->source( )->InitializeParticles( );
+      cluster->source( )->_initializeParticles( );
 
   }
 
@@ -133,7 +133,7 @@ namespace prefr
     _sorter->clusters( &_clusters );
     _sorter->particles( ParticleRange( _particles ));
 
-    _sorter->InitDistanceArray( _camera );
+    _sorter->initDistanceArray( _camera );
 
 #ifdef PREFR_USE_OPENMP
     _sorter->_parallel = _parallel;
@@ -153,7 +153,7 @@ namespace prefr
 
     _renderer->particles( ParticleRange( _particles ));
 
-    _renderer->init( );
+    _renderer->_init( );
 
     assert( _sorter->_distances );
     _renderer->distanceArray( _sorter->_distances );
@@ -192,7 +192,7 @@ namespace prefr
     {
 #endif
       // Set source's elapsed delta
-      source->PrepareFrame( deltaTime );
+      source->prepareFrame( deltaTime );
     }
 
 #ifdef PREFR_USE_OPENMP
@@ -206,12 +206,12 @@ namespace prefr
 #endif
       Source* source = cluster->source( );
 
-      if( source->Emits( ))
+      if( source->emits( ))
       {
         for( auto emittedParticle : source->_particlesToEmit )
         {
           tparticle particle = _particles.at( emittedParticle );
-          cluster->updater( )->Emit( *cluster, &particle );
+          cluster->updater( )->emit( *cluster, &particle );
         }
       }
     }
@@ -237,7 +237,7 @@ namespace prefr
              particle++ )
         {
           // Update
-          cluster->updater( )->Update( *cluster, &particle, deltaTime );
+          cluster->updater( )->update( *cluster, &particle, deltaTime );
 
           cluster->aliveParticles += particle.alive( );
 
@@ -272,39 +272,40 @@ namespace prefr
     {
 #endif
       // Finish frame
-      source->CloseFrame( );
+      source->closeFrame( );
     }
 
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->aliveParticles = _aliveParticles;
 
+    std::cout << "Alive: " << _aliveParticles << std::endl;
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
   {
     if( _run )
-      _sorter->UpdateCameraDistance( cameraPosition, _renderDeadParticles );
+      _sorter->updateCameraDistance( cameraPosition, _renderDeadParticles );
   }
 
   void ParticleSystem::updateCameraDistances( void )
   {
     if( _run )
-        _sorter->UpdateCameraDistance( _renderDeadParticles );
+        _sorter->updateCameraDistance( _renderDeadParticles );
   }
 
   void ParticleSystem::updateRender( )
   {
     if( _run )
     {
-      _sorter->Sort( );
-      _renderer->SetupRender( );
+      _sorter->sort( );
+      _renderer->setupRender( );
     }
   }
 
   void ParticleSystem::render( ) const
   {
     if( _run )
-      _renderer->Paint( );
+      _renderer->paint( );
   }
 
   void ParticleSystem::run( bool run_ )

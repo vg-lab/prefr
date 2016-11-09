@@ -75,22 +75,22 @@ namespace prefr
 
   Particles::iterator Particles::begin( void )
   {
-    return CreateIterator( 0 );
+    return _createIterator( 0 );
   }
 
   Particles::const_iterator Particles::begin( void ) const
   {
-    return CreateConstIterator( 0 );
+    return _createConstIterator( 0 );
   }
 
   Particles::iterator Particles::end( void )
   {
-    return CreateIterator( _size );
+    return _createIterator( _size );
   }
 
   Particles::const_iterator Particles::end( void ) const
   {
-    return CreateConstIterator( _size );
+    return _createConstIterator( _size );
   }
 
   ParticleRange Particles::range( void )
@@ -102,16 +102,16 @@ namespace prefr
 
   Particles::iterator Particles::at( unsigned int i )
   {
-    return CreateIterator( i );
+    return _createIterator( i );
   }
 
   Particles::const_iterator Particles::at( unsigned int i ) const
   {
-    return CreateConstIterator( i );
+    return _createConstIterator( i );
   }
 
   Particles::iterator
-  Particles::CreateIterator( unsigned int i )
+  Particles::_createIterator( unsigned int i )
   {
     assert( i <= _size );
 
@@ -135,7 +135,7 @@ namespace prefr
   }
 
   Particles::const_iterator
-  Particles::CreateConstIterator( unsigned int i ) const
+  Particles::_createConstIterator( unsigned int i ) const
   {
     assert( i <= _size );
 

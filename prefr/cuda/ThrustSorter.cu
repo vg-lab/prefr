@@ -32,7 +32,7 @@ namespace prefr
   ThrustSorter::~ThrustSorter( )
   { }
 
-  void ThrustSorter::InitDistanceArray( )
+  void ThrustSorter::initDistanceArray( )
   {
     _distances = new CUDADistanceArray( _particles.size );
 
@@ -42,7 +42,7 @@ namespace prefr
     cda->deviceDistances.resize( _particles.size );
   }
 
-  void ThrustSorter::Sort( SortOrder order )
+  void ThrustSorter::sort( SortOrder order )
   {
 
     CUDADistanceArray* cda = static_cast< CUDADistanceArray* >( _distances );
@@ -82,11 +82,11 @@ namespace prefr
 
   }
 
-  void ThrustSorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
+  void ThrustSorter::updateCameraDistance( const glm::vec3& cameraPosition,
                                            bool renderDeadParticles )
   {
     _aliveParticles = 0;
-    _distances->ResetCounter( );
+    _distances->resetCounter( );
 
     for( auto cluster : *_clusters )
     {
@@ -96,7 +96,7 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          UpdateParticleDistance( &particle, cameraPosition,
+          updateParticleDistance( &particle, cameraPosition,
                                   renderDeadParticles );
           _aliveParticles++;
         }
@@ -105,7 +105,7 @@ namespace prefr
 
 
   }
-  void ThrustSorter::UpdateParticleDistance( const tparticle_ptr current,
+  void ThrustSorter::updateParticleDistance( const tparticle_ptr current,
                                              const glm::vec3& cameraPosition,
                                              bool renderDeadParticles )
   {

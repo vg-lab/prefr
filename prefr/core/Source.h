@@ -77,20 +77,18 @@ namespace prefr
     PREFR_API
     virtual ~Source( void );
 
-    PREFR_API virtual bool Active( );
-    PREFR_API virtual bool Emits( ) const;
-    PREFR_API virtual bool Continue( ) const;
-    PREFR_API virtual bool Finished( );
-    PREFR_API virtual void Restart( );
+    PREFR_API virtual bool active( );
+    PREFR_API virtual bool emits( ) const;
+    PREFR_API virtual bool continuing( ) const;
+    PREFR_API virtual bool finished( );
+    PREFR_API virtual void restart( );
 
-    PREFR_API virtual const int& GetBudget( );
-    PREFR_API virtual void PrepareFrame( const float& deltaTime );
-    PREFR_API virtual void CloseFrame( );
+    PREFR_API virtual const int& budget( );
+    PREFR_API virtual void prepareFrame( const float& deltaTime );
+    PREFR_API virtual void closeFrame( );
 
-    PREFR_API virtual void IncreaseAlive( );
-    PREFR_API virtual void CheckEmissionEnd( );
-
-    PREFR_API virtual void ReduceBudgetBy( const unsigned int& decrement = 1 );
+    PREFR_API virtual void increaseAlive( );
+    PREFR_API virtual void checkEmissionEnd( );
 
     PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
 
@@ -108,8 +106,8 @@ namespace prefr
 
   protected:
 
-    virtual void InitializeParticles( void );
-    virtual void PrepareParticles( void );
+    virtual void _initializeParticles( void );
+    virtual void _prepareParticles( void );
 
     Cluster* _cluster;
 
@@ -164,12 +162,12 @@ namespace prefr
     PREFR_API TimedSource( float emissionRate_, glm::vec3 position_,
                            float period, float offset, float duration );
 
-    PREFR_API virtual bool Emits( ) const;
+    PREFR_API virtual bool emits( ) const;
 
-    PREFR_API virtual void CheckEmissionEnd( );
+    PREFR_API virtual void checkEmissionEnd( );
 
-    PREFR_API virtual void PrepareFrame( const float& deltaTime );
-    PREFR_API virtual void CloseFrame( );
+    PREFR_API virtual void prepareFrame( const float& deltaTime );
+    PREFR_API virtual void closeFrame( );
 
   };
 

@@ -47,12 +47,12 @@ namespace prefr
       delete( _distances );
   }
 
-  void Sorter::InitDistanceArray( ICamera* camera )
+  void Sorter::initDistanceArray( ICamera* camera )
   {
     _distances = new DistanceArray( _particles.size, camera );
   }
 
-  void Sorter::Sort(SortOrder /*order*/)
+  void Sorter::sort(SortOrder /*order*/)
   {
 
     TDistUnitContainer::iterator end = _distances->begin( ) + _aliveParticles;
@@ -73,11 +73,11 @@ namespace prefr
     std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
   }
 
-  void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
+  void Sorter::updateCameraDistance( const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {
 //    _aliveParticles = 0;
-    _distances->ResetCounter( );
+    _distances->resetCounter( );
 
 #ifdef PREFR_USE_OPENMP
 
@@ -99,7 +99,7 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          UpdateParticleDistance( &particle, cameraPosition,
+          updateParticleDistance( &particle, cameraPosition,
                                   renderDeadParticles );
 
         }
@@ -108,25 +108,25 @@ namespace prefr
 
   }
 
-  void Sorter::UpdateCameraDistance( bool renderDeadParticles )
+  void Sorter::updateCameraDistance( bool renderDeadParticles )
   {
     assert( _distances->_camera );
 
-    UpdateCameraDistance( _distances->_camera->PReFrCameraPosition( ),
+    updateCameraDistance( _distances->_camera->PReFrCameraPosition( ),
                           renderDeadParticles );
 
   }
 
-  void Sorter::UpdateParticleDistance( const tparticle_ptr current,
+  void Sorter::updateParticleDistance( const tparticle_ptr current,
                                        const glm::vec3& cameraPosition,
                                        bool renderDeadParticles )
   {
 
     DistanceUnit& dist = _distances->at( current->id( ));
 
-    dist.Id( current->id( ));
+    dist.id( current->id( ));
 
-    dist.Distance( current->alive() || renderDeadParticles ?
+    dist.distance( current->alive() || renderDeadParticles ?
                    length2(current->position( ) - cameraPosition ) :
                    -1 );
   }

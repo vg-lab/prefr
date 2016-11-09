@@ -96,7 +96,8 @@ class Camera : public prefr::ICamera, public reto::Camera
   }
 };
 
-class RenderProgram : public prefr::IGLRenderProgram, public reto::ShaderProgram
+class RenderProgram : public prefr::IGLRenderProgram,
+                      public reto::ShaderProgram
 {
 public:
 
@@ -111,9 +112,9 @@ public:
 
   virtual ~RenderProgram( ){ }
 
-  void PReFrActivateGLProgram( void ){ use( );}
+  void prefrActivateGLProgram( void ){ use( );}
 
-  unsigned int PReFrGLProgramID( void ){ return program( ); }
+  unsigned int prefrGLProgramID( void ){ return program( ); }
 };
 
 
@@ -281,7 +282,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   particleSystem = new ParticleSystem( maxParticles, &camera );
 
   Model* model1 = new Model( 3.0f, 10.0f );
-  model1->color.Insert( 0.0f, glm::vec4( 1.0f, 1.0f, 0.0f, 0.15f ));
+  model1->color.Insert( 0.0f, glm::vec4( 1.0f, 1.0f, 0.0f, 0.65f ));
   model1->color.Insert( 0.70f, glm::vec4( 1.0f, 0.0f, 0.0f, 0.05f ));
   model1->color.Insert( 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 0.0f ));
 
@@ -289,18 +290,18 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   model1->size.Insert( 1.0f, 3.0f );
 
   model1->velocity.Insert( 0.0f, 5.0f );
-  model1->velocity.Insert( 1.0f, 8.0f );
+  model1->velocity.Insert( 1.0f, 5.0f );
   particleSystem->addModel( model1 );
 
   Model* model2 = new Model( 5.0f, 10.0f );
-  model2->color.Insert( 0.0f, glm::vec4( 0.0f, 1.0f, 1.0f, 0.15f ));
+  model2->color.Insert( 0.0f, glm::vec4( 0.0f, 1.0f, 1.0f, 0.65f ));
   model2->color.Insert( 1.0f, glm::vec4( 0.0f, 0.0f, 1.0f, 0.05f ));
 
   model2->size.Insert( 0.0f, 10.0f );
   model2->size.Insert( 1.0f, 3.0f );
 
   model2->velocity.Insert( 0.0f, 5.0f );
-  model2->velocity.Insert( 1.0f, 30.0f );
+  model2->velocity.Insert( 1.0f, 5.0f );
   particleSystem->addModel( model2 );
 
   Updater* updater = new Updater( );
@@ -353,7 +354,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   particleSystem->renderer( renderer );
 
 #ifdef PREFR_USE_OPENMP
-  particleSystem->parallel( true );
+  particleSystem->parallel( false );
 #endif
 
   particleSystem->run( true );

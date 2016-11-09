@@ -58,7 +58,7 @@ namespace prefr
   OSGRenderer::~OSGRenderer( )
   { }
 
-  void OSGRenderer::init( void )
+  void OSGRenderer::_init( void )
   {
     _renderConfig = new OSGRenderConfig( _particles.size );
 
@@ -69,37 +69,37 @@ namespace prefr
 
      OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-     osgrc->billboardVertices = new std::vector< GLfloat >;
-     osgrc->vertexArray = new osg::Vec3Array;
-     osgrc->billboardIndices = new osg::DrawElementsUByte( GL_TRIANGLE_STRIP );
+     osgrc->_billboardVertices = new std::vector< GLfloat >;
+     osgrc->_vertexArray = new osg::Vec3Array;
+     osgrc->_billboardIndices = new osg::DrawElementsUByte( GL_TRIANGLE_STRIP );
 
-     osgrc->particlePositions =
+     osgrc->_particlePositions =
          new std::vector< GLfloat >( _particles.size * 4 );
 
-     osgrc->particleColors = new std::vector< GLfloat >( _particles.size * 4 );
+     osgrc->_particleColors = new std::vector< GLfloat >( _particles.size * 4 );
 
      for( unsigned int i = 0; i < 4; i++ )
      {
-       osgrc->vertexArray->push_back( osg::Vec3( b[ i * 3 ],
+       osgrc->_vertexArray->push_back( osg::Vec3( b[ i * 3 ],
                                                  b[ i * 3 + 1 ],
                                                  b[ i * 3 + 2 ] ));
 
-       osgrc->billboardVertices->push_back( b[ i * 3 ]);
-       osgrc->billboardVertices->push_back( b[ i * 3 + 1 ]);
-       osgrc->billboardVertices->push_back( b[ i * 3 + 2 ]);
+       osgrc->_billboardVertices->push_back( b[ i * 3 ]);
+       osgrc->_billboardVertices->push_back( b[ i * 3 + 1 ]);
+       osgrc->_billboardVertices->push_back( b[ i * 3 + 2 ]);
 
-       osgrc->billboardIndices->push_back( i );
+       osgrc->_billboardIndices->push_back( i );
 
      }
   }
 
 
 
-  void OSGRenderer::SetupRender( void )
+  void OSGRenderer::setupRender( void )
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    osgrc->boundingBox.init( );
+    osgrc->_boundingBox.init( );
 
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for
@@ -112,7 +112,7 @@ namespace prefr
       unsigned int idx = i * 4;
 
       std::vector< GLfloat >::iterator posit =
-          osgrc->particlePositions->begin( ) + idx;
+          osgrc->_particlePositions->begin( ) + idx;
 
       *posit = currentParticle.position( ).x;
       ++posit;
@@ -126,12 +126,12 @@ namespace prefr
       *posit = currentParticle.size( );
       ++posit;
 
-      osgrc->boundingBox.expandBy( osg::Vec3( currentParticle.position( ).x,
+      osgrc->_boundingBox.expandBy( osg::Vec3( currentParticle.position( ).x,
                                               currentParticle.position( ).y,
                                               currentParticle.position( ).z ));
 
       std::vector< GLfloat >::iterator colorit =
-          osgrc->particleColors->begin( ) + idx;
+          osgrc->_particleColors->begin( ) + idx;
 
       *colorit = currentParticle.color( ).x;
       ++colorit;
@@ -146,40 +146,40 @@ namespace prefr
       ++colorit;
     }
 
-    if( osgrc->boundingBox.radius( ) == 0 )
-      osgrc->boundingBox.expandBy( osg::Vec3( 1, 1, 1 ));
+    if( osgrc->_boundingBox.radius( ) == 0 )
+      osgrc->_boundingBox.expandBy( osg::Vec3( 1, 1, 1 ));
 
-    osgrc->boundingSphere.expandBy( osgrc->boundingBox );
+    osgrc->_boundingSphere.expandBy( osgrc->_boundingBox );
 
-    osgrc->billboardIndices->setNumInstances( _renderConfig->aliveParticles );
+    osgrc->_billboardIndices->setNumInstances( _renderConfig->aliveParticles );
   }
 
 
 
-  void OSGRenderer::Paint( void ) const
+  void OSGRenderer::paint( void ) const
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    glBindVertexArray( osgrc->vao );
+    glBindVertexArray( osgrc->_vao );
 
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
-
-    glBufferSubData( GL_ARRAY_BUFFER,
-                     0,
-                     sizeof( GLfloat ) * _renderConfig->aliveParticles * 4,
-                     &osgrc->particlePositions->front( ));
-
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesPositions );
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
                      sizeof( GLfloat ) * _renderConfig->aliveParticles * 4,
-                     &osgrc->particleColors->front( ));
+                     &osgrc->_particlePositions->front( ));
 
-    glDrawElementsInstanced( osgrc->billboardIndices->getMode( ),
-                             osgrc->billboardIndices->getNumIndices( ),
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesColors );
+
+    glBufferSubData( GL_ARRAY_BUFFER,
+                     0,
+                     sizeof( GLfloat ) * _renderConfig->aliveParticles * 4,
+                     &osgrc->_particleColors->front( ));
+
+    glDrawElementsInstanced( osgrc->_billboardIndices->getMode( ),
+                             osgrc->_billboardIndices->getNumIndices( ),
                              GL_UNSIGNED_BYTE, nullptr,
-                             osgrc->billboardIndices->getNumInstances( ));
+                             osgrc->_billboardIndices->getNumInstances( ));
     glBindVertexArray( 0 );
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );

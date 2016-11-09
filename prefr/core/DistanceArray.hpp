@@ -28,35 +28,38 @@
 #include "../utils/types.h"
 #include "ICamera.h"
 
-#define SERIALIZE_BEFORE_SORT 1
-
 namespace prefr
 {
 
   class DistanceUnit
   {
+    friend class DistanceArray;
 
   public:
-    int* id;
-    float* distance;
 
     DistanceUnit( void )
     {
-      id = nullptr;
-      distance = nullptr;
+      _id = nullptr;
+      _distance = nullptr;
     }
 
     DistanceUnit( int* id_, float* distance_ )
-      : id( id_ )
-      , distance( distance_ )
+      : _id( id_ )
+      , _distance( distance_ )
     {
     }
 
-    inline const int& Id( void ) const { return *id; }
-    inline void Id( int i ){ *id = i; }
+    inline const int& id( void ) const { return *_id; }
+    inline void id( int i ){ *_id = i; }
 
-    inline const float& Distance( void ) const { return *distance; }
-    inline void Distance( float d ){ *distance = d; }
+    inline const float& distance( void ) const { return *_distance; }
+    inline void distance( float d ){ *_distance = d; }
+
+  protected:
+
+    int* _id;
+    float* _distance;
+
 
   };
 
@@ -84,8 +87,8 @@ namespace prefr
            element != elements.end( );
            ++element, ++currentId, ++currentDist )
       {
-        ( *element ).id = &( *currentId );
-        ( *element ).distance = &( *currentDist );
+        ( *element )._id = &( *currentId );
+        ( *element )._distance = &( *currentDist );
       }
 
     }
@@ -116,15 +119,15 @@ namespace prefr
 
     virtual inline const int& getID( unsigned int i ) const
     {
-      return elements[ i ].Id( );
+      return elements[ i ].id( );
     }
 
     virtual inline const float& getDistance( unsigned int i ) const
     {
-      return elements[i].Distance( );
+      return elements[i].distance( );
     }
 
-    inline void ResetCounter( void )
+    inline void resetCounter( void )
     {
       current = 0;
       currentIt = elements.begin( );
@@ -143,13 +146,13 @@ namespace prefr
     inline static bool sortDescending ( const DistanceUnit& lhs,
                                         const DistanceUnit& rhs )
     {
-      return *lhs.distance > *rhs.distance;
+      return *lhs._distance > *rhs._distance;
     }
 
     inline static bool sortAscending ( const DistanceUnit& lhs,
                                        const DistanceUnit& rhs)
     {
-      return *lhs.distance < *rhs.distance;
+      return *lhs._distance < *rhs._distance;
     }
 
     std::vector< int > ids;
