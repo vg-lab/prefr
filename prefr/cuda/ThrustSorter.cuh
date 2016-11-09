@@ -36,15 +36,20 @@ namespace prefr
     PREFR_API ThrustSorter(  );
     PREFR_API virtual ~ThrustSorter( );
 
-    PREFR_API void Sort( SortOrder order );
+    PREFR_API virtual void Sort( SortOrder order );
 
+    PREFR_API
     virtual void UpdateCameraDistance( const glm::vec3& cameraPosition,
-                                       bool discardDeadParticles = true );
+                                       bool renderDeadParticles = false );
 
+    PREFR_API
     virtual void UpdateParticleDistance( const tparticle_ptr current,
                                          const glm::vec3& cameraPosition,
-                                         bool discardDeadParticles = true );
+                                         bool renderDeadParticles = false );
 
+  protected:
+
+    PREFR_API
     virtual void InitDistanceArray( ICamera* camera );
   };
 

@@ -68,7 +68,7 @@ namespace prefr
                                          bool renderDeadParticles = false );
 
     PREFR_API
-    virtual void UpdateCameraDistance( bool renderDeadParticles = false );
+    void UpdateCameraDistance( bool renderDeadParticles = false );
 
     PREFR_API virtual void InitDistanceArray( ICamera* camera );
 

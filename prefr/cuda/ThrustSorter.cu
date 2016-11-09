@@ -105,6 +105,7 @@ namespace prefr
 
 
   }
+
   void ThrustSorter::UpdateParticleDistance( const tparticle_ptr current,
                                              const glm::vec3& cameraPosition,
                                              bool renderDeadParticles )
@@ -113,7 +114,7 @@ namespace prefr
     CUDADistanceArray* cda = static_cast< CUDADistanceArray* >( _distances );
     cda->translatedIDs[ _distances->current ] = current->id( );
 
-    ( *_distances->distances )[ _distances.current ] =
+    ( *_distances ).distances[ _distances->current ] =
         current->alive( )  || renderDeadParticles ?
         length2( current->position( ) - cameraPosition ) :
         -1;

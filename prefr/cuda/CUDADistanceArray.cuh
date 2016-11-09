@@ -56,7 +56,7 @@ namespace prefr
       return translatedIDs[ ids[ i ]];
     }
 
-    virtual inline float& getDistance( unsigned int i )
+    virtual inline const float& getDistance( unsigned int i ) const
     {
       return distances[ i ];
     }
