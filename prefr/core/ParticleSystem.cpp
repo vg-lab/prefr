@@ -234,7 +234,7 @@ namespace prefr
         // For each particle of the cluster...
         for( tparticle particle = cluster->particles( ).begin( );
              particle != cluster->particles( ).end( );
-             particle++ )
+             ++particle )
         {
           // Update
           cluster->updater( )->update( *cluster, &particle, deltaTime );
@@ -278,7 +278,6 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->aliveParticles = _aliveParticles;
 
-    std::cout << "Alive: " << _aliveParticles << std::endl;
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )

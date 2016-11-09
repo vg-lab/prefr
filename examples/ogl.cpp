@@ -290,7 +290,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   model1->size.Insert( 1.0f, 3.0f );
 
   model1->velocity.Insert( 0.0f, 5.0f );
-  model1->velocity.Insert( 1.0f, 5.0f );
+  model1->velocity.Insert( 1.0f, 8.0f );
   particleSystem->addModel( model1 );
 
   Model* model2 = new Model( 5.0f, 10.0f );
@@ -301,7 +301,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   model2->size.Insert( 1.0f, 3.0f );
 
   model2->velocity.Insert( 0.0f, 5.0f );
-  model2->velocity.Insert( 1.0f, 5.0f );
+  model2->velocity.Insert( 1.0f, 30.0f );
   particleSystem->addModel( model2 );
 
   Updater* updater = new Updater( );
@@ -354,7 +354,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   particleSystem->renderer( renderer );
 
 #ifdef PREFR_USE_OPENMP
-  particleSystem->parallel( false );
+  particleSystem->parallel( true );
 #endif
 
   particleSystem->run( true );

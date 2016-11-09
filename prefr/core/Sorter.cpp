@@ -55,7 +55,8 @@ namespace prefr
   void Sorter::sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = _distances->begin( ) + _aliveParticles;
+    TDistUnitContainer::iterator end = _distances->begin( );
+    end += _aliveParticles;
 
 #ifdef PREFR_USE_OPENMP
     if( _parallel )
@@ -69,14 +70,14 @@ namespace prefr
 #endif
     }
     else
+      std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
 #endif
-    std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
+
   }
 
   void Sorter::updateCameraDistance( const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {
-//    _aliveParticles = 0;
     _distances->resetCounter( );
 
 #ifdef PREFR_USE_OPENMP
@@ -99,9 +100,9 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
+          if( particle.alive( ) || renderDeadParticles )
           updateParticleDistance( &particle, cameraPosition,
                                   renderDeadParticles );
-
         }
       }
     }
@@ -122,7 +123,7 @@ namespace prefr
                                        bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = _distances->at( current->id( ));
+    DistanceUnit& dist = *_distances->next( );
 
     dist.id( current->id( ));
 

@@ -124,7 +124,7 @@ namespace prefr
 
     virtual inline const float& getDistance( unsigned int i ) const
     {
-      return elements[i].distance( );
+      return elements[ i ].distance( );
     }
 
     inline void resetCounter( void )
@@ -137,8 +137,8 @@ namespace prefr
     {
       DistanceUnit* result = &( *currentIt );
 
-      current++;
-      currentIt++;
+      ++current;
+      ++currentIt;
 
       return result;
     }

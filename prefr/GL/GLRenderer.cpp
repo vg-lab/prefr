@@ -206,9 +206,8 @@ namespace prefr
 
     if( _glRenderConfig->_glRenderProgram && _glRenderConfig->_camera )
     {
-      glDisable(GL_DEPTH_TEST);
-//      glEnable( GL_DEPTH_TEST );
-//      glDepthMask( GL_FALSE );
+      glEnable( GL_DEPTH_TEST );
+      glDepthMask( GL_FALSE );
       glDisable( GL_CULL_FACE );
       glEnable( GL_BLEND );
       glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -250,8 +249,8 @@ namespace prefr
 
     glBindVertexArray( 0 );
 
-//    glDepthMask( GL_TRUE );
-//    glEnable( GL_CULL_FACE );
+    glDepthMask( GL_TRUE );
+    glEnable( GL_CULL_FACE );
 
   }
 
