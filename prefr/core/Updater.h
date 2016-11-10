@@ -88,8 +88,8 @@ namespace prefr
      * @see ParticleSytem#Update
      *
      */
-    PREFR_API
-    virtual void emit( const Cluster& cluster, const tparticle_ptr current );
+    PREFR_API virtual void emitParticle( const Cluster& cluster,
+                                         const tparticle_ptr current );
 
 
     /*! \brief Update method.
@@ -110,9 +110,9 @@ namespace prefr
      * @param deltaTime Current delta time to compute attributes variations
      * according to elapsed time since last frame.
      */
-    PREFR_API virtual void update( const Cluster& cluster,
-                                   const tparticle_ptr current,
-                                   float deltaTime );
+    PREFR_API virtual void updateParticle( const Cluster& cluster,
+                                           const tparticle_ptr current,
+                                           float deltaTime );
   };
 }
 

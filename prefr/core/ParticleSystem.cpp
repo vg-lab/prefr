@@ -210,7 +210,7 @@ namespace prefr
         for( auto emittedParticle : source->_particlesToEmit )
         {
           tparticle particle = _particles.at( emittedParticle );
-          cluster->updater( )->emit( *cluster, &particle );
+          cluster->updater( )->emitParticle( *cluster, &particle );
         }
       }
     }
@@ -236,7 +236,7 @@ namespace prefr
              ++particle )
         {
           // Update
-          cluster->updater( )->update( *cluster, &particle, deltaTime );
+          cluster->updater( )->updateParticle( *cluster, &particle, deltaTime );
 
           cluster->aliveParticles += particle.alive( );
 

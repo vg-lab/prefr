@@ -32,7 +32,7 @@ namespace prefr
   Updater::~Updater( )
   { }
 
-  void Updater::emit( const Cluster& cluster,
+  void Updater::emitParticle( const Cluster& cluster,
                       const tparticle_ptr current )
   {
     if( current->alive( ))
@@ -54,7 +54,7 @@ namespace prefr
 
   }
 
-  void Updater::update( const Cluster& cluster,
+  void Updater::updateParticle( const Cluster& cluster,
                         const tparticle_ptr current,
                         float deltaTime )
   {
