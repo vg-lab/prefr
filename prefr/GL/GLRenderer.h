@@ -35,6 +35,12 @@ namespace prefr
 
   public:
 
+    enum BlendFunc
+    {
+      ONE_MINUS_SRC_ALPHA = 0,
+      ONE_MINUS_CONSTANT_ALPHA = 1
+    };
+
     PREFR_API
     GLRenderer( );
 
@@ -53,12 +59,18 @@ namespace prefr
     PREFR_API
     virtual void distanceArray( DistanceArray* distances );
 
+    virtual void alphaBlendingFunc( BlendFunc blendFunc );
+    BlendFunc alphaBlendingFunc( void );
+
   protected:
 
     void _init( void );
 
     GLRenderConfig* _glRenderConfig;
     IGLRenderProgram* _glRenderProgram;
+
+    unsigned int _blendFuncValue;
+    BlendFunc _blendFunc;
   };
 
 

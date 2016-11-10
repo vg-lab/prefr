@@ -222,7 +222,8 @@ void idleFunc( void )
   glutPostRedisplay( );
 
 }
-
+prefr::GLRenderer* renderer;
+prefr::GLRenderer::BlendFunc alphaBlendFunc;
 void mouseFunc( int button, int state, int xCoord, int yCoord )
 {
   if( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
@@ -247,6 +248,19 @@ void mouseFunc( int button, int state, int xCoord, int yCoord )
   if( button == GLUT_MIDDLE_BUTTON && state == GLUT_UP )
   {
     translation = false;
+
+    if( alphaBlendFunc == prefr::GLRenderer::ONE_MINUS_CONSTANT_ALPHA )
+    {
+      alphaBlendFunc = prefr::GLRenderer::ONE_MINUS_SRC_ALPHA;
+      glClearColor( 1.0f, 1.f, 1.f, 0.0f );
+    }
+    else
+    {
+      alphaBlendFunc = prefr::GLRenderer::ONE_MINUS_CONSTANT_ALPHA;
+      glClearColor( 0.0f, 0.f, 0.f, 0.0f );
+    }
+
+    renderer->alphaBlendingFunc( alphaBlendFunc );
   }
 
   if( button == 3 && state == GLUT_DOWN )
@@ -349,7 +363,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   Sorter* sorter = new Sorter( );
   particleSystem->sorter( sorter );
 
-  GLRenderer* renderer = new GLRenderer( );
+  renderer = new GLRenderer( );
   renderer->glRenderProgram( &program );
   particleSystem->renderer( renderer );
 

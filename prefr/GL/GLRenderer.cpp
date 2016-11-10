@@ -33,7 +33,9 @@ namespace prefr
   : Renderer( )
   , _glRenderConfig( nullptr )
   , _glRenderProgram( nullptr )
-  { }
+  {
+    alphaBlendingFunc( ONE_MINUS_SRC_ALPHA );
+  }
 
   GLRenderer::~GLRenderer( )
   { }
@@ -133,6 +135,32 @@ namespace prefr
 
   }
 
+  void GLRenderer::alphaBlendingFunc( BlendFunc blendFunc )
+  {
+    switch( blendFunc )
+    {
+      case ONE_MINUS_CONSTANT_ALPHA:
+
+        _blendFunc = blendFunc;
+        _blendFuncValue = ( unsigned int ) GL_ONE_MINUS_CONSTANT_ALPHA;
+
+        break;
+
+      case ONE_MINUS_SRC_ALPHA:
+      default:
+
+        _blendFunc = blendFunc;
+        _blendFuncValue = ( unsigned int ) GL_ONE_MINUS_SRC_ALPHA;
+
+        break;
+    }
+  }
+
+  GLRenderer::BlendFunc GLRenderer::alphaBlendingFunc( void )
+  {
+    return _blendFunc;
+  }
+
   void GLRenderer::setupRender( void )
   {
 #ifdef PREFR_USE_OPENMP
@@ -210,7 +238,7 @@ namespace prefr
       glDepthMask( GL_FALSE );
       glDisable( GL_CULL_FACE );
       glEnable( GL_BLEND );
-      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+      glBlendFunc( GL_SRC_ALPHA, _blendFuncValue );
 
       _glRenderProgram->prefrActivateGLProgram( );
       unsigned int programID = _glRenderProgram->prefrGLProgramID( );

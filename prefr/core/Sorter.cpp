@@ -55,8 +55,12 @@ namespace prefr
   void Sorter::sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = _distances->begin( );
-    end += _aliveParticles;
+    TDistUnitContainer::iterator end;
+#ifndef PREFR_USE_OPENMP
+    end = _distances->begin( ) + _aliveParticles;
+#else
+    end = _distances->end( );
+#endif
 
 #ifdef PREFR_USE_OPENMP
     if( _parallel )
@@ -73,6 +77,22 @@ namespace prefr
       std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
 #endif
 
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "SORT" << std::endl;
+    std::cout << "IDS:";
+    for( auto id : _distances->elements )
+    {
+      std::cout << "\t" << id.id( );
+    }
+    std::cout << std::endl;
+
+    std::cout << "DIST:";
+    for( auto dist : _distances->elements )
+    {
+      std::cout << "\t" << dist.distance( );
+    }
+    std::cout << std::endl;
+#endif
   }
 
   void Sorter::updateCameraDistance( const glm::vec3& cameraPosition,
@@ -100,13 +120,32 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
+#ifndef PREFR_USE_OPENMP
           if( particle.alive( ) || renderDeadParticles )
+#endif
           updateParticleDistance( &particle, cameraPosition,
                                   renderDeadParticles );
+
         }
       }
     }
 
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "SETUP" << std::endl;
+    std::cout << "IDS:";
+    for( auto id : _distances->elements )
+    {
+      std::cout << "\t" << id.id( );
+    }
+    std::cout << std::endl;
+
+    std::cout << "DIST:";
+    for( auto dist : _distances->elements )
+    {
+      std::cout << "\t" << dist.distance( );
+    }
+    std::cout << std::endl;
+#endif
   }
 
   void Sorter::updateCameraDistance( bool renderDeadParticles )
@@ -123,13 +162,26 @@ namespace prefr
                                        bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = *_distances->next( );
+    DistanceUnit& dist =
+#ifdef PREFR_USE_OPENMP
+        _distances->at( current->id( ));
+#else
+        *_distances->next( );
+#endif
 
     dist.id( current->id( ));
 
     dist.distance( current->alive() || renderDeadParticles ?
                    length2(current->position( ) - cameraPosition ) :
                    -1 );
+
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "Particle " << current->id( )
+              << " " << std::boolalpha << current->alive( )
+              << "\t" << dist.distance( )
+              << "\t" << _distances->elements[ current->id( )].distance( )
+              << std::endl;
+#endif
   }
 
 

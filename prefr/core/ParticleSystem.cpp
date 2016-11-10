@@ -183,7 +183,6 @@ namespace prefr
 
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
       Source* source = _sources[ s ];
