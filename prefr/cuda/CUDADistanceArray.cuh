@@ -22,7 +22,7 @@
 #ifndef __PREFR__CUDA_DISTANCE_ARRAY__
 #define __PREFR__CUDA_DISTANCE_ARRAY__
 
-#include "../DistanceArray.hpp"
+#include "../core/DistanceArray.hpp"
 
 #ifdef PREFR_USE_CUDA
 #include <thrust/device_vector.h>
@@ -45,18 +45,18 @@ namespace prefr
 
 #endif
 
-    CUDADistanceArray ( unsigned int size)
-    : DistanceArray( size )
+    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
+    : DistanceArray( size, camera )
     {
       translatedIDs.resize( size );
     }
 
-    virtual inline int& getID( unsigned int i )
+    virtual inline const int& getID( unsigned int i ) const
     {
       return translatedIDs[ ids[ i ]];
     }
 
-    virtual inline float& getDistance( unsigned int i )
+    virtual inline const float& getDistance( unsigned int i ) const
     {
       return distances[ i ];
     }

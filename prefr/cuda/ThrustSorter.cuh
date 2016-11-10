@@ -22,8 +22,8 @@
 #ifndef __PREFR__THRUST_SORTER__
 #define __PREFR__THRUST_SORTER__
 
-#include "../Sorter.h"
-#include "../types.h"
+#include "../core/Sorter.h"
+#include "../utils/types.h"
 #include "CUDADistanceArray.cuh"
 
 namespace prefr
@@ -36,16 +36,19 @@ namespace prefr
     PREFR_API ThrustSorter(  );
     PREFR_API virtual ~ThrustSorter( );
 
-    PREFR_API void sort( SortOrder order );
+    PREFR_API virtual void sort( SortOrder order );
 
+    PREFR_API
     virtual void updateCameraDistance( const glm::vec3& cameraPosition,
-                                       bool discardDeadParticles = true );
+                                       bool renderDeadParticles = false );
 
+    PREFR_API
     virtual void updateParticleDistance( const tparticle_ptr current,
                                          const glm::vec3& cameraPosition,
-                                         bool discardDeadParticles = true );
+                                         bool renderDeadParticles = false );
 
-    virtual void initDistanceArray( );
+    PREFR_API virtual void initDistanceArray( ICamera* camera );
+
   };
 
 } // namespace prefr

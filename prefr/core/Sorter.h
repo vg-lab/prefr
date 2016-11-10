@@ -63,7 +63,7 @@ namespace prefr
                                        bool renderDeadParticles = false );
 
     PREFR_API
-    virtual void updateCameraDistance( bool renderDeadParticles = false );
+    void updateCameraDistance( bool renderDeadParticles = false );
 
     PREFR_API
     virtual void updateParticleDistance( const tparticle_ptr current,

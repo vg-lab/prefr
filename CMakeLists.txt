@@ -32,7 +32,7 @@ set( PREFR_DESCRIPTION "PREFR - Particle Framework" )
 set( COMMON_PROJECT_DOMAIN gmrv.es )
 
 option( PREFR_WITH_OPENSCENEGRAPH "PREFR_WITH_OPENSCENEGRAPH" OFF )
-option( PREFR_WITH_CUDA "PREFR_WITH_CUDA" OFF )
+#option( PREFR_WITH_CUDA "PREFR_WITH_CUDA" OFF )
 option( MODERN_GPU_ARCH "GPU_ARCH" ON )
 option( PREFR_WITH_EXAMPLES "PREFR_WITH_EXAMPLES" OFF )
 option( PREFR_WITH_LOGGING "PREFR_WITH_LOGGING" OFF )
@@ -44,7 +44,7 @@ endif( )
 
 include( Common )
 
-common_find_package( nvidiaOpenGL SYSTEM )
+#common_find_package( nvidiaOpenGL SYSTEM )
 common_find_package( OpenGL REQUIRED SYSTEM )
 common_find_package( GLEW REQUIRED SYSTEM )
 common_find_package( GLM REQUIRED )
@@ -68,7 +68,7 @@ endif( )
 
 
 if ( PREFR_WITH_OPENSCENEGRAPH )
-	common_find_package( OpenSceneGraph COMPONENTS
+	common_find_package( OpenSceneGraph 3.2 EXACT COMPONENTS
     osgViewer osgGA osgDB osgUtil osgQt SYSTEM )
 	if ( OPENSCENEGRAPH_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES OpenSceneGraph )
@@ -77,7 +77,8 @@ endif( )
 
 if ( PREFR_WITH_CUDA )
 	include(CudaCommonLibrary)
-	common_find_package( CUDA SYSTEM )
+	find_package( CUDA REQUIRED )
+	common_find_package( CUDA SYSTEM REQUIRED )
   if ( CUDA_FOUND )
 		list( APPEND PREFR_DEPENDENT_LIBRARIES CUDA )
 
