@@ -47,15 +47,20 @@ namespace prefr
       delete( _distances );
   }
 
-  void Sorter::InitDistanceArray( ICamera* camera )
+  void Sorter::initDistanceArray( ICamera* camera )
   {
     _distances = new DistanceArray( _particles.size, camera );
   }
 
-  void Sorter::Sort(SortOrder /*order*/)
+  void Sorter::sort(SortOrder /*order*/)
   {
 
-    TDistUnitContainer::iterator end = _distances->begin( ) + _aliveParticles;
+    TDistUnitContainer::iterator end;
+#ifndef PREFR_USE_OPENMP
+    end = _distances->begin( ) + _aliveParticles;
+#else
+    end = _distances->end( );
+#endif
 
 #ifdef PREFR_USE_OPENMP
     if( _parallel )
@@ -69,15 +74,31 @@ namespace prefr
 #endif
     }
     else
+      std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
 #endif
-    std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
+
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "SORT" << std::endl;
+    std::cout << "IDS:";
+    for( auto id : _distances->elements )
+    {
+      std::cout << "\t" << id.id( );
+    }
+    std::cout << std::endl;
+
+    std::cout << "DIST:";
+    for( auto dist : _distances->elements )
+    {
+      std::cout << "\t" << dist.distance( );
+    }
+    std::cout << std::endl;
+#endif
   }
 
-  void Sorter::UpdateCameraDistance( const glm::vec3& cameraPosition,
+  void Sorter::updateCameraDistance( const glm::vec3& cameraPosition,
                                      bool renderDeadParticles )
   {
-//    _aliveParticles = 0;
-    _distances->ResetCounter( );
+    _distances->resetCounter( );
 
 #ifdef PREFR_USE_OPENMP
 
@@ -99,36 +120,68 @@ namespace prefr
              particle != cluster->particles( ).end( );
              particle++ )
         {
-          UpdateParticleDistance( &particle, cameraPosition,
+#ifndef PREFR_USE_OPENMP
+          if( particle.alive( ) || renderDeadParticles )
+#endif
+          updateParticleDistance( &particle, cameraPosition,
                                   renderDeadParticles );
 
         }
       }
     }
 
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "SETUP" << std::endl;
+    std::cout << "IDS:";
+    for( auto id : _distances->elements )
+    {
+      std::cout << "\t" << id.id( );
+    }
+    std::cout << std::endl;
+
+    std::cout << "DIST:";
+    for( auto dist : _distances->elements )
+    {
+      std::cout << "\t" << dist.distance( );
+    }
+    std::cout << std::endl;
+#endif
   }
 
-  void Sorter::UpdateCameraDistance( bool renderDeadParticles )
+  void Sorter::updateCameraDistance( bool renderDeadParticles )
   {
     assert( _distances->_camera );
 
-    UpdateCameraDistance( _distances->_camera->PReFrCameraPosition( ),
+    updateCameraDistance( _distances->_camera->PReFrCameraPosition( ),
                           renderDeadParticles );
 
   }
 
-  void Sorter::UpdateParticleDistance( const tparticle_ptr current,
+  void Sorter::updateParticleDistance( const tparticle_ptr current,
                                        const glm::vec3& cameraPosition,
                                        bool renderDeadParticles )
   {
 
-    DistanceUnit& dist = _distances->at( current->id( ));
+    DistanceUnit& dist =
+#ifdef PREFR_USE_OPENMP
+        _distances->at( current->id( ));
+#else
+        *_distances->next( );
+#endif
 
-    dist.Id( current->id( ));
+    dist.id( current->id( ));
 
-    dist.Distance( current->alive() || renderDeadParticles ?
+    dist.distance( current->alive() || renderDeadParticles ?
                    length2(current->position( ) - cameraPosition ) :
                    -1 );
+
+#ifdef PREFR_WITH_LOGGING
+    std::cout << "Particle " << current->id( )
+              << " " << std::boolalpha << current->alive( )
+              << "\t" << dist.distance( )
+              << "\t" << _distances->elements[ current->id( )].distance( )
+              << std::endl;
+#endif
   }
 
 

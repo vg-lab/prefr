@@ -32,9 +32,12 @@ namespace prefr
   Updater::~Updater( )
   { }
 
-  void Updater::Emit( const Cluster& cluster,
+  void Updater::emit( const Cluster& cluster,
                       const tparticle_ptr current )
   {
+    if( current->alive( ))
+      return;
+
     Source* source = cluster.source( );
     Model* model = cluster.model( );
 
@@ -51,7 +54,7 @@ namespace prefr
 
   }
 
-  void Updater::Update( const Cluster& cluster,
+  void Updater::update( const Cluster& cluster,
                         const tparticle_ptr current,
                         float deltaTime )
   {
@@ -63,16 +66,15 @@ namespace prefr
 
     current->life( current->life( ) - deltaTime );
 
-    if( current->alive( ) && current->life( ) < 0.0f )
+    if( current->alive( ) && current->life( ) <= 0.0f )
     {
       current->life( 0.0f );
+      current->alive( false );
       #pragma omp critical
       {
         source->_deadParticles.push_back( current->id( ));
       }
     }
-
-    current->alive( current->life( ) > 0 );
 
     if( current->alive( ))
     {

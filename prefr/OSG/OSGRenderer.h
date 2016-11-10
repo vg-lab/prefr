@@ -43,13 +43,13 @@ namespace prefr
     virtual ~OSGRenderer( );
 
     PREFR_API
-    void init( );
+    void _init( );
 
     PREFR_API
-    virtual void SetupRender( void );
+    virtual void setupRender( void );
 
     PREFR_API
-    virtual void Paint( void ) const;
+    virtual void paint( void ) const;
 
   };
 

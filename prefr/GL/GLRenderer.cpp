@@ -33,12 +33,14 @@ namespace prefr
   : Renderer( )
   , _glRenderConfig( nullptr )
   , _glRenderProgram( nullptr )
-  { }
+  {
+    alphaBlendingFunc( ONE_MINUS_SRC_ALPHA );
+  }
 
   GLRenderer::~GLRenderer( )
   { }
 
-  void GLRenderer::init( void )
+  void GLRenderer::_init( void )
   {
     _glRenderConfig = new GLRenderConfig( _particles.size );
     _renderConfig = _glRenderConfig;
@@ -133,7 +135,33 @@ namespace prefr
 
   }
 
-  void GLRenderer::SetupRender( void )
+  void GLRenderer::alphaBlendingFunc( BlendFunc blendFunc )
+  {
+    switch( blendFunc )
+    {
+      case ONE_MINUS_CONSTANT_ALPHA:
+
+        _blendFunc = blendFunc;
+        _blendFuncValue = ( unsigned int ) GL_ONE_MINUS_CONSTANT_ALPHA;
+
+        break;
+
+      case ONE_MINUS_SRC_ALPHA:
+      default:
+
+        _blendFunc = blendFunc;
+        _blendFuncValue = ( unsigned int ) GL_ONE_MINUS_SRC_ALPHA;
+
+        break;
+    }
+  }
+
+  GLRenderer::BlendFunc GLRenderer::alphaBlendingFunc( void )
+  {
+    return _blendFunc;
+  }
+
+  void GLRenderer::setupRender( void )
   {
 #ifdef PREFR_USE_OPENMP
 
@@ -200,22 +228,23 @@ namespace prefr
 
   }
 
-  void GLRenderer::Paint( void ) const
+  void GLRenderer::paint( void ) const
   {
     glBindVertexArray( _glRenderConfig->_vao );
 
     if( _glRenderConfig->_glRenderProgram && _glRenderConfig->_camera )
     {
-      glDisable( GL_DEPTH_TEST );
+      glEnable( GL_DEPTH_TEST );
+      glDepthMask( GL_FALSE );
       glDisable( GL_CULL_FACE );
       glEnable( GL_BLEND );
-      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+      glBlendFunc( GL_SRC_ALPHA, _blendFuncValue );
 
-      _glRenderProgram->PReFrActivateGLProgram( );
-      unsigned int programID = _glRenderProgram->PReFrGLProgramID( );
+      _glRenderProgram->prefrActivateGLProgram( );
+      unsigned int programID = _glRenderProgram->prefrGLProgramID( );
 
       unsigned int mvpID = glGetUniformLocation(
-          programID, _glRenderProgram->PReFrViewProjectionMatrixAlias( ));
+          programID, _glRenderProgram->prefrViewProjectionMatrixAlias( ));
 
       glm::mat4x4 tmp =
           _glRenderConfig->_camera->PReFrCameraViewProjectionMatrix( );
@@ -223,10 +252,10 @@ namespace prefr
       glUniformMatrix4fv( mvpID, 1, GL_FALSE, glm::value_ptr( tmp ));
 
       unsigned int cameraUpID = glGetUniformLocation(
-          programID, _glRenderProgram->PReFrViewMatrixUpComponentAlias( ));
+          programID, _glRenderProgram->prefrViewMatrixUpComponentAlias( ));
 
       unsigned int cameraRightID = glGetUniformLocation(
-          programID, _glRenderProgram->PReFrViewMatrixRightComponentAlias( ));
+          programID, _glRenderProgram->prefrViewMatrixRightComponentAlias( ));
 
       const glm::mat4x4& viewMatrix =
           std::move( _glRenderConfig->_camera->PReFrCameraViewMatrix( ));
@@ -247,6 +276,10 @@ namespace prefr
                            _glRenderConfig->aliveParticles );
 
     glBindVertexArray( 0 );
+
+    glDepthMask( GL_TRUE );
+    glEnable( GL_CULL_FACE );
+
   }
 
 }

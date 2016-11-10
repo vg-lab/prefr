@@ -41,55 +41,58 @@ namespace prefr
 
     OSGRenderConfig( unsigned int size )
     : RenderConfig( size )
-    , billboardVertices( new std::vector< GLfloat >( size ) )
-    , particlePositions( new std::vector< GLfloat >( size ) )
-    , particleColors( new std::vector< GLfloat >( size ))
-    , vao( 0 )
-    , vboBillboardVertex( 0 )
-    , vboParticlesPositions( 0 )
-    , vboParticlesColors( 0 )
-    , vertexArray( nullptr )
-    , billboardIndices( nullptr )
-    , vboDrawElements( 0 )
-    , uCameraUp( nullptr )
-    , uCameraRight( nullptr )
-    , init( false )
+    , _billboardVertices( new std::vector< GLfloat >( size ) )
+    , _particlePositions( new std::vector< GLfloat >( size ) )
+    , _particleColors( new std::vector< GLfloat >( size ))
+    , _vao( 0 )
+    , _vboBillboardVertex( 0 )
+    , _vboParticlesPositions( 0 )
+    , _vboParticlesColors( 0 )
+    , _vertexArray( nullptr )
+    , _billboardIndices( nullptr )
+    , _vboDrawElements( 0 )
+    , _uCameraUp( nullptr )
+    , _uCameraRight( nullptr )
+    , _init( false )
     { }
 
     virtual ~OSGRenderConfig( )
     {
-      vboDrawElements = 0;
-      init = false;
+      _vboDrawElements = 0;
+      _init = false;
     }
 
   protected:
 
     // Triangles vertices
-    std::vector< GLfloat >* billboardVertices;
-    std::vector< GLfloat >* particlePositions;
-    std::vector< GLfloat >* particleColors;
+    std::vector< GLfloat >* _billboardVertices;
+    std::vector< GLfloat >* _particlePositions;
+    std::vector< GLfloat >* _particleColors;
 
     // OpenGL pointers
-    GLuint vao;
-    GLuint vboBillboardVertex;
-    GLuint vboParticlesPositions;
-    GLuint vboParticlesColors;
+    GLuint _vao;
+    GLuint _vboBillboardVertex;
+    GLuint _vboParticlesPositions;
+    GLuint _vboParticlesColors;
 
-    osg::Vec3Array* vertexArray;
-    osg::DrawElementsUByte* billboardIndices;
+    osg::Vec3Array* _vertexArray;
+    osg::DrawElementsUByte* _billboardIndices;
 
     // OpenGL pointers
-    GLuint vboDrawElements;
+    GLuint _vboDrawElements;
 
-    osg::Uniform* uCameraUp;
-    osg::Uniform* uCameraRight;
+    osg::Uniform* _uCameraUp;
+    osg::Uniform* _uCameraRight;
 
-    osg::Vec3f eye, center, up, right;
+    osg::Vec3f _eye;
+    osg::Vec3f _center;
+    osg::Vec3f _up;
+    osg::Vec3f _right;
 
-    osg::BoundingBox boundingBox;
-    osg::BoundingSphere boundingSphere;
+    osg::BoundingBox _boundingBox;
+    osg::BoundingSphere _boundingSphere;
 
-    bool init;
+    bool _init;
 
   };
 

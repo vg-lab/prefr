@@ -157,61 +157,61 @@ namespace prefr
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    glGenVertexArrays( 1, &osgrc->vao );
+    glGenVertexArrays( 1, &osgrc->_vao );
 
     GLuint buffersGL[ 4 ];
     glGenBuffers( 4, buffersGL );
 
-    osgrc->vboBillboardVertex = buffersGL[ 0 ];
-    osgrc->vboParticlesPositions = buffersGL[ 1 ];
-    osgrc->vboParticlesColors = buffersGL[ 2 ];
-    osgrc->vboDrawElements = buffersGL[ 3 ];
+    osgrc->_vboBillboardVertex = buffersGL[ 0 ];
+    osgrc->_vboParticlesPositions = buffersGL[ 1 ];
+    osgrc->_vboParticlesColors = buffersGL[ 2 ];
+    osgrc->_vboDrawElements = buffersGL[ 3 ];
 
-    osgrc->init = true;
+    osgrc->_init = true;
 
     // Assign billboard vertices
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboBillboardVertex );
 
     glBufferData( GL_ARRAY_BUFFER,
-                  sizeof( GLfloat ) * osgrc->billboardVertices->size( ),
-                  &osgrc->billboardVertices->front( ), GL_STATIC_DRAW );
+                  sizeof( GLfloat ) * osgrc->_billboardVertices->size( ),
+                  &osgrc->_billboardVertices->front( ), GL_STATIC_DRAW );
 
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesPositions );
 
     glBufferData( GL_ARRAY_BUFFER,
-                  sizeof( GLfloat ) * osgrc->particlePositions->size( ),
+                  sizeof( GLfloat ) * osgrc->_particlePositions->size( ),
                   nullptr, GL_DYNAMIC_DRAW );
 
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesColors );
 
     glBufferData( GL_ARRAY_BUFFER,
-                  sizeof( GLfloat ) * osgrc->particleColors->size( ),
+                  sizeof( GLfloat ) * osgrc->_particleColors->size( ),
                   nullptr, GL_DYNAMIC_DRAW );
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->_vboDrawElements );
 
     glBufferData( GL_ELEMENT_ARRAY_BUFFER,
-                  osgrc->billboardIndices->getTotalDataSize( ),
-                  osgrc->billboardIndices->getDataPointer( ), GL_STATIC_DRAW );
+                  osgrc->_billboardIndices->getTotalDataSize( ),
+                  osgrc->_billboardIndices->getDataPointer( ), GL_STATIC_DRAW );
 
-    glBindVertexArray( osgrc->vao );
+    glBindVertexArray( osgrc->_vao );
 
     glEnableVertexAttribArray( 0 );
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboBillboardVertex );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboBillboardVertex );
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
     glEnableVertexAttribArray( 1 );
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesPositions );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesPositions );
     glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, ( void* ) 0 );
 
     glEnableVertexAttribArray( 2 );
-    glBindBuffer( GL_ARRAY_BUFFER, osgrc->vboParticlesColors );
+    glBindBuffer( GL_ARRAY_BUFFER, osgrc->_vboParticlesColors );
     glVertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, 0, ( void* ) 0 );
 
     glVertexAttribDivisor( 1, 1 );
     glVertexAttribDivisor( 2, 1 );
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->vboDrawElements );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, osgrc->_vboDrawElements );
 
     glBindVertexArray( 0 );
 
@@ -222,7 +222,7 @@ namespace prefr
 
   osg::BoundingBox OSGManager::computeBound( ) const
   {
-    return dynamic_cast< OSGRenderConfig* >( _renderConfig )->boundingBox;
+    return dynamic_cast< OSGRenderConfig* >( _renderConfig )->_boundingBox;
   }
 
   void OSGManager::drawImplementation( osg::RenderInfo& renderInfo ) const
@@ -238,25 +238,25 @@ namespace prefr
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    glDeleteBuffers( 1, &osgrc->vboBillboardVertex );
-    glDeleteBuffers( 1, &osgrc->vboDrawElements );
-    glDeleteBuffers( 1, &osgrc->vboParticlesPositions );
-    glDeleteBuffers( 1, &osgrc->vboParticlesColors );
-    glDeleteVertexArrays( 1, &osgrc->vao );
+    glDeleteBuffers( 1, &osgrc->_vboBillboardVertex );
+    glDeleteBuffers( 1, &osgrc->_vboDrawElements );
+    glDeleteBuffers( 1, &osgrc->_vboParticlesPositions );
+    glDeleteBuffers( 1, &osgrc->_vboParticlesColors );
+    glDeleteVertexArrays( 1, &osgrc->_vao );
   }
 
   void OSGManager::accept( osg::PrimitiveFunctor& functor ) const
   {
     OSGRenderConfig* osgrc = static_cast< OSGRenderConfig* >( _renderConfig );
 
-    if ( !osgrc->vertexArray || !osgrc->billboardIndices )
+    if ( !osgrc->_vertexArray || !osgrc->_billboardIndices )
       return;
 
     // add drawable to the stats
-    functor.setVertexArray( osgrc->vertexArray->size( ),
+    functor.setVertexArray( osgrc->_vertexArray->size( ),
                             static_cast< const osg::Vec3* >(
-                                osgrc->vertexArray->getDataPointer( )));
-    osgrc->billboardIndices->accept( functor );
+                                osgrc->_vertexArray->getDataPointer( )));
+    osgrc->_billboardIndices->accept( functor );
   }
 
 
@@ -297,11 +297,11 @@ namespace prefr
     program->addShader( vertexShader );
     program->addShader( fragmentShader );
 
-    osgrc->uCameraUp = new osg::Uniform( "cameraUp", osg::Vec3f( ));
-    osgrc->uCameraRight = new osg::Uniform( "cameraRight", osg::Vec3f( ));
+    osgrc->_uCameraUp = new osg::Uniform( "cameraUp", osg::Vec3f( ));
+    osgrc->_uCameraRight = new osg::Uniform( "cameraRight", osg::Vec3f( ));
 
-    psState->addUniform( osgrc->uCameraUp );
-    psState->addUniform( osgrc->uCameraRight );
+    psState->addUniform( osgrc->_uCameraUp );
+    psState->addUniform( osgrc->_uCameraRight );
 
     program->addBindAttribLocation( "vertexPosition", 0 );
     program->addBindAttribLocation( "particlePosition", 1 );
@@ -337,21 +337,21 @@ namespace prefr
     osg::Vec3d eye, center, up;
     _cameraManipulator->getTransformation( eye, center, up );
 
-    osgrc->eye = osg::Vec3f( eye );
-    osgrc->center = osg::Vec3f( center );
-    osgrc->up = osg::Vec3f( up );
+    osgrc->_eye = osg::Vec3f( eye );
+    osgrc->_center = osg::Vec3f( center );
+    osgrc->_up = osg::Vec3f( up );
 
     _particleSystem->updateCameraDistances(
-        glm::vec3( osgrc->eye.x( ), osgrc->eye.y( ), osgrc->eye.z( )));
+        glm::vec3( osgrc->_eye.x( ), osgrc->_eye.y( ), osgrc->_eye.z( )));
 
-    osg::Vec3f forward = ( osgrc->center - osgrc->eye );
+    osg::Vec3f forward = ( osgrc->_center - osgrc->_eye );
     forward.normalize( );
 
-    osgrc->right = osgrc->up ^ forward;
+    osgrc->_right = osgrc->_up ^ forward;
 
-    osgrc->uCameraUp->set( osgrc->up );
+    osgrc->_uCameraUp->set( osgrc->_up );
 
-    osgrc->uCameraRight->set( osgrc->right );
+    osgrc->_uCameraRight->set( osgrc->_right );
   }
 
 }

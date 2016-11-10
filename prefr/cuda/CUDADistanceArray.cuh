@@ -45,8 +45,8 @@ namespace prefr
 
 #endif
 
-    CUDADistanceArray ( unsigned int size)
-    : DistanceArray( size )
+    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
+    : DistanceArray( size, camera )
     {
       translatedIDs.resize( size );
     }

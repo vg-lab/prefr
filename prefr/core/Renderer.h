@@ -22,7 +22,7 @@
 #ifndef __PREFR__RENDERER__
 #define __PREFR__RENDERER__
 
-// #include <particles/config.h>
+#include <prefr/api.h>
 #include "../utils/types.h"
 
 #include "Particles.h"
@@ -39,23 +39,23 @@ namespace prefr
 
   public:
 
-    Renderer( );
+    PREFR_API Renderer( );
 
-    virtual ~Renderer();
+    PREFR_API virtual ~Renderer();
 
-    virtual void SetupRender( void ) = 0;
+    PREFR_API virtual void setupRender( void ) = 0;
 
-    virtual void Paint( void ) const = 0;
+    PREFR_API virtual void paint( void ) const = 0;
 
-    RenderConfig* renderConfig( void ) const;
+    PREFR_API RenderConfig* renderConfig( void ) const;
 
-    virtual void distanceArray( DistanceArray* distanceArray );
+    PREFR_API virtual void distanceArray( DistanceArray* distanceArray );
+
+    PREFR_API void particles( const ParticleRange& particles );
 
   protected:
 
-    virtual void init( void ) = 0;
-
-    void particles( const ParticleRange& particles );
+    virtual void _init( void ) = 0;
 
     ParticleCollection _particles;
 

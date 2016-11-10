@@ -35,25 +35,25 @@ namespace prefr
     virtual ~IGLRenderProgram( ){ }
 
     PREFR_API
-    virtual void PReFrActivateGLProgram( void ) = 0;
+    virtual void prefrActivateGLProgram( void ) = 0;
 
     PREFR_API
-    virtual unsigned int PReFrGLProgramID( void ) = 0;
+    virtual unsigned int prefrGLProgramID( void ) = 0;
     
     PREFR_API virtual inline
-    const char* PReFrViewProjectionMatrixAlias( void ) const
+    const char* prefrViewProjectionMatrixAlias( void ) const
     {
       return _viewProjectionMatrixAlias.c_str( );
     }
 
     PREFR_API virtual inline
-    const char* PReFrViewMatrixUpComponentAlias( void ) const
+    const char* prefrViewMatrixUpComponentAlias( void ) const
     {
       return _viewMatrixUpComponentAlias.c_str( );
     }
 
     PREFR_API virtual inline
-    const char* PReFrViewMatrixRightComponentAlias( void ) const
+    const char* prefrViewMatrixRightComponentAlias( void ) const
     {
       return _viewMatrixRightComponentAlias.c_str( );
     }

@@ -236,8 +236,8 @@ namespace prefr
 
     class base_iterator;
 
-    iterator CreateIterator( unsigned int i );
-    const_iterator CreateConstIterator( unsigned int i ) const;
+    iterator _createIterator( unsigned int i );
+    const_iterator _createConstIterator( unsigned int i ) const;
 
     PREFR_ATRIB( id, unsigned int )
     PREFR_ATRIB( life, float )

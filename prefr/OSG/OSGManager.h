@@ -30,8 +30,6 @@
 #include "../core/ParticleSystem.h"
 #include "OSGRenderConfig.h"
 
-
-
 #include <osg/Array>
 #include <osg/Geometry>
 
