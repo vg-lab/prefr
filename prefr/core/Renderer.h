@@ -19,50 +19,55 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
+#ifndef __PREFR__RENDERER__
+#define __PREFR__RENDERER__
 
-#include "../core/DistanceArray.hpp"
+#include <prefr/api.h>
+#include "../utils/types.h"
 
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#include "Particles.h"
+
+#include "DistanceArray.hpp"
+#include "RenderConfig.h"
 
 namespace prefr
 {
 
-  class CUDADistanceArray : public DistanceArray
+  class Renderer
   {
+    friend class ParticleSystem;
+
   public:
 
-#ifdef PREFR_USE_CUDA
+    PREFR_API Renderer( );
 
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
+    PREFR_API virtual ~Renderer();
 
-    std::vector< int > translatedIDs;
+    PREFR_API virtual void setupRender( void ) = 0;
 
-#endif
+    PREFR_API virtual void paint( void ) const = 0;
 
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
+    PREFR_API RenderConfig* renderConfig( void ) const;
 
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
+    PREFR_API virtual void distanceArray( DistanceArray* distanceArray );
 
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
+    PREFR_API void particles( const ParticleRange& particles );
+
+  protected:
+
+    virtual void _init( void ) = 0;
+
+    ParticleCollection _particles;
+
+    DistanceArray* _distances;
+    RenderConfig* _renderConfig;
+
+    bool _parallel;
 
   };
 
 }
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+
+
+#endif /* __PREFR__RENDERER__ */

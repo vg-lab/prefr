@@ -19,50 +19,51 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
-
-#include "../core/DistanceArray.hpp"
-
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#include "Model.h"
 
 namespace prefr
 {
+  Model::Model()
+  : _minLife( 0.0f )
+  , _maxLife( 0.0f )
+  , _lifeRange( 0.0f )
+  , _lifeNormalization( 1.0f )
+  { }
 
-  class CUDADistanceArray : public DistanceArray
+  Model::Model( float min, float max )
   {
-  public:
+    setLife( min, max );
+  }
 
-#ifdef PREFR_USE_CUDA
+  Model::~Model( )
+  { }
 
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
+  void Model::setLife( float min, float max )
+  {
+    _minLife = min;
+    _maxLife = max;
+    _lifeRange = _maxLife - _minLife;
+    _lifeNormalization = 1.0f / _maxLife;
+  }
 
-    std::vector< int > translatedIDs;
+  float Model::minLife( void ) const
+  {
+    return _minLife;
+  }
 
-#endif
+  float Model::maxLife( void ) const
+  {
+    return _maxLife;
+  }
 
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
+  float Model::inverseMaxLife( void )
+  {
+    return _lifeNormalization;
+  }
 
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
-
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
-
-  };
-
+  float Model::lifeInterval( void )
+  {
+    return _lifeRange;
+  }
 }
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */

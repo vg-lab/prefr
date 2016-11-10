@@ -19,50 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
-
-#include "../core/DistanceArray.hpp"
-
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#include "Config.h"
+#include "GL/glew.h"
 
 namespace prefr
 {
 
-  class CUDADistanceArray : public DistanceArray
+  bool Config::_initialized = false;
+
+  void Config::init( void )
   {
-  public:
-
-#ifdef PREFR_USE_CUDA
-
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
-
-    std::vector< int > translatedIDs;
-
-#endif
-
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
+    if ( !_initialized )
     {
-      translatedIDs.resize( size );
+      glewExperimental = GL_TRUE;
+      glewInit( );
+      _initialized = true;
     }
+  }
 
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
+  bool Config::isInitialized( void )
+  {
+    return _initialized;
+  }
 
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
-
-  };
-
-}
-
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+} // namespace prefr

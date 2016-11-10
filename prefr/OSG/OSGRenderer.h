@@ -19,50 +19,44 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
+#ifndef __PREFR__OSG_RENDERER__
+#define __PREFR__OSG_RENDERER__
 
-#include "../core/DistanceArray.hpp"
+#include <prefr/api.h>
 
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#include "../core/Renderer.h"
+#include "OSGRenderConfig.h"
+
+#ifdef PREFR_USE_OPENSCENEGRAPH
 
 namespace prefr
 {
 
-  class CUDADistanceArray : public DistanceArray
+  class OSGRenderer : public Renderer
   {
   public:
 
-#ifdef PREFR_USE_CUDA
+    PREFR_API
+    OSGRenderer( );
 
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
+    PREFR_API
+    virtual ~OSGRenderer( );
 
-    std::vector< int > translatedIDs;
+    PREFR_API
+    void _init( );
 
-#endif
+    PREFR_API
+    virtual void setupRender( void );
 
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
-
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
-
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
+    PREFR_API
+    virtual void paint( void ) const;
 
   };
 
+
 }
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+#endif
+
+
+#endif /* __PREFR__OSG_RENDERER__ */

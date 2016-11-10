@@ -19,50 +19,39 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
+#ifndef __PREFR__THRUST_SORTER__
+#define __PREFR__THRUST_SORTER__
 
-#include "../core/DistanceArray.hpp"
-
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#include "../core/Sorter.h"
+#include "../utils/types.h"
+#include "CUDADistanceArray.cuh"
 
 namespace prefr
 {
 
-  class CUDADistanceArray : public DistanceArray
+  class ThrustSorter : public Sorter
   {
   public:
 
-#ifdef PREFR_USE_CUDA
+    PREFR_API ThrustSorter(  );
+    PREFR_API virtual ~ThrustSorter( );
 
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
+    PREFR_API virtual void sort( SortOrder order );
 
-    std::vector< int > translatedIDs;
+    PREFR_API
+    virtual void updateCameraDistance( const glm::vec3& cameraPosition,
+                                       bool renderDeadParticles = false );
 
-#endif
+    PREFR_API
+    virtual void updateParticleDistance( const tparticle_ptr current,
+                                         const glm::vec3& cameraPosition,
+                                         bool renderDeadParticles = false );
 
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
-
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
-
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
+    PREFR_API virtual void initDistanceArray( ICamera* camera );
 
   };
 
-}
+} // namespace prefr
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+
+#endif

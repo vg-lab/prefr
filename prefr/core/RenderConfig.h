@@ -17,52 +17,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
-
-#include "../core/DistanceArray.hpp"
-
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
-#endif
+#ifndef __PREFR__RENDER_CONFIG__
+#define __PREFR__RENDER_CONFIG__
 
 namespace prefr
 {
 
-  class CUDADistanceArray : public DistanceArray
+  class RenderConfig
   {
   public:
 
-#ifdef PREFR_USE_CUDA
+    RenderConfig( unsigned int )
+    : aliveParticles( 0 )
+    { }
 
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
+    virtual ~RenderConfig( ){ }
 
-    std::vector< int > translatedIDs;
-
-#endif
-
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
-
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
-
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
+    unsigned int aliveParticles;
 
   };
 
 }
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+
+#endif /* RENDERCONFIG_H_ */

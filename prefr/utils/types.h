@@ -19,50 +19,45 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef __PREFR__CUDA_DISTANCE_ARRAY__
-#define __PREFR__CUDA_DISTANCE_ARRAY__
+#ifndef __PREFR__TYPES__
+#define __PREFR__TYPES__
 
-#include "../core/DistanceArray.hpp"
-
-#ifdef PREFR_USE_CUDA
-#include <thrust/device_vector.h>
-#include <thrust/host_vector.h>
+// types.h should be the first file included to ensure
+// GLEW is included before any other GL file
+#ifndef PREFR_SKIP_GLEW_INCLUDE
+#include <GL/glew.h>
 #endif
 
-namespace prefr
-{
-
-  class CUDADistanceArray : public DistanceArray
-  {
-  public:
-
-#ifdef PREFR_USE_CUDA
-
-    thrust::device_vector< int > deviceID;
-    thrust::device_vector< float > deviceDistances;
-
-    std::vector< int > translatedIDs;
-
+// CUDA include
+#include <prefr/defines.h>
+#if (PREFR_USE_CUDA)
+  #include <cuda.h>
 #endif
 
-    CUDADistanceArray ( unsigned int size, ICamera* camera = nullptr )
-    : DistanceArray( size, camera )
-    {
-      translatedIDs.resize( size );
-    }
+// std includes
+#include <vector>
+#include <algorithm>
 
-    virtual inline const int& getID( unsigned int i ) const
-    {
-      return translatedIDs[ ids[ i ]];
-    }
 
-    virtual inline const float& getDistance( unsigned int i ) const
-    {
-      return distances[ i ];
-    }
+// math for windows includes
+#ifdef WIN32
+#define _USE_MATH_DEFINES
+#include <cmath>
+#endif
 
-  };
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
-}
+// GLM includes
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#endif /* __PREFR__CUDA_DISTANCE_ARRAY__ */
+// PREFR include for type definitions
+#include "ElementCollection.hpp"
+
+
+#endif /* PREFR__TYPES__ */
