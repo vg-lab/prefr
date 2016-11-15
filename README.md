@@ -17,7 +17,7 @@ different behaviors. A basic multi-core implementation based on OpenMP is also p
 
 ## Dependencies
 
-###Strong dependences:
+### Strong dependences:
 * OpenGL
 * GLEW
 * GLM
