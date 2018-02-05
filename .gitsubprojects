@@ -1,2 +1,2 @@
 # -*- mode: cmake -*-
-git_subproject(ReTo git@gitlab.gmrv.es:nsviz/ReTo.git a804fe12)
+git_subproject(ReTo git@gitlab.gmrv.es:nsviz/ReTo.git 250a05b)
