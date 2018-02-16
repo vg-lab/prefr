@@ -27,8 +27,6 @@
 
 #include <vector>
 
-#include "../utils/ElementCollection.hpp"
-
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 

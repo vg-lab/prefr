@@ -41,16 +41,16 @@ namespace prefr
     Source* source = cluster.source( );
     Model* model = cluster.model( );
 
-    current->life( glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) *
+    current->set_life( glm::clamp( rand( ) * invRandMax, 0.0f, 1.0f ) *
                    model->_lifeRange + model->_minLife );
 
-    current->alive( true );
+    current->set_alive( true );
 
     SampledValues values;
     source->sample( &values );
 
-    current->position( values.position );
-    current->velocity( values.direction );
+    current->set_position( values.position );
+    current->set_velocity( values.direction );
 
   }
 
@@ -64,12 +64,12 @@ namespace prefr
     if( !source || !model )
       return;
 
-    current->life( current->life( ) - deltaTime );
+    current->set_life( current->life( ) - deltaTime );
 
     if( current->alive( ) && current->life( ) <= 0.0f )
     {
-      current->life( 0.0f );
-      current->alive( false );
+      current->set_life( 0.0f );
+      current->set_alive( false );
       #pragma omp critical
       {
         source->_deadParticles.push_back( current->id( ));
@@ -83,12 +83,12 @@ namespace prefr
           glm::clamp( current->life( ) * ( model->_lifeNormalization ),
                       0.0f, 1.0f );
 
-      current->color( model->color.GetValue( refLife ));
+      current->set_color( model->color.GetValue( refLife ));
 
-      current->size( model->size.GetValue( refLife ));
-      current->velocityModule( model->velocity.GetValue( refLife ));
+      current->set_size( model->size.GetValue( refLife ));
+      current->set_velocityModule( model->velocity.GetValue( refLife ));
 
-      current->position( current->position( ) +
+      current->set_position( current->position( ) +
                          current->velocity( ) *
                          current->velocityModule( ) * deltaTime );
 

@@ -52,8 +52,8 @@ namespace prefr
     auto particle = _particles.begin( );
     for( unsigned int i = 0; i < _maxParticles; i++ )
     {
-      particle.id( i );
-      particle.alive( false );
+      particle.set_id( i );
+      particle.set_alive( false );
 
       ++particle;
     }
@@ -96,7 +96,7 @@ namespace prefr
 
     auto clusterIT = _clusterReference.begin( ) + start_;
 
-    for( unsigned int i = 0; i < size_; i++ )
+    for( unsigned int i = start_; i < start_ + size_; i++ )
     {
       *clusterIT = reference;
       ++clusterIT;
@@ -105,6 +105,13 @@ namespace prefr
     if( cluster->source( ))
       cluster->source( )->_initializeParticles( );
 
+    std::cout << "Cluster " << start_ << " to " << start_ + size_ << std::endl;
+    for( tparticle p = cluster->particles( ).begin( ); p != cluster->particles( ).end( ); p++ )
+    {
+      std::cout << " " << p.id();
+    }
+
+    std::cout << std::endl;
   }
 
   void ParticleSystem::addSource( Source* source )

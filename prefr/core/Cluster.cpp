@@ -112,11 +112,11 @@ namespace prefr
 //      if( !particle.alive( ) )
 //        continue;
 
-      particle.life( 0.0f );
+      particle.set_life( 0.0f );
 
       if( changeState )
       {
-        particle.alive( false );
+        particle.set_alive( false );
 
         #pragma omp critical
         {

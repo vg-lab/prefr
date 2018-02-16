@@ -49,7 +49,7 @@ namespace prefr
 
   void Sorter::initDistanceArray( ICamera* camera )
   {
-    _distances = new DistanceArray( _particles.size, camera );
+    _distances = new DistanceArray( _particles.size( ), camera );
   }
 
   void Sorter::sort(SortOrder /*order*/)

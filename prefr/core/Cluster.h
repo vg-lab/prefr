@@ -28,8 +28,6 @@
 #include "Model.h"
 #include "Updater.h"
 
-#include "../utils/ElementCollection.hpp"
-
 namespace prefr
 {
 

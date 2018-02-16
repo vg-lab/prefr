@@ -42,7 +42,7 @@ namespace prefr
 
   void GLRenderer::_init( void )
   {
-    _glRenderConfig = new GLRenderConfig( _particles.size );
+    _glRenderConfig = new GLRenderConfig( _particles.size( ) );
     _renderConfig = _glRenderConfig;
 
     _glRenderConfig->_glRenderProgram = _glRenderProgram;
@@ -52,9 +52,9 @@ namespace prefr
 
     _glRenderConfig->_billboardVertices = new std::vector< GLfloat >( 12 );
     _glRenderConfig->_particlePositions =
-        new std::vector< GLfloat >( _particles.size * 4 );
+        new std::vector< GLfloat >( _particles.size( ) * 4 );
     _glRenderConfig->_particleColors =
-        new std::vector< GLfloat >( _particles.size * 4 );
+        new std::vector< GLfloat >( _particles.size( ) * 4 );
 
     for ( unsigned int i = 0;
           i < _glRenderConfig->_billboardVertices->size( );
@@ -170,7 +170,7 @@ namespace prefr
 #endif
     for( int i = 0; i < ( int ) _glRenderConfig->aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.GetElement( _distances->getID( i ));
+      tparticle currentParticle = _particles.at( _distances->getID( i ));
 
       unsigned int idx = i * 4;
 

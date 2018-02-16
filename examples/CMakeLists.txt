@@ -24,4 +24,9 @@ if( PREFR_WITH_EXAMPLES )
 
   endif( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND)
 
+  set( PREFRCOLLECTION_HEADERS )
+  set( PREFRCOLLECTION_SOURCES collection.cpp )
+  set( PREFRCOLLECTION_LINK_LIBRARIES prefr )
+  common_application( prefrCollection )
+
 endif()

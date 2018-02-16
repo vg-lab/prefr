@@ -99,7 +99,7 @@ namespace prefr
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
-          deltaTime * ( float ) _cluster->particles( ).size * _emissionRate;
+          deltaTime * ( float ) _cluster->particles( ).size( )* _emissionRate;
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;
@@ -161,7 +161,7 @@ namespace prefr
     {
       _cluster = cluster_;
 
-      if( _cluster->particles( ).size > 0 && _deadParticles.size( ) == 0)
+      if( _cluster->particles( ).size( )> 0 && _deadParticles.size( ) == 0)
       {
         _initializeParticles( );
       }
@@ -192,13 +192,13 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      if( !_cluster || _cluster->particles( ).size == 0 )
+      if( !_cluster || _cluster->particles( ).size( )== 0 )
       {
         std::cout << "Particles cannot be configured." << std::endl;
         return;
       }
 
-      _totalParticles = _cluster->particles( ).size;
+      _totalParticles = _cluster->particles( ).size( );
       _deadParticles.resize( _totalParticles );
 
       std::vector< unsigned int >::iterator deadIt = _deadParticles.begin( );

@@ -25,9 +25,10 @@
 #include <boost/noncopyable.hpp>
 
 #include "../utils/types.h"
-#include "../utils/ElementCollection.hpp"
 
 #include <vector>
+#include <tuple>
+#include <memory>
 
 #define STRINGIZE( cad ) #cad
 
@@ -39,44 +40,68 @@
     void p##name( unsigned int i, const type& value ) \
       { _##name##Vector[ i ] = value; }
 
-#define PREFR_ATRIB_BOOL( name, type ) \
+#define PREFR_ATRIB_BOOL( name ) \
   protected: \
-    std::vector< type > _##name##Vector; \
+    std::vector< char > _##name##Vector; \
   public: \
-    type p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
-    void p##name( unsigned int i, const type& value ) \
+    bool p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
+    void p##name( unsigned int i, const bool& value ) \
       { _##name##Vector[ i ] = value; }
 
-#define PREFR_ATRIB_IT( name, type ) \
+#define PREFR_CONST_IT_ATRIB( name, type ) \
   protected: \
-    std::vector< type >::iterator _##name##Iterator; \
+    type* _##name##_ptr; \
   public: \
-    type name( void ) const { return *_##name##Iterator; } \
-    void name( const type& value ){ *_##name##Iterator = value; }
+    type name( void ) const { return *_##name##_ptr; }
 
-#define PREFR_ATRIB_BOOL_IT( name, type ) \
+#define PREFR_CONST_IT_ATRIB_BOOL( name ) \
   protected: \
-    std::vector< type >::iterator _##name##Iterator; \
+    char* _##name##_ptr; \
   public: \
-    type name( void ) const { return *_##name##Iterator; } \
-    void name( const type& value ){ *_##name##Iterator = value; }
+    bool name( void ) const { return *_##name##_ptr; }
 
-#define PREFR_ATRIB_CONST_IT( name, type ) \
-  protected: \
-    std::vector< type >::const_iterator _##name##ConstIterator; \
+
+#define PREFR_IT_ATRIB( name, type ) \
   public: \
-    type name( void ) const { return *_##name##ConstIterator; }
+    void set_##name( const type& value ){ *_##name##_ptr = value; }
+
 
 namespace prefr
 {
   class Particles;
-}
+  class ParticleCollection;
 
-typedef utils::ElementCollection< prefr::Particles > ParticleRange;
-typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
+  typedef glm::vec3 TVect3;
+  typedef glm::vec4 TVect4;
 
-namespace prefr
-{
+  typedef ParticleCollection ParticleRange;
+//  typedef utils::ElementCollection< prefr::Particles > ParticleRange;
+//  typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
+
+  typedef std::tuple< unsigned int*,
+                      float*,
+                      float*,
+                      TVect3*,
+                      TVect4*,
+                      float*,
+                      TVect3*,
+                      float*,
+                      TVect3*,
+                      char*> TParticle;
+
+  enum TParticleAttribEnum
+  {
+    ID = 0,
+    LIFE,
+    SIZE,
+    POSITION,
+    COLOR,
+    VELOCITY_MODULE,
+    VELOCITY,
+    ACCELERATION_MODULE,
+    ACCELERATION,
+    ALIVE
+  };
 
   /*! \class Particles
    *
@@ -98,21 +123,14 @@ namespace prefr
 
   public:
 
-    enum TAttribute
-    {
-      ID = 0,
-      LIFE,
-      SIZE,
-      POSITION,
-      COLOR,
-      VELOCITY,
-      ACCELERATION,
-      ALIVE
-    };
-
+    class base_iterator;
+    class base_const_iterator;
 
     class iterator;
     class const_iterator;
+
+    friend class base_const_iterator;
+    friend class ParticleCollection;
 
     /*! \brief Default constructor.
      *
@@ -234,10 +252,11 @@ namespace prefr
 
   protected:
 
-    class base_iterator;
+    iterator _createIterator( unsigned int i ) const;
 
-    iterator _createIterator( unsigned int i );
-    const_iterator _createConstIterator( unsigned int i ) const;
+    const TParticle& vectorReferences( void ) const;
+
+    void initVectorReferences( void );
 
     PREFR_ATRIB( id, unsigned int )
     PREFR_ATRIB( life, float )
@@ -246,16 +265,95 @@ namespace prefr
     PREFR_ATRIB( color, glm::vec4 )
     PREFR_ATRIB( velocityModule, float )
     PREFR_ATRIB( velocity, glm::vec3 )
+    PREFR_ATRIB( accelerationModule, float )
     PREFR_ATRIB( acceleration, glm::vec3 )
 
-    PREFR_ATRIB_BOOL( alive, bool )
+    PREFR_ATRIB_BOOL( alive )
 
     unsigned int _size;
 
+    TParticle _vectorReferences;
   };
 
-  class Particles::iterator
-  : public std::iterator< std::bidirectional_iterator_tag, Particles >
+  class Particles::base_const_iterator
+  {
+
+    virtual ~base_const_iterator( void );
+
+    friend class Particles;
+    friend class ParticleCollection;
+
+  public:
+
+    base_const_iterator( const base_const_iterator& other );
+
+//    virtual int operator+( const base_const_iterator& other ) const;
+//    virtual int operator-( const base_const_iterator& other ) const;
+//
+//    virtual int operator+( const base_iterator& other ) const;
+//    virtual int operator-( const base_iterator& other ) const;
+//
+//    virtual base_const_iterator operator+( int increase );
+//    virtual base_const_iterator operator-( int decrease );
+//
+//    virtual bool operator== ( const base_const_iterator& other ) const;
+//    virtual bool operator!= ( const base_const_iterator& other ) const;
+
+  protected:
+
+    base_const_iterator( void );
+
+    void set( unsigned int index_ = 0 );
+    void increase( int inc );
+    void decrease( int dec );
+
+    bool compare( const base_const_iterator& other ) const ;
+    int difference( const base_const_iterator& other ) const;
+
+    unsigned int _position;
+    unsigned int _size;
+
+    const Particles* _data;
+    TParticle _vectorRef;
+
+    PREFR_CONST_IT_ATRIB( id, unsigned int )
+    PREFR_CONST_IT_ATRIB( life, float )
+    PREFR_CONST_IT_ATRIB( size, float )
+    PREFR_CONST_IT_ATRIB( position, glm::vec3 )
+    PREFR_CONST_IT_ATRIB( color, glm::vec4 )
+    PREFR_CONST_IT_ATRIB( velocityModule, float )
+    PREFR_CONST_IT_ATRIB( velocity, glm::vec3 )
+    PREFR_CONST_IT_ATRIB( accelerationModule, float )
+    PREFR_CONST_IT_ATRIB( acceleration, glm::vec3 )
+    PREFR_CONST_IT_ATRIB_BOOL( alive )
+  };
+
+  class Particles::base_iterator : public Particles::base_const_iterator
+  {
+
+  public:
+
+    base_iterator( const base_const_iterator& other );
+    virtual ~base_iterator( void );
+
+  protected:
+
+    base_iterator( void );
+
+    PREFR_IT_ATRIB( id, unsigned int )
+    PREFR_IT_ATRIB( life, float )
+    PREFR_IT_ATRIB( size, float )
+    PREFR_IT_ATRIB( position, glm::vec3 )
+    PREFR_IT_ATRIB( color, glm::vec4 )
+    PREFR_IT_ATRIB( velocityModule, float )
+    PREFR_IT_ATRIB( velocity, glm::vec3 )
+    PREFR_IT_ATRIB( accelerationModule, float )
+    PREFR_IT_ATRIB( acceleration, glm::vec3 )
+    PREFR_IT_ATRIB( alive, bool )
+
+  };
+
+  class Particles::iterator : public Particles::base_iterator
   {
     friend class Particles;
     friend class Particles::const_iterator;
@@ -263,45 +361,32 @@ namespace prefr
   public:
 
     iterator( void );
-    iterator( const iterator& other );
-    virtual ~iterator( ){ }
+    iterator( const base_iterator& other );
+    iterator( const Particles::const_iterator& other );
+
+    ~iterator( ){ }
 
     iterator& operator++( void );
     iterator operator++( int );
     iterator& operator--( void );
     iterator operator--( int );
 
-    iterator operator+( int increase );
-    iterator operator-( int decrease );
+    virtual int operator+( const iterator& other ) const;
+    virtual int operator-( const iterator& other ) const;
 
-    int operator+( const iterator& other );
-    int operator-( const iterator& other );
+    virtual iterator operator+( int increase );
+    virtual iterator operator-( int decrease );
 
-    bool operator== ( const iterator& other );
-    bool operator!= ( const iterator& other );
+    virtual bool operator== ( const iterator& other ) const;
+    virtual bool operator!= ( const iterator& other ) const;
 
-  protected:
 
-    long _position;
-    unsigned int _size;
-
-    const Particles* _data;
-
-    PREFR_ATRIB_IT( id, unsigned int )
-    PREFR_ATRIB_IT( life, float )
-    PREFR_ATRIB_IT( size, float )
-    PREFR_ATRIB_IT( position, glm::vec3 )
-    PREFR_ATRIB_IT( color, glm::vec4 )
-    PREFR_ATRIB_IT( velocityModule, float )
-    PREFR_ATRIB_IT( velocity, glm::vec3 )
-    PREFR_ATRIB_IT( acceleration, glm::vec3 )
-
-    PREFR_ATRIB_BOOL_IT( alive, bool )
+//    virtual auto operator*( void );
+//    virtual auto operator->( void );
 
   };
 
-  class Particles::const_iterator
-  : public std::iterator< std::bidirectional_iterator_tag, Particles >
+  class Particles::const_iterator : public Particles::base_const_iterator
   {
     friend class Particles;
     friend class Particles::iterator;
@@ -309,40 +394,151 @@ namespace prefr
   public:
 
     const_iterator( void );
-    const_iterator( const Particles::const_iterator& other );
+    const_iterator( const Particles::base_const_iterator& other );
     const_iterator( const Particles::iterator& other );
-    ~const_iterator( ){ }
+    virtual ~const_iterator( ){ }
 
     const_iterator& operator++( void );
     const_iterator operator++( int );
     const_iterator& operator--( void );
     const_iterator operator--( int );
 
-    const_iterator operator+( int increase );
-    const_iterator operator-( int decrease );
+    virtual int operator+( const const_iterator& other ) const;
+    virtual int operator-( const const_iterator& other ) const;
 
-    bool operator== ( const const_iterator& other );
-    bool operator!= ( const const_iterator& other );
+    virtual const_iterator operator+( int increase );
+    virtual const_iterator operator-( int decrease );
+
+    virtual bool operator== ( const const_iterator& other ) const;
+    virtual bool operator!= ( const const_iterator& other ) const;
+
+  };
+
+
+  typedef std::vector< unsigned int > ParticleIndices;
+
+  class ParticleCollection
+  {
+
+  public:
+
+    class iterator;
+    class const_iterator;
+
+    typedef ParticleCollection::iterator iterator;
+
+    friend class iterator;
+    friend class const_iterator;
+    friend class Particles;
+    friend class ParticleSystem;
+
+    ParticleCollection( void );
+    ParticleCollection( const ParticleCollection& other );
+
+    const ParticleIndices& indices( void ) const;
+    void indices( const ParticleIndices& newIndices );
+
+    unsigned int size( void );
+
+    iterator begin( void );
+    const_iterator begin( void ) const;
+
+    iterator end( void );
+    const_iterator end( void ) const;
+
+    iterator at( unsigned int index_ );
 
   protected:
 
-    long _position;
+    ParticleCollection( const Particles& data );
+    ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
+    ParticleCollection( const Particles& data,
+                        unsigned int begin_,
+                        unsigned int end_ );
+
+    ParticleCollection( const Particles& data,
+                        Particles::iterator begin_,
+                        Particles::iterator end_ );
+
+    iterator _createIterator( unsigned int index = 0 ) const;
+
+    ParticleIndices _particleIndices;
+    TParticle _vectorReferences;
+
     unsigned int _size;
 
     const Particles* _data;
+  };
 
-    PREFR_ATRIB_CONST_IT( id, unsigned int )
-    PREFR_ATRIB_CONST_IT( life, float )
-    PREFR_ATRIB_CONST_IT( size, float )
-    PREFR_ATRIB_CONST_IT( position, glm::vec3 )
-    PREFR_ATRIB_CONST_IT( color, glm::vec4 )
-    PREFR_ATRIB_CONST_IT( velocityModule, float )
-    PREFR_ATRIB_CONST_IT( velocity, glm::vec3 )
-    PREFR_ATRIB_CONST_IT( acceleration, glm::vec3 )
+  class ParticleCollection::iterator : public Particles::base_iterator
+  {
 
-    PREFR_ATRIB_CONST_IT( alive, bool )
+    friend class ParticleCollection;
+    friend class ParticleCollection::const_iterator;
+
+  public:
+
+    iterator( void );
+    iterator( const iterator& other );
+    iterator( const const_iterator& other );
+
+
+    iterator& operator++( void );
+    iterator operator++( int );
+    iterator& operator--( void );
+    iterator operator--( int );
+
+    virtual int operator+( const iterator& other ) const;
+    virtual int operator-( const iterator& other ) const;
+
+    virtual iterator operator+( int increase ) const;
+    virtual iterator operator-( int decrease ) const;
+
+    virtual bool operator== ( const iterator& other ) const;
+    virtual bool operator!= ( const iterator& other ) const;
+
+  protected:
+
+    unsigned int _indexPosition;
+    const ParticleIndices* _particleIndices;
 
   };
+
+  class ParticleCollection::const_iterator : public Particles::base_const_iterator
+  {
+
+    friend class ParticleCollection;
+    friend class ParticleCollection::iterator;
+
+  public:
+
+    const_iterator( void );
+    const_iterator( const iterator& other );
+    const_iterator( const const_iterator& other );
+
+    const_iterator& operator++( void );
+    const_iterator operator++( int );
+    const_iterator& operator--( void );
+    const_iterator operator--( int );
+
+    const_iterator operator+( int increase ) const;
+    const_iterator operator-( int decrease ) const;
+
+    int operator+( const const_iterator& other ) const;
+    int operator-( const const_iterator& other ) const;
+
+    bool operator== ( const const_iterator& other ) const;
+    bool operator!= ( const const_iterator& other ) const;
+
+    ParticleCollection* collection( void ) const;
+
+  protected:
+
+    unsigned int _indexPosition;
+    const ParticleIndices* _particleIndices;
+
+  };
+
 
   typedef Particles::iterator tparticle;
   typedef tparticle* tparticle_ptr;
