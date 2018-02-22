@@ -29,6 +29,8 @@
 #include <vector>
 #include <tuple>
 #include <memory>
+#include <iostream>
+#include <set>
 
 #define STRINGIZE( cad ) #cad
 
@@ -53,6 +55,7 @@
     type* _##name##_ptr; \
   public: \
     type name( void ) const { return *_##name##_ptr; }
+//    type name( void ) const { std::cout << "attrib " << STRINGIZE( name ) << " " << _##name##_ptr << std::endl; return *_##name##_ptr; }
 
 #define PREFR_CONST_IT_ATRIB_BOOL( name ) \
   protected: \
@@ -75,6 +78,8 @@ namespace prefr
   typedef glm::vec4 TVect4;
 
   typedef ParticleCollection ParticleRange;
+  typedef std::vector< unsigned int > ParticleIndices;
+
 //  typedef utils::ElementCollection< prefr::Particles > ParticleRange;
 //  typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
 
@@ -275,6 +280,67 @@ namespace prefr
     TParticle _vectorReferences;
   };
 
+
+  class ParticleCollection
+  {
+
+  public:
+
+    friend class Particles::iterator;
+    friend class Particles::const_iterator;
+    friend class Particles;
+    friend class ParticleSystem;
+
+    ParticleCollection( void );
+    ParticleCollection( const ParticleCollection& other );
+
+    ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
+
+    const ParticleIndices& indices( void ) const;
+    void indices( const ParticleIndices& newIndices );
+
+    unsigned int size( void );
+
+    Particles::iterator begin( void );
+    Particles::const_iterator begin( void ) const;
+
+    Particles::iterator end( void );
+    Particles::const_iterator end( void ) const;
+
+    Particles::iterator at( unsigned int index_ );
+
+    void addIndex( unsigned int idx );
+    void addIndices( ParticleIndices idxVector );
+
+    void removeIndex( unsigned int idx );
+    void removeIndices( ParticleIndices idxVector );
+
+    void transferIndexTo( ParticleCollection& other, unsigned int idx );
+    void transferIndicesTo( ParticleCollection& other, ParticleIndices idxVector );
+
+  protected:
+
+    ParticleCollection( const Particles& data );
+
+    ParticleCollection( const Particles& data,
+                        unsigned int begin_,
+                        unsigned int end_ );
+
+    ParticleCollection( const Particles& data,
+                        Particles::iterator begin_,
+                        Particles::iterator end_ );
+
+    Particles::iterator _createIterator( unsigned int index = 0 ) const;
+
+    ParticleIndices _particleIndices;
+    TParticle _vectorReferences;
+
+    unsigned int _size;
+
+    const Particles* _data;
+
+  };
+
   class Particles::base_const_iterator
   {
 
@@ -287,18 +353,6 @@ namespace prefr
 
     base_const_iterator( const base_const_iterator& other );
 
-//    virtual int operator+( const base_const_iterator& other ) const;
-//    virtual int operator-( const base_const_iterator& other ) const;
-//
-//    virtual int operator+( const base_iterator& other ) const;
-//    virtual int operator-( const base_iterator& other ) const;
-//
-//    virtual base_const_iterator operator+( int increase );
-//    virtual base_const_iterator operator-( int decrease );
-//
-//    virtual bool operator== ( const base_const_iterator& other ) const;
-//    virtual bool operator!= ( const base_const_iterator& other ) const;
-
   protected:
 
     base_const_iterator( void );
@@ -308,13 +362,19 @@ namespace prefr
     void decrease( int dec );
 
     bool compare( const base_const_iterator& other ) const ;
+    int sum( const base_const_iterator& other ) const;
     int difference( const base_const_iterator& other ) const;
+
+    TParticle currentValues( void );
 
     unsigned int _position;
     unsigned int _size;
 
     const Particles* _data;
     TParticle _vectorRef;
+
+    unsigned int _indexPosition;
+    const ParticleIndices* _particleIndices;
 
     PREFR_CONST_IT_ATRIB( id, unsigned int )
     PREFR_CONST_IT_ATRIB( life, float )
@@ -355,126 +415,9 @@ namespace prefr
 
   class Particles::iterator : public Particles::base_iterator
   {
-    friend class Particles;
-    friend class Particles::const_iterator;
-
-  public:
-
-    iterator( void );
-    iterator( const base_iterator& other );
-    iterator( const Particles::const_iterator& other );
-
-    ~iterator( ){ }
-
-    iterator& operator++( void );
-    iterator operator++( int );
-    iterator& operator--( void );
-    iterator operator--( int );
-
-    virtual int operator+( const iterator& other ) const;
-    virtual int operator-( const iterator& other ) const;
-
-    virtual iterator operator+( int increase );
-    virtual iterator operator-( int decrease );
-
-    virtual bool operator== ( const iterator& other ) const;
-    virtual bool operator!= ( const iterator& other ) const;
-
-
-//    virtual auto operator*( void );
-//    virtual auto operator->( void );
-
-  };
-
-  class Particles::const_iterator : public Particles::base_const_iterator
-  {
-    friend class Particles;
-    friend class Particles::iterator;
-
-  public:
-
-    const_iterator( void );
-    const_iterator( const Particles::base_const_iterator& other );
-    const_iterator( const Particles::iterator& other );
-    virtual ~const_iterator( ){ }
-
-    const_iterator& operator++( void );
-    const_iterator operator++( int );
-    const_iterator& operator--( void );
-    const_iterator operator--( int );
-
-    virtual int operator+( const const_iterator& other ) const;
-    virtual int operator-( const const_iterator& other ) const;
-
-    virtual const_iterator operator+( int increase );
-    virtual const_iterator operator-( int decrease );
-
-    virtual bool operator== ( const const_iterator& other ) const;
-    virtual bool operator!= ( const const_iterator& other ) const;
-
-  };
-
-
-  typedef std::vector< unsigned int > ParticleIndices;
-
-  class ParticleCollection
-  {
-
-  public:
-
-    class iterator;
-    class const_iterator;
-
-    typedef ParticleCollection::iterator iterator;
-
-    friend class iterator;
-    friend class const_iterator;
-    friend class Particles;
-    friend class ParticleSystem;
-
-    ParticleCollection( void );
-    ParticleCollection( const ParticleCollection& other );
-
-    const ParticleIndices& indices( void ) const;
-    void indices( const ParticleIndices& newIndices );
-
-    unsigned int size( void );
-
-    iterator begin( void );
-    const_iterator begin( void ) const;
-
-    iterator end( void );
-    const_iterator end( void ) const;
-
-    iterator at( unsigned int index_ );
-
-  protected:
-
-    ParticleCollection( const Particles& data );
-    ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
-    ParticleCollection( const Particles& data,
-                        unsigned int begin_,
-                        unsigned int end_ );
-
-    ParticleCollection( const Particles& data,
-                        Particles::iterator begin_,
-                        Particles::iterator end_ );
-
-    iterator _createIterator( unsigned int index = 0 ) const;
-
-    ParticleIndices _particleIndices;
-    TParticle _vectorReferences;
-
-    unsigned int _size;
-
-    const Particles* _data;
-  };
-
-  class ParticleCollection::iterator : public Particles::base_iterator
-  {
 
     friend class ParticleCollection;
-    friend class ParticleCollection::const_iterator;
+    friend class Particles::const_iterator;
 
   public:
 
@@ -497,18 +440,16 @@ namespace prefr
     virtual bool operator== ( const iterator& other ) const;
     virtual bool operator!= ( const iterator& other ) const;
 
-  protected:
-
-    unsigned int _indexPosition;
-    const ParticleIndices* _particleIndices;
+    iterator operator*( void );
+    iterator operator->( void );
 
   };
 
-  class ParticleCollection::const_iterator : public Particles::base_const_iterator
+  class Particles::const_iterator : public Particles::base_const_iterator
   {
 
     friend class ParticleCollection;
-    friend class ParticleCollection::iterator;
+    friend class Particles::iterator;
 
   public:
 
@@ -530,15 +471,10 @@ namespace prefr
     bool operator== ( const const_iterator& other ) const;
     bool operator!= ( const const_iterator& other ) const;
 
-    ParticleCollection* collection( void ) const;
-
-  protected:
-
-    unsigned int _indexPosition;
-    const ParticleIndices* _particleIndices;
+    const_iterator operator*( void );
+    const_iterator operator->( void );
 
   };
-
 
   typedef Particles::iterator tparticle;
   typedef tparticle* tparticle_ptr;

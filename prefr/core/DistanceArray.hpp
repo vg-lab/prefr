@@ -49,11 +49,11 @@ namespace prefr
     {
     }
 
-    inline const int& id( void ) const { return *_id; }
-    inline void id( int i ){ *_id = i; }
+    const int& id( void ) const { return *_id; }
+    void id( int i ){ *_id = i; }
 
-    inline const float& distance( void ) const { return *_distance; }
-    inline void distance( float d ){ *_distance = d; }
+    const float& distance( void ) const { return *_distance; }
+    void distance( float d ){ *_distance = d; }
 
   protected:
 

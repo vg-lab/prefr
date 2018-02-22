@@ -359,6 +359,8 @@ namespace prefr
      */
     const ClustersArray& clusters( void ) const;
 
+    ParticleCollection createCollection( ParticleIndices indices );
+
   protected:
 
     /*! Particles collection the system will manage. */

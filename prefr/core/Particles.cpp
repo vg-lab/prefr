@@ -125,7 +125,10 @@ namespace prefr
     iterator it;
     it._data = this;
     it._vectorRef = _vectorReferences;
-    it._size = _size;
+    it._size = 0;
+
+    it._indexPosition = 0;
+    it._particleIndices = nullptr;
 
     it.set( i );
 
@@ -159,6 +162,8 @@ namespace prefr
   , _size( 0 )
   , _data( nullptr )
   , _vectorRef( )
+  , _indexPosition( 0 )
+  , _particleIndices( nullptr )
   , _id_ptr( nullptr )
   , _life_ptr( nullptr )
   , _size_ptr( nullptr )
@@ -173,9 +178,11 @@ namespace prefr
 
   Particles::base_const_iterator::base_const_iterator( const Particles::base_const_iterator& other )
   : _position( other._position )
-  , _size( 0 )
+  , _size( other._size )
   , _data( other._data )
   , _vectorRef( other._vectorRef )
+  , _indexPosition( other._indexPosition )
+  , _particleIndices( other._particleIndices )
   , _id_ptr( other._id_ptr )
   , _life_ptr( other._life_ptr )
   , _size_ptr( other._size_ptr )
@@ -193,8 +200,6 @@ namespace prefr
 
   void Particles::base_const_iterator::set( unsigned int index_ )
   {
-//    assert( index_ < _data->numParticles( ));
-
     _id_ptr =
         std::get< ( unsigned int ) prefr::ID >( _vectorRef ) + index_;
     _life_ptr =
@@ -221,45 +226,98 @@ namespace prefr
 
   void Particles::base_const_iterator::increase( int inc )
   {
-    _id_ptr += inc;
-    _life_ptr += inc;
-    _size_ptr += inc;
-    _position_ptr += inc;
-    _color_ptr += inc;
-    _velocityModule_ptr += inc;
-    _velocity_ptr += inc;
-    _accelerationModule_ptr += inc;
-    _acceleration_ptr += inc;
-    _alive_ptr += inc;
+    _indexPosition += inc;
 
-    _position += inc;
+    if( _particleIndices && _indexPosition < _size )
+    {
+
+      unsigned int index = (*_particleIndices)[ _indexPosition ];
+
+      set( index );
+    }
+    else
+    {
+      _id_ptr += inc;
+      _life_ptr += inc;
+      _size_ptr += inc;
+      _position_ptr += inc;
+      _color_ptr += inc;
+      _velocityModule_ptr += inc;
+      _velocity_ptr += inc;
+      _accelerationModule_ptr += inc;
+      _acceleration_ptr += inc;
+      _alive_ptr += inc;
+
+      _position += inc;
+    }
+
+//    std::cout << "it " << _position << " " << _indexPosition << " " << _size << std::endl;
   }
 
   void Particles::base_const_iterator::decrease( int dec )
   {
-    _id_ptr -= dec;
-    _life_ptr -= dec;
-    _size_ptr -= dec;
-    _position_ptr -= dec;
-    _color_ptr -= dec;
-    _velocityModule_ptr -= dec;
-    _velocity_ptr -= dec;
-    _accelerationModule_ptr -= dec;
-    _acceleration_ptr -= dec;
-    _alive_ptr -= dec;
+    _indexPosition -= dec;
 
-    _position -= dec;
+    if( _particleIndices && _indexPosition < _particleIndices->size( ))
+    {
+
+      unsigned int index = (*_particleIndices)[ _indexPosition ];
+
+      set( index );
+    }
+    else
+    {
+      _id_ptr -= dec;
+      _life_ptr -= dec;
+      _size_ptr -= dec;
+      _position_ptr -= dec;
+      _color_ptr -= dec;
+      _velocityModule_ptr -= dec;
+      _velocity_ptr -= dec;
+      _accelerationModule_ptr -= dec;
+      _acceleration_ptr -= dec;
+      _alive_ptr -= dec;
+
+      _position -= dec;
+    }
+
+
+  }
+
+  int Particles::base_const_iterator::sum( const base_const_iterator& other ) const
+  {
+    if( _particleIndices )
+          return _indexPosition + other._indexPosition;
+        else
+          return _position + other._position;
   }
 
   int Particles::base_const_iterator::difference( const base_const_iterator& other ) const
   {
-    return ( int ) _position - ( int ) other._position;
+    if( _particleIndices )
+      return ( int ) _indexPosition - ( int ) other._indexPosition;
+    else
+      return ( int ) _position - ( int ) other._position;
   }
 
   bool Particles::base_const_iterator::compare( const base_const_iterator& other ) const
   {
     return ( other._data == this->_data &&
              other._position == this->_position );
+  }
+
+  TParticle Particles::base_const_iterator::currentValues( void )
+  {
+    return std::make_tuple( _id_ptr,
+                            _life_ptr,
+                            _size_ptr,
+                            _position_ptr,
+                            _color_ptr,
+                            _velocityModule_ptr,
+                            _velocity_ptr,
+                            _accelerationModule_ptr,
+                            _acceleration_ptr,
+                            _alive_ptr);
   }
 
 
@@ -279,289 +337,16 @@ namespace prefr
 
   // ITERATOR
 
-  Particles::iterator::iterator( void )
-  : base_iterator( )
-  { }
 
-  Particles::iterator::iterator( const base_iterator& other )
-  : base_iterator( other )
-  { }
-
-  Particles::iterator::iterator( const Particles::const_iterator& other )
-  : base_iterator( other )
-  { }
-
-  Particles::iterator& Particles::iterator::operator++( void )
+  Particles::iterator Particles::iterator::operator*( void )
   {
-    increase( 1 );
-
-    return *this;
+    return (*this);
   }
 
-  Particles::iterator Particles::iterator::operator++( int )
+  Particles::iterator Particles::iterator::operator->( void )
   {
-    Particles::iterator result( *this );
-
-    increase( 1 );
-
-    return result;
+    return (*this);
   }
-
-  Particles::iterator& Particles::iterator::operator--( void )
-  {
-    decrease( 1 );
-
-    return *this;
-  }
-
-  Particles::iterator Particles::iterator::operator--( int )
-  {
-    Particles::iterator result( *this );
-
-    decrease( 1 );
-
-    return result;
-  }
-
-  bool Particles::iterator::operator==( const Particles::iterator& other ) const
-  {
-    return compare( other );
-  }
-
-  bool Particles::iterator::operator!=( const Particles::iterator& other ) const
-  {
-    return !(*this == other);
-  }
-
-  int Particles::iterator::operator+( const Particles::iterator& other ) const
-  {
-    return _position + std::abs( difference( other ));
-  }
-
-  int Particles::iterator::operator-( const Particles::iterator& other ) const
-  {
-    return difference( other );
-  }
-
-  Particles::iterator
-  Particles::iterator::operator+( int increase )
-  {
-    iterator result( *this );
-    result.increase( increase );
-
-    return result;
-  }
-
-  Particles::iterator
-  Particles::iterator::operator-( int decrease )
-  {
-    iterator result( *this );
-    result.decrease( decrease );
-
-    return result;
-  }
-//  Particles::iterator Particles::iterator::operator+( int increment )
-//  {
-//    Particles::iterator result( *this );
-//
-//    increase( increment );
-//
-//    return result;
-//  }
-//
-//  Particles::iterator Particles::iterator::operator-( int decrement )
-//  {
-//    Particles::iterator result( *this );
-//
-//    increase( decrement );
-//
-//    return result;
-//  }
-//
-//  int operator+( const Particles::const_iterator& other )
-//  {
-//
-//  }
-//
-//  int operator-( const Particles::const_iterator& other )
-
-//  auto Particles::iterator::operator*( void )
-//  {
-//    return std::make_tuple( id( ),
-//                            life( ),
-//                            size( ),
-//                            position( ),
-//                            color( ),
-//                            velocityModule( ),
-//                            velocity( ),
-//                            accelerationModule( ),
-//                            acceleration( ),
-//                            alive( ));
-//  }
-//
-//  auto Particles::iterator::operator->( void )
-//  {
-//    return std::make_shared< TParticle >(
-//        std::make_tuple( id( ),
-//                         life( ),
-//                         size( ),
-//                         position( ),
-//                         color( ),
-//                         velocityModule( ),
-//                         velocity( ),
-//                         accelerationModule( ),
-//                         acceleration( ),
-//                         alive( )));
-//  }
-
-  // CONST_ITERATOR
-
-  Particles::const_iterator::const_iterator( void )
-  : base_const_iterator( )
-  { }
-
-  Particles::const_iterator::const_iterator(
-      const Particles::base_const_iterator& other )
-  : base_const_iterator( other )
-  { }
-
-  Particles::const_iterator::const_iterator(
-      const Particles::iterator& other )
-  : base_const_iterator( other )
-  { }
-
-  Particles::const_iterator& Particles::const_iterator::operator++( void )
-  {
-
-    increase( 1 );
-
-    return *this;
-  }
-
-  Particles::const_iterator Particles::const_iterator::operator++( int )
-  {
-    Particles::const_iterator result( *this );
-
-    increase( 1 );
-
-    return result;
-  }
-
-  Particles::const_iterator& Particles::const_iterator::operator--( void )
-  {
-
-    increase( -1 );
-
-    return *this;
-  }
-
-  Particles::const_iterator Particles::const_iterator::operator--( int )
-  {
-    Particles::const_iterator result( *this );
-
-    increase( -1 );
-
-    return result;
-  }
-
-  bool Particles::const_iterator::operator==( const Particles::const_iterator& other ) const
-  {
-    return compare( other );
-  }
-
-  bool Particles::const_iterator::operator!=( const Particles::const_iterator& other ) const
-  {
-    return !(*this == other);
-  }
-
-  int Particles::const_iterator::operator+( const Particles::const_iterator& other ) const
-  {
-    return _position + std::abs( difference( other ));
-  }
-
-  int Particles::const_iterator::operator-( const Particles::const_iterator& other ) const
-  {
-    return difference( other );
-  }
-
-  Particles::const_iterator
-  Particles::const_iterator::operator+( int increase )
-  {
-    const_iterator result( *this );
-    result.increase( increase );
-
-    return result;
-  }
-
-  Particles::const_iterator
-  Particles::const_iterator::operator-( int decrease )
-  {
-    const_iterator result( *this );
-    result.decrease( decrease );
-
-    return result;
-  }
-
-//  Particles::const_iterator
-//  Particles::const_iterator::operator+( int increment )
-//  {
-//    Particles::const_iterator result( *this );
-//
-//    increase( increment );
-//
-//    return result;
-//  }
-//
-//  Particles::const_iterator
-//  Particles::const_iterator::operator-( int decrement )
-//  {
-//    Particles::const_iterator result( *this );
-//
-//    increase( decrement );
-//
-//    return result;
-//  }
-//
-//  bool
-//  Particles::const_iterator::operator==( const Particles::const_iterator& other ) const
-//  {
-//    return compare( other );
-//  }
-//
-//  bool
-//  Particles::const_iterator::operator!=( const Particles::const_iterator& other ) const
-//  {
-//    return !( *this == other );
-//  }
-
-//  auto Particles::const_iterator::operator*( void )
-//  {
-//    return std::make_tuple( id( ),
-//                            life( ),
-//                            size( ),
-//                            position( ),
-//                            color( ),
-//                            velocityModule( ),
-//                            velocity( ),
-//                            accelerationModule( ),
-//                            acceleration( ),
-//                            alive( ));
-//  }
-//
-//  auto Particles::const_iterator::operator->( void )
-//  {
-//    return std::make_shared< TParticle >(
-//        std::make_tuple( id( ),
-//                         life( ),
-//                         size( ),
-//                         position( ),
-//                         color( ),
-//                         velocityModule( ),
-//                         velocity( ),
-//                         accelerationModule( ),
-//                         acceleration( ),
-//                         alive( )));
-//  }
 
 
   ParticleCollection::ParticleCollection( void )
@@ -581,13 +366,8 @@ namespace prefr
   : _vectorReferences( data_.vectorReferences( ))
   , _data( & data_ )
   {
-    _particleIndices.reserve( _data->numParticles( ) );
-    for( unsigned int i = 0; i < _data->numParticles( ); i++ )
-    {
-      _particleIndices.push_back( i );
-    }
-
-    _size = _particleIndices.size( );
+    _particleIndices.clear( );
+    _size = _data->numParticles( );
   }
 
   ParticleCollection::ParticleCollection( const Particles& data_,
@@ -652,148 +432,206 @@ namespace prefr
     return _size;
   }
 
-  ParticleCollection::iterator ParticleCollection::begin( void )
+  Particles::iterator ParticleCollection::begin( void )
   {
     return _createIterator( );
   }
 
-  ParticleCollection::const_iterator ParticleCollection::begin( void ) const
+  Particles::const_iterator ParticleCollection::begin( void ) const
   {
     return _createIterator( );
   }
 
-  ParticleCollection::iterator ParticleCollection::end( void )
+  Particles::iterator ParticleCollection::end( void )
   {
     return _createIterator( _size );
   }
 
-  ParticleCollection::const_iterator ParticleCollection::end( void ) const
+  Particles::const_iterator ParticleCollection::end( void ) const
   {
     return _createIterator( _size );
   }
 
-  ParticleCollection::iterator ParticleCollection::at( unsigned int index_ )
+  Particles::iterator ParticleCollection::at( unsigned int index_ )
   {
-    assert( index_ < _size );
     return _createIterator( index_ );
   }
 
-  ParticleCollection::iterator
+  Particles::iterator
   ParticleCollection::_createIterator( unsigned int index_ ) const
   {
     assert( _data );
-//    std::cout << " Index: " << index_ << " size " << _size << std::endl;
-//    assert( index_ < _size );
+    assert( index_ < _data->numParticles( ));
 
-    index_ = std::min( index_, _size );
+    Particles::iterator result;
 
-    iterator result;
     result._data = _data;
-    result._particleIndices = &_particleIndices;
     result._vectorRef = _vectorReferences;
-    result._indexPosition = index_;
-    result._size = _particleIndices.size( );
 
+    if( index_ < _particleIndices.size( ))
+    {
+      result._particleIndices = &_particleIndices;
+      result._size = _particleIndices.size( );
 
-    result.set( index_ );
+      result._indexPosition = index_;
+
+      unsigned int index = _particleIndices[ index_ ];
+
+      result.set( index );
+
+    }
+    else if( _particleIndices.size( ) && index_ == _particleIndices.size( ) )
+    {
+      unsigned int index = _particleIndices.back( ) + 1;
+      result._particleIndices = nullptr;
+      result._size = 0;
+      result._position = index;
+    }
+    else
+    {
+      result._particleIndices = nullptr;
+      result._size = 0;
+      result.set( index_ );
+    }
 
     return result;
   }
+
+  void ParticleCollection::addIndex( unsigned int idx )
+  {
+    std::set< unsigned int > indexSet( _particleIndices.begin( ),
+                                       _particleIndices.end( ));
+
+    indexSet.insert( idx );
+
+    _particleIndices.clear( );
+    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+
+    _size = _particleIndices.size( );
+
+    std::cout << "Indices: " << _particleIndices.size( ) << std::endl;
+  }
+
+  void ParticleCollection::addIndices( ParticleIndices idxVector )
+  {
+    std::set< unsigned int > indexSet( _particleIndices.begin( ),
+                                       _particleIndices.end( ));
+
+    for( auto idx : idxVector )
+      indexSet.insert( idx );
+
+    _particleIndices.clear( );
+    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+
+    _size = _particleIndices.size( );
+  }
+
+  void ParticleCollection::removeIndex( unsigned int idx )
+  {
+    std::set< unsigned int > indexSet( _particleIndices.begin( ), _particleIndices.end( ));
+
+    indexSet.erase( idx );
+
+    _particleIndices.clear( );
+    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+
+    _size = _particleIndices.size( );
+  }
+
+  void ParticleCollection::removeIndices( ParticleIndices idxVector )
+  {
+    std::set< unsigned int > indexSet( _particleIndices.begin( ),
+                                       _particleIndices.end( ));
+
+    for( auto idx : idxVector )
+      indexSet.erase( idx );
+
+    _particleIndices.clear( );
+    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+
+    _size = _particleIndices.size( );
+  }
+
+  void ParticleCollection::transferIndexTo( ParticleCollection& other,
+                                            unsigned int idx )
+  {
+    removeIndex( idx );
+    other.addIndex( idx );
+  }
+
+  void ParticleCollection::transferIndicesTo( ParticleCollection& other,
+                                              ParticleIndices idxVector  )
+  {
+    removeIndices( idxVector );
+    other.addIndices( idxVector );
+  }
+
 
 
   // PARTICLECOLLECTION::ITERATOR
 
-  ParticleCollection::iterator::iterator( void )
+  Particles::iterator::iterator( void )
   : base_iterator( )
-  , _indexPosition( 0 )
-  , _particleIndices( nullptr )
   { }
 
-  ParticleCollection::iterator::iterator( const ParticleCollection::iterator& other )
+  Particles::iterator::iterator( const Particles::iterator& other )
   : base_iterator( other )
-  , _indexPosition( other._indexPosition )
-  , _particleIndices( other._particleIndices )
   { }
 
-  ParticleCollection::iterator::iterator( const ParticleCollection::const_iterator& other )
+  Particles::iterator::iterator( const Particles::const_iterator& other )
   : base_iterator( other )
-  , _indexPosition( other._indexPosition )
-  , _particleIndices( other._particleIndices )
   { }
 
 
-  ParticleCollection::iterator& ParticleCollection::iterator::operator++( void )
+  Particles::iterator& Particles::iterator::operator++( void )
   {
-    _indexPosition++;
 
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    increase( 1 );
 
     return *this;
   }
 
-  ParticleCollection::iterator ParticleCollection::iterator::operator++( int )
+  Particles::iterator Particles::iterator::operator++( int )
   {
 
-    ParticleCollection::iterator result;
+    Particles::iterator result( *this );
 
-    _indexPosition++;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    increase( 1 );
 
     return result;
 
   }
 
-  ParticleCollection::iterator& ParticleCollection::iterator::operator--( void )
+  Particles::iterator& Particles::iterator::operator--( void )
   {
-    if( _indexPosition >= 1 )
-      _indexPosition--;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    decrease( 1 );
 
     return *this;
   }
 
-  ParticleCollection::iterator ParticleCollection::iterator::operator--( int )
+  Particles::iterator Particles::iterator::operator--( int )
   {
-    ParticleCollection::iterator result;
+    Particles::iterator result( *this );
 
-    if( _indexPosition >= 1 )
-      _indexPosition--;
+    decrease( 1 );
 
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
-
-return result;
+    return result;
   }
 
-  int ParticleCollection::iterator::operator+( const ParticleCollection::iterator& other ) const
+  int Particles::iterator::operator+( const Particles::iterator& other ) const
   {
-    return _indexPosition + std::abs( difference( other ));
+    return sum( other );
   }
 
-  int ParticleCollection::iterator::operator-( const ParticleCollection::iterator& other ) const
+  int Particles::iterator::operator-( const Particles::iterator& other ) const
   {
     return difference( other );
   }
 
-  ParticleCollection::iterator ParticleCollection::iterator::operator+( int increment ) const
+  Particles::iterator Particles::iterator::operator+( int increment ) const
   {
 
-    ParticleCollection::iterator result( *this );
-
-    increment = std::min( _position + std::abs( increment ), _size - 1 );
+    Particles::iterator result( *this );
 
     result.increase( increment );
 
@@ -801,26 +639,22 @@ return result;
 
   }
 
-  ParticleCollection::iterator ParticleCollection::iterator::operator-( int decrement ) const
+  Particles::iterator Particles::iterator::operator-( int decrement ) const
   {
-    ParticleCollection::iterator result;
+    Particles::iterator result( *this );
 
-    if( ( unsigned int ) std::abs( decrement ) > _position )
-      decrement = -_position;
-
-    result.increase( decrement );
+    result.decrease( decrement );
 
     return result;
 
   }
 
-  bool ParticleCollection::iterator::operator==( const ParticleCollection::iterator& other ) const
+  bool Particles::iterator::operator==( const Particles::iterator& other ) const
   {
-    return compare( other ) && _particleIndices == other._particleIndices
-        && _indexPosition == other._indexPosition;
+    return compare( other );
   }
 
-  bool ParticleCollection::iterator::operator!=( const ParticleCollection::iterator& other ) const
+  bool Particles::iterator::operator!=( const Particles::iterator& other ) const
   {
     return !(*this == other);
   }
@@ -828,120 +662,105 @@ return result;
 
   // PARTICLECOLLECTION::CONST_ITERATOR
 
-  ParticleCollection::const_iterator::const_iterator( void )
+  Particles::const_iterator::const_iterator( void )
   : base_const_iterator( )
-  , _indexPosition( 0 )
-  , _particleIndices( nullptr )
   { }
 
-  ParticleCollection::const_iterator::const_iterator( const ParticleCollection::iterator& other )
+  Particles::const_iterator::const_iterator( const Particles::iterator& other )
   : base_const_iterator( other )
-  , _indexPosition( other._indexPosition )
-  , _particleIndices( other._particleIndices )
   { }
 
-  ParticleCollection::const_iterator::const_iterator( const ParticleCollection::const_iterator& other )
+  Particles::const_iterator::const_iterator( const Particles::const_iterator& other )
   : base_const_iterator( other )
-  , _indexPosition( other._indexPosition )
-  , _particleIndices( other._particleIndices )
   { }
 
 
-  ParticleCollection::const_iterator& ParticleCollection::const_iterator::operator++( void )
+  Particles::const_iterator& Particles::const_iterator::operator++( void )
   {
-    _indexPosition++;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    increase( 1 );
 
     return *this;
   }
 
-  ParticleCollection::const_iterator ParticleCollection::const_iterator::operator++( int )
+  Particles::const_iterator Particles::const_iterator::operator++( int )
   {
 
-    ParticleCollection::const_iterator result;
+    Particles::const_iterator result( *this );
 
-    _indexPosition++;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    increase( 1 );
 
     return result;
 
   }
 
-  ParticleCollection::const_iterator& ParticleCollection::const_iterator::operator--( void )
+  Particles::const_iterator& Particles::const_iterator::operator--( void )
   {
-    if( _indexPosition >= 1 )
-      _indexPosition--;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    decrease( 1 );
 
     return *this;
   }
 
-  ParticleCollection::const_iterator ParticleCollection::const_iterator::operator--( int )
+  Particles::const_iterator Particles::const_iterator::operator--( int )
   {
-    ParticleCollection::const_iterator result;
+    Particles::const_iterator result( *this );
 
-    if( _indexPosition >= 1 )
-      _indexPosition--;
-
-    unsigned int index = std::min( _indexPosition, _size - 1 );
-    index = (*_particleIndices)[ index ];
-
-    set( index );
+    decrease( 1 );
 
     return result;
   }
 
-  int ParticleCollection::const_iterator::operator+( const ParticleCollection::const_iterator& other ) const
+  int Particles::const_iterator::operator+( const Particles::const_iterator& other ) const
   {
-    return _indexPosition + std::abs( difference( other ));
+    return sum( other );
   }
 
-  int ParticleCollection::const_iterator::operator-( const ParticleCollection::const_iterator& other ) const
+  int Particles::const_iterator::operator-( const Particles::const_iterator& other ) const
   {
     return difference( other );
   }
 
 
-  ParticleCollection::const_iterator
-  ParticleCollection::const_iterator::operator+( int increase ) const
+  Particles::const_iterator
+  Particles::const_iterator::operator+( int increase ) const
   {
     iterator result( *this );
+
     result.increase( increase );
 
     return result;
   }
 
-  ParticleCollection::const_iterator
-  ParticleCollection::const_iterator::operator-( int decrease ) const
+  Particles::const_iterator
+  Particles::const_iterator::operator-( int decrease ) const
   {
     iterator result( *this );
+
     result.decrease( decrease );
 
     return result;
   }
 
-  bool ParticleCollection::const_iterator::operator==( const ParticleCollection::const_iterator& other ) const
+  bool Particles::const_iterator::operator==( const Particles::const_iterator& other ) const
   {
-    return compare( other ) && _particleIndices == other._particleIndices
-        && _indexPosition == other._indexPosition;
+    return compare( other );
   }
 
-  bool ParticleCollection::const_iterator::operator!=( const ParticleCollection::const_iterator& other ) const
+  bool Particles::const_iterator::operator!=( const Particles::const_iterator& other ) const
   {
     return !(*this == other);
   }
+
+  Particles::const_iterator Particles::const_iterator::operator*( void )
+  {
+    return (*this);
+  }
+
+  Particles::const_iterator  Particles::const_iterator::operator->( void )
+  {
+    return (*this);
+  }
+
+
 
 }
 

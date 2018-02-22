@@ -116,9 +116,10 @@ namespace prefr
 
       if( cluster->active( ) || renderDeadParticles )
       {
-        for( tparticle particle = cluster->particles( ).begin( );
-             particle != cluster->particles( ).end( );
-             particle++ )
+//        for( tparticle particle = cluster->particles( ).begin( );
+//             particle != cluster->particles( ).end( );
+//             particle++ )
+        for( auto particle : cluster->particles( ))
         {
 #ifndef PREFR_USE_OPENMP
           if( particle.alive( ) || renderDeadParticles )

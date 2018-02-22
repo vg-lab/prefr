@@ -41,7 +41,7 @@ namespace prefr
   , _camera( camera )
   , _useExternalCamera( camera ? true : false )
 #ifdef PREFR_USE_OPENMP
-  , _parallel( false )
+  , _parallel( true )
 #endif
   {
 
@@ -88,7 +88,7 @@ namespace prefr
 
     assert( start_ + size_ <= _maxParticles );
 
-    cluster->particles( ParticleRange( _particles, start_, start_ + size_ ));
+    cluster->particles( ParticleCollection( _particles, start_, start_ + size_ ));
 
     _clusters.push_back( cluster );
 
@@ -104,14 +104,6 @@ namespace prefr
 
     if( cluster->source( ))
       cluster->source( )->_initializeParticles( );
-
-    std::cout << "Cluster " << start_ << " to " << start_ + size_ << std::endl;
-    for( tparticle p = cluster->particles( ).begin( ); p != cluster->particles( ).end( ); p++ )
-    {
-      std::cout << " " << p.id();
-    }
-
-    std::cout << std::endl;
   }
 
   void ParticleSystem::addSource( Source* source )
@@ -238,9 +230,7 @@ namespace prefr
       {
 
         // For each particle of the cluster...
-        for( tparticle particle = cluster->particles( ).begin( );
-             particle != cluster->particles( ).end( );
-             ++particle )
+        for( auto particle : cluster->particles( ))
         {
           // Update
           cluster->updater( )->updateParticle( *cluster, &particle, deltaTime );
@@ -349,6 +339,10 @@ namespace prefr
     return _clusters;
   }
 
+  ParticleCollection ParticleSystem::createCollection( ParticleIndices indices )
+  {
+    return ParticleCollection( _particles, indices );
+  }
 }
 
 

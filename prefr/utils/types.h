@@ -57,7 +57,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // PREFR include for type definitions
-#include "ElementCollection.hpp"
 
 
 #endif /* PREFR__TYPES__ */

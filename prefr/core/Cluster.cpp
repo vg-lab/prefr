@@ -109,9 +109,6 @@ namespace prefr
          particle != _particles.end( );
          particle++ )
     {
-//      if( !particle.alive( ) )
-//        continue;
-
       particle.set_life( 0.0f );
 
       if( changeState )

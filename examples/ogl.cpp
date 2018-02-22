@@ -368,7 +368,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   particleSystem->renderer( renderer );
 
 #ifdef PREFR_USE_OPENMP
-  particleSystem->parallel( false );
+  particleSystem->parallel( true );
 #endif
 
   particleSystem->run( true );

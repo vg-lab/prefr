@@ -12,32 +12,52 @@
 
 using namespace prefr;
 
+void printIndices( const ParticleCollection& collection, const std::string& name )
+{
+  std::cout << name << ": ";
+  for( auto it : collection )
+  {
+    std::cout << " " << it.id( );
+  }
+  std::cout << std::endl;
+
+}
+
 int main( int /*argc*/, char** /*argv*/ )
 {
 
-  ParticleSystem* ps = new ParticleSystem( 200 );
+  ParticleSystem* ps = new ParticleSystem( 100 );
 
-  Cluster* c = new Cluster( );
-  ps->addCluster( c, 0, 100 );
+  ParticleIndices indices = { 0, 1, 5, 10, 20 };
 
-  ParticleCollection pc1 = c->particles( );
+  ParticleCollection pc1 =  ps->createCollection( indices );
 
-  for( ParticleCollection::iterator it = pc1.begin( ); it != pc1.end( ); it++ )
-  {
-    std::cout << " " << it.id( );
-  }
-  std::cout << std::endl;
+  auto begin = pc1.begin( );
+  auto end = pc1.end( );
 
-  c = new Cluster( );
-  ps->addCluster( c, 100, 100 );
+  printIndices( pc1, "Collection 1");
 
-  ParticleCollection pc2 = c->particles( );
+  ParticleCollection pc2 = pc1;
+  ParticleCollection pc3( pc2 );
 
-  for( ParticleCollection::iterator it = pc2.begin( ); it != pc2.end( ); it++ )
-  {
-    std::cout << " " << it.id( );
-  }
-  std::cout << std::endl;
+  printIndices( pc2, "Collection 2");
+
+  ParticleIndices aux = { 21, 23, 50, 99 };
+//  pc2.addIndex( 21 );
+//  pc2.addIndex( 23 );
+//  pc2.addIndex( 50 );
+//  pc2.addIndex( 99 );
+
+  pc2.addIndices( aux );
+
+  printIndices( pc2, "Collection 2");
+  printIndices( pc3, "Collection 3");
+
+  pc2.transferIndicesTo( pc3, aux );
+
+  printIndices( pc2, "Collection 2");
+  printIndices( pc3, "Collection 3");
+
 
   delete ps;
 

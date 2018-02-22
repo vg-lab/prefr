@@ -85,8 +85,7 @@ namespace prefr
       _emittedParticles = 0;
       _continueEmission = true;
 
-      for( tparticle particle = _cluster->particles( ).begin( );
-           particle != _cluster->particles( ).end( ); ++particle )
+      for( auto particle : _cluster->particles( ))
       {
         _deadParticles.push_back( particle.id( ));
         _particlesToEmit.clear( );
@@ -202,11 +201,13 @@ namespace prefr
       _deadParticles.resize( _totalParticles );
 
       std::vector< unsigned int >::iterator deadIt = _deadParticles.begin( );
-      for( tparticle particle = _cluster->particles( ).begin( );
-          particle != _cluster->particles( ).end( ); ++particle, ++deadIt )
+
+      for( auto particle : _cluster->particles( ))
       {
         if( !particle.alive( ))
           *deadIt = particle.id( );
+
+        ++deadIt;
       }
     }
 

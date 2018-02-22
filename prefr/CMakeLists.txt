@@ -10,7 +10,6 @@ set(PREFR_PUBLIC_HEADERS
   utils/Config.h
   utils/Timer.hpp
   utils/InterpolationSet.hpp
-  utils/ElementCollection.hpp   
   
   core/ParticleSystem.h
   core/Particles.h
