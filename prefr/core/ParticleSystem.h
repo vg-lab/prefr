@@ -37,6 +37,7 @@
 #include "Sorter.h"
 #include "Source.h"
 #include "Updater.h"
+#include "UpdateConfig.h"
 
 #include <reto/reto.h>
 
@@ -120,8 +121,7 @@ namespace prefr
      */
     PREFR_API
     virtual void addCluster( Cluster* cluster,
-                             unsigned int start,
-                             unsigned int size );
+                             const ParticleIndices& indices );
 
     /*! \brief Adds a Source object to the particle system.
      *
@@ -135,7 +135,7 @@ namespace prefr
      *
      */
     PREFR_API
-    virtual void addSource( Source* source );
+    virtual void addSource( Source* source, const ParticleIndices& indices  );
 
     /*! \brief Adds a Model object to the system.
      *
@@ -317,6 +317,9 @@ namespace prefr
     PREFR_API
     virtual bool run( void ) const ;
 
+    PREFR_API
+    void resize( unsigned int newSize );
+
     /*! \brief Returns the current number of alive particles.
      *
      * Returns the current number of alive particles.
@@ -361,6 +364,9 @@ namespace prefr
 
     ParticleCollection createCollection( ParticleIndices indices );
 
+    const UpdateConfig& ConfigUpdate( void );
+
+
   protected:
 
     /*! Particles collection the system will manage. */
@@ -375,7 +381,7 @@ namespace prefr
     ModelsArray _models;
 
     /*! Updater objects collection of the system. */
-    std::vector< Updater* > _updaters;
+    UpdatersArray _updaters;
 
     /*! Particle Sorter for composition rendering. */
     Sorter* _sorter;
@@ -383,8 +389,16 @@ namespace prefr
     /*! Particle Renderer (OpenGL, OSG, etc.). */
     Renderer* _renderer;
 
-    /*! Vector storing a per-particle index to its cluster. */
-    std::vector< int > _clusterReference;
+    /*! Vectors storing a per-particle pointer to their modifiers. */
+    SourcesArray _referenceSources;
+    ModelsArray _referenceModels;
+    UpdatersArray _referenceUpdaters;
+
+    /*! Vectors storing flags from different stages.*/
+    FlagsArray _flagsEmitted;
+    FlagsArray _flagsDead;
+
+    UpdateConfig _updateConfig;
 
     /*! Stores the number of currently alive particles (current frame). */
     unsigned int _aliveParticles;

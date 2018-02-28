@@ -47,7 +47,19 @@ namespace prefr
 
     _particles.resize( _maxParticles );
 
-    _clusterReference.resize( _maxParticles, -1 );
+    _referenceModels.resize( _maxParticles, nullptr );
+    _referenceSources.resize( _maxParticles, nullptr );
+    _referenceUpdaters.resize( _maxParticles, nullptr );
+
+    _flagsEmitted.resize( _maxParticles, false );
+    _flagsDead.resize( _maxParticles, false );
+
+    _updateConfig._refModels = &_referenceModels;
+    _updateConfig._refSources = &_referenceSources;
+    _updateConfig._refUpdaters = &_referenceUpdaters;
+
+    _updateConfig._emitted = &_flagsEmitted;
+    _updateConfig._dead = &_flagsDead;
 
     auto particle = _particles.begin( );
     for( unsigned int i = 0; i < _maxParticles; i++ )
@@ -81,35 +93,49 @@ namespace prefr
 
   }
 
-  void ParticleSystem::addCluster( Cluster* cluster,
-                                   unsigned int start_,
-                                   unsigned int size_ )
+  void ParticleSystem::resize( unsigned int newSize )
   {
+    _particles.resize( newSize );
 
-    assert( start_ + size_ <= _maxParticles );
+    _referenceModels.resize( newSize, nullptr );
+    _referenceSources.resize( newSize, nullptr );
+    _referenceUpdaters.resize( newSize, nullptr );
 
-    cluster->particles( ParticleCollection( _particles, start_, start_ + size_ ));
+    _flagsEmitted.resize( newSize, false );
+    _flagsDead.resize( newSize, false );
 
-    _clusters.push_back( cluster );
-
-    unsigned int reference = ( unsigned int ) _clusters.size( ) - 1;
-
-    auto clusterIT = _clusterReference.begin( ) + start_;
-
-    for( unsigned int i = start_; i < start_ + size_; i++ )
-    {
-      *clusterIT = reference;
-      ++clusterIT;
-    }
-
-    if( cluster->source( ))
-      cluster->source( )->_initializeParticles( );
   }
 
-  void ParticleSystem::addSource( Source* source )
+  void ParticleSystem::addCluster( Cluster* cluster,
+                                   const ParticleIndices& indices )
+  {
+    assert( indices.size( ) > 0 );
+
+    cluster->_updateConfig = &_updateConfig;
+    cluster->particles( ParticleCollection( _particles, indices));
+
+    _clusters.push_back( cluster );
+  }
+
+  void ParticleSystem::addSource( Source* source,
+                                  const ParticleIndices& indices )
   {
     assert( source );
+    assert( indices.size( ) > 0 );
+
+    source->_updateConfig = &_updateConfig;
+    source->_particles = ParticleCollection( _particles, indices );
+    for( unsigned int idx : indices )
+    {
+      _flagsDead[ idx ] = true;
+      _flagsEmitted[ idx ] = false;
+
+      _referenceSources[ idx ] = source;
+    }
+
     _sources.push_back( source );
+
+    source->_initializeParticles( );
   }
 
   void ParticleSystem::addModel( Model* model )
@@ -121,6 +147,9 @@ namespace prefr
   void ParticleSystem::addUpdater( Updater* updater )
   {
     assert( updater );
+
+    updater->_updateConfig = &_updateConfig;
+
     _updaters.push_back(updater);
   }
 
@@ -129,8 +158,8 @@ namespace prefr
     assert( sorter_ );
     _sorter = sorter_;
 
-    _sorter->clusters( &_clusters );
-    _sorter->particles( ParticleRange( _particles ));
+    _sorter->particles(  _particles );
+    _sorter->sources( &_sources );
 
     _sorter->initDistanceArray( _camera );
 
@@ -150,7 +179,7 @@ namespace prefr
     assert( renderer_ );
     _renderer = renderer_ ;
 
-    _renderer->particles( ParticleRange( _particles ));
+    _renderer->particles( _particles );
 
     _renderer->_init( );
 
@@ -195,65 +224,17 @@ namespace prefr
 
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
+    for( int particleId = 0; particleId < ( int ) _particles.numParticles( ); ++particleId )
     {
-      Cluster* cluster = _clusters[ c ];
+      tparticle particle = _particles.at( particleId );
 #else
-    for( auto cluster : _clusters )
+    for( auto particle : _particles )
     {
 #endif
-      Source* source = cluster->source( );
 
-      if( source->emits( ))
-      {
-        for( auto emittedParticle : source->_particlesToEmit )
-        {
-          tparticle particle = _particles.at( emittedParticle );
-          cluster->updater( )->emitParticle( *cluster, &particle );
-        }
-      }
-    }
+      Updater* updater = _referenceUpdaters[ particle.id( )];
+      updater->updateParticle( particle, deltaTime );
 
-    // For each cluster....
-#ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for if( _parallel )
-    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
-    {
-      Cluster* cluster = _clusters[ c ];
-#else
-    for( auto cluster : _clusters )
-    {
-#endif
-      cluster->aliveParticles = 0;
-      // If active
-      if( cluster->active( ))
-      {
-
-        // For each particle of the cluster...
-        for( auto particle : cluster->particles( ))
-        {
-          // Update
-          cluster->updater( )->updateParticle( *cluster, &particle, deltaTime );
-
-          cluster->aliveParticles += particle.alive( );
-
-        }
-      }
-      // Else
-      else
-      {
-        // If kill particles...
-        if( cluster->inactiveKillParticles( ))
-        {
-          // Kill particles
-          cluster->killParticles( );
-        }
-      }
-    }
-
-    for( Cluster* cluster : _clusters )
-    {
-      _aliveParticles += cluster->aliveParticles;
     }
 
     // For each source...
@@ -269,10 +250,13 @@ namespace prefr
 #endif
       // Finish frame
       source->closeFrame( );
+
+      #pragma omp atomic
+      _aliveParticles += source->aliveParticles( );
+
     }
 
-    _sorter->_aliveParticles = _aliveParticles;
-    _renderer->renderConfig( )->aliveParticles = _aliveParticles;
+    _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
 
   }
 

@@ -33,10 +33,9 @@ namespace prefr
 {
 
   Sorter::Sorter( )
-  : _clusters( nullptr )
-  , _emissionNodes( nullptr )
+  : _sources( nullptr )
   , _distances( nullptr )
-  , _aliveParticles( 0 )
+//  , _aliveParticles( 0 )
   , _parallel( false )
   {}
 
@@ -103,31 +102,23 @@ namespace prefr
 #ifdef PREFR_USE_OPENMP
 
     #pragma omp parallel for if( _parallel )
-    for( int i = 0; i < ( int ) _clusters->size( ); ++i)
+    for( int i = 0; i < ( int ) _sources->size( ); ++i)
     {
-      Cluster* cluster = ( *_clusters )[ i ];
-
+      Source* source = ( *_sources )[ i ];
 #else
 
-    for( auto cluster : *_clusters )
+    for( auto source : *_sources )
     {
 
 #endif
-
-      if( cluster->active( ) || renderDeadParticles )
+// TODO
+      for( auto particle : source->particles( ))
       {
-//        for( tparticle particle = cluster->particles( ).begin( );
-//             particle != cluster->particles( ).end( );
-//             particle++ )
-        for( auto particle : cluster->particles( ))
         {
-#ifndef PREFR_USE_OPENMP
-          if( particle.alive( ) || renderDeadParticles )
-#endif
-          updateParticleDistance( &particle, cameraPosition,
-                                  renderDeadParticles );
-
+            updateParticleDistance( &particle, cameraPosition,
+                                    renderDeadParticles );
         }
+
       }
     }
 
@@ -185,10 +176,9 @@ namespace prefr
 #endif
   }
 
-
-  void Sorter::clusters( ClustersArray* clusters_ )
+  void Sorter::sources( SourcesArray* sources_ )
   {
-    _clusters = clusters_;
+    _sources = sources_;
   }
 
   void Sorter::particles( const ParticleRange& particles_ )

@@ -72,21 +72,17 @@ namespace prefr
 
     PREFR_API virtual void initDistanceArray( ICamera* camera );
 
-    PREFR_API void clusters( ClustersArray* clusters );
-
     PREFR_API void particles( const ParticleRange& particles );
 
 protected:
 
+    void sources( SourcesArray* sources_ );
+
     ParticleCollection _particles;
 
-    ClustersArray* _clusters;
-
-    SourcesArray* _emissionNodes;
+    SourcesArray* _sources;
 
     DistanceArray* _distances;
-
-    unsigned int _aliveParticles;
 
     bool _parallel;
 

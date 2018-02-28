@@ -51,6 +51,7 @@ namespace prefr
    */
   class Cluster
   {
+    friend class ParticleSystem;
 
   public:
 
@@ -67,54 +68,6 @@ namespace prefr
      *
      */
     PREFR_API virtual ~Cluster( void );
-
-    /*! \brief Returns the assigned Source.
-     *
-     *  Returns the assigned Source object.
-     *
-     * @return Assigned Source object.
-     */
-    PREFR_API Source* source( void ) const;
-
-    /*! \brief Sets the Source object.
-     *
-     * Sets the Source object.
-     *
-     * @param source Source object to be assigned.
-     */
-    PREFR_API void source( Source* source );
-
-    /*! \brief Returns the assigned Model object.
-     *
-     * Returns the assigned Model object.
-     *
-     * @return Assigned Model object.
-     */
-    PREFR_API Model* model( void ) const;
-
-    /*! \brief Sets the Model object.
-     *
-     * Sets the Model object.
-     *
-     * @param model Model object to be assigned.
-     */
-    PREFR_API void model( Model* model );
-
-    /*! \brief Returns the assigned Updater object.
-     *
-     * Returns the assigned Updater object.
-     *
-     * @return Assigned Updater object.
-     */
-    PREFR_API Updater* updater( void ) const;
-
-    /*! Sets the Updater object.
-     *
-     * Sets the Updater object.
-     *
-     * @param updater Updater object to be assigned.
-     */
-    PREFR_API void updater( Updater* updater);
 
     /*! \brief Returns the set of particles compounding the cluster.
      *
@@ -178,29 +131,24 @@ namespace prefr
      */
     PREFR_API virtual void killParticles( bool changeState = true );
 
-    /*!
-     *  Number of alive particles set after ParticleSystem#Update step by
-     *  default.
-     */
-    unsigned int aliveParticles;
+
+    virtual void setSource( Source* source_ );
+    virtual void setModel( Model* model_ );
+    virtual void setUpdater( Updater* updater_ );
 
   protected:
 
     /*! Range of particles compounding the cluster. */
-    ParticleRange _particles;
+    ParticleCollection _particles;
 
-    /*! Number of particles compounding the cluster. */
-    unsigned int _size;
+    UpdateConfig* _updateConfig;
 
-    /*! Source object responsible for the emission and other attributes. */
-    Source* _source;
+    /*!
+     *  Number of alive particles set after ParticleSystem#Update step by
+     *  default.
+     */
+    unsigned int _aliveParticles;
 
-    /*! Model object defining generic attributes for the particles. */
-    Model* _model;
-
-    /*! Updater object responsible for updating particle attributes during
-     * simulation each frame. */
-    Updater* _updater;
 
     /*! Flag indicating whether cluster is active or not. */
     bool _active;

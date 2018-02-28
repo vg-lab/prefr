@@ -25,12 +25,13 @@
 #include <prefr/api.h>
 
 #include "../utils/types.h"
+#include "../utils/Timer.hpp"
 
 #include "Particles.h"
 #include "Cluster.h"
 #include "Sampler.h"
+#include "UpdateConfig.h"
 
-#include "../utils/Timer.hpp"
 
 namespace prefr
 {
@@ -77,6 +78,8 @@ namespace prefr
     PREFR_API
     virtual ~Source( void );
 
+    ParticleCollection& particles( void );
+
     PREFR_API virtual bool active( );
     PREFR_API virtual bool emits( ) const;
     PREFR_API virtual bool continuing( ) const;
@@ -92,34 +95,30 @@ namespace prefr
 
     PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
 
-    PREFR_API Cluster* cluster( void );
-    PREFR_API void cluster( Cluster* cluster_ );
-
     PREFR_API void sampler( Sampler* sampler );
     PREFR_API const Sampler* sampler( void ) const;
 
     PREFR_API glm::vec3 position( void ) const;
     PREFR_API void sample( SampledValues* ) const;
 
-    PREFR_API std::vector< unsigned int >& deadParticles( void );
-    PREFR_API std::vector< unsigned int >& particlesToEmit( void );
+    PREFR_API unsigned int aliveParticles( void ) const;
 
   protected:
 
     virtual void _initializeParticles( void );
     virtual void _prepareParticles( void );
 
-    Cluster* _cluster;
+    ParticleCollection _particles;
+    UpdateConfig* _updateConfig;
 
     Sampler* _sampler;
 
     glm::vec3 _position;
 
-    std::vector< unsigned int > _deadParticles;
-    std::vector< unsigned int > _particlesToEmit;
+    unsigned int _particlesToEmit;
+    unsigned int _aliveParticles;
 
     float _emissionRate;
-    unsigned int _totalParticles;
 
     float _emissionAcc;
     int _particlesBudget;

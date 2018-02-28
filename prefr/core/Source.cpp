@@ -29,11 +29,12 @@ namespace prefr
     Source::Source( float emissionRate_,
                     const glm::vec3& position_,
                     Sampler* sampler_ )
-    : _cluster( nullptr )
+    : _updateConfig( nullptr )
     , _sampler( sampler_ )
     , _position( position_ )
+    , _particlesToEmit( 0 )
+    , _aliveParticles( 0 )
     , _emissionRate( emissionRate_ )
-    , _totalParticles( 0 )
     , _emissionAcc( 0 )
     , _particlesBudget( 0 )
     , _active( true )
@@ -45,13 +46,14 @@ namespace prefr
     , _emittedParticles( 0 )
     , _maxEmissionCycles( 0 )
     , _currentCycle( 0 )
-    {
-
-    }
+    { }
 
     Source::~Source( void )
-    {
+    { }
 
+    ParticleCollection& Source::particles( void )
+    {
+      return _particles;
     }
 
     bool Source::active( )
@@ -61,7 +63,7 @@ namespace prefr
 
     bool Source::emits( ) const
     {
-      return _active && _particlesToEmit.size( ) > 0 && continuing( );
+      return _active && _particlesToEmit > 0 && continuing( );
     }
 
     bool Source::continuing( ) const
@@ -85,20 +87,22 @@ namespace prefr
       _emittedParticles = 0;
       _continueEmission = true;
 
-      for( auto particle : _cluster->particles( ))
+      for( auto particle : _particles)
       {
-        _deadParticles.push_back( particle.id( ));
-        _particlesToEmit.clear( );
+        _updateConfig->setEmitted( particle.id( ), false );
+        _updateConfig->setDead( particle.id( ), true );
       }
+
+      _particlesToEmit = _particles.size( );
     }
 
     void Source::prepareFrame( const float& deltaTime )
     {
-      assert( _cluster );
+      assert( _particles.size( ) > 0 );
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
-          deltaTime * ( float ) _cluster->particles( ).size( )* _emissionRate;
+          deltaTime * ( float ) _particles.size( ) * _emissionRate;
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;
@@ -120,10 +124,10 @@ namespace prefr
       if( _maxEmissionCycles > 0 )
       {
 
-        if( _emittedParticles >= _totalParticles )
+        if( _emittedParticles >= _particles.size( ) )
         {
          _currentCycle++;
-         _emittedParticles -= _totalParticles;
+         _emittedParticles -= _particles.size( );
         }
 
         this->_continueEmission = !( _currentCycle >= _maxEmissionCycles );
@@ -140,7 +144,18 @@ namespace prefr
     void Source::closeFrame( )
     {
       _particlesBudget = 0;
-      _particlesToEmit.clear( );
+
+      _aliveParticles = 0;
+
+      for( auto particle : _particles )
+      {
+        _updateConfig->setEmitted( particle.id( ), false );
+
+        if( particle.alive( ))
+        {
+          _aliveParticles++;
+        }
+      }
 
       checkEmissionEnd( );
 
@@ -150,21 +165,6 @@ namespace prefr
         this->_active = false;
     }
 
-
-    Cluster* Source::cluster( void )
-    {
-      return _cluster;
-    }
-
-    void Source::cluster( Cluster* cluster_ )
-    {
-      _cluster = cluster_;
-
-      if( _cluster->particles( ).size( )> 0 && _deadParticles.size( ) == 0)
-      {
-        _initializeParticles( );
-      }
-    }
 
     void Source::sampler( Sampler* sampler_ )
     {
@@ -191,66 +191,62 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      if( !_cluster || _cluster->particles( ).size( )== 0 )
+      if( _particles.size( ) == 0 )
       {
-        std::cout << "Particles cannot be configured." << std::endl;
+        std::cout << "Particles cannot be configured. Collection size is zero." << std::endl;
         return;
       }
 
-      _totalParticles = _cluster->particles( ).size( );
-      _deadParticles.resize( _totalParticles );
-
-      std::vector< unsigned int >::iterator deadIt = _deadParticles.begin( );
-
-      for( auto particle : _cluster->particles( ))
+      for( auto particle : _particles )
       {
-        if( !particle.alive( ))
-          *deadIt = particle.id( );
-
-        ++deadIt;
+        _updateConfig->setDead( particle.id( ), true );
+        _updateConfig->setEmitted( particle.id( ), false );
       }
+
     }
 
     void Source::_prepareParticles( void )
     {
       if( _emissionRate <= 0.0f )
       {
-        for( auto particle : _deadParticles )
+        for( auto particle : _particles )
         {
-          _particlesToEmit.push_back( particle );
-          ++_lastFrameAliveParticles;
-        }
+          if( _updateConfig->dead( particle.id( )))
+          {
+            _updateConfig->setEmitted( particle.id( ), true );
+            _updateConfig->setDead( particle.id( ), false );
 
-        _deadParticles.clear( );
+            ++_lastFrameAliveParticles;
+          }
+        }
       }
       else
       {
         // Fill dead pool for the emission for this frame
-        while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
+        for( auto particle : _particles )
         {
-          assert( _particlesBudget >= 0 );
+          if( _particlesBudget == 0 )
+            break;
 
-          _particlesToEmit.push_back( _deadParticles.back( ));
-          _deadParticles.pop_back( );
+          if( !_updateConfig->dead( particle.id( )))
+            continue;
+
+          _updateConfig->setEmitted( particle.id( ), true );
+          _updateConfig->setDead( particle.id( ), false );
 
           --_particlesBudget;
           ++_lastFrameAliveParticles;
+
         }
       }
 
       _emittedParticles += _lastFrameAliveParticles;
     }
 
-    std::vector< unsigned int >& Source::deadParticles( void )
+    unsigned int Source::aliveParticles( void ) const
     {
-      return _deadParticles;
+      return _aliveParticles;
     }
-
-    std::vector< unsigned int >& Source::particlesToEmit( void )
-    {
-      return _particlesToEmit;
-    }
-
 
     TimedSource::TimedSource( float emissionRate_, glm::vec3 position_ )
     : Source( emissionRate_, position_ )
@@ -273,10 +269,10 @@ namespace prefr
       if( _maxEmissionCycles > 0 )
       {
 
-        if( _emittedParticles >= _totalParticles )
+        if( _emittedParticles >= _particles.size( ) )
         {
           _currentCycle++;
-          _emittedParticles -= _totalParticles;
+          _emittedParticles -= _particles.size( );
         }
         else if( AfterTime( ))
         {

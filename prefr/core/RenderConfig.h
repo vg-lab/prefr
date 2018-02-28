@@ -26,15 +26,18 @@ namespace prefr
 
   class RenderConfig
   {
+    friend class ParticleSystem;
+    friend class Renderer;
+
   public:
 
     RenderConfig( unsigned int )
-    : aliveParticles( 0 )
+    : _aliveParticles( 0 )
     { }
 
     virtual ~RenderConfig( ){ }
 
-    unsigned int aliveParticles;
+    unsigned int _aliveParticles;
 
   };
 

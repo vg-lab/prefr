@@ -74,9 +74,6 @@ namespace prefr
   class Particles;
   class ParticleCollection;
 
-  typedef glm::vec3 TVect3;
-  typedef glm::vec4 TVect4;
-
   typedef ParticleCollection ParticleRange;
   typedef std::vector< unsigned int > ParticleIndices;
 

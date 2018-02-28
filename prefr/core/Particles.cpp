@@ -50,12 +50,12 @@ namespace prefr
     _idVector.resize( newSize );
     _lifeVector.resize( newSize, 0.0f );
     _sizeVector.resize( newSize, 0.0f );
-    _positionVector.resize( newSize );
-    _colorVector.resize( newSize );
+    _positionVector.resize( newSize, TVect3( 0, 0, 0) );
+    _colorVector.resize( newSize, TVect4( 0, 0, 0, 0) );
     _velocityModuleVector.resize( newSize, 0.0f );
-    _velocityVector.resize( newSize );
-    _accelerationModuleVector.resize( newSize );
-    _accelerationVector.resize( newSize );
+    _velocityVector.resize( newSize, TVect3( 0, 0, 0));
+    _accelerationModuleVector.resize( newSize, 0.0f );
+    _accelerationVector.resize( newSize, TVect3( 0, 0, 0) );
     _aliveVector.resize( newSize, false );
 
     initVectorReferences( );
@@ -461,7 +461,7 @@ namespace prefr
   ParticleCollection::_createIterator( unsigned int index_ ) const
   {
     assert( _data );
-    assert( index_ < _data->numParticles( ));
+    assert( index_ <= _data->numParticles( ));
 
     Particles::iterator result;
 

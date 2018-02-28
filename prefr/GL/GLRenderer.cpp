@@ -168,7 +168,7 @@ namespace prefr
     #pragma omp parallel for if( _parallel )
 
 #endif
-    for( int i = 0; i < ( int ) _glRenderConfig->aliveParticles; ++i )
+    for( int i = 0; i < ( int ) _glRenderConfig->_aliveParticles; ++i )
     {
       tparticle currentParticle = _particles.at( _distances->getID( i ));
 
@@ -213,7 +213,7 @@ namespace prefr
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof( GLfloat ) * _glRenderConfig->aliveParticles * 4,
+                     sizeof( GLfloat ) * _glRenderConfig->_aliveParticles * 4,
                      &_glRenderConfig->_particlePositions->front( ));
 
     // Update colors buffer
@@ -221,7 +221,7 @@ namespace prefr
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof( GLfloat ) * _glRenderConfig->aliveParticles * 4,
+                     sizeof( GLfloat ) * _glRenderConfig->_aliveParticles * 4,
                      &_glRenderConfig->_particleColors->front( ));
 
     glBindVertexArray( 0 );
@@ -273,7 +273,7 @@ namespace prefr
     }
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
-                           _glRenderConfig->aliveParticles );
+                           _glRenderConfig->_aliveParticles );
 
     glBindVertexArray( 0 );
 

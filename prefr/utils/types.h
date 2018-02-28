@@ -57,6 +57,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // PREFR include for type definitions
+namespace prefr
+{
+  typedef glm::vec3 TVect3;
+  typedef glm::vec4 TVect4;
+}
 
 
 #endif /* PREFR__TYPES__ */

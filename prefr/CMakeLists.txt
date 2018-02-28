@@ -14,6 +14,7 @@ set(PREFR_PUBLIC_HEADERS
   core/ParticleSystem.h
   core/Particles.h
   core/Cluster.h
+  core/UpdateConfig.h
   core/Updater.h
   core/Source.h
   core/Sampler.h
@@ -46,6 +47,7 @@ set(PREFR_SOURCES
   core/ParticleSystem.cpp
   core/Particles.cpp
   core/Cluster.cpp
+  core/UpdateConfig.cpp
   core/Updater.cpp
   core/Source.cpp
   core/Sampler.cpp

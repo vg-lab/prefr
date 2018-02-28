@@ -25,51 +25,14 @@ namespace prefr
 {
 
   Cluster::Cluster( )
-  : aliveParticles( 0 )
-  , _particles( )
-  , _size( 0 )
-  , _source( nullptr )
-  , _model( nullptr )
-  , _updater( nullptr )
+  : _updateConfig( nullptr )
+  , _aliveParticles( 0 )
   , _active( true )
   , _inactiveKillParticles( false )
   { }
 
   Cluster::~Cluster( void )
-  {
-
-  }
-
-  Source* Cluster::source( void ) const
-  {
-    return _source;
-  }
-
-  void Cluster::source( Source* source_ )
-  {
-    _source = source_;
-    _source->cluster( this );
-  }
-
-  Model* Cluster::model( void ) const
-  {
-    return _model;
-  }
-
-  void Cluster::model( Model* model_ )
-  {
-    _model = model_;
-  }
-
-  Updater* Cluster::updater( void ) const
-  {
-    return _updater;
-  }
-
-  void Cluster::updater( Updater* updater_)
-  {
-    _updater = updater_;
-  }
+  { }
 
   ParticleRange Cluster::particles( void ) const
   {
@@ -103,11 +66,7 @@ namespace prefr
 
   void Cluster::killParticles( bool changeState )
   {
-    _source->_deadParticles.clear( );
-
-    for( tparticle particle = _particles.begin( );
-         particle != _particles.end( );
-         particle++ )
+    for( auto particle : _particles )
     {
       particle.set_life( 0.0f );
 
@@ -115,13 +74,48 @@ namespace prefr
       {
         particle.set_alive( false );
 
-        #pragma omp critical
-        {
-          _source->_deadParticles.push_back( particle.id( ));
-        }
+        _updateConfig->setDead( particle.id( ), true );
+//        ( *_updateConfig->_dead )[ particle.id( )] = true;
       }
     }
   }
+
+  void Cluster::setSource( Source* source_ )
+  {
+//    for( auto particle : _particles )
+//    {
+//      Source* source = _updateConfig->source( particle.id( ));
+//      if( source )
+//      {
+//        source->particles( ).removeIndex( particle.id( ));
+//      }
+//
+////      ( *_updateConfig->_refSources )[ particle.id( )] = source_;
+//    }
+//
+//    _updateConfig->setSource( source_, )
+//    source_->_particles.addIndices( _particles.indices( ));
+    _updateConfig->setSource( source_ , _particles.indices( ));
+  }
+
+  void Cluster::setModel( Model* model_ )
+  {
+//    for( auto particle : _particles )
+//    {
+//      ( *_updateConfig->_refModels )[ particle.id( )] = model_;
+//    }
+    _updateConfig->setModel( model_, _particles.indices( ));
+  }
+
+  void Cluster::setUpdater( Updater* updater_ )
+  {
+//    for( auto particle : _particles )
+//    {
+//      ( *_updateConfig->_refUpdaters )[ particle.id( )] = updater_;
+//    }
+    _updateConfig->setUpdater( updater_, _particles.indices( ));
+  }
+
 
 }
 

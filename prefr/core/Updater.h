@@ -31,6 +31,7 @@
 #include "Cluster.h"
 #include "Model.h"
 #include "Source.h"
+#include "UpdateConfig.h"
 
 namespace prefr
 {
@@ -56,6 +57,8 @@ namespace prefr
    *  */
   class Updater
   {
+    friend class ParticleSystem;
+
   public:
 
     /*! \brief Default constructor.
@@ -88,9 +91,8 @@ namespace prefr
      * @see ParticleSytem#Update
      *
      */
-    PREFR_API virtual void emitParticle( const Cluster& cluster,
-                                         const tparticle_ptr current );
 
+// TODO merge both comments.
 
     /*! \brief Update method.
      *
@@ -110,10 +112,15 @@ namespace prefr
      * @param deltaTime Current delta time to compute attributes variations
      * according to elapsed time since last frame.
      */
-    PREFR_API virtual void updateParticle( const Cluster& cluster,
-                                           const tparticle_ptr current,
+    PREFR_API virtual void updateParticle( tparticle current,
                                            float deltaTime );
+
+  protected:
+
+    UpdateConfig* _updateConfig;
   };
+
+  typedef std::vector< Updater* > UpdatersArray;
 }
 
 #endif /* PARTICLEUPDATER_H_ */
