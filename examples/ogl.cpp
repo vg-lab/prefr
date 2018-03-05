@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -347,8 +347,9 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
     indices.reserve( particlesPerCluster );
 
     unsigned int start = particlesPerCluster * i;
+    unsigned int end = start + particlesPerCluster;
 
-    for( unsigned int index = start; index < start + particlesPerCluster; ++index )
+    for( unsigned int index = start; index < end; ++index )
     {
       indices.push_back( index );
     }

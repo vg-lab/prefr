@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -25,6 +25,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "../utils/types.h"
+#include "../utils/VectorizedSet.hpp"
 
 #include <vector>
 #include <tuple>
@@ -75,6 +76,7 @@ namespace prefr
   class ParticleCollection;
 
   typedef ParticleCollection ParticleRange;
+  typedef prefr::VectorizedSet< unsigned int > ParticleSet;
   typedef std::vector< unsigned int > ParticleIndices;
 
 //  typedef utils::ElementCollection< prefr::Particles > ParticleRange;
@@ -236,7 +238,8 @@ namespace prefr
 
     /*! \brief Returns an iterator pointing to the given nth position.
      *
-     * Returns an iterator pointing to the given nth position.
+     * Returns an iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
      *
      * @param i Nth position to be returned.
      * @return an Particles::iterator pointing to the given nth position.
@@ -245,12 +248,31 @@ namespace prefr
 
     /*! \brief Returns a constant iterator pointing to the given nth position.
      *
-     * Returns a constant iterator pointing to the given nth position.
+     * Returns a constant iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
      *
      * @param i Nth position to be returned.
      * @return an Particles::const_terator pointing to the given nth position.
      */
     const_iterator at( unsigned int i ) const;
+
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns a iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
+    iterator operator[]( unsigned int i );
+
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    const_iterator operator[]( unsigned int i ) const;
 
   protected:
 
@@ -291,12 +313,19 @@ namespace prefr
     ParticleCollection( void );
     ParticleCollection( const ParticleCollection& other );
 
+    ParticleCollection( const Particles& data, const ParticleSet& indices_ );
     ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
 
     const ParticleIndices& indices( void ) const;
+    void indices( const ParticleSet& newIndices );
     void indices( const ParticleIndices& newIndices );
 
-    unsigned int size( void );
+    unsigned int size( void ) const;
+    bool empty( void ) const;
+
+    Particles::iterator find( unsigned int particleId );
+
+    bool hasElement( unsigned int idx ) const;
 
     Particles::iterator begin( void );
     Particles::const_iterator begin( void ) const;
@@ -304,16 +333,52 @@ namespace prefr
     Particles::iterator end( void );
     Particles::const_iterator end( void ) const;
 
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns an iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
     Particles::iterator at( unsigned int index_ );
 
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    Particles::const_iterator at( unsigned int index_ ) const;
+
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns a iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
+    Particles::iterator operator[]( unsigned int i );
+
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    Particles::const_iterator operator[]( unsigned int i ) const;
+
     void addIndex( unsigned int idx );
-    void addIndices( ParticleIndices idxVector );
+    void addIndices( ParticleSet idxVector );
 
     void removeIndex( unsigned int idx );
-    void removeIndices( ParticleIndices idxVector );
+    void removeIndices( ParticleSet idxVector );
 
     void transferIndexTo( ParticleCollection& other, unsigned int idx );
-    void transferIndicesTo( ParticleCollection& other, ParticleIndices idxVector );
+    void transferIndicesTo( ParticleCollection& other, ParticleSet idxVector );
 
   protected:
 
@@ -327,9 +392,10 @@ namespace prefr
                         Particles::iterator begin_,
                         Particles::iterator end_ );
 
-    Particles::iterator _createIterator( unsigned int index = 0 ) const;
+    Particles::iterator _createIterator( unsigned int index = 0, bool absolute = false ) const;
 
-    ParticleIndices _particleIndices;
+    ParticleSet _particleIndices;
+    ParticleIndices _indices;
     TParticle _vectorReferences;
 
     unsigned int _size;

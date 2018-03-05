@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -42,7 +42,7 @@ namespace prefr
 
   void GLRenderer::_init( void )
   {
-    _glRenderConfig = new GLRenderConfig( _particles.size( ) );
+    _glRenderConfig = new GLRenderConfig( _particles.size( ));
     _renderConfig = _glRenderConfig;
 
     _glRenderConfig->_glRenderProgram = _glRenderProgram;
@@ -170,7 +170,7 @@ namespace prefr
 #endif
     for( int i = 0; i < ( int ) _glRenderConfig->_aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.at( _distances->getID( i ));
+      tparticle currentParticle = _particles[ _distances->getID( i )];
 
       unsigned int idx = i * 4;
 

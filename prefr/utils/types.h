@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -55,6 +55,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "error.h"
 
 // PREFR include for type definitions
 namespace prefr

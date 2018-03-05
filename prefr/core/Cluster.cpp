@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -24,7 +24,7 @@
 namespace prefr
 {
 
-  Cluster::Cluster( )
+  Cluster::Cluster( void )
   : _updateConfig( nullptr )
   , _aliveParticles( 0 )
   , _active( true )
@@ -75,44 +75,22 @@ namespace prefr
         particle.set_alive( false );
 
         _updateConfig->setDead( particle.id( ), true );
-//        ( *_updateConfig->_dead )[ particle.id( )] = true;
       }
     }
   }
 
   void Cluster::setSource( Source* source_ )
   {
-//    for( auto particle : _particles )
-//    {
-//      Source* source = _updateConfig->source( particle.id( ));
-//      if( source )
-//      {
-//        source->particles( ).removeIndex( particle.id( ));
-//      }
-//
-////      ( *_updateConfig->_refSources )[ particle.id( )] = source_;
-//    }
-//
-//    _updateConfig->setSource( source_, )
-//    source_->_particles.addIndices( _particles.indices( ));
     _updateConfig->setSource( source_ , _particles.indices( ));
   }
 
   void Cluster::setModel( Model* model_ )
   {
-//    for( auto particle : _particles )
-//    {
-//      ( *_updateConfig->_refModels )[ particle.id( )] = model_;
-//    }
     _updateConfig->setModel( model_, _particles.indices( ));
   }
 
   void Cluster::setUpdater( Updater* updater_ )
   {
-//    for( auto particle : _particles )
-//    {
-//      ( *_updateConfig->_refUpdaters )[ particle.id( )] = updater_;
-//    }
     _updateConfig->setUpdater( updater_, _particles.indices( ));
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -46,6 +46,10 @@ namespace prefr
   {
 
     _particles.resize( _maxParticles );
+
+    // Initialize used and unused particles.
+    _used = ParticleCollection( _particles, ParticleIndices( ));
+    _unused.addIndices( ParticleCollection( _particles ).indices( ));
 
     _referenceModels.resize( _maxParticles, nullptr );
     _referenceSources.resize( _maxParticles, nullptr );
@@ -107,7 +111,7 @@ namespace prefr
   }
 
   void ParticleSystem::addCluster( Cluster* cluster,
-                                   const ParticleIndices& indices )
+                                   const ParticleSet& indices )
   {
     assert( indices.size( ) > 0 );
 
@@ -117,8 +121,13 @@ namespace prefr
     _clusters.push_back( cluster );
   }
 
+  void ParticleSystem::detachCluster( Cluster* cluster )
+  {
+    _clusters.remove( cluster );
+  }
+
   void ParticleSystem::addSource( Source* source,
-                                  const ParticleIndices& indices )
+                                  const ParticleSet& indices )
   {
     assert( source );
     assert( indices.size( ) > 0 );
@@ -127,6 +136,13 @@ namespace prefr
     source->_particles = ParticleCollection( _particles, indices );
     for( unsigned int idx : indices )
     {
+      if( !_unused.hasElement( idx ))
+      {
+        Source* previous = _referenceSources[ idx ];
+        if( previous )
+          previous->particles( ).removeIndex( idx );
+      }
+
       _flagsDead[ idx ] = true;
       _flagsEmitted[ idx ] = false;
 
@@ -135,13 +151,60 @@ namespace prefr
 
     _sources.push_back( source );
 
+    _unused.removeIndices( source->particles( ).indices( ));
+
+    _used.addIndices( indices );
+
     source->_initializeParticles( );
+  }
+
+  void ParticleSystem::detachSource( Source* source )
+  {
+    assert( source );
+
+    for( auto const & particle : source->particles( ))
+    {
+      unsigned int idx = particle.id( );
+
+      _referenceModels[ idx ] = nullptr;
+      _referenceSources[ idx ] = nullptr;
+      _referenceUpdaters[ idx ] = nullptr;
+
+      _flagsDead[ idx ] = false;
+      _flagsEmitted[ idx ] = false;
+
+    }
+
+    _used.removeIndices( source->particles( ).indices( ));
+    _unused.addIndices( source->particles( ).indices( ));
   }
 
   void ParticleSystem::addModel( Model* model )
   {
     assert( model );
     _models.push_back( model );
+  }
+
+  void ParticleSystem::detachModel( Model* model )
+  {
+    assert( model );
+    _models.remove( model );
+
+    for( auto const & particle : _used )
+    {
+      unsigned int idx = particle.id( );
+
+      if( _referenceModels[ idx ] == model )
+      {
+        _referenceModels[ idx ] = nullptr;
+
+        _flagsDead[ idx ] = false;
+        _flagsEmitted[ idx ] = false;
+
+        _used.removeIndex( idx );
+        _unused.addIndex( idx );
+      }
+    }
   }
 
   void ParticleSystem::addUpdater( Updater* updater )
@@ -153,13 +216,36 @@ namespace prefr
     _updaters.push_back(updater);
   }
 
+  void ParticleSystem::detachUpdater( Updater* updater )
+  {
+    assert( updater );
+
+    for( auto const & particle : _used )
+    {
+      unsigned int idx = particle.id( );
+
+      if( _referenceUpdaters[ idx ] == updater )
+      {
+        _referenceUpdaters[ idx ] = nullptr;
+
+        _flagsDead[ idx ] = false;
+        _flagsEmitted[ idx ] = false;
+
+        _used.removeIndex( idx );
+        _unused.addIndex( idx );
+      }
+    }
+  }
+
+
+
   void ParticleSystem::sorter( Sorter* sorter_ )
   {
     assert( sorter_ );
     _sorter = sorter_;
 
-    _sorter->particles(  _particles );
-    _sorter->sources( &_sources );
+    _sorter->particles( _particles );
+    _sorter->sources( &_sourcesVec );
 
     _sorter->initDistanceArray( _camera );
 
@@ -207,28 +293,48 @@ namespace prefr
     if( !_run )
       return;
 
+     prepareFrame( deltaTime );
+
+     updateFrame( deltaTime );
+
+     finishFrame( );
+
+  }
+
+
+  void ParticleSystem::prepareFrame( float deltaTime )
+  {
     _aliveParticles = 0;
 
 #ifdef PREFR_USE_OPENMP
+
+    _sourcesVec = _sources.vector( );
+    _sorter->sources( &_sourcesVec );
+
     #pragma omp parallel for if( _parallel )
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
-      Source* source = _sources[ s ];
+      Source* source = _sourcesVec[ s ];
 #else
-    for( auto source : _sources )
+    for( auto& source : _sources )
     {
 #endif
       // Set source's elapsed delta
       source->prepareFrame( deltaTime );
     }
 
+  }
+
+  void ParticleSystem::updateFrame( float deltaTime )
+  {
+
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-    for( int particleId = 0; particleId < ( int ) _particles.numParticles( ); ++particleId )
+    for( int particleId = 0; particleId < ( int ) _used.size( ); ++particleId )
     {
-      tparticle particle = _particles.at( particleId );
+      tparticle particle = _used[ particleId ];
 #else
-    for( auto particle : _particles )
+    for( auto particle : _used )
     {
 #endif
 
@@ -237,15 +343,19 @@ namespace prefr
 
     }
 
+  }
+
+  void ParticleSystem::finishFrame( void )
+  {
     // For each source...
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
 
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
-      Source* source = _sources[ s ];
+      Source* source = _sourcesVec[ s ];
 #else
-    for( auto source : _sources )
+    for( auto& source : _sources )
     {
 #endif
       // Finish frame
@@ -256,6 +366,7 @@ namespace prefr
 
     }
 
+    _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
 
   }
@@ -323,9 +434,31 @@ namespace prefr
     return _clusters;
   }
 
-  ParticleCollection ParticleSystem::createCollection( ParticleIndices indices )
+  ParticleCollection ParticleSystem::createCollection( const ParticleSet& indices )
   {
     return ParticleCollection( _particles, indices );
+  }
+
+  ParticleSet ParticleSystem::retrieveUnused( unsigned int size )
+  {
+    assert( size <= _maxParticles );
+
+    if( size == 0  || size == _maxParticles )
+      return _unused.indices( );
+
+    unsigned int count = 0;
+    ParticleSet result;
+    for( auto particleId : _unused.indices( ) )
+    {
+      if( count >= size )
+        break;
+
+      result.append( particleId );
+
+      ++count;
+    }
+
+    return result;
   }
 }
 

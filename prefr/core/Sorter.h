@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -76,13 +76,15 @@ namespace prefr
 
 protected:
 
-    void sources( SourcesArray* sources_ );
+    void sources( std::vector< Source* >* sources_ );
 
     ParticleCollection _particles;
 
-    SourcesArray* _sources;
+    std::vector< Source* >* _sources;
 
     DistanceArray* _distances;
+
+    unsigned int _aliveParticles;
 
     bool _parallel;
 

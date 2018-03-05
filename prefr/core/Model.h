@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -146,9 +146,7 @@ protected:
 
   };
 
-  typedef Model tprototype;
-  typedef tprototype* tprototype_ptr;
-  typedef std::vector< tprototype_ptr > ModelsArray;
+  typedef VectorizedSet< Model* > ModelsArray;
 
 
 }

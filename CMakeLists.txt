@@ -7,8 +7,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-project( prefr VERSION 0.3.1 )
-set( prefr_VERSION_ABI 4 )
+project( prefr VERSION 1.0.0 )
+set( prefr_VERSION_ABI 5 )
 
 # Disable in source building
 if( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" )

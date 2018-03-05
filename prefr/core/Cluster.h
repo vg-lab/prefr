@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -60,7 +60,7 @@ namespace prefr
      * Default constructor.
      *
      */
-    PREFR_API Cluster( );
+    PREFR_API Cluster( void );
 
     /*! \brief Default destructor.
      *
@@ -158,7 +158,7 @@ namespace prefr
     bool _inactiveKillParticles;
   };
 
-  typedef std::vector< Cluster* > ClustersArray;
+  typedef VectorizedSet< Cluster* > ClustersArray;
 
 }
 

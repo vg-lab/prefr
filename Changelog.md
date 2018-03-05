@@ -1,3 +1,10 @@
+# v1.0 (2018-03)
+* Improved particles sets management by allowing non-consecutive collections.
+* Rearranged modifier classes and their particles' assignment. (API change)
+* Modified emission process (improved parallel emission process)
+* Removed OSG support.
+* Updated CMake/common version.
+
 # v0.3 - (2016-11)
 * Multi-core implementation (OpenMP).
 * Introduced Cluster object for an easier management of particle sets.

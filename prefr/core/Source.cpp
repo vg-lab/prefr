@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -87,7 +87,7 @@ namespace prefr
       _emittedParticles = 0;
       _continueEmission = true;
 
-      for( auto particle : _particles)
+      for( auto const & particle : _particles)
       {
         _updateConfig->setEmitted( particle.id( ), false );
         _updateConfig->setDead( particle.id( ), true );
@@ -147,7 +147,7 @@ namespace prefr
 
       _aliveParticles = 0;
 
-      for( auto particle : _particles )
+      for( auto const & particle : _particles )
       {
         _updateConfig->setEmitted( particle.id( ), false );
 
@@ -191,13 +191,13 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      if( _particles.size( ) == 0 )
+      if( _particles.empty( ))
       {
         std::cout << "Particles cannot be configured. Collection size is zero." << std::endl;
         return;
       }
 
-      for( auto particle : _particles )
+      for( auto const & particle : _particles )
       {
         _updateConfig->setDead( particle.id( ), true );
         _updateConfig->setEmitted( particle.id( ), false );
@@ -209,7 +209,7 @@ namespace prefr
     {
       if( _emissionRate <= 0.0f )
       {
-        for( auto particle : _particles )
+        for( auto const & particle : _particles )
         {
           if( _updateConfig->dead( particle.id( )))
           {
@@ -223,7 +223,7 @@ namespace prefr
       else
       {
         // Fill dead pool for the emission for this frame
-        for( auto particle : _particles )
+        for( auto const& particle : _particles )
         {
           if( _particlesBudget == 0 )
             break;

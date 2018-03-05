@@ -10,6 +10,7 @@ set(PREFR_PUBLIC_HEADERS
   utils/Config.h
   utils/Timer.hpp
   utils/InterpolationSet.hpp
+  utils/VectorizedSet.hpp
   
   core/ParticleSystem.h
   core/Particles.h
@@ -28,10 +29,6 @@ set(PREFR_PUBLIC_HEADERS
   GL/GLRenderer.h
   GL/GLRenderConfig.h
   GL/IGLRenderProgram.h
-  
-  OSG/OSGRenderConfig.h
-  OSG/OSGManager.h
-  OSG/OSGRenderer.h
   
   cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh
@@ -57,9 +54,6 @@ set(PREFR_SOURCES
   
   GL/GLRenderer.cpp
       
-  OSG/OSGManager.cpp
-  OSG/OSGRenderer.cpp
-  
   cuda/ThrustSorter.cu
 )
 

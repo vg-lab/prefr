@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -42,6 +42,7 @@
 #include <reto/reto.h>
 
 #include "../utils/Log.h"
+#include "../utils/VectorizedSet.hpp"
 
 namespace prefr
 {
@@ -121,7 +122,10 @@ namespace prefr
      */
     PREFR_API
     virtual void addCluster( Cluster* cluster,
-                             const ParticleIndices& indices );
+                             const ParticleSet& indices );
+
+    PREFR_API
+    virtual void detachCluster( Cluster* cluster );
 
     /*! \brief Adds a Source object to the particle system.
      *
@@ -135,7 +139,10 @@ namespace prefr
      *
      */
     PREFR_API
-    virtual void addSource( Source* source, const ParticleIndices& indices  );
+    virtual void addSource( Source* source, const ParticleSet& indices  );
+
+    PREFR_API
+    virtual void detachSource( Source* source );
 
     /*! \brief Adds a Model object to the system.
      *
@@ -150,6 +157,9 @@ namespace prefr
     PREFR_API
     virtual void addModel( Model* model );
 
+    PREFR_API
+    virtual void detachModel( Model* model );
+
     /*! \brief Adds an Updater object to the system.
      *
      * Adds an Updater object to the system. The object is appended to
@@ -163,6 +173,9 @@ namespace prefr
      */
     PREFR_API
     virtual void addUpdater( Updater* updater );
+
+    PREFR_API
+    virtual void detachUpdater( Updater* updater );
 
     /*! \brief Sets the Sorter object.
      *
@@ -362,20 +375,43 @@ namespace prefr
      */
     const ClustersArray& clusters( void ) const;
 
-    ParticleCollection createCollection( ParticleIndices indices );
+    /*! \brief Returns a created particle collection.
+     *
+     * Returns a particles' collection created using the given indices.
+     *
+     * @param indices
+     * @return Created collection
+     */
+    ParticleCollection createCollection( const ParticleSet& indices );
 
-    const UpdateConfig& ConfigUpdate( void );
+
+    /*! \brief Returns a set of available particles.
+     *
+     * Returns a set with "size" particles (if) available.
+     *
+     * @param size Max number of particles to be included
+     * @return Collection of available particles.
+     */
+    ParticleSet retrieveUnused( unsigned int size = 0 );
 
 
   protected:
 
+    virtual void prepareFrame( float deltaTime );
+    virtual void updateFrame( float deltaTime );
+    virtual void finishFrame( void );
+
     /*! Particles collection the system will manage. */
     Particles _particles;
+
+    ParticleCollection _used;
+    ParticleCollection _unused;
 
     ClustersArray _clusters;
 
     /*! Particle sources array of the particle set. */
     SourcesArray _sources;
+    std::vector< Source* > _sourcesVec;
 
     /*! Particle models. */
     ModelsArray _models;
@@ -390,9 +426,9 @@ namespace prefr
     Renderer* _renderer;
 
     /*! Vectors storing a per-particle pointer to their modifiers. */
-    SourcesArray _referenceSources;
-    ModelsArray _referenceModels;
-    UpdatersArray _referenceUpdaters;
+    std::vector< Source* > _referenceSources;
+    std::vector< Model* > _referenceModels;
+    std::vector< Updater* > _referenceUpdaters;
 
     /*! Vectors storing flags from different stages.*/
     FlagsArray _flagsEmitted;

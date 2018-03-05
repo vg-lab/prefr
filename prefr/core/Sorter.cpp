@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -35,7 +35,7 @@ namespace prefr
   Sorter::Sorter( )
   : _sources( nullptr )
   , _distances( nullptr )
-//  , _aliveParticles( 0 )
+  , _aliveParticles( 0 )
   , _parallel( false )
   {}
 
@@ -107,7 +107,7 @@ namespace prefr
       Source* source = ( *_sources )[ i ];
 #else
 
-    for( auto source : *_sources )
+    for( auto& source : *_sources )
     {
 
 #endif
@@ -176,7 +176,7 @@ namespace prefr
 #endif
   }
 
-  void Sorter::sources( SourcesArray* sources_ )
+  void Sorter::sources( std::vector< Source* >* sources_ )
   {
     _sources = sources_;
   }

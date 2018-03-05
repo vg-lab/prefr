@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -108,14 +108,25 @@ namespace prefr
 
   Particles::iterator Particles::at( unsigned int i )
   {
+    PREFR_CHECK_THROW( i <= _size, "Index out of range.");
     return _createIterator( i );
   }
 
   Particles::const_iterator Particles::at( unsigned int i ) const
   {
+    PREFR_CHECK_THROW( i <= _size, "Index out of range.");
     return _createIterator( i );
   }
 
+  Particles::iterator Particles::operator[]( unsigned int i )
+  {
+    return _createIterator( i );
+  }
+
+  Particles::const_iterator Particles::operator[]( unsigned int i ) const
+  {
+    return _createIterator( i );
+  }
 
   Particles::iterator
   Particles::_createIterator( unsigned int i ) const
@@ -250,8 +261,6 @@ namespace prefr
 
       _position += inc;
     }
-
-//    std::cout << "it " << _position << " " << _indexPosition << " " << _size << std::endl;
   }
 
   void Particles::base_const_iterator::decrease( int dec )
@@ -357,6 +366,7 @@ namespace prefr
 
   ParticleCollection::ParticleCollection( const ParticleCollection& other )
   : _particleIndices( other._particleIndices )
+  , _indices( other._indices )
   , _vectorReferences( other._vectorReferences )
   , _size( other._particleIndices.size( ))
   , _data( other._data )
@@ -379,12 +389,12 @@ namespace prefr
     if( end_ < begin_ )
       std::swap( begin_, end_ );
 
-    _particleIndices.reserve( end_ - begin_ );
     for( unsigned int i = begin_; i < end_; i++ )
     {
       _particleIndices.push_back( i );
     }
 
+    _indices = _particleIndices.vector( );
     _size = _particleIndices.size( );
   }
 
@@ -398,67 +408,122 @@ namespace prefr
     unsigned int begin = begin_ - beginIt;
     unsigned int end = end_ - beginIt;
 
-    _particleIndices.reserve( begin - end );
-
     for( unsigned int i = begin; i < end; i++ )
     {
       _particleIndices.push_back( i );
     }
 
+    _indices = _particleIndices.vector( );
     _size = _particleIndices.size( );
   }
 
   ParticleCollection::ParticleCollection( const Particles& data_,
-                                          const ParticleIndices& indices_ )
+                                          const ParticleSet& indices_ )
   : _particleIndices( indices_ )
+  , _indices( _particleIndices.vector( ))
   , _vectorReferences( data_.vectorReferences( ))
   , _size( _particleIndices.size( ))
   , _data( & data_ )
   { }
 
+  ParticleCollection::ParticleCollection( const Particles& data_,
+                                          const ParticleIndices& indices_ )
+  : _particleIndices( indices_ )
+  , _indices( indices_ )
+  , _vectorReferences( data_.vectorReferences( ))
+  , _size( _particleIndices.size( ))
+  , _data( & data_ )
+  { }
+
+
   const ParticleIndices& ParticleCollection::indices( void ) const
   {
-    return _particleIndices;
+    return _indices;
   }
+
+  void ParticleCollection::indices( const ParticleSet& newIndices )
+  {
+    _particleIndices = newIndices;
+    _indices = _particleIndices.vector( );
+    _size = _particleIndices.size( );
+  }
+
 
   void ParticleCollection::indices( const ParticleIndices& newIndices )
   {
     _particleIndices = newIndices;
+    _indices = newIndices;
     _size = _particleIndices.size( );
   }
 
-  unsigned int ParticleCollection::size( void )
+  unsigned int ParticleCollection::size( void ) const
   {
     return _size;
   }
 
+  bool ParticleCollection::empty( void ) const
+  {
+    return _size == 0;
+  }
+
+  Particles::iterator ParticleCollection::find( unsigned int particleId )
+  {
+    if( _particleIndices.hasElement( particleId ))
+      return _createIterator( particleId );
+
+    return _createIterator( _size, true );
+  }
+
+  bool ParticleCollection::hasElement( unsigned int idx ) const
+  {
+    return _particleIndices.hasElement( idx );
+  }
+
   Particles::iterator ParticleCollection::begin( void )
   {
-    return _createIterator( );
+    return _createIterator( 0, !_particleIndices.size( ));
   }
 
   Particles::const_iterator ParticleCollection::begin( void ) const
   {
-    return _createIterator( );
+    return _createIterator( 0, !_particleIndices.size( ));
   }
 
   Particles::iterator ParticleCollection::end( void )
   {
-    return _createIterator( _size );
+    return _createIterator( _size, !_particleIndices.size( ) );
   }
 
   Particles::const_iterator ParticleCollection::end( void ) const
   {
-    return _createIterator( _size );
+    return _createIterator( _size, !_particleIndices.size( ) );
   }
 
   Particles::iterator ParticleCollection::at( unsigned int index_ )
   {
-    return _createIterator( index_ );
+    PREFR_CHECK_THROW( index_ <= _size, "Index out of range.");
+    return _createIterator( index_, !_particleIndices.size( ) );
   }
 
+  Particles::const_iterator ParticleCollection::at( unsigned int index_ ) const
+  {
+    PREFR_CHECK_THROW( index_ <= _size, "Index out of range.");
+    return _createIterator( index_, !_particleIndices.size( ) );
+  }
+
+  Particles::iterator ParticleCollection::operator[]( unsigned int i )
+  {
+    return _createIterator( i, !_particleIndices.size( ) );
+  }
+
+  Particles::const_iterator ParticleCollection::operator[]( unsigned int i ) const
+  {
+    return _createIterator( i, !_particleIndices.size( ) );
+  }
+
+
   Particles::iterator
-  ParticleCollection::_createIterator( unsigned int index_ ) const
+  ParticleCollection::_createIterator( unsigned int index_, bool absolute ) const
   {
     assert( _data );
     assert( index_ <= _data->numParticles( ));
@@ -468,24 +533,27 @@ namespace prefr
     result._data = _data;
     result._vectorRef = _vectorReferences;
 
-    if( index_ < _particleIndices.size( ))
+    if( !absolute )
     {
-      result._particleIndices = &_particleIndices;
-      result._size = _particleIndices.size( );
+      if( index_ < _particleIndices.size( ))
+      {
+        result._particleIndices = &_indices;
+        result._size = _particleIndices.size( );
 
-      result._indexPosition = index_;
+        result._indexPosition = index_;
 
-      unsigned int index = _particleIndices[ index_ ];
+        unsigned int index = _indices[ index_ ];
 
-      result.set( index );
+        result.set( index );
 
-    }
-    else if( _particleIndices.size( ) && index_ == _particleIndices.size( ) )
-    {
-      unsigned int index = _particleIndices.back( ) + 1;
-      result._particleIndices = nullptr;
-      result._size = 0;
-      result._position = index;
+      }
+      else if( _particleIndices.size( ) && index_ == _particleIndices.size( ) )
+      {
+       unsigned int index = _indices.back( ) + 1;
+       result._particleIndices = nullptr;
+       result._size = 0;
+       result._position = index;
+      }
     }
     else
     {
@@ -499,55 +567,32 @@ namespace prefr
 
   void ParticleCollection::addIndex( unsigned int idx )
   {
-    std::set< unsigned int > indexSet( _particleIndices.begin( ),
-                                       _particleIndices.end( ));
-
-    indexSet.insert( idx );
-
-    _particleIndices.clear( );
-    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+    _particleIndices.append( idx );
+    _indices = _particleIndices.vector( );
 
     _size = _particleIndices.size( );
-
-    std::cout << "Indices: " << _particleIndices.size( ) << std::endl;
   }
 
-  void ParticleCollection::addIndices( ParticleIndices idxVector )
+  void ParticleCollection::addIndices( ParticleSet idxVector )
   {
-    std::set< unsigned int > indexSet( _particleIndices.begin( ),
-                                       _particleIndices.end( ));
-
-    for( auto idx : idxVector )
-      indexSet.insert( idx );
-
-    _particleIndices.clear( );
-    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+    _particleIndices.insert( idxVector );
+    _indices = _particleIndices.vector( );
 
     _size = _particleIndices.size( );
   }
 
   void ParticleCollection::removeIndex( unsigned int idx )
   {
-    std::set< unsigned int > indexSet( _particleIndices.begin( ), _particleIndices.end( ));
-
-    indexSet.erase( idx );
-
-    _particleIndices.clear( );
-    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+    _particleIndices.remove( idx );
+    _indices = _particleIndices.vector( );
 
     _size = _particleIndices.size( );
   }
 
-  void ParticleCollection::removeIndices( ParticleIndices idxVector )
+  void ParticleCollection::removeIndices( ParticleSet idxVector )
   {
-    std::set< unsigned int > indexSet( _particleIndices.begin( ),
-                                       _particleIndices.end( ));
-
-    for( auto idx : idxVector )
-      indexSet.erase( idx );
-
-    _particleIndices.clear( );
-    _particleIndices.insert( _particleIndices.end( ), indexSet.begin( ), indexSet.end( ));
+    _particleIndices.remove( idxVector );
+    _indices = _particleIndices.vector( );
 
     _size = _particleIndices.size( );
   }
@@ -560,7 +605,7 @@ namespace prefr
   }
 
   void ParticleCollection::transferIndicesTo( ParticleCollection& other,
-                                              ParticleIndices idxVector  )
+                                              ParticleSet idxVector  )
   {
     removeIndices( idxVector );
     other.addIndices( idxVector );

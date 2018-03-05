@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -33,18 +33,6 @@ namespace prefr
   Updater::~Updater( )
   { }
 
-//  void Updater::emitParticle( const tparticle_ptr current )
-//  {
-//    if( current->alive( ))
-//      return;
-//
-//    Source* source = _updateConfig->_refSources[ current->id( )];
-//    Model* model = _updateConfig->_refSources[ current->id( )];
-//
-//
-//
-//  }
-
   void Updater::updateParticle( tparticle current,
                                 float deltaTime )
   {
@@ -71,7 +59,6 @@ namespace prefr
       current.set_velocity( values.direction );
 
       _updateConfig->setEmitted( id, false );
-//      (*_updateConfig->_emitted)[ id ] = false;
     }
     else
     {
@@ -85,10 +72,8 @@ namespace prefr
         current.set_life( 0.0f );
         current.set_alive( false );
 
-//        (*_updateConfig->_dead)[ id ] = true;
         _updateConfig->setDead( id, true );
       }
-
 
       float refLife = 1.0f -
           glm::clamp( current.life( ) * ( model->_lifeNormalization ),
