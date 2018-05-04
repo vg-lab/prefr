@@ -27,13 +27,29 @@ using namespace prefr;
 
 void printIndices( const ParticleCollection& collection, const std::string& name )
 {
-  std::cout << name << ": ";
-  for( auto const &it : collection )
-  {
-    std::cout << " " << it.id( );
-  }
+  std::cout << "--------------------- " << name << ": ";
+
+  prefr::Particles::const_iterator begin = collection.begin( );
+  prefr::Particles::const_iterator end = collection.end( );
+
+//  std::cout << std::endl << "begin";
+//  begin.print( );
+//
+//  std::cout << "end";
+//  end.print( );
+
   std::cout << std::endl;
 
+  for( auto it : collection )
+//  for( prefr::tparticle it = collection.begin( ); it != collection.end( ); ++it )
+    std::cout << " " << it.id( );
+
+  std::cout << std::endl;
+
+//  for( prefr::tparticle it = collection.begin( ); it != collection.end( ); ++it )
+//    it.print( );
+
+  std::cout << "--------------------- " << std::endl;
 }
 
 int main( int /*argc*/, char** /*argv*/ )
@@ -45,29 +61,58 @@ int main( int /*argc*/, char** /*argv*/ )
   ParticleIndices indices = { 0, 1, 5, 10, 20 };
 
   // Create collection from indices.
-  ParticleCollection pc1 =  ps->createCollection( indices );
+  ParticleCollection one =  ps->createCollection( indices );
 
-  printIndices( pc1, "Collection 1");
+  printIndices( one, "one");
 
   // Copy collections.
-  ParticleCollection pc2 = pc1;
-  ParticleCollection pc3( pc2 );
+  ParticleCollection two = one;
+  ParticleCollection three( two );
 
-  printIndices( pc2, "Collection 2");
+  printIndices( two, "two");
+  printIndices( three, "three");
 
   ParticleSet aux = { 21, 23, 50, 99 };
 
   // Add indices to collection
-  pc2.addIndices( aux );
+  two.addIndices( aux );
 
-  printIndices( pc2, "Collection 2");
-  printIndices( pc3, "Collection 3");
+  printIndices( two, "two");
 
   // Transfer the given indices to the given collection.
-  pc2.transferIndicesTo( pc3, aux );
+  two.transferIndicesTo( three, aux );
 
-  printIndices( pc2, "Collection 2");
-  printIndices( pc3, "Collection 3");
+  printIndices( two, "two");
+  printIndices( three, "three");
+
+  three.removeIndices( indices );
+
+  printIndices( three, "three" );
+
+  two.addIndices( indices );
+
+  printIndices( two, "two");
+
+  three.addIndices( two.indices( ));
+
+  printIndices( three, "three" );
+
+  three.removeIndices( indices );
+
+  printIndices( three, "three" );
+
+  three.addIndices( indices );
+
+  printIndices( three, "three" );
+
+  three.removeIndices( two.indices( ));
+
+  printIndices( three, "three" );
+
+  three.removeIndices( three.indices( ));
+
+  printIndices( three, "three" );
+
 
   delete ps;
 }

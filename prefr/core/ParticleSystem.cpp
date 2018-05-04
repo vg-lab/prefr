@@ -49,7 +49,10 @@ namespace prefr
 
     // Initialize used and unused particles.
     _used = ParticleCollection( _particles, ParticleIndices( ));
-    _unused.addIndices( ParticleCollection( _particles ).indices( ));
+    _unused = ParticleCollection( _particles, _particles.begin( ), _particles.end( ) );
+
+    std::cout << "Available particles " << _unused.size( )
+              << " of " << _maxParticles << std::endl;
 
     _referenceModels.resize( _maxParticles, nullptr );
     _referenceSources.resize( _maxParticles, nullptr );
@@ -113,7 +116,7 @@ namespace prefr
   void ParticleSystem::addCluster( Cluster* cluster,
                                    const ParticleSet& indices )
   {
-    assert( indices.size( ) > 0 );
+//    assert( indices.size( ) > 0 );
 
     cluster->_updateConfig = &_updateConfig;
     cluster->particles( ParticleCollection( _particles, indices));
@@ -130,30 +133,34 @@ namespace prefr
                                   const ParticleSet& indices )
   {
     assert( source );
-    assert( indices.size( ) > 0 );
+//    assert( indices.size( ) > 0 );
 
     source->_updateConfig = &_updateConfig;
-    source->_particles = ParticleCollection( _particles, indices );
-    for( unsigned int idx : indices )
+
+    if( indices.size( ) > 0 )
     {
-      if( !_unused.hasElement( idx ))
+      source->_particles = ParticleCollection( _particles, indices );
+      for( unsigned int idx : indices )
       {
-        Source* previous = _referenceSources[ idx ];
-        if( previous )
-          previous->particles( ).removeIndex( idx );
+        if( !_unused.hasElement( idx ))
+        {
+          Source* previous = _referenceSources[ idx ];
+          if( previous )
+            previous->particles( ).removeIndex( idx );
+        }
+
+        _flagsDead[ idx ] = true;
+        _flagsEmitted[ idx ] = false;
+
+        _referenceSources[ idx ] = source;
       }
 
-      _flagsDead[ idx ] = true;
-      _flagsEmitted[ idx ] = false;
+      _unused.removeIndices( source->particles( ).indices( ));
+      _used.addIndices( indices );
 
-      _referenceSources[ idx ] = source;
     }
 
     _sources.push_back( source );
-
-    _unused.removeIndices( source->particles( ).indices( ));
-
-    _used.addIndices( indices );
 
     source->_initializeParticles( );
   }
@@ -369,6 +376,7 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
 
+    std::cout << "Alive " << _aliveParticles << std::endl;
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
@@ -441,10 +449,12 @@ namespace prefr
 
   ParticleSet ParticleSystem::retrieveUnused( unsigned int size )
   {
-    assert( size <= _maxParticles );
+//    assert( size <= _maxParticles );
 
-    if( size == 0  || size == _maxParticles )
+    if( size == 0  || size >= _maxParticles )
       return _unused.indices( );
+
+    std::cout << "Retrieving " << size << " particles... of " << _unused.indices( ).size( ) << std::endl;
 
     unsigned int count = 0;
     ParticleSet result;
@@ -458,6 +468,7 @@ namespace prefr
       ++count;
     }
 
+    std::cout << "Retrieved " << result.size( ) << " available particles." << std::endl;
     return result;
   }
 }

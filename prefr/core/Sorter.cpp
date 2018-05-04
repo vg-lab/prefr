@@ -186,4 +186,8 @@ namespace prefr
     _particles = particles_;
   }
 
+  void Sorter::aliveParticles( unsigned int alive )
+  {
+    _aliveParticles = alive;
+  }
 }

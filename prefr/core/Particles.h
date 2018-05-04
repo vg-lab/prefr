@@ -234,7 +234,7 @@ namespace prefr
      * @return A prefr::utils::InterpolationSet object with the
      * values set to the first and last positions.
      */
-    ParticleRange range( void );
+    ParticleRange range( void ) const;
 
     /*! \brief Returns an iterator pointing to the given nth position.
      *
@@ -320,7 +320,7 @@ namespace prefr
     void indices( const ParticleSet& newIndices );
     void indices( const ParticleIndices& newIndices );
 
-    unsigned int size( void ) const;
+    size_t size( void ) const;
     bool empty( void ) const;
 
     Particles::iterator find( unsigned int particleId );
@@ -372,13 +372,13 @@ namespace prefr
     Particles::const_iterator operator[]( unsigned int i ) const;
 
     void addIndex( unsigned int idx );
-    void addIndices( ParticleSet idxVector );
+    void addIndices( const ParticleSet& idxVector );
 
     void removeIndex( unsigned int idx );
-    void removeIndices( ParticleSet idxVector );
+    void removeIndices( const ParticleSet& idxVector );
 
     void transferIndexTo( ParticleCollection& other, unsigned int idx );
-    void transferIndicesTo( ParticleCollection& other, ParticleSet idxVector );
+    void transferIndicesTo( ParticleCollection& other, const ParticleSet& idxVector );
 
   protected:
 
@@ -415,6 +415,8 @@ namespace prefr
   public:
 
     base_const_iterator( const base_const_iterator& other );
+
+    void print( std::ostream& stream = std::cout ) const;
 
   protected:
 
@@ -541,6 +543,9 @@ namespace prefr
 
   typedef Particles::iterator tparticle;
   typedef tparticle* tparticle_ptr;
+
+  std::ostream& operator<<( std::ostream& stream,
+                            const Particles::base_const_iterator& it );
 
 }
 #endif /* __PREFR__PARTICLES__ */

@@ -48,13 +48,14 @@ namespace prefr
     void setDead( unsigned int idx, bool value );
 
     Model* model( unsigned int idx ) const;
-    void setModel( Model* model_, ParticleSet indices );
+    void setModel( Model* model_, const ParticleSet& indices );
 
     Source* source( unsigned int idx ) const;
-    void setSource( Source* source_, ParticleSet indices );
+    void setSource( Source* source_, const ParticleSet& indices );
+    void removeSourceIndices( Source* source_, const ParticleSet& indices );
 
     Updater* updater( unsigned int idx ) const;
-    void setUpdater( Updater* updater_, ParticleSet indices );
+    void setUpdater( Updater* updater_, const ParticleSet& indices );
 
   protected:
 

@@ -70,7 +70,7 @@ namespace prefr
     return (*_refModels)[ idx ];
   }
 
-  void UpdateConfig::setModel( Model* model_, ParticleSet indices )
+  void UpdateConfig::setModel( Model* model_, const ParticleSet& indices )
   {
     for( auto idx : indices )
     {
@@ -84,14 +84,16 @@ namespace prefr
     return (*_refSources)[ idx ];
   }
 
-  void UpdateConfig::setSource( Source* source_, ParticleSet indices )
+  void UpdateConfig::setSource( Source* source_, const ParticleSet& indices )
   {
+    assert( source_ );
 
     for( auto idx : indices )
     {
       // Remove indices from original source.
       //TODO Check algorithm efficiency.
       Source* auxSource = source( idx );
+      assert( auxSource );
       auxSource->particles( ).removeIndex( idx );
       // Change source reference.
       (*_refSources )[ idx ] = source_;
@@ -100,13 +102,30 @@ namespace prefr
     source_->particles( ).addIndices( indices );
   }
 
+  void UpdateConfig::removeSourceIndices( Source* source_,
+                                          const ParticleSet& indices )
+  {
+    for( auto idx : indices )
+    {
+//      Source* auxSource = source( idx );
+//      if( auxSource == source_ )
+      {
+        (*_refSources )[ idx ] = nullptr;
+        setEmitted( idx, false );
+        setDead( idx, true );
+      }
+    }
+
+    source_->particles( ).removeIndices( indices );
+  }
+
   Updater* UpdateConfig::updater( unsigned int idx ) const
   {
       assert( idx < _refUpdaters->size( ));
       return (*_refUpdaters)[ idx ];
   }
 
-  void UpdateConfig::setUpdater( Updater* updater_, ParticleSet indices )
+  void UpdateConfig::setUpdater( Updater* updater_, const ParticleSet& indices )
   {
     for( auto idx : indices )
     {

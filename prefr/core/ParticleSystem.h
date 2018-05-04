@@ -122,7 +122,7 @@ namespace prefr
      */
     PREFR_API
     virtual void addCluster( Cluster* cluster,
-                             const ParticleSet& indices );
+                             const ParticleSet& indices = ParticleSet( ));
 
     PREFR_API
     virtual void detachCluster( Cluster* cluster );
@@ -139,7 +139,8 @@ namespace prefr
      *
      */
     PREFR_API
-    virtual void addSource( Source* source, const ParticleSet& indices  );
+    virtual void addSource( Source* source,
+                            const ParticleSet& indices = ParticleSet( ) );
 
     PREFR_API
     virtual void detachSource( Source* source );
@@ -384,6 +385,9 @@ namespace prefr
      */
     ParticleCollection createCollection( const ParticleSet& indices );
 
+
+    //TODO
+    void releaseParticles( const ParticleSet& indices );
 
     /*! \brief Returns a set of available particles.
      *

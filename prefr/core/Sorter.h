@@ -74,6 +74,7 @@ namespace prefr
 
     PREFR_API void particles( const ParticleRange& particles );
 
+    PREFR_API void aliveParticles( unsigned int alive );
 protected:
 
     void sources( std::vector< Source* >* sources_ );
