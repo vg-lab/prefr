@@ -131,6 +131,10 @@ namespace prefr
     {
       current = 0;
       currentIt = elements.begin( );
+
+      //TODO find something more efficient
+      for( auto& dist : distances )
+        dist = -1;
     }
 
     inline DistanceUnit* next( void )

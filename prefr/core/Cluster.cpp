@@ -34,7 +34,7 @@ namespace prefr
   Cluster::~Cluster( void )
   { }
 
-  ParticleRange Cluster::particles( void ) const
+  ParticleRange& Cluster::particles( void )
   {
     return _particles;
   }

@@ -75,7 +75,7 @@ namespace prefr
      *
      * @return Set of particles compounding the cluster.
      */
-    PREFR_API ParticleRange particles( void ) const;
+    PREFR_API ParticleRange& particles( void );
 
     /*! \brief Sets the range of particles compounding the cluster.
      *

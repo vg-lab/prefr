@@ -51,9 +51,6 @@ namespace prefr
     _used = ParticleCollection( _particles, ParticleIndices( ));
     _unused = ParticleCollection( _particles, _particles.begin( ), _particles.end( ) );
 
-    std::cout << "Available particles " << _unused.size( )
-              << " of " << _maxParticles << std::endl;
-
     _referenceModels.resize( _maxParticles, nullptr );
     _referenceSources.resize( _maxParticles, nullptr );
     _referenceUpdaters.resize( _maxParticles, nullptr );
@@ -78,6 +75,8 @@ namespace prefr
     }
 
     _aliveParticles = 0;
+    _lastAlive = 0;
+    _noVariationFrames = 0;
   }
 
 
@@ -300,12 +299,20 @@ namespace prefr
     if( !_run )
       return;
 
+    if( _lastAlive != 0  && _noVariationFrames >= 50 )
+    {
+      _run = false;
+      return;
+
+    }
      prepareFrame( deltaTime );
 
      updateFrame( deltaTime );
 
      finishFrame( );
 
+     if( _lastAlive == _aliveParticles )
+       _noVariationFrames++;
   }
 
 
@@ -326,6 +333,9 @@ namespace prefr
     for( auto& source : _sources )
     {
 #endif
+      if( source->particles( ).empty( ))
+        continue;
+
       // Set source's elapsed delta
       source->prepareFrame( deltaTime );
     }
@@ -346,7 +356,8 @@ namespace prefr
 #endif
 
       Updater* updater = _referenceUpdaters[ particle.id( )];
-      updater->updateParticle( particle, deltaTime );
+      if( updater )
+        updater->updateParticle( particle, deltaTime );
 
     }
 
@@ -365,6 +376,9 @@ namespace prefr
     for( auto& source : _sources )
     {
 #endif
+      if( source->particles( ).empty( ))
+        continue;
+
       // Finish frame
       source->closeFrame( );
 
@@ -376,7 +390,6 @@ namespace prefr
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
 
-    std::cout << "Alive " << _aliveParticles << std::endl;
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
@@ -454,8 +467,6 @@ namespace prefr
     if( size == 0  || size >= _maxParticles )
       return _unused.indices( );
 
-    std::cout << "Retrieving " << size << " particles... of " << _unused.indices( ).size( ) << std::endl;
-
     unsigned int count = 0;
     ParticleSet result;
     for( auto particleId : _unused.indices( ) )
@@ -468,7 +479,6 @@ namespace prefr
       ++count;
     }
 
-    std::cout << "Retrieved " << result.size( ) << " available particles." << std::endl;
     return result;
   }
 }

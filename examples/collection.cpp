@@ -32,22 +32,12 @@ void printIndices( const ParticleCollection& collection, const std::string& name
   prefr::Particles::const_iterator begin = collection.begin( );
   prefr::Particles::const_iterator end = collection.end( );
 
-//  std::cout << std::endl << "begin";
-//  begin.print( );
-//
-//  std::cout << "end";
-//  end.print( );
-
   std::cout << std::endl;
 
   for( auto it : collection )
-//  for( prefr::tparticle it = collection.begin( ); it != collection.end( ); ++it )
     std::cout << " " << it.id( );
 
   std::cout << std::endl;
-
-//  for( prefr::tparticle it = collection.begin( ); it != collection.end( ); ++it )
-//    it.print( );
 
   std::cout << "--------------------- " << std::endl;
 }

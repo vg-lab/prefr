@@ -460,6 +460,10 @@ namespace prefr
 
     /*! Flag indicating if the system will run concurrently. */
     bool _parallel;
+
+    unsigned int _lastAlive;
+
+    unsigned int _noVariationFrames;
   };
 
 }

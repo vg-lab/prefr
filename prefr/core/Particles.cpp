@@ -540,19 +540,13 @@ namespace prefr
   Particles::iterator
   ParticleCollection::_createIterator( unsigned int index_, bool absolute ) const
   {
-    assert( _data );
+//    assert( _data );
     assert( index_ <= _data->numParticles( ));
 
     Particles::iterator result;
 
     result._data = _data;
     result._vectorRef = _vectorReferences;
-
-//    std::cout << "Create it: " << index_ << " -> ";
-//    for( auto idx : _indices )
-//      std::cout << " " << idx;
-//    std::cout << std::endl;
-
 
     if( !absolute )
     {

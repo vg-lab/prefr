@@ -98,7 +98,9 @@ namespace prefr
 
     void Source::prepareFrame( const float& deltaTime )
     {
-      assert( _particles.size( ) > 0 );
+//      assert( _particles.size( ) > 0 );
+      if( _particles.empty( ))
+        return;
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
@@ -191,12 +193,6 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      if( _particles.empty( ))
-      {
-        std::cout << "Particles cannot be configured. Collection size is zero." << std::endl;
-        return;
-      }
-
       for( auto const & particle : _particles )
       {
         _updateConfig->setDead( particle.id( ), true );

@@ -53,7 +53,6 @@ namespace prefr
 
   void Sorter::sort(SortOrder /*order*/)
   {
-
     TDistUnitContainer::iterator end;
 #ifndef PREFR_USE_OPENMP
     end = _distances->begin( ) + _aliveParticles;
@@ -111,7 +110,10 @@ namespace prefr
     {
 
 #endif
-// TODO
+      if( source->particles( ).empty( ))
+        continue;
+
+      // TODO
       for( auto particle : source->particles( ))
       {
         {
@@ -124,6 +126,7 @@ namespace prefr
 
 #ifdef PREFR_WITH_LOGGING
     std::cout << "SETUP" << std::endl;
+    std::cout << "CAMERA: " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
     std::cout << "IDS:";
     for( auto id : _distances->elements )
     {
@@ -162,14 +165,16 @@ namespace prefr
 #endif
 
     dist.id( current->id( ));
-
     dist.distance( current->alive() || renderDeadParticles ?
-                   length2(current->position( ) - cameraPosition ) :
+                   glm::length( current->position( ) - cameraPosition ) :
                    -1 );
 
 #ifdef PREFR_WITH_LOGGING
     std::cout << "Particle " << current->id( )
-              << " " << std::boolalpha << current->alive( )
+              << "\t" << std::boolalpha << current->alive( )
+              << "\t" << current->position( ).x
+              << "\t" << current->position( ).y
+              << "\t" << current->position( ).z
               << "\t" << dist.distance( )
               << "\t" << _distances->elements[ current->id( )].distance( )
               << std::endl;
