@@ -541,14 +541,14 @@ namespace prefr
   ParticleCollection::_createIterator( unsigned int index_, bool absolute ) const
   {
 //    assert( _data );
-    assert( index_ <= _data->numParticles( ));
+//    assert( index_ <= _data->numParticles( ));
 
     Particles::iterator result;
 
     result._data = _data;
     result._vectorRef = _vectorReferences;
 
-    if( !absolute )
+    if( !absolute && _data )
     {
       if( index_ < _particleIndices.size( ))
       {

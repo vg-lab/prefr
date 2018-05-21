@@ -82,6 +82,8 @@ namespace prefr
   void Cluster::setSource( Source* source_ )
   {
     _updateConfig->setSource( source_ , _particles.indices( ));
+    _updateConfig->setEmitted( _particles.indices( ), false );
+    _updateConfig->setDead( _particles.indices( ), true );
   }
 
   void Cluster::setModel( Model* model_ )

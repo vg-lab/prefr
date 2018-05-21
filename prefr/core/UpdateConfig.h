@@ -43,9 +43,11 @@ namespace prefr
 
     bool emitted( unsigned int idx ) const;
     void setEmitted( unsigned int idx, bool value );
+    void setEmitted( const ParticleSet& indices, bool value );
 
     bool dead( unsigned int idx ) const;
     void setDead( unsigned int idx, bool value );
+    void setDead( const ParticleSet& indices, bool value );
 
     Model* model( unsigned int idx ) const;
     void setModel( Model* model_, const ParticleSet& indices );

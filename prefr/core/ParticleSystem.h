@@ -396,7 +396,7 @@ namespace prefr
      * @param size Max number of particles to be included
      * @return Collection of available particles.
      */
-    ParticleSet retrieveUnused( unsigned int size = 0 );
+    ParticleCollection retrieveUnused( unsigned int size = 0 );
 
 
   protected:

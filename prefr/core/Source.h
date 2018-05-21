@@ -80,13 +80,15 @@ namespace prefr
 
     ParticleCollection& particles( void );
 
-    PREFR_API virtual bool active( );
+    PREFR_API virtual bool active( ) const;
+    PREFR_API virtual void active( bool state );
+
     PREFR_API virtual bool emits( ) const;
     PREFR_API virtual bool continuing( ) const;
-    PREFR_API virtual bool finished( );
+    PREFR_API virtual bool finished( ) const;
     PREFR_API virtual void restart( );
 
-    PREFR_API virtual const int& budget( );
+    PREFR_API virtual const int& budget( ) const;
     PREFR_API virtual void prepareFrame( const float& deltaTime );
     PREFR_API virtual void closeFrame( );
 

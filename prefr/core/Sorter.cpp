@@ -110,7 +110,7 @@ namespace prefr
     {
 
 #endif
-      if( source->particles( ).empty( ))
+      if( source->particles( ).empty( ) || !source->active( ))
         continue;
 
       // TODO

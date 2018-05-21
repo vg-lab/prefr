@@ -51,6 +51,14 @@ namespace prefr
     (* _emitted)[ idx ] = value;
   }
 
+  void UpdateConfig::setEmitted( const ParticleSet& indices, bool value )
+  {
+    for( auto idx : indices )
+    {
+      assert( idx < _emitted->size( ));
+      (* _emitted)[ idx ] = value;
+    }
+  }
 
   bool UpdateConfig::dead( unsigned int idx ) const
   {
@@ -62,6 +70,15 @@ namespace prefr
   {
     assert( idx < _dead->size( ));
     (* _dead)[ idx ] = value;
+  }
+
+  void UpdateConfig::setDead( const ParticleSet& indices, bool value )
+  {
+    for( auto idx : indices )
+    {
+      assert( idx < _dead->size( ));
+      (* _dead)[ idx ] = value;
+    }
   }
 
   Model* UpdateConfig::model( unsigned int idx ) const
@@ -93,13 +110,17 @@ namespace prefr
       // Remove indices from original source.
       //TODO Check algorithm efficiency.
       Source* auxSource = source( idx );
-      assert( auxSource );
-      auxSource->particles( ).removeIndex( idx );
-      // Change source reference.
+//      assert( auxSource );
+      if( auxSource )
+        auxSource->particles( ).removeIndex( idx );
+        // Change source reference.
+
       (*_refSources )[ idx ] = source_;
+
     }
 
     source_->particles( ).addIndices( indices );
+
   }
 
   void UpdateConfig::removeSourceIndices( Source* source_,

@@ -56,9 +56,14 @@ namespace prefr
       return _particles;
     }
 
-    bool Source::active( )
+    bool Source::active( ) const
     {
       return _active;
+    }
+
+    void Source::active( bool state )
+    {
+      _active = state;
     }
 
     bool Source::emits( ) const
@@ -71,12 +76,12 @@ namespace prefr
       return _continueEmission;
     }
 
-    bool Source::finished( )
+    bool Source::finished( ) const
     {
       return _finished;
     }
 
-    const int& Source::budget( )
+    const int& Source::budget( )  const
     {
       return _particlesBudget;
     }
@@ -193,16 +198,22 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      for( auto const & particle : _particles )
+      if( _particles.size( ) > 0 )
       {
-        _updateConfig->setDead( particle.id( ), true );
-        _updateConfig->setEmitted( particle.id( ), false );
+        for( auto particle : _particles )
+        {
+          particle.set_alive( false );
+          _updateConfig->setDead( particle.id( ), true );
+          _updateConfig->setEmitted( particle.id( ), false );
+        }
       }
-
     }
 
     void Source::_prepareParticles( void )
     {
+      if( _particles.size( ) == 0 )
+        return;
+
       if( _emissionRate <= 0.0f )
       {
         for( auto const & particle : _particles )

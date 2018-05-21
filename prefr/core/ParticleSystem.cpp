@@ -136,9 +136,10 @@ namespace prefr
 
     source->_updateConfig = &_updateConfig;
 
+    source->_particles = ParticleCollection( _particles, indices );
+
     if( indices.size( ) > 0 )
     {
-      source->_particles = ParticleCollection( _particles, indices );
       for( unsigned int idx : indices )
       {
         if( !_unused.hasElement( idx ))
@@ -160,6 +161,8 @@ namespace prefr
     }
 
     _sources.push_back( source );
+
+    source->active( true );
 
     source->_initializeParticles( );
   }
@@ -183,6 +186,10 @@ namespace prefr
 
     _used.removeIndices( source->particles( ).indices( ));
     _unused.addIndices( source->particles( ).indices( ));
+
+    _sources.remove( source );
+
+    source->active( false );
   }
 
   void ParticleSystem::addModel( Model* model )
@@ -333,7 +340,7 @@ namespace prefr
     for( auto& source : _sources )
     {
 #endif
-      if( source->particles( ).empty( ))
+      if( source->particles( ).empty( ) || !source->active( ))
         continue;
 
       // Set source's elapsed delta
@@ -354,6 +361,10 @@ namespace prefr
     for( auto particle : _used )
     {
 #endif
+
+      Source* source = _referenceSources[ particle.id( )];
+      if( !source || !source->active( ) || source->particles( ).empty( ))
+        continue;
 
       Updater* updater = _referenceUpdaters[ particle.id( )];
       if( updater )
@@ -376,7 +387,7 @@ namespace prefr
     for( auto& source : _sources )
     {
 #endif
-      if( source->particles( ).empty( ))
+      if( source->particles( ).empty( ) || !source->active( ))
         continue;
 
       // Finish frame
@@ -460,26 +471,31 @@ namespace prefr
     return ParticleCollection( _particles, indices );
   }
 
-  ParticleSet ParticleSystem::retrieveUnused( unsigned int size )
+  ParticleCollection ParticleSystem::retrieveUnused( unsigned int size )
   {
 //    assert( size <= _maxParticles );
 
     if( size == 0  || size >= _maxParticles )
-      return _unused.indices( );
+      size = _maxParticles;
 
     unsigned int count = 0;
-    ParticleSet result;
+
+    ParticleSet indices;
+
     for( auto particleId : _unused.indices( ) )
     {
       if( count >= size )
         break;
 
-      result.append( particleId );
+      indices.append( particleId );
 
       ++count;
     }
+//
+//    _unused.removeIndices( indices );
+//    _used.addIndices( indices );
 
-    return result;
+    return ParticleCollection( _particles, indices );
   }
 }
 
