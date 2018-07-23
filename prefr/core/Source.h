@@ -43,6 +43,7 @@ namespace prefr
   {
   public:
 
+    unsigned int index;
     glm::vec3 position;
     glm::vec3 direction;
     glm::mat4 rotation;
@@ -79,6 +80,7 @@ namespace prefr
     virtual ~Source( void );
 
     ParticleCollection& particles( void );
+    void particles( const ParticleSet& indices );
 
     PREFR_API virtual bool active( ) const;
     PREFR_API virtual void active( bool state );
@@ -92,20 +94,24 @@ namespace prefr
     PREFR_API virtual void prepareFrame( const float& deltaTime );
     PREFR_API virtual void closeFrame( );
 
-    PREFR_API virtual void increaseAlive( );
-    PREFR_API virtual void checkEmissionEnd( );
-
     PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
 
     PREFR_API void sampler( Sampler* sampler );
     PREFR_API const Sampler* sampler( void ) const;
 
     PREFR_API glm::vec3 position( void ) const;
-    PREFR_API void sample( SampledValues* ) const;
+    PREFR_API virtual void sample( SampledValues* );
 
     PREFR_API unsigned int aliveParticles( void ) const;
 
+    PREFR_API void autoDeactivateWhenFinished( bool state );
+    PREFR_API void killParticlesWhenInactive( bool state );
+
   protected:
+
+    virtual void _finishFrame( void );
+    virtual void _checkEmissionEnd( void );
+    virtual void _checkFinished( void );
 
     virtual void _initializeParticles( void );
     virtual void _prepareParticles( void );
@@ -117,26 +123,30 @@ namespace prefr
 
     glm::vec3 _position;
 
+    std::unordered_map< unsigned int, unsigned int > _emittedIndices;
+
     unsigned int _particlesToEmit;
+
     unsigned int _aliveParticles;
+    unsigned int _lastFrameAliveParticles;
+
+    unsigned int _currentFrameEmittedParticles;
+    unsigned int _emittedParticles;
 
     float _emissionRate;
 
     float _emissionAcc;
     int _particlesBudget;
+
     bool _active;
     bool _continueEmission;
     bool _finished;
 
-    bool _autoDeactivateWhenFinished;
-
-    bool _killParticlesIfInactive;
-
-    int _lastFrameAliveParticles;
-
-    unsigned int _emittedParticles;
     unsigned int _maxEmissionCycles;
     unsigned int _currentCycle;
+
+    bool _autoDeactivateWhenFinished;
+    bool _killParticlesIfInactive;
 
   };
 
@@ -165,7 +175,7 @@ namespace prefr
 
     PREFR_API virtual bool emits( ) const;
 
-    PREFR_API virtual void checkEmissionEnd( );
+    PREFR_API virtual void _checkEmissionEnd( );
 
     PREFR_API virtual void prepareFrame( const float& deltaTime );
     PREFR_API virtual void closeFrame( );

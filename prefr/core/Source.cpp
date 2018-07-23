@@ -34,18 +34,19 @@ namespace prefr
     , _position( position_ )
     , _particlesToEmit( 0 )
     , _aliveParticles( 0 )
+    , _lastFrameAliveParticles( 0 )
+    , _currentFrameEmittedParticles( 0 )
+    , _emittedParticles( 0 )
     , _emissionRate( emissionRate_ )
     , _emissionAcc( 0 )
     , _particlesBudget( 0 )
     , _active( true )
     , _continueEmission( true )
     , _finished( false )
-    , _autoDeactivateWhenFinished( true )
-    , _killParticlesIfInactive( false )
-    , _lastFrameAliveParticles( 0 )
-    , _emittedParticles( 0 )
     , _maxEmissionCycles( 0 )
     , _currentCycle( 0 )
+    , _autoDeactivateWhenFinished( true )
+    , _killParticlesIfInactive( false )
     { }
 
     Source::~Source( void )
@@ -104,29 +105,22 @@ namespace prefr
     void Source::prepareFrame( const float& deltaTime )
     {
 //      assert( _particles.size( ) > 0 );
-      if( _particles.empty( ))
+      if( _particles.empty( ) || !_continueEmission )
         return;
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
-          deltaTime * ( float ) _particles.size( ) * _emissionRate;
+          deltaTime * ( float ) _particles.size( ) * abs( _emissionRate );
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;
-      _particlesBudget = int( floor( _emissionAcc ));
+      _particlesBudget = std::max( 0,  int( floor( _emissionAcc )));
       _emissionAcc -= _particlesBudget;
-
-      _lastFrameAliveParticles = 0;
 
       _prepareParticles( );
     }
 
-    void Source::increaseAlive( )
-    {
-      _lastFrameAliveParticles++;
-    }
-
-    void Source::checkEmissionEnd( )
+    void Source::_checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
@@ -147,10 +141,31 @@ namespace prefr
       _maxEmissionCycles = cycles;
     }
 
+    void Source::autoDeactivateWhenFinished( bool state )
+    {
+      _autoDeactivateWhenFinished = state;
+    }
+
+    void Source::killParticlesWhenInactive( bool state )
+    {
+      _killParticlesIfInactive = state;
+    }
 
     void Source::closeFrame( )
     {
+      _finishFrame( );
+
+      _checkEmissionEnd( );
+
+      _checkFinished( );
+    }
+
+    void Source::_finishFrame( void )
+    {
+
       _particlesBudget = 0;
+
+      _lastFrameAliveParticles = _aliveParticles;
 
       _aliveParticles = 0;
 
@@ -164,14 +179,15 @@ namespace prefr
         }
       }
 
-      checkEmissionEnd( );
+    }
 
+    void Source::_checkFinished( )
+    {
       this->_finished = !_continueEmission && _lastFrameAliveParticles == 0 ;
 
       if ( _finished && _autoDeactivateWhenFinished )
         this->_active = false;
     }
-
 
     void Source::sampler( Sampler* sampler_ )
     {
@@ -188,7 +204,7 @@ namespace prefr
       return _position;
     }
 
-    void Source::sample( SampledValues* sampledValues ) const
+    void Source::sample( SampledValues* sampledValues )
     {
       assert( _sampler );
 
@@ -206,6 +222,9 @@ namespace prefr
           _updateConfig->setDead( particle.id( ), true );
           _updateConfig->setEmitted( particle.id( ), false );
         }
+
+        _emittedIndices.clear( );
+        _emittedIndices.reserve( _particles.size( ));
       }
     }
 
@@ -214,6 +233,11 @@ namespace prefr
       if( _particles.size( ) == 0 )
         return;
 
+      _emittedIndices.clear( );
+
+      _currentFrameEmittedParticles = 0;
+
+      // Fill dead pool for the emission for this frame with all particles
       if( _emissionRate <= 0.0f )
       {
         for( auto const & particle : _particles )
@@ -223,13 +247,16 @@ namespace prefr
             _updateConfig->setEmitted( particle.id( ), true );
             _updateConfig->setDead( particle.id( ), false );
 
-            ++_lastFrameAliveParticles;
+            _emittedIndices.insert(
+                std::make_pair( particle.id( ), _currentFrameEmittedParticles ));
+
+            ++_currentFrameEmittedParticles;
           }
         }
       }
       else
       {
-        // Fill dead pool for the emission for this frame
+        // Fill dead pool for the emission for this frame according to budget
         for( auto const& particle : _particles )
         {
           if( _particlesBudget == 0 )
@@ -241,13 +268,15 @@ namespace prefr
           _updateConfig->setEmitted( particle.id( ), true );
           _updateConfig->setDead( particle.id( ), false );
 
-          --_particlesBudget;
-          ++_lastFrameAliveParticles;
+          _emittedIndices.insert(
+              std::make_pair( particle.id( ), _currentFrameEmittedParticles ));
 
+          --_particlesBudget;
+          ++_currentFrameEmittedParticles;
         }
       }
 
-      _emittedParticles += _lastFrameAliveParticles;
+      _emittedParticles += _currentFrameEmittedParticles;
     }
 
     unsigned int Source::aliveParticles( void ) const
@@ -268,10 +297,10 @@ namespace prefr
 
     bool TimedSource::emits( ) const
     {
-      return InTime( ) && Source::emits( );
+      return inTime( ) && Source::emits( );
     }
 
-    void TimedSource::checkEmissionEnd( )
+    void TimedSource::_checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
@@ -281,7 +310,7 @@ namespace prefr
           _currentCycle++;
           _emittedParticles -= _particles.size( );
         }
-        else if( AfterTime( ))
+        else if( afterTime( ))
         {
           _currentCycle++;
           _emittedParticles = 0;
@@ -296,13 +325,13 @@ namespace prefr
     {
       Source::prepareFrame( deltaTime );
 
-      UpdateTimer( deltaTime );
+      updateTimer( deltaTime );
     }
 
     void TimedSource::closeFrame( )
     {
       Source::closeFrame( );
 
-      RestoreTimer( );
+      restoreTimer( );
     }
 }

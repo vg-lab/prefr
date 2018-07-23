@@ -44,6 +44,11 @@ namespace prefr
     assert( model );
     assert( source );
 
+//    std::cout << "updating particle " << id
+//             << " " << current.alive( )
+//             << " " << _updateConfig->dead( id )
+//             << " " << _updateConfig->emitted( id )
+//             << std::endl;
 
     if( _updateConfig->emitted( id ) && !current.alive( ))
     {
@@ -53,6 +58,7 @@ namespace prefr
       current.set_alive( true );
 
       SampledValues values;
+      values.index = current.id( );
       source->sample( &values );
 
       current.set_position( values.position );
