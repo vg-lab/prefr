@@ -230,7 +230,7 @@ namespace prefr
     _acceleration_ptr =
         std::get< ( unsigned int ) prefr::ACCELERATION >( _vectorRef ) + index_;
     _alive_ptr =
-        std::get< ( unsigned int ) prefr::ALIVE >( _vectorRef ) + index_;
+        std::get< ( unsigned int ) prefr::PARTICLE_ALIVE >( _vectorRef ) + index_;
 
     _position = index_;
   }
