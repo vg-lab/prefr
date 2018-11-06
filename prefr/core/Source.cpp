@@ -110,7 +110,7 @@ namespace prefr
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
-          deltaTime * ( float ) _particles.size( ) * abs( _emissionRate );
+          deltaTime * ( float ) _particles.size( ) * std::abs( _emissionRate );
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;

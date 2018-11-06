@@ -104,7 +104,7 @@ namespace prefr
     VELOCITY,
     ACCELERATION_MODULE,
     ACCELERATION,
-    ALIVE
+    PARTICLE_ALIVE
   };
 
   /*! \class Particles
