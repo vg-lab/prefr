@@ -258,7 +258,7 @@ namespace prefr
           programID, _glRenderProgram->prefrViewMatrixRightComponentAlias( ));
 
       const glm::mat4x4& viewMatrix =
-          std::move( _glRenderConfig->_camera->PReFrCameraViewMatrix( ));
+          _glRenderConfig->_camera->PReFrCameraViewMatrix( );
 
       glUniform3f( cameraUpID,
                    viewMatrix[ 0 ][ 1 ],

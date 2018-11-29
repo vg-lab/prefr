@@ -69,6 +69,9 @@ namespace prefr
 
     std::vector< bool >* _emitted;
     std::vector< bool >* _dead;
+
+    ParticleCollection* _used;
+    ParticleCollection* _unused;
   };
 }
 

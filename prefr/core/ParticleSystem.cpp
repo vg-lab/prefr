@@ -65,6 +65,9 @@ namespace prefr
     _updateConfig._emitted = &_flagsEmitted;
     _updateConfig._dead = &_flagsDead;
 
+    _updateConfig._used = &_used;
+    _updateConfig._unused = &_unused;
+
     auto particle = _particles.begin( );
     for( unsigned int i = 0; i < _maxParticles; i++ )
     {
@@ -171,21 +174,7 @@ namespace prefr
   {
     assert( source );
 
-    for( auto const & particle : source->particles( ))
-    {
-      unsigned int idx = particle.id( );
-
-      _referenceModels[ idx ] = nullptr;
-      _referenceSources[ idx ] = nullptr;
-      _referenceUpdaters[ idx ] = nullptr;
-
-      _flagsDead[ idx ] = false;
-      _flagsEmitted[ idx ] = false;
-
-    }
-
-    _used.removeIndices( source->particles( ).indices( ));
-    _unused.addIndices( source->particles( ).indices( ));
+    releaseParticles( source->particles( ));
 
     _sources.remove( source );
 
@@ -471,6 +460,29 @@ namespace prefr
     return ParticleCollection( _particles, indices );
   }
 
+  void ParticleSystem::releaseParticles( const ParticleCollection& collection )
+  {
+    releaseParticles( collection.indices( ));
+  }
+
+  void ParticleSystem::releaseParticles( const ParticleSet& indices )
+  {
+    for( auto const & idx : indices )
+    {
+      _referenceModels[ idx ] = nullptr;
+      _referenceSources[ idx ] = nullptr;
+      _referenceUpdaters[ idx ] = nullptr;
+
+      _flagsDead[ idx ] = false;
+      _flagsEmitted[ idx ] = false;
+
+    }
+
+    _used.removeIndices( indices);
+    _unused.addIndices( indices );
+
+  }
+
   ParticleCollection ParticleSystem::retrieveUnused( unsigned int size )
   {
 //    assert( size <= _maxParticles );
@@ -497,6 +509,17 @@ namespace prefr
 
     return ParticleCollection( _particles, indices );
   }
+
+  ParticleCollection ParticleSystem::retrieveActive( void )
+  {
+    return _used;
+  }
+
+  ParticleCollection ParticleSystem::particles( void )
+  {
+    return _particles;
+  }
+
 }
 
 

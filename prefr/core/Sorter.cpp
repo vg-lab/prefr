@@ -159,9 +159,9 @@ namespace prefr
 
     DistanceUnit& dist =
 #ifdef PREFR_USE_OPENMP
-        _distances->at( current->id( ));
+    _distances->at( current->id( ));
 #else
-        *_distances->next( );
+    *_distances->next( );
 #endif
 
     dist.id( current->id( ));

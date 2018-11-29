@@ -387,6 +387,8 @@ namespace prefr
 
 
     //TODO
+    void releaseParticles( const ParticleCollection& indices );
+
     void releaseParticles( const ParticleSet& indices );
 
     /*! \brief Returns a set of available particles.
@@ -398,6 +400,9 @@ namespace prefr
      */
     ParticleCollection retrieveUnused( unsigned int size = 0 );
 
+    ParticleCollection retrieveActive( void );
+
+    ParticleCollection particles( void );
 
   protected:
 

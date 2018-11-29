@@ -57,6 +57,15 @@ namespace prefr
       return _particles;
     }
 
+    void Source::particles( const ParticleSet& indices )
+    {
+      if( !_particles.empty( ))
+        _updateConfig->removeSourceIndices( this, _particles.indices( ));
+
+      _particles.indices( indices );
+      _initializeParticles( );
+    }
+
     bool Source::active( ) const
     {
       return _active;
@@ -93,7 +102,7 @@ namespace prefr
       _emittedParticles = 0;
       _continueEmission = true;
 
-      for( auto const & particle : _particles)
+      for( auto const & particle : _particles )
       {
         _updateConfig->setEmitted( particle.id( ), false );
         _updateConfig->setDead( particle.id( ), true );

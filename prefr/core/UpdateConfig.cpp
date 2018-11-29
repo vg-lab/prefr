@@ -34,6 +34,8 @@ namespace prefr
   , _refUpdaters( nullptr )
   , _emitted( nullptr )
   , _dead( nullptr )
+  , _used( nullptr )
+  , _unused( nullptr )
   { }
 
   UpdateConfig::~UpdateConfig( void )
@@ -42,13 +44,13 @@ namespace prefr
   bool UpdateConfig::emitted( unsigned int idx ) const
   {
     assert( idx < _emitted->size( ));
-    return (*_emitted)[ idx ];
+    return ( *_emitted )[ idx ];
   }
 
   void UpdateConfig::setEmitted( unsigned int idx, bool value )
   {
     assert( idx < _emitted->size( ));
-    (* _emitted)[ idx ] = value;
+    ( *_emitted )[ idx ] = value;
   }
 
   void UpdateConfig::setEmitted( const ParticleSet& indices, bool value )
@@ -56,20 +58,20 @@ namespace prefr
     for( auto idx : indices )
     {
       assert( idx < _emitted->size( ));
-      (* _emitted)[ idx ] = value;
+      ( *_emitted )[ idx ] = value;
     }
   }
 
   bool UpdateConfig::dead( unsigned int idx ) const
   {
     assert( idx < _dead->size( ));
-    return (*_dead)[ idx ];
+    return ( *_dead )[ idx ];
   }
 
   void UpdateConfig::setDead( unsigned int idx, bool value )
   {
     assert( idx < _dead->size( ));
-    (* _dead)[ idx ] = value;
+    ( *_dead )[ idx ] = value;
   }
 
   void UpdateConfig::setDead( const ParticleSet& indices, bool value )
@@ -77,33 +79,35 @@ namespace prefr
     for( auto idx : indices )
     {
       assert( idx < _dead->size( ));
-      (* _dead)[ idx ] = value;
+      ( *_dead )[ idx ] = value;
     }
   }
 
   Model* UpdateConfig::model( unsigned int idx ) const
   {
     assert( idx < _refModels->size( ));
-    return (*_refModels)[ idx ];
+    return ( *_refModels )[ idx ];
   }
 
   void UpdateConfig::setModel( Model* model_, const ParticleSet& indices )
   {
     for( auto idx : indices )
     {
-      (*_refModels)[ idx ] = model_;
+      ( *_refModels )[ idx ] = model_;
     }
   }
 
   Source* UpdateConfig::source( unsigned int idx ) const
   {
     assert( idx < _refSources->size( ));
-    return (*_refSources)[ idx ];
+    return ( *_refSources )[ idx ];
   }
 
   void UpdateConfig::setSource( Source* source_, const ParticleSet& indices )
   {
     assert( source_ );
+
+    std::set< Source* > sources;
 
     for( auto idx : indices )
     {
@@ -112,12 +116,19 @@ namespace prefr
       Source* auxSource = source( idx );
 //      assert( auxSource );
       if( auxSource )
-        auxSource->particles( ).removeIndex( idx );
+        sources.insert( auxSource );
+//        auxSource->particles( ).removeIndex( idx );
         // Change source reference.
 
-      (*_refSources )[ idx ] = source_;
+      ( *_refSources )[ idx ] = source_;
 
     }
+
+    for( auto s : sources )
+      s->particles( ).removeIndices( indices );
+
+    _used->addIndices( indices );
+    _unused->removeIndices( indices );
 
     source_->particles( ).addIndices( indices );
 
@@ -136,6 +147,9 @@ namespace prefr
         setDead( idx, true );
       }
     }
+
+    _used->removeIndices( indices );
+    _unused->addIndices( indices );
 
     source_->particles( ).removeIndices( indices );
   }

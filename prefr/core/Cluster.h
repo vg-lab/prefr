@@ -132,7 +132,7 @@ namespace prefr
     PREFR_API virtual void killParticles( bool changeState = true );
 
 
-    virtual void setSource( Source* source_ );
+    virtual void setSource( Source* source_, bool resetState = true );
     virtual void setModel( Model* model_ );
     virtual void setUpdater( Updater* updater_ );
 

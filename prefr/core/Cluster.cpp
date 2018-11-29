@@ -79,11 +79,15 @@ namespace prefr
     }
   }
 
-  void Cluster::setSource( Source* source_ )
+  void Cluster::setSource( Source* source_, bool resetState )
   {
     _updateConfig->setSource( source_ , _particles.indices( ));
-    _updateConfig->setEmitted( _particles.indices( ), false );
-    _updateConfig->setDead( _particles.indices( ), true );
+
+    if( resetState )
+    {
+      _updateConfig->setEmitted( _particles.indices( ), false );
+      _updateConfig->setDead( _particles.indices( ), true );
+    }
   }
 
   void Cluster::setModel( Model* model_ )
