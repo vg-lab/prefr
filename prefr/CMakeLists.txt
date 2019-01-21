@@ -27,6 +27,7 @@ set(PREFR_PUBLIC_HEADERS
   core/ICamera.h
   
   GL/GLRenderer.h
+  GL/GLPickRenderer.h
   GL/GLRenderConfig.h
   GL/IGLRenderProgram.h
   
@@ -53,6 +54,7 @@ set(PREFR_SOURCES
   core/Renderer.cpp
   
   GL/GLRenderer.cpp
+  GL/GLPickRenderer.cpp
       
   cuda/ThrustSorter.cu
 )

@@ -1,4 +1,4 @@
-if( PREFR_WITH_EXAMPLES )
+#if( PREFR_WITH_EXAMPLES )
 
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderPath.h.in
@@ -20,4 +20,4 @@ if( PREFR_WITH_EXAMPLES )
   set( PREFRCOLLECTION_LINK_LIBRARIES prefr )
   common_application( prefrCollection )
 
-endif()
+#endif()

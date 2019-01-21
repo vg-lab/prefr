@@ -37,6 +37,7 @@ namespace prefr
   class GLRenderConfig : public RenderConfig
   {
     friend class GLRenderer;
+    friend class GLPickRenderer;
 
   public:
 

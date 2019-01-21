@@ -7,7 +7,6 @@ out vec4 outputColor;
 
 void main()
 {	
-
 	vec2 p = -1.0 + 2.0 * uvCoord;
 	float l = sqrt(dot(p,p));// + color.a;
 	
