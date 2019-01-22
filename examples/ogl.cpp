@@ -245,7 +245,8 @@ void idleFunc( void )
 }
 void mouseFunc( int button, int state, int xCoord, int yCoord )
 {
-  if( button == 2 ) {
+  if( button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN )
+  {
     int height = 500;
     printf("Click at %d, %d\n", xCoord, height - yCoord);
     checkPicking = true;

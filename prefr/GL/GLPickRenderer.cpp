@@ -48,6 +48,33 @@ namespace prefr
 
   tparticle GLPickRenderer::pick( int posX, int posY )
   {
+    recreateFBOFunc( );
+
+    glScissor( posX, posY, 1, 1 );
+    
+    drawFunc( );
+    
+    GLubyte color[4];
+    glReadPixels(posX, posY, 1, 1,
+      GL_RGBA, GL_UNSIGNED_BYTE, color);
+    unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
+
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glDisable(GL_SCISSOR_TEST);
+
+    value = _distances->getID( value );
+
+    if (value < uint32_t( -1 ) )
+    {
+      std::cout << value << std::endl;
+    }
+    std::cout << "R: " << (int)color[0] << ", G: " << (int)color[1] << ", B: " << (int)color[2] << std::endl;
+        
+    return _particles.GetElement( value );
+  }
+
+  void GLPickRenderer::recreateFBOFunc( void )
+  {
     if( framebuffer == uint32_t( -1 ) )
     {
       glGenFramebuffers(1, &framebuffer);
@@ -79,10 +106,15 @@ namespace prefr
       }
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+  }
 
+  void GLPickRenderer::drawFunc( void )
+  {
     glBindVertexArray( _glRenderConfig->_vao );
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    glEnable(GL_SCISSOR_TEST);
 
     if( _glPickProgram && _glRenderConfig->_camera )
     {
@@ -133,23 +165,43 @@ namespace prefr
     glFinish( );
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-    
-    GLubyte color[4];
-    glReadPixels(posX, posY, 1, 1,
-      GL_RGBA, GL_UNSIGNED_BYTE, color);
-    unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-    value = _distances->getID( value );
-
-    if (value < uint32_t( -1 ) )
-    {
-      std::cout << value << std::endl;
-    }
-    std::cout << "R: " << (int)color[0] << ", G: " << (int)color[1] << ", B: " << (int)color[2] << std::endl;
-        
-    return _particles.GetElement( value );
   }
 
+  std::vector< tparticle > GLPickRenderer::pickArea( int minPointX, int minPointY, 
+      int maxPointX, int maxPointY )
+  {
+    recreateFBOFunc( );
+    glScissor( minPointX, minPointY, maxPointX, maxPointY );
+
+    drawFunc( );
+
+    std::vector< tparticle > particles;
+
+    GLubyte color[4];
+    for( auto x = minPointX; x < maxPointX; ++x )
+    {
+      for( auto y = minPointY; y < maxPointY; ++y )
+      {
+        glReadPixels( x, y, 1, 1,
+          GL_RGBA, GL_UNSIGNED_BYTE, color);
+        unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
+
+        value = _distances->getID( value );
+
+        if (value < uint32_t( -1 ) )
+        {
+          std::cout << value << std::endl;
+        }
+        std::cout << "R: " << (int)color[0] << ", G: " << (int)color[1] << ", B: " << (int)color[2] << std::endl;
+      
+        particles.push_back( _particles.GetElement( value ) );
+      }
+    }
+    
+    
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glDisable(GL_SCISSOR_TEST);
+
+    return particles;
+  }
 }

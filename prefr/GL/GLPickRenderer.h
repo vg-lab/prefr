@@ -27,6 +27,8 @@
 #include "GLRenderer.h"
 #include "GLRenderConfig.h"
 
+#include <vector>
+
 namespace prefr
 {
   class GLPickRenderer : public GLRenderer
@@ -34,6 +36,9 @@ namespace prefr
   public:
     PREFR_API
     virtual tparticle pick( int posX, int posY );
+    PREFR_API
+    virtual std::vector< tparticle > pickArea( int minPointX, int minPointY, 
+      int maxPointX, int maxPointY );
 
     PREFR_API
     void setWindowSize( uint32_t w, uint32_t h );
@@ -48,6 +53,10 @@ namespace prefr
     uint32_t width = 500;
     uint32_t height = 500;
     bool recreateFBO = true;
+
+  private:
+    void recreateFBOFunc( void );
+    void drawFunc( void );
   };
 
 
