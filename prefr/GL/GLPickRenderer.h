@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2019 GMRV/URJC.
  *
- * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ * Authors: Cristian Rodríguez <cristian.rodriguez@urjc.es>
  *
  * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
  *
@@ -35,9 +35,11 @@ namespace prefr
   {
   public:
     PREFR_API
-    virtual tparticle pick( int posX, int posY );
+    virtual ~GLPickRenderer( void );
     PREFR_API
-    virtual std::vector< tparticle > pickArea( int minPointX, int minPointY, 
+    virtual uint32_t pick( int posX, int posY );
+    PREFR_API
+    virtual std::vector< uint32_t > pickArea( int minPointX, int minPointY, 
       int maxPointX, int maxPointY );
 
     PREFR_API
@@ -54,7 +56,9 @@ namespace prefr
     uint32_t height = 500;
     bool recreateFBO = true;
 
-  private:
+    const uint32_t BACKGROUND_VALUE = 16646655;
+
+  protected:
     void recreateFBOFunc( void );
     void drawFunc( void );
   };

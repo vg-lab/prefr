@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2019 GMRV/URJC.
  *
- * Authors: Sergio Galindo <sergio.galindo@urjc.es>
+ * Authors: Cristian Rodríguez <cristian.rodriguez@urjc.es>
  *
  * This file is part of PReFr <https://gmrv.gitlab.com/nsviz/prefr>
  *
@@ -28,15 +28,25 @@
 
 namespace prefr
 {
+  GLPickRenderer::~GLPickRenderer( void )
+  {
+    if( framebuffer != uint32_t( -1 ) )
+    {
+      glDeleteFramebuffers( 1, &framebuffer );
+    }
+    if( textureColorbuffer != uint32_t( -1 ) )
+    {
+      glDeleteTextures( 1, &textureColorbuffer );
+    }
+    if( rbo != uint32_t( -1 ) )
+    {
+      glDeleteRenderbuffers( 1, &rbo );
+    }
+  }
   void GLPickRenderer::glPickProgram( IGLRenderProgram* pickProgram )
   {
     assert( pickProgram );
     _glPickProgram = pickProgram;
-
-    //if( _glRenderConfig )
-    //{
-    //  _glRenderConfig->_glPickProgram = _glPickProgram;
-    //}
   }
 
   void GLPickRenderer::setWindowSize( uint32_t w, uint32_t h )
@@ -46,37 +56,52 @@ namespace prefr
     recreateFBO = true;
   }
 
-  tparticle GLPickRenderer::pick( int posX, int posY )
+  uint32_t GLPickRenderer::pick( int posX, int posY )
   {
-    recreateFBOFunc( );
+    GLint defaultFBO;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO);
 
+    GLfloat bkColor[ 4 ];
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
+
+    recreateFBOFunc( );
     glScissor( posX, posY, 1, 1 );
     
     drawFunc( );
-    
-    GLubyte color[4];
-    glReadPixels(posX, posY, 1, 1,
-      GL_RGBA, GL_UNSIGNED_BYTE, color);
+
+    GLubyte color[ 4 ];
+    glReadPixels( posX, posY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color );
     unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
 
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     glDisable(GL_SCISSOR_TEST);
+    glBindFramebuffer( GL_FRAMEBUFFER, defaultFBO );
+    glClearColor( bkColor[ 0 ], bkColor[ 1 ], bkColor[ 2 ], bkColor[ 3 ] );
+
+    if (value == BACKGROUND_VALUE )
+    {
+      return 0;
+    }
 
     value = _distances->getID( value );
 
-    if (value < uint32_t( -1 ) )
+    if( value >= _glRenderConfig->_aliveParticles )
     {
-      std::cout << value << std::endl;
+      return 0;
     }
-    std::cout << "R: " << (int)color[0] << ", G: " << (int)color[1] << ", B: " << (int)color[2] << std::endl;
-        
-    return _particles.GetElement( value );
+
+    return value + 1;
   }
 
   void GLPickRenderer::recreateFBOFunc( void )
   {
+    GLint defaultFBO;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO );
+
+    bool completeFBO = true;
     if( framebuffer == uint32_t( -1 ) )
     {
+      completeFBO = false;
+
       glGenFramebuffers(1, &framebuffer);
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
@@ -85,26 +110,32 @@ namespace prefr
       glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+        GL_TEXTURE_2D, textureColorbuffer, 0 );
 
-      // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+      // create a renderbuffer object for depth and stencil attachment
       glGenRenderbuffers(1, &rbo);
     }
 
     if( recreateFBO )
     {
-      glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+      glBindTexture( GL_TEXTURE_2D, textureColorbuffer );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, 
+        GL_UNSIGNED_BYTE, nullptr );
       
-      glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
-      // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-      if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      glBindRenderbuffer( GL_RENDERBUFFER, rbo );
+      glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height );
+    }
+
+    if( completeFBO )
+    {
+      glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
+        GL_RENDERBUFFER, rbo );
+      if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
       {
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
       }
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glBindFramebuffer( GL_FRAMEBUFFER, defaultFBO );
     }
   }
 
@@ -112,7 +143,10 @@ namespace prefr
   {
     glBindVertexArray( _glRenderConfig->_vao );
 
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+
+    glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glEnable(GL_SCISSOR_TEST);
 
@@ -155,7 +189,7 @@ namespace prefr
     }
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
-                           _glRenderConfig->aliveParticles );
+                           _glRenderConfig->_aliveParticles );
 
     glBindVertexArray( 0 );
 
@@ -167,15 +201,18 @@ namespace prefr
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
   }
 
-  std::vector< tparticle > GLPickRenderer::pickArea( int minPointX, int minPointY, 
+  std::vector< uint32_t > GLPickRenderer::pickArea( int minPointX, int minPointY, 
       int maxPointX, int maxPointY )
   {
+    GLfloat bkColor[ 4 ];
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
+
     recreateFBOFunc( );
     glScissor( minPointX, minPointY, maxPointX, maxPointY );
 
     drawFunc( );
 
-    std::vector< tparticle > particles;
+    std::vector< uint32_t > particles;
 
     GLubyte color[4];
     for( auto x = minPointX; x < maxPointX; ++x )
@@ -188,19 +225,26 @@ namespace prefr
 
         value = _distances->getID( value );
 
-        if (value < uint32_t( -1 ) )
+        if( value == BACKGROUND_VALUE )
         {
-          std::cout << value << std::endl;
+          continue;
         }
-        std::cout << "R: " << (int)color[0] << ", G: " << (int)color[1] << ", B: " << (int)color[2] << std::endl;
-      
-        particles.push_back( _particles.GetElement( value ) );
+
+        value = _distances->getID( value );
+
+        if( value >= _glRenderConfig->_aliveParticles )
+        {
+          continue;
+        }
+
+        particles.push_back( value + 1);
       }
     }
     
     
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     glDisable(GL_SCISSOR_TEST);
+    glClearColor( bkColor[ 0 ], bkColor[ 1 ], bkColor[ 2 ], bkColor[ 3 ] );
 
     return particles;
   }

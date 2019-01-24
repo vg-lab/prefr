@@ -8,10 +8,15 @@ if( PREFR_WITH_EXAMPLES )
 
   if ( GLUT_FOUND )
 
-    set( PREFROGL_HEADERS )
-    set( PREFROGL_SOURCES ogl.cpp )
-    set( PREFROGL_LINK_LIBRARIES prefr )
-    common_application( prefrOGL )
+  set( PREFROGL_HEADERS )
+  set( PREFROGL_SOURCES ogl.cpp )
+  set( PREFROGL_LINK_LIBRARIES prefr )
+  common_application( prefrOGL )
+
+  set( PREFRPICKOGL_HEADERS )
+  set( PREFRPICKOGL_SOURCES oglPick.cpp )
+  set( PREFRPICKOGL_LINK_LIBRARIES prefr )
+  common_application( prefrPickOGL )
 
   endif( GLUT_FOUND )
 
