@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -49,11 +49,11 @@ namespace prefr
     {
     }
 
-    inline const int& id( void ) const { return *_id; }
-    inline void id( int i ){ *_id = i; }
+    const int& id( void ) const { return *_id; }
+    void id( int i ){ *_id = i; }
 
-    inline const float& distance( void ) const { return *_distance; }
-    inline void distance( float d ){ *_distance = d; }
+    const float& distance( void ) const { return *_distance; }
+    void distance( float d ){ *_distance = d; }
 
   protected:
 
@@ -131,6 +131,10 @@ namespace prefr
     {
       current = 0;
       currentIt = elements.begin( );
+
+      //TODO find something more efficient
+      for( auto& dist : distances )
+        dist = -1;
     }
 
     inline DistanceUnit* next( void )

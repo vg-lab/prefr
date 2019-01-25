@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -29,39 +29,56 @@ namespace prefr
     Source::Source( float emissionRate_,
                     const glm::vec3& position_,
                     Sampler* sampler_ )
-    : _cluster( nullptr )
+    : _updateConfig( nullptr )
     , _sampler( sampler_ )
     , _position( position_ )
+    , _particlesToEmit( 0 )
+    , _aliveParticles( 0 )
+    , _lastFrameAliveParticles( 0 )
+    , _currentFrameEmittedParticles( 0 )
+    , _emittedParticles( 0 )
     , _emissionRate( emissionRate_ )
-    , _totalParticles( 0 )
     , _emissionAcc( 0 )
     , _particlesBudget( 0 )
     , _active( true )
     , _continueEmission( true )
     , _finished( false )
-    , _autoDeactivateWhenFinished( true )
-    , _killParticlesIfInactive( false )
-    , _lastFrameAliveParticles( 0 )
-    , _emittedParticles( 0 )
     , _maxEmissionCycles( 0 )
     , _currentCycle( 0 )
-    {
-
-    }
+    , _autoDeactivateWhenFinished( true )
+    , _killParticlesIfInactive( false )
+    { }
 
     Source::~Source( void )
-    {
+    { }
 
+    ParticleCollection& Source::particles( void )
+    {
+      return _particles;
     }
 
-    bool Source::active( )
+    void Source::particles( const ParticleSet& indices )
+    {
+      if( !_particles.empty( ))
+        _updateConfig->removeSourceIndices( this, _particles.indices( ));
+
+      _particles.indices( indices );
+      _initializeParticles( );
+    }
+
+    bool Source::active( ) const
     {
       return _active;
     }
 
+    void Source::active( bool state )
+    {
+      _active = state;
+    }
+
     bool Source::emits( ) const
     {
-      return _active && _particlesToEmit.size( ) > 0 && continuing( );
+      return _active && _particlesToEmit > 0 && continuing( );
     }
 
     bool Source::continuing( ) const
@@ -69,12 +86,12 @@ namespace prefr
       return _continueEmission;
     }
 
-    bool Source::finished( )
+    bool Source::finished( ) const
     {
       return _finished;
     }
 
-    const int& Source::budget( )
+    const int& Source::budget( )  const
     {
       return _particlesBudget;
     }
@@ -85,46 +102,42 @@ namespace prefr
       _emittedParticles = 0;
       _continueEmission = true;
 
-      for( tparticle particle = _cluster->particles( ).begin( );
-           particle != _cluster->particles( ).end( ); ++particle )
+      for( auto const & particle : _particles )
       {
-        _deadParticles.push_back( particle.id( ));
-        _particlesToEmit.clear( );
+        _updateConfig->setEmitted( particle.id( ), false );
+        _updateConfig->setDead( particle.id( ), true );
       }
+
+      _particlesToEmit = _particles.size( );
     }
 
     void Source::prepareFrame( const float& deltaTime )
     {
-      assert( _cluster );
+//      assert( _particles.size( ) > 0 );
+      if( _particles.empty( ) || !_continueEmission )
+        return;
 
       // Compute raw budget, as it can be zero along several consecutive frames
       float rawBudget =
-          deltaTime * ( float ) _cluster->particles( ).size * _emissionRate;
+          deltaTime * ( float ) _particles.size( ) * std::abs( _emissionRate );
 
       // Accumulate budget to emit as soon as it reaches a unit
       _emissionAcc += rawBudget;
-      _particlesBudget = int( floor( _emissionAcc ));
+      _particlesBudget = std::max( 0,  int( floor( _emissionAcc )));
       _emissionAcc -= _particlesBudget;
-
-      _lastFrameAliveParticles = 0;
 
       _prepareParticles( );
     }
 
-    void Source::increaseAlive( )
-    {
-      _lastFrameAliveParticles++;
-    }
-
-    void Source::checkEmissionEnd( )
+    void Source::_checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
 
-        if( _emittedParticles >= _totalParticles )
+        if( _emittedParticles >= _particles.size( ) )
         {
          _currentCycle++;
-         _emittedParticles -= _totalParticles;
+         _emittedParticles -= _particles.size( );
         }
 
         this->_continueEmission = !( _currentCycle >= _maxEmissionCycles );
@@ -137,34 +150,52 @@ namespace prefr
       _maxEmissionCycles = cycles;
     }
 
+    void Source::autoDeactivateWhenFinished( bool state )
+    {
+      _autoDeactivateWhenFinished = state;
+    }
+
+    void Source::killParticlesWhenInactive( bool state )
+    {
+      _killParticlesIfInactive = state;
+    }
 
     void Source::closeFrame( )
     {
+      _finishFrame( );
+
+      _checkEmissionEnd( );
+
+      _checkFinished( );
+    }
+
+    void Source::_finishFrame( void )
+    {
+
       _particlesBudget = 0;
-      _particlesToEmit.clear( );
 
-      checkEmissionEnd( );
+      _lastFrameAliveParticles = _aliveParticles;
 
+      _aliveParticles = 0;
+
+      for( auto const & particle : _particles )
+      {
+        _updateConfig->setEmitted( particle.id( ), false );
+
+        if( particle.alive( ))
+        {
+          _aliveParticles++;
+        }
+      }
+
+    }
+
+    void Source::_checkFinished( )
+    {
       this->_finished = !_continueEmission && _lastFrameAliveParticles == 0 ;
 
       if ( _finished && _autoDeactivateWhenFinished )
         this->_active = false;
-    }
-
-
-    Cluster* Source::cluster( void )
-    {
-      return _cluster;
-    }
-
-    void Source::cluster( Cluster* cluster_ )
-    {
-      _cluster = cluster_;
-
-      if( _cluster->particles( ).size > 0 && _deadParticles.size( ) == 0)
-      {
-        _initializeParticles( );
-      }
     }
 
     void Source::sampler( Sampler* sampler_ )
@@ -182,7 +213,7 @@ namespace prefr
       return _position;
     }
 
-    void Source::sample( SampledValues* sampledValues ) const
+    void Source::sample( SampledValues* sampledValues )
     {
       assert( _sampler );
 
@@ -192,64 +223,75 @@ namespace prefr
 
     void Source::_initializeParticles( void )
     {
-      if( !_cluster || _cluster->particles( ).size == 0 )
+      if( _particles.size( ) > 0 )
       {
-        std::cout << "Particles cannot be configured." << std::endl;
-        return;
-      }
+        for( auto particle : _particles )
+        {
+          particle.set_alive( false );
+          _updateConfig->setDead( particle.id( ), true );
+          _updateConfig->setEmitted( particle.id( ), false );
+        }
 
-      _totalParticles = _cluster->particles( ).size;
-      _deadParticles.resize( _totalParticles );
-
-      std::vector< unsigned int >::iterator deadIt = _deadParticles.begin( );
-      for( tparticle particle = _cluster->particles( ).begin( );
-          particle != _cluster->particles( ).end( ); ++particle, ++deadIt )
-      {
-        if( !particle.alive( ))
-          *deadIt = particle.id( );
+        _emittedIndices.clear( );
+        _emittedIndices.reserve( _particles.size( ));
       }
     }
 
     void Source::_prepareParticles( void )
     {
+      if( _particles.size( ) == 0 )
+        return;
+
+      _emittedIndices.clear( );
+
+      _currentFrameEmittedParticles = 0;
+
+      // Fill dead pool for the emission for this frame with all particles
       if( _emissionRate <= 0.0f )
       {
-        for( auto particle : _deadParticles )
+        for( auto const & particle : _particles )
         {
-          _particlesToEmit.push_back( particle );
-          ++_lastFrameAliveParticles;
-        }
+          if( _updateConfig->dead( particle.id( )))
+          {
+            _updateConfig->setEmitted( particle.id( ), true );
+            _updateConfig->setDead( particle.id( ), false );
 
-        _deadParticles.clear( );
+            _emittedIndices.insert(
+                std::make_pair( particle.id( ), _currentFrameEmittedParticles ));
+
+            ++_currentFrameEmittedParticles;
+          }
+        }
       }
       else
       {
-        // Fill dead pool for the emission for this frame
-        while( _particlesBudget > 0 && _deadParticles.size( ) > 0 )
+        // Fill dead pool for the emission for this frame according to budget
+        for( auto const& particle : _particles )
         {
-          assert( _particlesBudget >= 0 );
+          if( _particlesBudget == 0 )
+            break;
 
-          _particlesToEmit.push_back( _deadParticles.back( ));
-          _deadParticles.pop_back( );
+          if( !_updateConfig->dead( particle.id( )))
+            continue;
+
+          _updateConfig->setEmitted( particle.id( ), true );
+          _updateConfig->setDead( particle.id( ), false );
+
+          _emittedIndices.insert(
+              std::make_pair( particle.id( ), _currentFrameEmittedParticles ));
 
           --_particlesBudget;
-          ++_lastFrameAliveParticles;
+          ++_currentFrameEmittedParticles;
         }
       }
 
-      _emittedParticles += _lastFrameAliveParticles;
+      _emittedParticles += _currentFrameEmittedParticles;
     }
 
-    std::vector< unsigned int >& Source::deadParticles( void )
+    unsigned int Source::aliveParticles( void ) const
     {
-      return _deadParticles;
+      return _aliveParticles;
     }
-
-    std::vector< unsigned int >& Source::particlesToEmit( void )
-    {
-      return _particlesToEmit;
-    }
-
 
     TimedSource::TimedSource( float emissionRate_, glm::vec3 position_ )
     : Source( emissionRate_, position_ )
@@ -264,20 +306,20 @@ namespace prefr
 
     bool TimedSource::emits( ) const
     {
-      return InTime( ) && Source::emits( );
+      return inTime( ) && Source::emits( );
     }
 
-    void TimedSource::checkEmissionEnd( )
+    void TimedSource::_checkEmissionEnd( )
     {
       if( _maxEmissionCycles > 0 )
       {
 
-        if( _emittedParticles >= _totalParticles )
+        if( _emittedParticles >= _particles.size( ) )
         {
           _currentCycle++;
-          _emittedParticles -= _totalParticles;
+          _emittedParticles -= _particles.size( );
         }
-        else if( AfterTime( ))
+        else if( afterTime( ))
         {
           _currentCycle++;
           _emittedParticles = 0;
@@ -292,13 +334,13 @@ namespace prefr
     {
       Source::prepareFrame( deltaTime );
 
-      UpdateTimer( deltaTime );
+      updateTimer( deltaTime );
     }
 
     void TimedSource::closeFrame( )
     {
       Source::closeFrame( );
 
-      RestoreTimer( );
+      restoreTimer( );
     }
 }

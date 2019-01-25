@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -56,8 +56,14 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "error.h"
+
 // PREFR include for type definitions
-#include "ElementCollection.hpp"
+namespace prefr
+{
+  typedef glm::vec3 TVect3;
+  typedef glm::vec4 TVect4;
+}
 
 
 #endif /* PREFR__TYPES__ */

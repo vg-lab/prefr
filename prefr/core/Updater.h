@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -31,6 +31,7 @@
 #include "Cluster.h"
 #include "Model.h"
 #include "Source.h"
+#include "UpdateConfig.h"
 
 namespace prefr
 {
@@ -56,6 +57,8 @@ namespace prefr
    *  */
   class Updater
   {
+    friend class ParticleSystem;
+
   public:
 
     /*! \brief Default constructor.
@@ -70,50 +73,31 @@ namespace prefr
      */
     PREFR_API virtual ~Updater( );
 
-    /*! \brief Emit method.
+    /*! \brief Emit and Update method.
      *
-     *  This method is used to initialize dead particles and their
-     *  properties. This method will set particles' life, color, position and so
-     *  on taking into account the Model established properties.
-     *
-     *  Re-implement for different behaviors or when using non-default Model
-     *  and Source classes when adding new properties.
-     *
-     *  Note: By default, Updater#Emit is always called before Updater#Update
-     *  method.
-     *
-     * @param cluster Cluster owner of tparticle_ptr as second parameter.
-     * @param current tparticle_ptr referencing current particle to be emitted.
-     *
-     * @see ParticleSytem#Update
-     *
-     */
-    PREFR_API virtual void emitParticle( const Cluster& cluster,
-                                         const tparticle_ptr current );
-
-
-    /*! \brief Update method.
-     *
-     *  This method updates the state of particles each frame. This is,
-     *  updating their life values (and setting them as dead if life is lower
-     *  than 0) as well as other properties such as position, color, velocity,
-     *  size and so on.
+     *  This method emits (when appropriate) and updates the state of particles
+     *  each frame taking into account the Model established properties. This is,
+     *  establishing their life values (and setting them as alive/dead if life
+     *  is lower than 0) as well as other properties such as position, color,
+     *  velocity, size and so on.
      *
      *  Re-implement for adding different behaviors as well as updating
      *  other non-default properties added or re-implemented Model objects.
      *
-     *  Note: By default, Updater#Update is always called after
-     *  Updater#Emit method.
-     *
      * @param cluster Cluster owner of the particle to be updated.
-     * @param current tparticle_ptr referencing the particle to be updated.
+     * @param current tparticle_ptr referencing the particle to be emitted/updated.
      * @param deltaTime Current delta time to compute attributes variations
      * according to elapsed time since last frame.
      */
-    PREFR_API virtual void updateParticle( const Cluster& cluster,
-                                           const tparticle_ptr current,
+    PREFR_API virtual void updateParticle( tparticle current,
                                            float deltaTime );
+
+  protected:
+
+    UpdateConfig* _updateConfig;
   };
+
+  typedef VectorizedSet< Updater* > UpdatersArray;
 }
 
 #endif /* PARTICLEUPDATER_H_ */

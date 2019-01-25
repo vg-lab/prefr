@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -342,14 +342,23 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 
     cluster = new Cluster( );
     source = new Source( 0.3f, position, sampler );
-    cluster->source( source );
-    cluster->updater( updater );
-    cluster->model( i % 2 == 0 ? model1 : model2 );
 
-    particleSystem->addSource( source );
-    particleSystem->addCluster( cluster,
-                                particlesPerCluster * i,
-                                particlesPerCluster );
+    ParticleIndices indices;
+    indices.reserve( particlesPerCluster );
+
+    unsigned int start = particlesPerCluster * i;
+    unsigned int end = start + particlesPerCluster;
+
+    for( unsigned int index = start; index < end; ++index )
+    {
+      indices.push_back( index );
+    }
+
+    particleSystem->addSource( source, indices );
+    particleSystem->addCluster( cluster, indices );
+
+    cluster->setModel( i % 2 == 0 ? model1 : model2 );
+    cluster->setUpdater( updater );
 
     expandBoundingBox( boundingBoxMin, boundingBoxMax, position );
   }

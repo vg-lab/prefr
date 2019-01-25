@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -72,17 +72,16 @@ namespace prefr
 
     PREFR_API virtual void initDistanceArray( ICamera* camera );
 
-    PREFR_API void clusters( ClustersArray* clusters );
-
     PREFR_API void particles( const ParticleRange& particles );
 
+    PREFR_API void aliveParticles( unsigned int alive );
 protected:
+
+    void sources( std::vector< Source* >* sources_ );
 
     ParticleCollection _particles;
 
-    ClustersArray* _clusters;
-
-    SourcesArray* _emissionNodes;
+    std::vector< Source* >* _sources;
 
     DistanceArray* _distances;
 

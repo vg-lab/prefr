@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -40,9 +40,9 @@ namespace prefr
         : period(period_), offset(offset_), duration(duration_){}
 
       TimeFrame( const TimeFrame& other )
-        : period(other.period)
-        , offset(other.offset)
-        , duration(other.duration)
+      : period( other.period )
+      , offset( other.offset )
+      , duration( other.duration )
           //@sgalingo: this is not supported in VS 10 
           // : TimeFrame( other.period, other.offset, other.duration )
       {}
@@ -73,13 +73,13 @@ namespace prefr
 
     protected:
 
-      virtual inline void UpdateTimer(float deltaTime){timer += deltaTime;}
+      virtual inline void updateTimer(float deltaTime){timer += deltaTime;}
 
-      virtual inline void RestoreTimer() = 0;
+      virtual inline void restoreTimer() = 0;
 
     public:
 
-      virtual inline bool InTime() const = 0;
+      virtual inline bool inTime() const = 0;
       virtual inline void ResetTimer(){timer = 0;}
 
 
@@ -87,64 +87,66 @@ namespace prefr
 
     class SingleFrameTimer : public Timer
     {
-    private:
-
-      TimeFrame frame;
-
     public:
 
       SingleFrameTimer( )
         : Timer( )
-        , frame( TimeFrame(0, 0, 0 ) )
+        , _frame( TimeFrame(0, 0, 0 ) )
       {}
 
-      SingleFrameTimer( float period, float offset, float duration)
+      SingleFrameTimer( float period, float offset, float duration )
         : Timer( )
-        , frame( TimeFrame( period, offset, duration ) )
+        , _frame( TimeFrame( period, offset, duration ) )
       {}
 
-      inline virtual void SetFrame(const float& period, const float& offset, const float& duration)
+      inline virtual void setFrame( const float& period,
+                                    const float& offset,
+                                    const float& duration )
       {
-        PREFR_DEBUG_CHECK(period > duration, "Duration cannot be greater than period.");
+        PREFR_DEBUG_CHECK(period >= duration, "Duration cannot be greater than period.");
 
-        frame.period = period;
-        frame.offset = offset;
-        frame.duration = duration;
+        _frame.period = period;
+        _frame.offset = offset;
+        _frame.duration = duration;
       }
 
-      inline virtual void SetFrame(const TimeFrame& timeFrame)
+      inline virtual void setFrame( const TimeFrame& timeFrame )
       {
-        frame.period = timeFrame.period;
-        frame.offset = timeFrame.offset;
-        frame.duration = timeFrame.duration;
+        _frame.period = timeFrame.period;
+        _frame.offset = timeFrame.offset;
+        _frame.duration = timeFrame.duration;
       }
 
-      inline bool InTime() const
+      inline bool inTime( ) const
       {
-        if (frame.duration == 0.0f && timer >= frame.offset + frame.duration)
+        if (_frame.duration == 0.0f && timer >= _frame.offset + _frame.duration)
           return true;
         else
-          return frame.check(timer);
+          return _frame.check(timer);
       }
 
-      inline bool AfterTime() const
+      inline bool afterTime( ) const
       {
-        return (frame.period > 0) &&
-          (timer >= (frame.offset + frame.duration));
+        return (_frame.period > 0) &&
+          (timer >= (_frame.offset + _frame.duration));
       }
 
     protected:
-      inline void RestoreTimer()
+
+      inline void restoreTimer()
       {
-        if (AfterTime())
-          timer -= (frame.duration + frame.period);
+        if (afterTime())
+          timer -= (_frame.duration + _frame.period);
       }
 
-      inline void UpdateTimer(float deltaTime)
+      inline void updateTimer(float deltaTime)
       {
-        if (frame.period > 0)
+        if (_frame.period > 0)
           timer += deltaTime;
       }
+
+      TimeFrame _frame;
+
 
     };
 

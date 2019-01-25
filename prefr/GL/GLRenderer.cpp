@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -42,7 +42,7 @@ namespace prefr
 
   void GLRenderer::_init( void )
   {
-    _glRenderConfig = new GLRenderConfig( _particles.size );
+    _glRenderConfig = new GLRenderConfig( _particles.size( ));
     _renderConfig = _glRenderConfig;
 
     _glRenderConfig->_glRenderProgram = _glRenderProgram;
@@ -52,9 +52,9 @@ namespace prefr
 
     _glRenderConfig->_billboardVertices = new std::vector< GLfloat >( 12 );
     _glRenderConfig->_particlePositions =
-        new std::vector< GLfloat >( _particles.size * 4 );
+        new std::vector< GLfloat >( _particles.size( ) * 4 );
     _glRenderConfig->_particleColors =
-        new std::vector< GLfloat >( _particles.size * 4 );
+        new std::vector< GLfloat >( _particles.size( ) * 4 );
 
     for ( unsigned int i = 0;
           i < _glRenderConfig->_billboardVertices->size( );
@@ -168,9 +168,9 @@ namespace prefr
     #pragma omp parallel for if( _parallel )
 
 #endif
-    for( int i = 0; i < ( int ) _glRenderConfig->aliveParticles; ++i )
+    for( int i = 0; i < ( int ) _glRenderConfig->_aliveParticles; ++i )
     {
-      tparticle currentParticle = _particles.GetElement( _distances->getID( i ));
+      tparticle currentParticle = _particles[ _distances->getID( i )];
 
       unsigned int idx = i * 4;
 
@@ -213,7 +213,7 @@ namespace prefr
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof( GLfloat ) * _glRenderConfig->aliveParticles * 4,
+                     sizeof( GLfloat ) * _glRenderConfig->_aliveParticles * 4,
                      &_glRenderConfig->_particlePositions->front( ));
 
     // Update colors buffer
@@ -221,7 +221,7 @@ namespace prefr
 
     glBufferSubData( GL_ARRAY_BUFFER,
                      0,
-                     sizeof( GLfloat ) * _glRenderConfig->aliveParticles * 4,
+                     sizeof( GLfloat ) * _glRenderConfig->_aliveParticles * 4,
                      &_glRenderConfig->_particleColors->front( ));
 
     glBindVertexArray( 0 );
@@ -258,7 +258,7 @@ namespace prefr
           programID, _glRenderProgram->prefrViewMatrixRightComponentAlias( ));
 
       const glm::mat4x4& viewMatrix =
-          std::move( _glRenderConfig->_camera->PReFrCameraViewMatrix( ));
+          _glRenderConfig->_camera->PReFrCameraViewMatrix( );
 
       glUniform3f( cameraUpID,
                    viewMatrix[ 0 ][ 1 ],
@@ -273,7 +273,7 @@ namespace prefr
     }
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
-                           _glRenderConfig->aliveParticles );
+                           _glRenderConfig->_aliveParticles );
 
     glBindVertexArray( 0 );
 

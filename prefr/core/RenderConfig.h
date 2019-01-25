@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -18,6 +18,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 #ifndef __PREFR__RENDER_CONFIG__
 #define __PREFR__RENDER_CONFIG__
 
@@ -26,15 +27,18 @@ namespace prefr
 
   class RenderConfig
   {
+    friend class ParticleSystem;
+    friend class Renderer;
+
   public:
 
     RenderConfig( unsigned int )
-    : aliveParticles( 0 )
+    : _aliveParticles( 0 )
     { }
 
     virtual ~RenderConfig( ){ }
 
-    unsigned int aliveParticles;
+    unsigned int _aliveParticles;
 
   };
 

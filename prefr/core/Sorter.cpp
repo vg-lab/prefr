@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -33,8 +33,7 @@ namespace prefr
 {
 
   Sorter::Sorter( )
-  : _clusters( nullptr )
-  , _emissionNodes( nullptr )
+  : _sources( nullptr )
   , _distances( nullptr )
   , _aliveParticles( 0 )
   , _parallel( false )
@@ -49,12 +48,11 @@ namespace prefr
 
   void Sorter::initDistanceArray( ICamera* camera )
   {
-    _distances = new DistanceArray( _particles.size, camera );
+    _distances = new DistanceArray( _particles.size( ), camera );
   }
 
   void Sorter::sort(SortOrder /*order*/)
   {
-
     TDistUnitContainer::iterator end;
 #ifndef PREFR_USE_OPENMP
     end = _distances->begin( ) + _aliveParticles;
@@ -103,35 +101,32 @@ namespace prefr
 #ifdef PREFR_USE_OPENMP
 
     #pragma omp parallel for if( _parallel )
-    for( int i = 0; i < ( int ) _clusters->size( ); ++i)
+    for( int i = 0; i < ( int ) _sources->size( ); ++i)
     {
-      Cluster* cluster = ( *_clusters )[ i ];
-
+      Source* source = ( *_sources )[ i ];
 #else
 
-    for( auto cluster : *_clusters )
+    for( auto& source : *_sources )
     {
 
 #endif
+      if( source->particles( ).empty( ) || !source->active( ))
+        continue;
 
-      if( cluster->active( ) || renderDeadParticles )
+      // TODO
+      for( auto particle : source->particles( ))
       {
-        for( tparticle particle = cluster->particles( ).begin( );
-             particle != cluster->particles( ).end( );
-             particle++ )
         {
-#ifndef PREFR_USE_OPENMP
-          if( particle.alive( ) || renderDeadParticles )
-#endif
-          updateParticleDistance( &particle, cameraPosition,
-                                  renderDeadParticles );
-
+            updateParticleDistance( &particle, cameraPosition,
+                                    renderDeadParticles );
         }
+
       }
     }
 
 #ifdef PREFR_WITH_LOGGING
     std::cout << "SETUP" << std::endl;
+    std::cout << "CAMERA: " << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << std::endl;
     std::cout << "IDS:";
     for( auto id : _distances->elements )
     {
@@ -164,30 +159,31 @@ namespace prefr
 
     DistanceUnit& dist =
 #ifdef PREFR_USE_OPENMP
-        _distances->at( current->id( ));
+    _distances->at( current->id( ));
 #else
-        *_distances->next( );
+    *_distances->next( );
 #endif
 
     dist.id( current->id( ));
-
     dist.distance( current->alive() || renderDeadParticles ?
-                   length2(current->position( ) - cameraPosition ) :
+                   glm::length( current->position( ) - cameraPosition ) :
                    -1 );
 
 #ifdef PREFR_WITH_LOGGING
     std::cout << "Particle " << current->id( )
-              << " " << std::boolalpha << current->alive( )
+              << "\t" << std::boolalpha << current->alive( )
+              << "\t" << current->position( ).x
+              << "\t" << current->position( ).y
+              << "\t" << current->position( ).z
               << "\t" << dist.distance( )
               << "\t" << _distances->elements[ current->id( )].distance( )
               << std::endl;
 #endif
   }
 
-
-  void Sorter::clusters( ClustersArray* clusters_ )
+  void Sorter::sources( std::vector< Source* >* sources_ )
   {
-    _clusters = clusters_;
+    _sources = sources_;
   }
 
   void Sorter::particles( const ParticleRange& particles_ )
@@ -195,4 +191,8 @@ namespace prefr
     _particles = particles_;
   }
 
+  void Sorter::aliveParticles( unsigned int alive )
+  {
+    _aliveParticles = alive;
+  }
 }

@@ -10,11 +10,12 @@ set(PREFR_PUBLIC_HEADERS
   utils/Config.h
   utils/Timer.hpp
   utils/InterpolationSet.hpp
-  utils/ElementCollection.hpp   
+  utils/VectorizedSet.hpp
   
   core/ParticleSystem.h
   core/Particles.h
   core/Cluster.h
+  core/UpdateConfig.h
   core/Updater.h
   core/Source.h
   core/Sampler.h
@@ -28,10 +29,6 @@ set(PREFR_PUBLIC_HEADERS
   GL/GLRenderer.h
   GL/GLRenderConfig.h
   GL/IGLRenderProgram.h
-  
-  OSG/OSGRenderConfig.h
-  OSG/OSGManager.h
-  OSG/OSGRenderer.h
   
   cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh
@@ -47,6 +44,7 @@ set(PREFR_SOURCES
   core/ParticleSystem.cpp
   core/Particles.cpp
   core/Cluster.cpp
+  core/UpdateConfig.cpp
   core/Updater.cpp
   core/Source.cpp
   core/Sampler.cpp
@@ -56,9 +54,6 @@ set(PREFR_SOURCES
   
   GL/GLRenderer.cpp
       
-  OSG/OSGManager.cpp
-  OSG/OSGRenderer.cpp
-  
   cuda/ThrustSorter.cu
 )
 
@@ -67,6 +62,8 @@ set(PREFR_LINK_LIBRARIES
   ${GLEW_LIBRARIES}
   ${BOOST_LIBRARIES}
 )
+
+add_definitions(-DPREFR_SHARED)
 
 if ( GLUT_FOUND )
   set( PREFR_LINK_LIBRARIES ${PREFR_LINK_LIBRARIES} ${GLUT_LIBRARIES} )

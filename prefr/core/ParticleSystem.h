@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -27,8 +27,6 @@
 
 #include <vector>
 
-#include "../utils/ElementCollection.hpp"
-
 #include "DistanceArray.hpp"
 #include "RenderConfig.h"
 
@@ -39,10 +37,12 @@
 #include "Sorter.h"
 #include "Source.h"
 #include "Updater.h"
+#include "UpdateConfig.h"
 
 #include <reto/reto.h>
 
 #include "../utils/Log.h"
+#include "../utils/VectorizedSet.hpp"
 
 namespace prefr
 {
@@ -122,8 +122,10 @@ namespace prefr
      */
     PREFR_API
     virtual void addCluster( Cluster* cluster,
-                             unsigned int start,
-                             unsigned int size );
+                             const ParticleSet& indices = ParticleSet( ));
+
+    PREFR_API
+    virtual void detachCluster( Cluster* cluster );
 
     /*! \brief Adds a Source object to the particle system.
      *
@@ -137,7 +139,11 @@ namespace prefr
      *
      */
     PREFR_API
-    virtual void addSource( Source* source );
+    virtual void addSource( Source* source,
+                            const ParticleSet& indices = ParticleSet( ) );
+
+    PREFR_API
+    virtual void detachSource( Source* source );
 
     /*! \brief Adds a Model object to the system.
      *
@@ -152,6 +158,9 @@ namespace prefr
     PREFR_API
     virtual void addModel( Model* model );
 
+    PREFR_API
+    virtual void detachModel( Model* model );
+
     /*! \brief Adds an Updater object to the system.
      *
      * Adds an Updater object to the system. The object is appended to
@@ -165,6 +174,9 @@ namespace prefr
      */
     PREFR_API
     virtual void addUpdater( Updater* updater );
+
+    PREFR_API
+    virtual void detachUpdater( Updater* updater );
 
     /*! \brief Sets the Sorter object.
      *
@@ -319,6 +331,9 @@ namespace prefr
     PREFR_API
     virtual bool run( void ) const ;
 
+    PREFR_API
+    void resize( unsigned int newSize );
+
     /*! \brief Returns the current number of alive particles.
      *
      * Returns the current number of alive particles.
@@ -361,21 +376,57 @@ namespace prefr
      */
     const ClustersArray& clusters( void ) const;
 
+    /*! \brief Returns a created particle collection.
+     *
+     * Returns a particles' collection created using the given indices.
+     *
+     * @param indices
+     * @return Created collection
+     */
+    ParticleCollection createCollection( const ParticleSet& indices );
+
+
+    //TODO
+    void releaseParticles( const ParticleCollection& indices );
+
+    void releaseParticles( const ParticleSet& indices );
+
+    /*! \brief Returns a set of available particles.
+     *
+     * Returns a set with "size" particles (if) available.
+     *
+     * @param size Max number of particles to be included
+     * @return Collection of available particles.
+     */
+    ParticleCollection retrieveUnused( unsigned int size = 0 );
+
+    ParticleCollection retrieveActive( void );
+
+    ParticleCollection particles( void );
+
   protected:
+
+    virtual void prepareFrame( float deltaTime );
+    virtual void updateFrame( float deltaTime );
+    virtual void finishFrame( void );
 
     /*! Particles collection the system will manage. */
     Particles _particles;
+
+    ParticleCollection _used;
+    ParticleCollection _unused;
 
     ClustersArray _clusters;
 
     /*! Particle sources array of the particle set. */
     SourcesArray _sources;
+    std::vector< Source* > _sourcesVec;
 
     /*! Particle models. */
     ModelsArray _models;
 
     /*! Updater objects collection of the system. */
-    std::vector< Updater* > _updaters;
+    UpdatersArray _updaters;
 
     /*! Particle Sorter for composition rendering. */
     Sorter* _sorter;
@@ -383,8 +434,16 @@ namespace prefr
     /*! Particle Renderer (OpenGL, OSG, etc.). */
     Renderer* _renderer;
 
-    /*! Vector storing a per-particle index to its cluster. */
-    std::vector< int > _clusterReference;
+    /*! Vectors storing a per-particle pointer to their modifiers. */
+    std::vector< Source* > _referenceSources;
+    std::vector< Model* > _referenceModels;
+    std::vector< Updater* > _referenceUpdaters;
+
+    /*! Vectors storing flags from different stages.*/
+    FlagsArray _flagsEmitted;
+    FlagsArray _flagsDead;
+
+    UpdateConfig _updateConfig;
 
     /*! Stores the number of currently alive particles (current frame). */
     unsigned int _aliveParticles;
@@ -406,6 +465,10 @@ namespace prefr
 
     /*! Flag indicating if the system will run concurrently. */
     bool _parallel;
+
+    unsigned int _lastAlive;
+
+    unsigned int _noVariationFrames;
   };
 
 }

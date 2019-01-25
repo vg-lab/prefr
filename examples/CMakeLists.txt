@@ -15,13 +15,9 @@ if( PREFR_WITH_EXAMPLES )
 
   endif( GLUT_FOUND )
 
-  if( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND )
-
-    set( PREFROSG_HEADERS )
-    set( PREFROSG_SOURCES osg.cpp )
-    set( PREFROSG_LINK_LIBRARIES prefr )
-    common_application( prefrOSG )
-
-  endif( PREFR_WITH_OPENSCENEGRAPH AND OPENSCENEGRAPH_FOUND)
+  set( PREFRCOLLECTION_HEADERS )
+  set( PREFRCOLLECTION_SOURCES collection.cpp )
+  set( PREFRCOLLECTION_LINK_LIBRARIES prefr )
+  common_application( prefrCollection )
 
 endif()

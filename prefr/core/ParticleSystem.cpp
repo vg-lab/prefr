@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -41,24 +41,45 @@ namespace prefr
   , _camera( camera )
   , _useExternalCamera( camera ? true : false )
 #ifdef PREFR_USE_OPENMP
-  , _parallel( false )
+  , _parallel( true )
 #endif
   {
 
     _particles.resize( _maxParticles );
 
-    _clusterReference.resize( _maxParticles, -1 );
+    // Initialize used and unused particles.
+    _used = ParticleCollection( _particles, ParticleIndices( ));
+    _unused = ParticleCollection( _particles, _particles.begin( ), _particles.end( ) );
+
+    _referenceModels.resize( _maxParticles, nullptr );
+    _referenceSources.resize( _maxParticles, nullptr );
+    _referenceUpdaters.resize( _maxParticles, nullptr );
+
+    _flagsEmitted.resize( _maxParticles, false );
+    _flagsDead.resize( _maxParticles, false );
+
+    _updateConfig._refModels = &_referenceModels;
+    _updateConfig._refSources = &_referenceSources;
+    _updateConfig._refUpdaters = &_referenceUpdaters;
+
+    _updateConfig._emitted = &_flagsEmitted;
+    _updateConfig._dead = &_flagsDead;
+
+    _updateConfig._used = &_used;
+    _updateConfig._unused = &_unused;
 
     auto particle = _particles.begin( );
     for( unsigned int i = 0; i < _maxParticles; i++ )
     {
-      particle.id( i );
-      particle.alive( false );
+      particle.set_id( i );
+      particle.set_alive( false );
 
       ++particle;
     }
 
     _aliveParticles = 0;
+    _lastAlive = 0;
+    _noVariationFrames = 0;
   }
 
 
@@ -81,36 +102,83 @@ namespace prefr
 
   }
 
-  void ParticleSystem::addCluster( Cluster* cluster,
-                                   unsigned int start_,
-                                   unsigned int size_ )
+  void ParticleSystem::resize( unsigned int newSize )
   {
+    _particles.resize( newSize );
 
-    assert( start_ + size_ <= _maxParticles );
+    _referenceModels.resize( newSize, nullptr );
+    _referenceSources.resize( newSize, nullptr );
+    _referenceUpdaters.resize( newSize, nullptr );
 
-    cluster->particles( ParticleRange( _particles, start_, start_ + size_ ));
-
-    _clusters.push_back( cluster );
-
-    unsigned int reference = ( unsigned int ) _clusters.size( ) - 1;
-
-    auto clusterIT = _clusterReference.begin( ) + start_;
-
-    for( unsigned int i = 0; i < size_; i++ )
-    {
-      *clusterIT = reference;
-      ++clusterIT;
-    }
-
-    if( cluster->source( ))
-      cluster->source( )->_initializeParticles( );
+    _flagsEmitted.resize( newSize, false );
+    _flagsDead.resize( newSize, false );
 
   }
 
-  void ParticleSystem::addSource( Source* source )
+  void ParticleSystem::addCluster( Cluster* cluster,
+                                   const ParticleSet& indices )
+  {
+//    assert( indices.size( ) > 0 );
+
+    cluster->_updateConfig = &_updateConfig;
+    cluster->particles( ParticleCollection( _particles, indices));
+
+    _clusters.push_back( cluster );
+  }
+
+  void ParticleSystem::detachCluster( Cluster* cluster )
+  {
+    _clusters.remove( cluster );
+  }
+
+  void ParticleSystem::addSource( Source* source,
+                                  const ParticleSet& indices )
   {
     assert( source );
+//    assert( indices.size( ) > 0 );
+
+    source->_updateConfig = &_updateConfig;
+
+    source->_particles = ParticleCollection( _particles, indices );
+
+    if( indices.size( ) > 0 )
+    {
+      for( unsigned int idx : indices )
+      {
+        if( !_unused.hasElement( idx ))
+        {
+          Source* previous = _referenceSources[ idx ];
+          if( previous )
+            previous->particles( ).removeIndex( idx );
+        }
+
+        _flagsDead[ idx ] = true;
+        _flagsEmitted[ idx ] = false;
+
+        _referenceSources[ idx ] = source;
+      }
+
+      _unused.removeIndices( source->particles( ).indices( ));
+      _used.addIndices( indices );
+
+    }
+
     _sources.push_back( source );
+
+    source->active( true );
+
+    source->_initializeParticles( );
+  }
+
+  void ParticleSystem::detachSource( Source* source )
+  {
+    assert( source );
+
+    releaseParticles( source->particles( ));
+
+    _sources.remove( source );
+
+    source->active( false );
   }
 
   void ParticleSystem::addModel( Model* model )
@@ -119,19 +187,67 @@ namespace prefr
     _models.push_back( model );
   }
 
+  void ParticleSystem::detachModel( Model* model )
+  {
+    assert( model );
+    _models.remove( model );
+
+    for( auto const & particle : _used )
+    {
+      unsigned int idx = particle.id( );
+
+      if( _referenceModels[ idx ] == model )
+      {
+        _referenceModels[ idx ] = nullptr;
+
+        _flagsDead[ idx ] = false;
+        _flagsEmitted[ idx ] = false;
+
+        _used.removeIndex( idx );
+        _unused.addIndex( idx );
+      }
+    }
+  }
+
   void ParticleSystem::addUpdater( Updater* updater )
   {
     assert( updater );
+
+    updater->_updateConfig = &_updateConfig;
+
     _updaters.push_back(updater);
   }
+
+  void ParticleSystem::detachUpdater( Updater* updater )
+  {
+    assert( updater );
+
+    for( auto const & particle : _used )
+    {
+      unsigned int idx = particle.id( );
+
+      if( _referenceUpdaters[ idx ] == updater )
+      {
+        _referenceUpdaters[ idx ] = nullptr;
+
+        _flagsDead[ idx ] = false;
+        _flagsEmitted[ idx ] = false;
+
+        _used.removeIndex( idx );
+        _unused.addIndex( idx );
+      }
+    }
+  }
+
+
 
   void ParticleSystem::sorter( Sorter* sorter_ )
   {
     assert( sorter_ );
     _sorter = sorter_;
 
-    _sorter->clusters( &_clusters );
-    _sorter->particles( ParticleRange( _particles ));
+    _sorter->particles( _particles );
+    _sorter->sources( &_sourcesVec );
 
     _sorter->initDistanceArray( _camera );
 
@@ -151,7 +267,7 @@ namespace prefr
     assert( renderer_ );
     _renderer = renderer_ ;
 
-    _renderer->particles( ParticleRange( _particles ));
+    _renderer->particles( _particles );
 
     _renderer->_init( );
 
@@ -179,103 +295,100 @@ namespace prefr
     if( !_run )
       return;
 
+    if( _lastAlive != 0  && _noVariationFrames >= 50 )
+    {
+      _run = false;
+      return;
+
+    }
+     prepareFrame( deltaTime );
+
+     updateFrame( deltaTime );
+
+     finishFrame( );
+
+     if( _lastAlive == _aliveParticles )
+       _noVariationFrames++;
+  }
+
+
+  void ParticleSystem::prepareFrame( float deltaTime )
+  {
     _aliveParticles = 0;
 
 #ifdef PREFR_USE_OPENMP
+
+    _sourcesVec = _sources.vector( );
+    _sorter->sources( &_sourcesVec );
+
     #pragma omp parallel for if( _parallel )
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
-      Source* source = _sources[ s ];
+      Source* source = _sourcesVec[ s ];
 #else
-    for( auto source : _sources )
+    for( auto& source : _sources )
     {
 #endif
+      if( source->particles( ).empty( ) || !source->active( ))
+        continue;
+
       // Set source's elapsed delta
       source->prepareFrame( deltaTime );
     }
 
+  }
+
+  void ParticleSystem::updateFrame( float deltaTime )
+  {
+
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
-    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
+    for( int particleId = 0; particleId < ( int ) _used.size( ); ++particleId )
     {
-      Cluster* cluster = _clusters[ c ];
+      tparticle particle = _used[ particleId ];
 #else
-    for( auto cluster : _clusters )
+    for( auto particle : _used )
     {
 #endif
-      Source* source = cluster->source( );
 
-      if( source->emits( ))
-      {
-        for( auto emittedParticle : source->_particlesToEmit )
-        {
-          tparticle particle = _particles.at( emittedParticle );
-          cluster->updater( )->emitParticle( *cluster, &particle );
-        }
-      }
+      Source* source = _referenceSources[ particle.id( )];
+      if( !source || !source->active( ) || source->particles( ).empty( ))
+        continue;
+
+      Updater* updater = _referenceUpdaters[ particle.id( )];
+      if( updater )
+        updater->updateParticle( particle, deltaTime );
+
     }
 
-    // For each cluster....
-#ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for if( _parallel )
-    for( int c = 0 ; c < ( int ) _clusters.size( ); ++c )
-    {
-      Cluster* cluster = _clusters[ c ];
-#else
-    for( auto cluster : _clusters )
-    {
-#endif
-      cluster->aliveParticles = 0;
-      // If active
-      if( cluster->active( ))
-      {
+  }
 
-        // For each particle of the cluster...
-        for( tparticle particle = cluster->particles( ).begin( );
-             particle != cluster->particles( ).end( );
-             ++particle )
-        {
-          // Update
-          cluster->updater( )->updateParticle( *cluster, &particle, deltaTime );
-
-          cluster->aliveParticles += particle.alive( );
-
-        }
-      }
-      // Else
-      else
-      {
-        // If kill particles...
-        if( cluster->inactiveKillParticles( ))
-        {
-          // Kill particles
-          cluster->killParticles( );
-        }
-      }
-    }
-
-    for( Cluster* cluster : _clusters )
-    {
-      _aliveParticles += cluster->aliveParticles;
-    }
-
+  void ParticleSystem::finishFrame( void )
+  {
     // For each source...
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
 
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
-      Source* source = _sources[ s ];
+      Source* source = _sourcesVec[ s ];
 #else
-    for( auto source : _sources )
+    for( auto& source : _sources )
     {
 #endif
+      if( source->particles( ).empty( ) || !source->active( ))
+        continue;
+
       // Finish frame
       source->closeFrame( );
+
+      #pragma omp atomic
+      _aliveParticles += source->aliveParticles( );
+
     }
 
     _sorter->_aliveParticles = _aliveParticles;
-    _renderer->renderConfig( )->aliveParticles = _aliveParticles;
+    _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
 
   }
 
@@ -340,6 +453,71 @@ namespace prefr
   const ClustersArray& ParticleSystem::clusters( void ) const
   {
     return _clusters;
+  }
+
+  ParticleCollection ParticleSystem::createCollection( const ParticleSet& indices )
+  {
+    return ParticleCollection( _particles, indices );
+  }
+
+  void ParticleSystem::releaseParticles( const ParticleCollection& collection )
+  {
+    releaseParticles( collection.indices( ));
+  }
+
+  void ParticleSystem::releaseParticles( const ParticleSet& indices )
+  {
+    for( auto const & idx : indices )
+    {
+      _referenceModels[ idx ] = nullptr;
+      _referenceSources[ idx ] = nullptr;
+      _referenceUpdaters[ idx ] = nullptr;
+
+      _flagsDead[ idx ] = false;
+      _flagsEmitted[ idx ] = false;
+
+    }
+
+    _used.removeIndices( indices);
+    _unused.addIndices( indices );
+
+  }
+
+  ParticleCollection ParticleSystem::retrieveUnused( unsigned int size )
+  {
+//    assert( size <= _maxParticles );
+
+    if( size == 0  || size >= _maxParticles )
+      size = _maxParticles;
+
+    unsigned int count = 0;
+
+    ParticleSet indices;
+
+    for( auto particleId : _unused.indices( ) )
+    {
+      if( count >= size )
+        break;
+
+      indices.append( particleId );
+
+      ++count;
+    }
+//
+//    _unused.removeIndices( indices );
+//    _used.addIndices( indices );
+
+    return ParticleCollection( _particles, indices );
+  }
+
+  ParticleCollection ParticleSystem::retrieveActive( void )
+  {
+    return _used;
+  }
+
+  ParticleCollection ParticleSystem::particles( void )
+  {
+    return _particles;
   }
 
 }

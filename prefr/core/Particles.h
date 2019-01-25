@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 GMRV/URJC.
+ * Copyright (c) 2014-2018 GMRV/URJC.
  *
  * Authors: Sergio Galindo <sergio.galindo@urjc.es>
  *
@@ -25,9 +25,13 @@
 #include <boost/noncopyable.hpp>
 
 #include "../utils/types.h"
-#include "../utils/ElementCollection.hpp"
+#include "../utils/VectorizedSet.hpp"
 
 #include <vector>
+#include <tuple>
+#include <memory>
+#include <iostream>
+#include <set>
 
 #define STRINGIZE( cad ) #cad
 
@@ -39,44 +43,69 @@
     void p##name( unsigned int i, const type& value ) \
       { _##name##Vector[ i ] = value; }
 
-#define PREFR_ATRIB_BOOL( name, type ) \
+#define PREFR_ATRIB_BOOL( name ) \
   protected: \
-    std::vector< type > _##name##Vector; \
+    std::vector< char > _##name##Vector; \
   public: \
-    type p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
-    void p##name( unsigned int i, const type& value ) \
+    bool p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
+    void p##name( unsigned int i, const bool& value ) \
       { _##name##Vector[ i ] = value; }
 
-#define PREFR_ATRIB_IT( name, type ) \
+#define PREFR_CONST_IT_ATRIB( name, type ) \
   protected: \
-    std::vector< type >::iterator _##name##Iterator; \
+    type* _##name##_ptr; \
   public: \
-    type name( void ) const { return *_##name##Iterator; } \
-    void name( const type& value ){ *_##name##Iterator = value; }
+    type name( void ) const { return *_##name##_ptr; }
+//    type name( void ) const { std::cout << "attrib " << STRINGIZE( name ) << " " << _##name##_ptr << std::endl; return *_##name##_ptr; }
 
-#define PREFR_ATRIB_BOOL_IT( name, type ) \
+#define PREFR_CONST_IT_ATRIB_BOOL( name ) \
   protected: \
-    std::vector< type >::iterator _##name##Iterator; \
+    char* _##name##_ptr; \
   public: \
-    type name( void ) const { return *_##name##Iterator; } \
-    void name( const type& value ){ *_##name##Iterator = value; }
+    bool name( void ) const { return *_##name##_ptr; }
 
-#define PREFR_ATRIB_CONST_IT( name, type ) \
-  protected: \
-    std::vector< type >::const_iterator _##name##ConstIterator; \
+
+#define PREFR_IT_ATRIB( name, type ) \
   public: \
-    type name( void ) const { return *_##name##ConstIterator; }
+    void set_##name( const type& value ){ *_##name##_ptr = value; }
+
 
 namespace prefr
 {
   class Particles;
-}
+  class ParticleCollection;
 
-typedef utils::ElementCollection< prefr::Particles > ParticleRange;
-typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
+  typedef ParticleCollection ParticleRange;
+  typedef prefr::VectorizedSet< unsigned int > ParticleSet;
+  typedef std::vector< unsigned int > ParticleIndices;
 
-namespace prefr
-{
+//  typedef utils::ElementCollection< prefr::Particles > ParticleRange;
+//  typedef utils::ElementCollection< prefr::Particles > ParticleCollection;
+
+  typedef std::tuple< unsigned int*,
+                      float*,
+                      float*,
+                      TVect3*,
+                      TVect4*,
+                      float*,
+                      TVect3*,
+                      float*,
+                      TVect3*,
+                      char*> TParticle;
+
+  enum TParticleAttribEnum
+  {
+    ID = 0,
+    LIFE,
+    SIZE,
+    POSITION,
+    COLOR,
+    VELOCITY_MODULE,
+    VELOCITY,
+    ACCELERATION_MODULE,
+    ACCELERATION,
+    PARTICLE_ALIVE
+  };
 
   /*! \class Particles
    *
@@ -98,21 +127,14 @@ namespace prefr
 
   public:
 
-    enum TAttribute
-    {
-      ID = 0,
-      LIFE,
-      SIZE,
-      POSITION,
-      COLOR,
-      VELOCITY,
-      ACCELERATION,
-      ALIVE
-    };
-
+    class base_iterator;
+    class base_const_iterator;
 
     class iterator;
     class const_iterator;
+
+    friend class base_const_iterator;
+    friend class ParticleCollection;
 
     /*! \brief Default constructor.
      *
@@ -212,11 +234,12 @@ namespace prefr
      * @return A prefr::utils::InterpolationSet object with the
      * values set to the first and last positions.
      */
-    ParticleRange range( void );
+    ParticleRange range( void ) const;
 
     /*! \brief Returns an iterator pointing to the given nth position.
      *
-     * Returns an iterator pointing to the given nth position.
+     * Returns an iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
      *
      * @param i Nth position to be returned.
      * @return an Particles::iterator pointing to the given nth position.
@@ -225,19 +248,39 @@ namespace prefr
 
     /*! \brief Returns a constant iterator pointing to the given nth position.
      *
-     * Returns a constant iterator pointing to the given nth position.
+     * Returns a constant iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
      *
      * @param i Nth position to be returned.
      * @return an Particles::const_terator pointing to the given nth position.
      */
     const_iterator at( unsigned int i ) const;
 
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns a iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
+    iterator operator[]( unsigned int i );
+
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    const_iterator operator[]( unsigned int i ) const;
+
   protected:
 
-    class base_iterator;
+    iterator _createIterator( unsigned int i ) const;
 
-    iterator _createIterator( unsigned int i );
-    const_iterator _createConstIterator( unsigned int i ) const;
+    const TParticle& vectorReferences( void ) const;
+
+    void initVectorReferences( void );
 
     PREFR_ATRIB( id, unsigned int )
     PREFR_ATRIB( life, float )
@@ -246,106 +289,263 @@ namespace prefr
     PREFR_ATRIB( color, glm::vec4 )
     PREFR_ATRIB( velocityModule, float )
     PREFR_ATRIB( velocity, glm::vec3 )
+    PREFR_ATRIB( accelerationModule, float )
     PREFR_ATRIB( acceleration, glm::vec3 )
 
-    PREFR_ATRIB_BOOL( alive, bool )
+    PREFR_ATRIB_BOOL( alive )
 
     unsigned int _size;
 
+    TParticle _vectorReferences;
   };
 
-  class Particles::iterator
-  : public std::iterator< std::bidirectional_iterator_tag, Particles >
+
+  class ParticleCollection
   {
+
+  public:
+
+    friend class Particles::iterator;
+    friend class Particles::const_iterator;
     friend class Particles;
+    friend class ParticleSystem;
+
+    ParticleCollection( void );
+    ParticleCollection( const ParticleCollection& other );
+
+    ParticleCollection( const Particles& data, const ParticleSet& indices_ );
+    ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
+
+    const ParticleIndices& indices( void ) const;
+    void indices( const ParticleSet& newIndices );
+    void indices( const ParticleIndices& newIndices );
+
+    size_t size( void ) const;
+    bool empty( void ) const;
+
+    Particles::iterator find( unsigned int particleId );
+
+    bool hasElement( unsigned int idx ) const;
+
+    Particles::iterator begin( void );
+    Particles::const_iterator begin( void ) const;
+
+    Particles::iterator end( void );
+    Particles::const_iterator end( void ) const;
+
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns an iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
+    Particles::iterator at( unsigned int index_ );
+
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position. Throws
+     * exception when i > n, where n is the actual number of total particles.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    Particles::const_iterator at( unsigned int index_ ) const;
+
+    /*! \brief Returns an iterator pointing to the given nth position.
+     *
+     * Returns a iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::iterator pointing to the given nth position.
+     */
+    Particles::iterator operator[]( unsigned int i );
+
+    /*! \brief Returns a constant iterator pointing to the given nth position.
+     *
+     * Returns a constant iterator pointing to the given nth position.
+     *
+     * @param i Nth position to be returned.
+     * @return an Particles::const_terator pointing to the given nth position.
+     */
+    Particles::const_iterator operator[]( unsigned int i ) const;
+
+    void addIndex( unsigned int idx );
+    void addIndices( const ParticleSet& idxVector );
+
+    void removeIndex( unsigned int idx );
+    void removeIndices( const ParticleSet& idxVector );
+
+    void transferIndexTo( ParticleCollection& other, unsigned int idx );
+    void transferIndicesTo( ParticleCollection& other, const ParticleSet& idxVector );
+
+  protected:
+
+    ParticleCollection( const Particles& data );
+
+    ParticleCollection( const Particles& data,
+                        unsigned int begin_,
+                        unsigned int end_ );
+
+    ParticleCollection( const Particles& data,
+                        Particles::iterator begin_,
+                        Particles::iterator end_ );
+
+    Particles::iterator _createIterator( unsigned int index = 0, bool absolute = false ) const;
+
+    ParticleSet _particleIndices;
+    ParticleIndices _indices;
+    TParticle _vectorReferences;
+
+    unsigned int _size;
+
+    const Particles* _data;
+
+  };
+
+  class Particles::base_const_iterator
+  {
+
+    virtual ~base_const_iterator( void );
+
+    friend class Particles;
+    friend class ParticleCollection;
+
+  public:
+
+    base_const_iterator( const base_const_iterator& other );
+
+    void print( std::ostream& stream = std::cout ) const;
+
+  protected:
+
+    base_const_iterator( void );
+
+    void set( unsigned int index_ = 0 );
+    void increase( int inc );
+    void decrease( int dec );
+
+    bool compare( const base_const_iterator& other ) const ;
+    int sum( const base_const_iterator& other ) const;
+    int difference( const base_const_iterator& other ) const;
+
+    TParticle currentValues( void );
+
+    unsigned int _position;
+    unsigned int _size;
+
+    const Particles* _data;
+    TParticle _vectorRef;
+
+    unsigned int _indexPosition;
+    const ParticleIndices* _particleIndices;
+
+    PREFR_CONST_IT_ATRIB( id, unsigned int )
+    PREFR_CONST_IT_ATRIB( life, float )
+    PREFR_CONST_IT_ATRIB( size, float )
+    PREFR_CONST_IT_ATRIB( position, glm::vec3 )
+    PREFR_CONST_IT_ATRIB( color, glm::vec4 )
+    PREFR_CONST_IT_ATRIB( velocityModule, float )
+    PREFR_CONST_IT_ATRIB( velocity, glm::vec3 )
+    PREFR_CONST_IT_ATRIB( accelerationModule, float )
+    PREFR_CONST_IT_ATRIB( acceleration, glm::vec3 )
+    PREFR_CONST_IT_ATRIB_BOOL( alive )
+  };
+
+  class Particles::base_iterator : public Particles::base_const_iterator
+  {
+
+  public:
+
+    base_iterator( const base_const_iterator& other );
+    virtual ~base_iterator( void );
+
+  protected:
+
+    base_iterator( void );
+
+    PREFR_IT_ATRIB( id, unsigned int )
+    PREFR_IT_ATRIB( life, float )
+    PREFR_IT_ATRIB( size, float )
+    PREFR_IT_ATRIB( position, glm::vec3 )
+    PREFR_IT_ATRIB( color, glm::vec4 )
+    PREFR_IT_ATRIB( velocityModule, float )
+    PREFR_IT_ATRIB( velocity, glm::vec3 )
+    PREFR_IT_ATRIB( accelerationModule, float )
+    PREFR_IT_ATRIB( acceleration, glm::vec3 )
+    PREFR_IT_ATRIB( alive, bool )
+
+  };
+
+  class Particles::iterator : public Particles::base_iterator
+  {
+
+    friend class ParticleCollection;
     friend class Particles::const_iterator;
 
   public:
 
     iterator( void );
     iterator( const iterator& other );
-    virtual ~iterator( ){ }
+    iterator( const const_iterator& other );
+
 
     iterator& operator++( void );
     iterator operator++( int );
     iterator& operator--( void );
     iterator operator--( int );
 
-    iterator operator+( int increase );
-    iterator operator-( int decrease );
+    virtual int operator+( const iterator& other ) const;
+    virtual int operator-( const iterator& other ) const;
 
-    int operator+( const iterator& other );
-    int operator-( const iterator& other );
+    virtual iterator operator+( int increase ) const;
+    virtual iterator operator-( int decrease ) const;
 
-    bool operator== ( const iterator& other );
-    bool operator!= ( const iterator& other );
+    virtual bool operator== ( const iterator& other ) const;
+    virtual bool operator!= ( const iterator& other ) const;
 
-  protected:
-
-    long _position;
-    unsigned int _size;
-
-    const Particles* _data;
-
-    PREFR_ATRIB_IT( id, unsigned int )
-    PREFR_ATRIB_IT( life, float )
-    PREFR_ATRIB_IT( size, float )
-    PREFR_ATRIB_IT( position, glm::vec3 )
-    PREFR_ATRIB_IT( color, glm::vec4 )
-    PREFR_ATRIB_IT( velocityModule, float )
-    PREFR_ATRIB_IT( velocity, glm::vec3 )
-    PREFR_ATRIB_IT( acceleration, glm::vec3 )
-
-    PREFR_ATRIB_BOOL_IT( alive, bool )
+    iterator operator*( void );
+    iterator operator->( void );
 
   };
 
-  class Particles::const_iterator
-  : public std::iterator< std::bidirectional_iterator_tag, Particles >
+  class Particles::const_iterator : public Particles::base_const_iterator
   {
-    friend class Particles;
+
+    friend class ParticleCollection;
     friend class Particles::iterator;
 
   public:
 
     const_iterator( void );
-    const_iterator( const Particles::const_iterator& other );
-    const_iterator( const Particles::iterator& other );
-    ~const_iterator( ){ }
+    const_iterator( const iterator& other );
+    const_iterator( const const_iterator& other );
 
     const_iterator& operator++( void );
     const_iterator operator++( int );
     const_iterator& operator--( void );
     const_iterator operator--( int );
 
-    const_iterator operator+( int increase );
-    const_iterator operator-( int decrease );
+    const_iterator operator+( int increase ) const;
+    const_iterator operator-( int decrease ) const;
 
-    bool operator== ( const const_iterator& other );
-    bool operator!= ( const const_iterator& other );
+    int operator+( const const_iterator& other ) const;
+    int operator-( const const_iterator& other ) const;
 
-  protected:
+    bool operator== ( const const_iterator& other ) const;
+    bool operator!= ( const const_iterator& other ) const;
 
-    long _position;
-    unsigned int _size;
-
-    const Particles* _data;
-
-    PREFR_ATRIB_CONST_IT( id, unsigned int )
-    PREFR_ATRIB_CONST_IT( life, float )
-    PREFR_ATRIB_CONST_IT( size, float )
-    PREFR_ATRIB_CONST_IT( position, glm::vec3 )
-    PREFR_ATRIB_CONST_IT( color, glm::vec4 )
-    PREFR_ATRIB_CONST_IT( velocityModule, float )
-    PREFR_ATRIB_CONST_IT( velocity, glm::vec3 )
-    PREFR_ATRIB_CONST_IT( acceleration, glm::vec3 )
-
-    PREFR_ATRIB_CONST_IT( alive, bool )
+    const_iterator operator*( void );
+    const_iterator operator->( void );
 
   };
 
   typedef Particles::iterator tparticle;
   typedef tparticle* tparticle_ptr;
+
+  std::ostream& operator<<( std::ostream& stream,
+                            const Particles::base_const_iterator& it );
 
 }
 #endif /* __PREFR__PARTICLES__ */
