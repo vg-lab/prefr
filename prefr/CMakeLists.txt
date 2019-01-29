@@ -30,6 +30,7 @@ set(PREFR_PUBLIC_HEADERS
   GL/GLPickRenderer.h
   GL/GLRenderConfig.h
   GL/IGLRenderProgram.h
+  GL/RenderProgram.h
   
   cuda/ThrustSorter.cuh
   cuda/CUDADistanceArray.cuh

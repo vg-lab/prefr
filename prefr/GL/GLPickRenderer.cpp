@@ -49,6 +49,11 @@ namespace prefr
     _glPickProgram = pickProgram;
   }
 
+  void GLPickRenderer::setDefaultFBO( int defaultFBO )
+  {
+    _defaultFBO = defaultFBO;
+  }
+
   void GLPickRenderer::setWindowSize( uint32_t w, uint32_t h )
   {
     width = w;
@@ -58,23 +63,23 @@ namespace prefr
 
   uint32_t GLPickRenderer::pick( int posX, int posY )
   {
-    GLint defaultFBO;
-    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO);
+//    GLint defaultFBO;
+//    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO);
 
     GLfloat bkColor[ 4 ];
     glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
 
-    recreateFBOFunc( );
+    _recreateFBOFunc( );
     glScissor( posX, posY, 1, 1 );
     
-    drawFunc( );
+    _drawFunc( );
 
     GLubyte color[ 4 ];
     glReadPixels( posX, posY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color );
     unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
 
     glDisable(GL_SCISSOR_TEST);
-    glBindFramebuffer( GL_FRAMEBUFFER, defaultFBO );
+    glBindFramebuffer( GL_FRAMEBUFFER, _defaultFBO );
     glClearColor( bkColor[ 0 ], bkColor[ 1 ], bkColor[ 2 ], bkColor[ 3 ] );
 
     if (value == BACKGROUND_VALUE )
@@ -92,7 +97,7 @@ namespace prefr
     return value + 1;
   }
 
-  void GLPickRenderer::recreateFBOFunc( void )
+  void GLPickRenderer::_recreateFBOFunc( void )
   {
     GLint defaultFBO;
     glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO );
@@ -139,7 +144,7 @@ namespace prefr
     }
   }
 
-  void GLPickRenderer::drawFunc( void )
+  void GLPickRenderer::_drawFunc( void )
   {
     glBindVertexArray( _glRenderConfig->_vao );
 
@@ -187,6 +192,10 @@ namespace prefr
                    viewMatrix[ 2 ][ 0 ]);
 
     }
+    else
+      std::cout << "Render error: Shader " << _glPickProgram
+                << " or camera" << _glRenderConfig->_camera
+                << " is null." << std::endl;
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
                            _glRenderConfig->_aliveParticles );
@@ -207,10 +216,10 @@ namespace prefr
     GLfloat bkColor[ 4 ];
     glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
 
-    recreateFBOFunc( );
+    _recreateFBOFunc( );
     glScissor( minPointX, minPointY, maxPointX, maxPointY );
 
-    drawFunc( );
+    _drawFunc( );
 
     std::vector< uint32_t > particles;
 

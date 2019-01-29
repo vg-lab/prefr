@@ -36,18 +36,27 @@ namespace prefr
   public:
     PREFR_API
     virtual ~GLPickRenderer( void );
+
     PREFR_API
     virtual uint32_t pick( int posX, int posY );
+
     PREFR_API
     virtual std::vector< uint32_t > pickArea( int minPointX, int minPointY, 
       int maxPointX, int maxPointY );
+
+    void setDefaultFBO( int defaultFBO );
 
     PREFR_API
     void setWindowSize( uint32_t w, uint32_t h );
 
     PREFR_API
     void glPickProgram( IGLRenderProgram* renderProgram );
+
   protected:
+
+    void _recreateFBOFunc( void );
+    void _drawFunc( void );
+
     IGLRenderProgram* _glPickProgram;
     uint32_t framebuffer = -1;
     uint32_t textureColorbuffer = -1;
@@ -56,11 +65,10 @@ namespace prefr
     uint32_t height = 500;
     bool recreateFBO = true;
 
+    int _defaultFBO;
+
     const uint32_t BACKGROUND_VALUE = 16646655;
 
-  protected:
-    void recreateFBOFunc( void );
-    void drawFunc( void );
   };
 
 
