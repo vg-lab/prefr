@@ -35,6 +35,8 @@ namespace prefr
   {
   public:
     PREFR_API
+    GLPickRenderer( void );
+    PREFR_API
     virtual ~GLPickRenderer( void );
 
     PREFR_API
@@ -58,17 +60,14 @@ namespace prefr
     void _drawFunc( void );
 
     IGLRenderProgram* _glPickProgram;
-    uint32_t framebuffer = -1;
-    uint32_t textureColorbuffer = -1;
-    uint32_t rbo = -1;
-    uint32_t width = 500;
-    uint32_t height = 500;
-    bool recreateFBO = true;
+    uint32_t _framebuffer;
+    uint32_t _textureColorbuffer;
+    uint32_t _rbo;
+    uint32_t _width;
+    uint32_t _height;
+    bool _recreateFBO;
 
     int _defaultFBO;
-
-    const uint32_t BACKGROUND_VALUE = 16646655;
-
   };
 
 

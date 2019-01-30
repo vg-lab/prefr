@@ -26,21 +26,34 @@
 #include "../utils/Log.h"
 #include <string>
 
+#define BACKGROUND_VALUE 16646655
+
 namespace prefr
 {
+  GLPickRenderer::GLPickRenderer( void )
+  : _glPickProgram( nullptr )
+  ,  _framebuffer( -1 )
+  ,  _textureColorbuffer( -1 )
+  ,  _rbo( -1 )
+  ,  _width( -1 )
+  ,  _height( -1 )
+  ,  _recreateFBO( true )
+  {
+
+  }
   GLPickRenderer::~GLPickRenderer( void )
   {
-    if( framebuffer != uint32_t( -1 ) )
+    if( _framebuffer != uint32_t( -1 ) )
     {
-      glDeleteFramebuffers( 1, &framebuffer );
+      glDeleteFramebuffers( 1, &_framebuffer );
     }
-    if( textureColorbuffer != uint32_t( -1 ) )
+    if( _textureColorbuffer != uint32_t( -1 ) )
     {
-      glDeleteTextures( 1, &textureColorbuffer );
+      glDeleteTextures( 1, &_textureColorbuffer );
     }
-    if( rbo != uint32_t( -1 ) )
+    if( _rbo != uint32_t( -1 ) )
     {
-      glDeleteRenderbuffers( 1, &rbo );
+      glDeleteRenderbuffers( 1, &_rbo );
     }
   }
   void GLPickRenderer::glPickProgram( IGLRenderProgram* pickProgram )
@@ -56,15 +69,16 @@ namespace prefr
 
   void GLPickRenderer::setWindowSize( uint32_t w, uint32_t h )
   {
-    width = w;
-    height = h;
-    recreateFBO = true;
+    _width = w;
+    _height = h;
+    _recreateFBO = true;
   }
 
   uint32_t GLPickRenderer::pick( int posX, int posY )
   {
-//    GLint defaultFBO;
-//    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO);
+    glViewport( 0, 0, _width, _height );
+    GLint defaultFBO;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO);
 
     GLfloat bkColor[ 4 ];
     glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
@@ -76,23 +90,16 @@ namespace prefr
 
     GLubyte color[ 4 ];
     glReadPixels( posX, posY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color );
-    unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
+    unsigned int idx = color[0] + color[1] * 255 + color[2] * 255 * 255;
 
     glDisable(GL_SCISSOR_TEST);
-    glBindFramebuffer( GL_FRAMEBUFFER, _defaultFBO );
+    glBindFramebuffer( GL_FRAMEBUFFER, defaultFBO );
     glClearColor( bkColor[ 0 ], bkColor[ 1 ], bkColor[ 2 ], bkColor[ 3 ] );
 
-    if (value == BACKGROUND_VALUE )
-    {
+    if( idx == BACKGROUND_VALUE || idx >= _glRenderConfig->_aliveParticles )
       return 0;
-    }
 
-    value = _distances->getID( value );
-
-    if( value >= _glRenderConfig->_aliveParticles )
-    {
-      return 0;
-    }
+    unsigned int value = _distances->getID( idx );
 
     return value + 1;
   }
@@ -103,39 +110,39 @@ namespace prefr
     glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFBO );
 
     bool completeFBO = true;
-    if( framebuffer == uint32_t( -1 ) )
+    if( _framebuffer == uint32_t( -1 ) )
     {
       completeFBO = false;
 
-      glGenFramebuffers(1, &framebuffer);
-      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      glGenFramebuffers(1, &_framebuffer);
+      glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
       // create a color attachment texture
-      glGenTextures(1, &textureColorbuffer);
-      glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+      glGenTextures(1, &_textureColorbuffer);
+      glBindTexture(GL_TEXTURE_2D, _textureColorbuffer);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
-        GL_TEXTURE_2D, textureColorbuffer, 0 );
+        GL_TEXTURE_2D, _textureColorbuffer, 0 );
 
       // create a renderbuffer object for depth and stencil attachment
-      glGenRenderbuffers(1, &rbo);
+      glGenRenderbuffers(1, &_rbo);
     }
 
-    if( recreateFBO )
+    if( _recreateFBO )
     {
-      glBindTexture( GL_TEXTURE_2D, textureColorbuffer );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, 
+      glBindTexture( GL_TEXTURE_2D, _textureColorbuffer );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, 
         GL_UNSIGNED_BYTE, nullptr );
       
-      glBindRenderbuffer( GL_RENDERBUFFER, rbo );
-      glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height );
+      glBindRenderbuffer( GL_RENDERBUFFER, _rbo );
+      glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _width, _height );
     }
 
     if( completeFBO )
     {
       glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
-        GL_RENDERBUFFER, rbo );
+        GL_RENDERBUFFER, _rbo );
       if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
       {
         std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
@@ -148,7 +155,7 @@ namespace prefr
   {
     glBindVertexArray( _glRenderConfig->_vao );
 
-    glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+    glBindFramebuffer( GL_FRAMEBUFFER, _framebuffer );
 
     glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -230,28 +237,23 @@ namespace prefr
       {
         glReadPixels( x, y, 1, 1,
           GL_RGBA, GL_UNSIGNED_BYTE, color);
-        unsigned int value = color[0] + color[1] * 255 + color[2] * 255 * 255;
+        unsigned int idx = color[0] + color[1] * 255 + color[2] * 255 * 255;
 
-        value = _distances->getID( value );
-
-        if( value == BACKGROUND_VALUE )
+        if( idx == BACKGROUND_VALUE || idx >= _glRenderConfig->_aliveParticles )
         {
           continue;
         }
 
-        value = _distances->getID( value );
+        unsigned int value = _distances->getID( idx );
 
-        if( value >= _glRenderConfig->_aliveParticles )
-        {
-          continue;
-        }
+        value = _distances->getID( value );
 
         particles.push_back( value + 1);
       }
     }
     
     
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glBindFramebuffer( GL_FRAMEBUFFER, _defaultFBO );
     glDisable(GL_SCISSOR_TEST);
     glClearColor( bkColor[ 0 ], bkColor[ 1 ], bkColor[ 2 ], bkColor[ 3 ] );
 
