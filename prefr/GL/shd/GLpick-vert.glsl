@@ -18,8 +18,6 @@ out float id;
 
 void main()
 {
-	//gl_Position = vec4((vec4(vertexPosition * particlePosition.a, 1.0) + (modelViewProjM * vec4(particlePosition.rgb, 1.0))).rgb, 1.0);
-
 	gl_Position = modelViewProjM 
 				* vec4(
 				(vertexPosition.x * particlePosition.a * cameraRight)
