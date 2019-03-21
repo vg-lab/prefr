@@ -34,8 +34,10 @@ namespace prefr
   class GLPickRenderer : public GLRenderer
   {
   public:
+
     PREFR_API
     GLPickRenderer( void );
+
     PREFR_API
     virtual ~GLPickRenderer( void );
 
@@ -44,7 +46,7 @@ namespace prefr
 
     PREFR_API
     virtual std::vector< uint32_t > pickArea( int minPointX, int minPointY, 
-      int maxPointX, int maxPointY );
+                                              int maxPointX, int maxPointY );
 
     void setDefaultFBO( int defaultFBO );
 
