@@ -1,7 +1,10 @@
-# v1.0 (2018-03)
+# v1.1 (2020-01)
+* Added ReTo's picking capabilities for visually selecting particles.
+
+# v1.0 (2019-03)
 * Improved particles sets management by allowing non-consecutive collections.
 * Rearranged modifier classes and their particles' assignment. (API change)
-* Modified emission process (improved parallel emission process)
+* Modified emission process (improved parallel emission process).
 * Removed OSG support.
 * Updated CMake/common version.
 
@@ -11,7 +14,7 @@
 * Renamed most classes and methods.
 * Camera and shader program interfaces for external management.
 * Updated CMake Common version.
-* Fixed compilation for Ubuntu 16.04
+* Fixed compilation for Ubuntu 16.04.
 
 # v0.2 - (2016-07)
 * Vectorized attributes for particles.

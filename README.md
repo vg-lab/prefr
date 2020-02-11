@@ -1,5 +1,5 @@
 # PReFr - Particle Rendering Framework
-(c) 2015-2016. GMRV / URJC
+(c) 2015-2020. GMRV / URJC
 
 www.gmrv.es
 gmrv@gmrv.es
@@ -10,29 +10,34 @@ PReFr (Particle Rendering Framework) is a modular and highly configurable
 framework providing the functionality for creating, managing and rendering
 particles within several environments. PReFr allows to deploy particle systems with low effort by simply using the provided modules.
 
-There are basic implementations for all involved modules as well as two 
-renderers (OpenGL and OpenSceneGraph 3.2) that can be easily reimplemented for
-different behaviors. A basic multi-core implementation based on OpenMP is also provided.
+There are basic implementations for all involved modules as well as an 
+OpenGL renderer that can be easily reimplemented for
+different behaviors. A complete multi-core implementation based on OpenMP is also provided for improving performance.
 
 
 ## Dependencies
 
 ### Strong dependences:
+
 * OpenGL
 * GLEW
 * GLM
 * Boost
+* ReTo (*)
+
+(*) Note: These dependencies will be automatically downloaded and compiled with
+the project.
 
 ### Weak dependences
-* ReTo: external camera and shaders handling.
+
 * OpenMP: multi-core functioning. 
 * GLUT: OpenGL example.
-* OpenSceneGraph (v3.2): OpenSceneGraph functionality.
+* Eigen3: full ReTo compatibility
 * CUDA/CUDA Thrust!: WIP.
 
 ## Building
 
-PReFr has been succesfully built and used on Ubuntu 14.04/16.04, Mac OSX
+PReFr has been succesfully built with GCC 6 and used on Ubuntu 14.04/16.04, Mac OSX
 Yosemite and Windows 7/8 (Visual Studio 2013 Win64). The following steps
 should be enough to build it:
 
