@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -31,7 +31,7 @@
 namespace prefr
 {
 
-  class GLRenderer : public Renderer
+  class PREFR_API GLRenderer : public Renderer
   {
 
   public:
@@ -42,22 +42,22 @@ namespace prefr
       ONE_MINUS_CONSTANT_ALPHA = 1
     };
 
-    PREFR_API
+    
     GLRenderer( );
 
-    PREFR_API
+    
     virtual ~GLRenderer( );
 
-    PREFR_API
+    
     virtual void setupRender( void );
 
-    PREFR_API
+    
     virtual void paint( void ) const;
 
-    PREFR_API
+    
     virtual void glRenderProgram( IGLRenderProgram* renderProgram );
 
-    PREFR_API
+    
     virtual void distanceArray( DistanceArray* distances );
 
     virtual void alphaBlendingFunc( BlendFunc blendFunc );

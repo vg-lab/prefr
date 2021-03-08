@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -184,10 +184,10 @@ namespace prefr
 
       glUniformMatrix4fv( mvpID, 1, GL_FALSE, glm::value_ptr( tmp ));
 
-      unsigned int cameraUpID = glGetUniformLocation(
+      const unsigned int cameraUpID = glGetUniformLocation(
           programID, _glPickProgram->prefrViewMatrixUpComponentAlias( ));
 
-      unsigned int cameraRightID = glGetUniformLocation(
+      const unsigned int cameraRightID = glGetUniformLocation(
           programID, _glPickProgram->prefrViewMatrixRightComponentAlias( ));
 
       const glm::mat4x4& viewMatrix =

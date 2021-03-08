@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -78,7 +78,7 @@ namespace prefr
    * steps of the pipeline could be avoided such as sorting.
    *
    */
- class ParticleSystem
+ class PREFR_API ParticleSystem
  {
 
  public:
@@ -96,14 +96,14 @@ namespace prefr
     * @see ICamera
     *
     *  */
-    PREFR_API
+    
     ParticleSystem( unsigned int maxParticles, ICamera* camera = nullptr );
 
     /*! \brief Default destructor.
      *
      * Default destructor.
      * */
-    PREFR_API
+    
     virtual ~ParticleSystem( );
 
     // Configuration methods
@@ -120,11 +120,11 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    PREFR_API
+    
     virtual void addCluster( Cluster* cluster,
                              const ParticleSet& indices = ParticleSet( ));
 
-    PREFR_API
+    
     virtual void detachCluster( Cluster* cluster );
 
     /*! \brief Adds a Source object to the particle system.
@@ -138,11 +138,11 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    PREFR_API
+    
     virtual void addSource( Source* source,
                             const ParticleSet& indices = ParticleSet( ) );
 
-    PREFR_API
+    
     virtual void detachSource( Source* source );
 
     /*! \brief Adds a Model object to the system.
@@ -155,10 +155,10 @@ namespace prefr
      *
      * @param model Model object to be added.
      */
-    PREFR_API
+    
     virtual void addModel( Model* model );
 
-    PREFR_API
+    
     virtual void detachModel( Model* model );
 
     /*! \brief Adds an Updater object to the system.
@@ -172,10 +172,10 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    PREFR_API
+    
     virtual void addUpdater( Updater* updater );
 
-    PREFR_API
+    
     virtual void detachUpdater( Updater* updater );
 
     /*! \brief Sets the Sorter object.
@@ -189,7 +189,7 @@ namespace prefr
      * @see updateRender
      *
      */
-    PREFR_API
+    
     virtual void sorter( Sorter* sorter );
 
     /*! \brief Returns the sorter.
@@ -202,7 +202,7 @@ namespace prefr
      * @see updateRender
      *
      */
-    PREFR_API
+    
     virtual Sorter* sorter( void ) const;
 
     /*! \brief Sets the Renderer object.
@@ -218,7 +218,7 @@ namespace prefr
      * @see render
      *
      */
-    PREFR_API
+    
     virtual void renderer( Renderer* renderer );
 
     /*! \brief Returns the Renderer object.
@@ -227,7 +227,7 @@ namespace prefr
      *
      * @return Renderer object.
      */
-    PREFR_API
+    
     Renderer* renderer( void ) const;
 
 
@@ -238,7 +238,7 @@ namespace prefr
      * Prepares the system for execution. Equivalent to run( true ).
      *
      */
-    PREFR_API
+    
     virtual void start( void );
 
     /*! \brief Particle updating method.
@@ -253,7 +253,7 @@ namespace prefr
      * @see Source
      *
      *  */
-    PREFR_API
+    
     virtual void update( const float& deltaTime );
 
     /*! \brief Computes particles distance to camera.
@@ -266,7 +266,7 @@ namespace prefr
      * @see Sorter
      *
      *  */
-    PREFR_API
+    
     virtual void updateCameraDistances( const glm::vec3& cameraPosition );
 
     /*! \brief Computes particles distance to camera (only with integrated
@@ -279,7 +279,7 @@ namespace prefr
      * @see Sorter
      * @see ICamera
      *  */
-    PREFR_API
+    
     virtual void updateCameraDistances( void );
 
     /*! \brief Particle render updating method
@@ -293,7 +293,7 @@ namespace prefr
      * @see Render
      *
      * */
-    PREFR_API
+    
     virtual void updateRender( void );
 
     /*! \brief Rendering method.
@@ -308,7 +308,7 @@ namespace prefr
      * @see UpdateRender
      *
      */
-    PREFR_API
+    
     virtual void render( void ) const;
 
     // Getters/Setters
@@ -319,7 +319,7 @@ namespace prefr
      *
      * @param run true to run, false to stop.
      */
-    PREFR_API
+    
     virtual void run( bool run );
 
     /*! \brief Returns true if the system is running.
@@ -328,10 +328,10 @@ namespace prefr
      *
      * @return true if running, false if not.
      */
-    PREFR_API
+    
     virtual bool run( void ) const ;
 
-    PREFR_API
+    
     void resize( unsigned int newSize );
 
     /*! \brief Returns the current number of alive particles.
@@ -340,7 +340,7 @@ namespace prefr
      *
      * @return Current number of alive particles.
      */
-    PREFR_API
+    
     virtual unsigned int aliveParticles( void ) const;
 
     /*! \brief Activates the rendering of dead particles.
@@ -365,7 +365,7 @@ namespace prefr
      *
      * @param parallelProcessing True to activate, false to deactivate.
      */
-    PREFR_API
+    
     void parallel( bool parallelProcessing );
 
     /*! \brief Returns the collection of cluster objects.

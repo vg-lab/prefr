@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -56,7 +56,7 @@ namespace prefr
    *  @see Model
    *
    *  */
-  class Updater
+  class PREFR_API Updater
   {
     friend class ParticleSystem;
 
@@ -66,13 +66,13 @@ namespace prefr
      *
      * Default constructor.
      *  */
-    PREFR_API Updater( void );
+     Updater( void );
 
     /*! \brief Default destructor.
      *
      * Default destructor.
      */
-    PREFR_API virtual ~Updater( );
+     virtual ~Updater( );
 
     /*! \brief Emit and Update method.
      *
@@ -90,7 +90,7 @@ namespace prefr
      * @param deltaTime Current delta time to compute attributes variations
      * according to elapsed time since last frame.
      */
-    PREFR_API virtual void updateParticle( tparticle current,
+     virtual void updateParticle( tparticle current,
                                            float deltaTime );
 
   protected:

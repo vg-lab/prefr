@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -25,6 +25,7 @@
 
 #include <vector>
 #include "Particles.h"
+#include <prefr/api.h>
 
 namespace prefr
 {
@@ -34,7 +35,7 @@ namespace prefr
 
   typedef std::vector< bool > FlagsArray;
 
-  class UpdateConfig
+  class PREFR_API UpdateConfig
   {
     friend class ParticleSystem;
 

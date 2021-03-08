@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -64,7 +64,7 @@ namespace prefr
    * Note: Reimplement this class to create a different behavior.
    *
    */
-  class Source
+  class PREFR_API Source
   {
     friend class ParticleSystem;
     friend class Cluster;
@@ -72,41 +72,41 @@ namespace prefr
 
   public:
 
-    PREFR_API
+    
     Source( float emissionRate,
             const glm::vec3& position,
             Sampler* sampler = nullptr );
 
-    PREFR_API
+    
     virtual ~Source( void );
 
     ParticleCollection& particles( void );
     void particles( const ParticleSet& indices );
 
-    PREFR_API virtual bool active( ) const;
-    PREFR_API virtual void active( bool state );
+     virtual bool active( ) const;
+     virtual void active( bool state );
 
-    PREFR_API virtual bool emits( ) const;
-    PREFR_API virtual bool continuing( ) const;
-    PREFR_API virtual bool finished( ) const;
-    PREFR_API virtual void restart( );
+     virtual bool emits( ) const;
+     virtual bool continuing( ) const;
+     virtual bool finished( ) const;
+     virtual void restart( );
 
-    PREFR_API virtual const int& budget( ) const;
-    PREFR_API virtual void prepareFrame( const float& deltaTime );
-    PREFR_API virtual void closeFrame( );
+     virtual const int& budget( ) const;
+     virtual void prepareFrame( const float& deltaTime );
+     virtual void closeFrame( );
 
-    PREFR_API virtual void maxEmissionCycles( unsigned int cycles );
+     virtual void maxEmissionCycles( unsigned int cycles );
 
-    PREFR_API void sampler( Sampler* sampler );
-    PREFR_API const Sampler* sampler( void ) const;
+     void sampler( Sampler* sampler );
+     const Sampler* sampler( void ) const;
 
-    PREFR_API glm::vec3 position( void ) const;
-    PREFR_API virtual void sample( SampledValues* );
+     glm::vec3 position( void ) const;
+     virtual void sample( SampledValues* );
 
-    PREFR_API unsigned int aliveParticles( void ) const;
+     unsigned int aliveParticles( void ) const;
 
-    PREFR_API void autoDeactivateWhenFinished( bool state );
-    PREFR_API void killParticlesWhenInactive( bool state );
+     void autoDeactivateWhenFinished( bool state );
+     void killParticlesWhenInactive( bool state );
 
   protected:
 
@@ -166,20 +166,20 @@ namespace prefr
    * @see Source
    *
    */
-  class TimedSource : public Source, public utils::SingleFrameTimer
+  class PREFR_API TimedSource : public Source, public utils::SingleFrameTimer
   {
   public:
 
-    PREFR_API TimedSource( float emissionRate_, glm::vec3 position_ );
-    PREFR_API TimedSource( float emissionRate_, glm::vec3 position_,
+     TimedSource( float emissionRate_, glm::vec3 position_ );
+     TimedSource( float emissionRate_, glm::vec3 position_,
                            float period, float offset, float duration );
 
-    PREFR_API virtual bool emits( ) const;
+     virtual bool emits( ) const;
 
-    PREFR_API virtual void _checkEmissionEnd( );
+     virtual void _checkEmissionEnd( );
 
-    PREFR_API virtual void prepareFrame( const float& deltaTime );
-    PREFR_API virtual void closeFrame( );
+     virtual void prepareFrame( const float& deltaTime );
+     virtual void closeFrame( );
 
   };
 

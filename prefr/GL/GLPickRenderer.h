@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -32,29 +32,29 @@
 
 namespace prefr
 {
-  class GLPickRenderer : public GLRenderer
+  class PREFR_API GLPickRenderer : public GLRenderer
   {
   public:
 
-    PREFR_API
+    
     GLPickRenderer( void );
 
-    PREFR_API
+    
     virtual ~GLPickRenderer( void );
 
-    PREFR_API
+    
     virtual uint32_t pick( int posX, int posY );
 
-    PREFR_API
+    
     virtual std::vector< uint32_t > pickArea( int minPointX, int minPointY, 
                                               int maxPointX, int maxPointY );
 
     void setDefaultFBO( int defaultFBO );
 
-    PREFR_API
+    
     void setWindowSize( uint32_t w, uint32_t h );
 
-    PREFR_API
+    
     void glPickProgram( IGLRenderProgram* renderProgram );
 
   protected:

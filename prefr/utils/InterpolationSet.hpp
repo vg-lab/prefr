@@ -159,7 +159,7 @@ namespace utils
     // Faster implementation for CPU interpolation.
     inline T GetValue( float time )
     {
-      assert( time >= 0 && time <= 1.0f );
+      assert( time >= 0.f && time <= 1.0f );
 
       if( size > 1 && time > 0.0f )
       {

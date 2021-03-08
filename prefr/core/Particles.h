@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -33,6 +33,8 @@
 #include <memory>
 #include <iostream>
 #include <set>
+
+#include <prefr/api.h>
 
 #define STRINGIZE( cad ) #cad
 
@@ -123,7 +125,7 @@ namespace prefr
    * @see Particles::iterator
    * @see Particles::const_iterator
    */
-  class Particles : public boost::noncopyable
+  class PREFR_API Particles : public boost::noncopyable
   {
 
   public:
@@ -301,7 +303,7 @@ namespace prefr
   };
 
 
-  class ParticleCollection
+  class PREFR_API ParticleCollection
   {
 
   public:
@@ -405,7 +407,7 @@ namespace prefr
 
   };
 
-  class Particles::base_const_iterator
+  class PREFR_API Particles::base_const_iterator
   {
 
     virtual ~base_const_iterator( void );
@@ -454,7 +456,7 @@ namespace prefr
     PREFR_CONST_IT_ATRIB_BOOL( alive )
   };
 
-  class Particles::base_iterator : public Particles::base_const_iterator
+  class PREFR_API Particles::base_iterator : public Particles::base_const_iterator
   {
 
   public:
@@ -479,7 +481,7 @@ namespace prefr
 
   };
 
-  class Particles::iterator : public Particles::base_iterator
+  class PREFR_API Particles::iterator : public Particles::base_iterator
   {
 
     friend class ParticleCollection;
@@ -511,7 +513,7 @@ namespace prefr
 
   };
 
-  class Particles::const_iterator : public Particles::base_const_iterator
+  class PREFR_API Particles::const_iterator : public Particles::base_const_iterator
   {
 
     friend class ParticleCollection;

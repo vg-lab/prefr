@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -31,10 +31,11 @@
 
 #include "../core/RenderConfig.h"
 #include "IGLRenderProgram.h"
+#include <prefr/api.h>
 
 namespace prefr
 {
-  class GLRenderConfig : public RenderConfig
+  class PREFR_API GLRenderConfig : public RenderConfig
   {
     friend class GLRenderer;
     friend class GLPickRenderer;
@@ -81,10 +82,6 @@ namespace prefr
     ICamera* _camera;
     IGLRenderProgram* _glRenderProgram;
   };
-
-
 }
-
-
 
 #endif /* __PREFR__GLRENDERCONFIG__ */
