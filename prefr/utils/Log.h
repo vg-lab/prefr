@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -42,7 +42,7 @@ namespace prefr
    * Static class to log output
    *
    */
-  class Log
+  class PREFR_API Log
   {
   public:
 
@@ -50,28 +50,28 @@ namespace prefr
      * Set current log level
      * @param level level to be set
      */
-    PREFR_API
+    
     static void setLogLevel( const TLogLevel logLevel );
 
     /**
      * Get current log level
      * @return current log level
      */
-    PREFR_API
+    
     static TLogLevel logLevel( void );
 
     /**
      * Set current output stream
      * @param stream output stream to be set
      */
-    PREFR_API
+    
     static void setStream( std::ostream& stream );
 
     /**
      * Get current output stream
      * @return current output stream
      */
-    PREFR_API
+    
     static const std::ostream& stream( void );
 
     /**
@@ -79,7 +79,7 @@ namespace prefr
      * @param msg message to log
      * @param level level of the message
      */
-    PREFR_API
+    
     static void log( const std::string& msg,
                      const TLogLevel level = LOG_LEVEL_VERBOSE );
 
@@ -89,7 +89,7 @@ namespace prefr
      * @param level level of the message
      * @param stream stream where log will be written
      */
-    PREFR_API
+    
     static void log( const std::string& msg,
                      std::ostream& stream,
                      const TLogLevel level = LOG_LEVEL_VERBOSE );

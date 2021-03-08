@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -34,25 +34,25 @@
 namespace prefr
 {
 
-  class Renderer
+  class PREFR_API Renderer
   {
     friend class ParticleSystem;
 
   public:
 
-    PREFR_API Renderer( );
+     Renderer( );
 
-    PREFR_API virtual ~Renderer();
+     virtual ~Renderer();
 
-    PREFR_API virtual void setupRender( void ) = 0;
+     virtual void setupRender( void ) = 0;
 
-    PREFR_API virtual void paint( void ) const = 0;
+     virtual void paint( void ) const = 0;
 
-    PREFR_API RenderConfig* renderConfig( void ) const;
+     RenderConfig* renderConfig( void ) const;
 
-    PREFR_API virtual void distanceArray( DistanceArray* distanceArray );
+     virtual void distanceArray( DistanceArray* distanceArray );
 
-    PREFR_API void particles( const ParticleRange& particles );
+     void particles( const ParticleRange& particles );
 
   protected:
 

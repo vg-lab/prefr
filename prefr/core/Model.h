@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -55,7 +55,7 @@ namespace prefr
    * @see Source
    *
    */
-  class Model
+  class PREFR_API Model
   {
     friend class Updater;
 
@@ -65,7 +65,7 @@ namespace prefr
      *
      * Default constructor.
      */
-    PREFR_API Model( void );
+     Model( void );
 
     /*! \brief Constructor initializing minimum and maximum life values.
      *
@@ -75,13 +75,13 @@ namespace prefr
      * @param min Minimum value for particles life range.
      * @param max Maximum value for particles life range.
      */
-    PREFR_API Model( float min, float max );
+     Model( float min, float max );
 
     /*! \brief Default destructor.
      *
      * Default destructor.
      */
-    PREFR_API virtual ~Model( );
+     virtual ~Model( );
 
     /*! \brief Defines minimum and maximum life values.
      *
@@ -91,28 +91,28 @@ namespace prefr
      * @param min Minimum value for particles life range.
      * @param max Maximum value for particles life range.
      */
-    PREFR_API void setLife( float min, float max );
+     void setLife( float min, float max );
 
     /*! \brief Returns current minimum life value.
      *
      * This method returns current minimum life value.
      * @return Current minimum life value.
      */
-    PREFR_API float minLife( void ) const;
+     float minLife( void ) const;
 
     /*! \brief Returns current maximum life value.
      *
      * This method returns current maximum life value.
      * @return Current maximum life value.
      */
-    PREFR_API float maxLife( void ) const;
+     float maxLife( void ) const;
 
     /*! \brief Returns the difference between max and min life values.
      *
      * Returns the difference between set maximum and minimum life values.
      * @return Difference between set maximum and minimum life values.
      */
-    PREFR_API float lifeInterval( void );
+     float lifeInterval( void );
 
     /*! \brief Returns the inverse of life range to avoid division operations..
      *
@@ -120,7 +120,7 @@ namespace prefr
      * avoid later division operations when normalizing life values.
      * @return Inverse of life range.
      */
-    PREFR_API float inverseMaxLife( void );
+     float inverseMaxLife( void );
 
     /*! InterpolationSet defining size values. */
     vectortfloat size;

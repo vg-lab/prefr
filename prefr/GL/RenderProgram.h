@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -27,14 +27,16 @@
 
 #include "IGLRenderProgram.h"
 
+#include <prefr/api.h>
+
 namespace prefr
 {
-  class RenderProgram : public prefr::IGLRenderProgram,
+  class PREFR_API RenderProgram : public prefr::IGLRenderProgram,
                         public reto::ShaderProgram
   {
   public:
 
-    PREFR_API
+    
     RenderProgram( )
     : prefr::IGLRenderProgram( )
     , reto::ShaderProgram( )
@@ -44,13 +46,13 @@ namespace prefr
       _viewMatrixRightComponentAlias = std::string( "cameraRight" );
     }
 
-    PREFR_API
+    
     virtual ~RenderProgram( ){ }
 
-    PREFR_API
+    
     void prefrActivateGLProgram( void ){ use( );}
 
-    PREFR_API
+    
     unsigned int prefrGLProgramID( void ){ return program( ); }
   };
 

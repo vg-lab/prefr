@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -56,6 +56,8 @@ void initOGL( void );
 void initShader( const char *vname, const char *fname );
 void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters );
 
+constexpr float rotationScale = 0.01f;
+
 glm::vec3 floatPtrToVec3( float* floatPos )
 {
   return glm::vec3( floatPos[ 0 ],
@@ -78,21 +80,21 @@ glm::mat4x4 floatPtrToMat4( float* floatPos )
 
 // PReFr Interface classes inheritance
 
-class Camera : public prefr::ICamera, public reto::Camera
+class Camera : public prefr::ICamera, public reto::OrbitalCameraController
 {
   glm::vec3 PReFrCameraPosition( void )
   {
-    return floatPtrToVec3( position( ));
+    return floatPtrToVec3( this->position().data() );
   }
 
   glm::mat4x4 PReFrCameraViewMatrix( void )
   {
-    return floatPtrToMat4( viewMatrix( ));
+    return floatPtrToMat4( this->camera()->viewMatrix());
   }
 
   glm::mat4x4 PReFrCameraViewProjectionMatrix( void )
   {
-    return floatPtrToMat4( viewProjectionMatrix( ));
+    return floatPtrToMat4( this->camera()->projectionViewMatrix( ));
   }
 };
 
@@ -210,7 +212,7 @@ void renderFunc( void )
 
 void resizeFunc( int width, int height )
 {
-  camera.ratio((( double ) width ) / height );
+  camera.windowSize(width, height);
   glViewport( 0, 0, width, height );
 }
 
@@ -278,8 +280,10 @@ void mouseMoveFunc( int xCoord, int yCoord )
 {
   if( rotation )
   {
-    camera.localRotation( - ( mxCoord - xCoord ) * 0.01,
-                          - ( myCoord - yCoord ) * 0.01 );
+    const auto rotationAngles = Eigen::Vector3f( -( mxCoord - xCoord ) * rotationScale,
+                                                  ( myCoord - yCoord ) * rotationScale,
+                                                  0.0f );
+    camera.rotation(rotationAngles);
     mxCoord = xCoord;
     myCoord = yCoord;
   }
@@ -363,11 +367,11 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
     expandBoundingBox( boundingBoxMin, boundingBoxMax, position );
   }
 
-  Eigen::Vector3f center = ( boundingBoxMax + boundingBoxMin ) * 0.5f;
-  float radius = ( boundingBoxMax - center ).norm( );
-  radius += 50;
+  const Eigen::Vector3f center = ( boundingBoxMax + boundingBoxMin ) * 0.5f;
+  const float radius = ( boundingBoxMax - center ).norm( ) + 50;
 
-  camera.targetPivotRadius( center, radius );
+  camera.position(center);
+  camera.radius(radius);
 
   Sorter* sorter = new Sorter( );
   particleSystem->sorter( sorter );

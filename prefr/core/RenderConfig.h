@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -20,13 +20,15 @@
  *
  */
 
+#include <prefr/api.h>
+
 #ifndef __PREFR__RENDER_CONFIG__
 #define __PREFR__RENDER_CONFIG__
 
 namespace prefr
 {
 
-  class RenderConfig
+  class PREFR_API RenderConfig
   {
     friend class ParticleSystem;
     friend class Renderer;

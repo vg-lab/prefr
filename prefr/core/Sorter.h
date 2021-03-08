@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -40,7 +40,7 @@ namespace prefr
     return( elem.x * elem.x + elem.y * elem.y + elem.z * elem.z );
   }
 
-  class Sorter
+  class PREFR_API Sorter
   {
     friend class ParticleSystem;
 
@@ -52,29 +52,29 @@ namespace prefr
       Ascending = 1,
     };
 
-    PREFR_API Sorter( );
+     Sorter( );
 
-    PREFR_API virtual ~Sorter( );
+     virtual ~Sorter( );
 
-    PREFR_API virtual void sort( SortOrder order = Descending );
+     virtual void sort( SortOrder order = Descending );
 
-    PREFR_API
+    
     virtual void updateCameraDistance( const glm::vec3& cameraPosition,
                                        bool renderDeadParticles = false );
 
-    PREFR_API
+    
     void updateCameraDistance( bool renderDeadParticles = false );
 
-    PREFR_API
+    
     virtual void updateParticleDistance( const tparticle_ptr current,
                                          const glm::vec3& cameraPosition,
                                          bool renderDeadParticles = false );
 
-    PREFR_API virtual void initDistanceArray( ICamera* camera );
+     virtual void initDistanceArray( ICamera* camera );
 
-    PREFR_API void particles( const ParticleRange& particles );
+     void particles( const ParticleRange& particles );
 
-    PREFR_API void aliveParticles( unsigned int alive );
+     void aliveParticles( unsigned int alive );
 protected:
 
     void sources( std::vector< Source* >* sources_ );

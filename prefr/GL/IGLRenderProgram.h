@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -27,32 +27,32 @@
 
 namespace prefr
 {
-  class IGLRenderProgram
+  class PREFR_API IGLRenderProgram
   {
   public:
 
-    PREFR_API
+    
     virtual ~IGLRenderProgram( ){ }
 
-    PREFR_API
+    
     virtual void prefrActivateGLProgram( void ) = 0;
 
-    PREFR_API
+    
     virtual unsigned int prefrGLProgramID( void ) = 0;
     
-    PREFR_API virtual inline
+     virtual inline
     const char* prefrViewProjectionMatrixAlias( void ) const
     {
       return _viewProjectionMatrixAlias.c_str( );
     }
 
-    PREFR_API virtual inline
+     virtual inline
     const char* prefrViewMatrixUpComponentAlias( void ) const
     {
       return _viewMatrixUpComponentAlias.c_str( );
     }
 
-    PREFR_API virtual inline
+     virtual inline
     const char* prefrViewMatrixRightComponentAlias( void ) const
     {
       return _viewMatrixRightComponentAlias.c_str( );

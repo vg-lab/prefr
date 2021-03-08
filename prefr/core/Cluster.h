@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -50,7 +50,7 @@ namespace prefr
    * @see Particles
    *
    */
-  class Cluster
+  class PREFR_API Cluster
   {
     friend class ParticleSystem;
 
@@ -61,14 +61,14 @@ namespace prefr
      * Default constructor.
      *
      */
-    PREFR_API Cluster( void );
+     Cluster( void );
 
     /*! \brief Default destructor.
      *
      * Default destructor.
      *
      */
-    PREFR_API virtual ~Cluster( void );
+     virtual ~Cluster( void );
 
     /*! \brief Returns the set of particles compounding the cluster.
      *
@@ -76,7 +76,7 @@ namespace prefr
      *
      * @return Set of particles compounding the cluster.
      */
-    PREFR_API ParticleRange& particles( void );
+     ParticleRange& particles( void );
 
     /*! \brief Sets the range of particles compounding the cluster.
      *
@@ -84,7 +84,7 @@ namespace prefr
      *
      * @param particleArray Set of particles compounding the cluster.
      */
-    PREFR_API void particles( const ParticleRange& particleArray );
+     void particles( const ParticleRange& particleArray );
 
     /*! \brief Gets the state of the cluster.
      *
@@ -92,7 +92,7 @@ namespace prefr
      *
      * @return State of the cluster, true if active.
      */
-    PREFR_API bool active( void ) const;
+     bool active( void ) const;
 
     /*! \brief Sets the state of the cluster.
      *
@@ -100,7 +100,7 @@ namespace prefr
      *
      * @param active State of the cluster, true to set active.
      */
-    PREFR_API void active( bool active );
+     void active( bool active );
 
     /*! \brief Returns the flag indicating if particles will be killed
      * when deactivated.
@@ -110,7 +110,7 @@ namespace prefr
      * @return Flag of killing particles when deactivated. True if particles
      * will be killed.
      */
-    PREFR_API bool inactiveKillParticles( void ) const;
+     bool inactiveKillParticles( void ) const;
 
     /*! \brief Sets the the flag indicating if particles will be killed
      * when deactivated.
@@ -120,7 +120,7 @@ namespace prefr
      * @param killParticles Flag of killing particles when deactivated. True
      * if particles will be killed.
      */
-    PREFR_API void inactiveKillParticles( bool killParticles );
+     void inactiveKillParticles( bool killParticles );
 
     /*! This method kills current cluster particles.
      *
@@ -130,7 +130,7 @@ namespace prefr
      *
      * @param changeState
      */
-    PREFR_API virtual void killParticles( bool changeState = true );
+     virtual void killParticles( bool changeState = true );
 
 
     virtual void setSource( Source* source_, bool resetState = true );

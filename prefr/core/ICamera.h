@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -23,6 +23,9 @@
 #ifndef __PREFR__ICAMERA__
 #define __PREFR__ICAMERA__
 
+#include <prefr/api.h>
+#include <glm/fwd.hpp>
+
 namespace prefr
 {
 
@@ -32,7 +35,7 @@ namespace prefr
    * implementations within PReFr by simply implementing its methods.
    *
    */
-  class ICamera
+  class PREFR_API ICamera
   {
   public:
 

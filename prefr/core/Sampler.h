@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 GMRV/URJC.
+ * Copyright (c) 2014-2020 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -30,62 +30,61 @@ namespace prefr
   class Source;
   class SampledValues;
 
-  class Sampler
+  class PREFR_API Sampler
   {
   public:
 
-    PREFR_API
+    
     Sampler( ){ }
 
-    PREFR_API
+    
     virtual ~Sampler( ){ }
 
-    PREFR_API
+    
     virtual void sample( const Source& source,
                          SampledValues* values ) const = 0;
 
   };
 
-
-  class PointSampler : public Sampler
+  class PREFR_API PointSampler : public Sampler
   {
   public:
 
-    PREFR_API
+    
     PointSampler( ): Sampler( ){ }
 
-    PREFR_API
+    
     virtual ~PointSampler( ){ }
 
-    PREFR_API
+    
     virtual void sample( const Source& source,
                          SampledValues* values ) const;
   };
 
-  class SphereSampler : public Sampler
+  class PREFR_API SphereSampler : public Sampler
   {
   public:
 
-    PREFR_API
+    
     SphereSampler( float radius = 0.0f, float angleTheta = 360 );
 
-    PREFR_API
+    
     virtual ~SphereSampler( ){ }
 
-    PREFR_API
+    
     virtual void sample( const Source& source,
                          SampledValues* values ) const;
 
-    PREFR_API
+    
     void angleTheta( float angle );
 
-    PREFR_API
+    
     float angleTheta( void ) const;
 
-    PREFR_API
+    
     void radius( float radiusDegrees );
 
-    PREFR_API
+    
     float radius( void ) const;
 
   protected:
@@ -94,7 +93,6 @@ namespace prefr
     float _angleTheta;
 
   };
-
 }
 
 #endif /* __PREFR__SAMPLER__ */
