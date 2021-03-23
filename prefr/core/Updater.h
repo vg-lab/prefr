@@ -36,7 +36,6 @@
 
 namespace prefr
 {
-
   class Cluster;
 
   /*! \class Updater

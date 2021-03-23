@@ -92,6 +92,4 @@ protected:
   };
 }
 
-
-
 #endif /* __PREFR__SORTER__ */

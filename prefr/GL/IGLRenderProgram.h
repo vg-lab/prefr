@@ -31,28 +31,25 @@ namespace prefr
   {
   public:
 
-    
     virtual ~IGLRenderProgram( ){ }
-
     
     virtual void prefrActivateGLProgram( void ) = 0;
-
     
     virtual unsigned int prefrGLProgramID( void ) = 0;
     
-     virtual inline
+    virtual inline
     const char* prefrViewProjectionMatrixAlias( void ) const
     {
       return _viewProjectionMatrixAlias.c_str( );
     }
 
-     virtual inline
+    virtual inline
     const char* prefrViewMatrixUpComponentAlias( void ) const
     {
       return _viewMatrixUpComponentAlias.c_str( );
     }
 
-     virtual inline
+    virtual inline
     const char* prefrViewMatrixRightComponentAlias( void ) const
     {
       return _viewMatrixRightComponentAlias.c_str( );

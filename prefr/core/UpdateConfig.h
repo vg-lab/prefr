@@ -77,6 +77,4 @@ namespace prefr
   };
 }
 
-
-
 #endif /* __PREFR_UPDATECONFIG__ */

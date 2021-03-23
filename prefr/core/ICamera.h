@@ -79,10 +79,6 @@ namespace prefr
      */
     virtual glm::mat4x4 PReFrCameraViewProjectionMatrix( void ) = 0;
   };
-
-
 }
-
-
 
 #endif /* __PREFR__ICAMERA__ */

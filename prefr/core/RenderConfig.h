@@ -27,14 +27,12 @@
 
 namespace prefr
 {
-
   class PREFR_API RenderConfig
   {
     friend class ParticleSystem;
     friend class Renderer;
 
   public:
-
     RenderConfig( unsigned int )
     : _aliveParticles( 0 )
     { }
@@ -42,10 +40,7 @@ namespace prefr
     virtual ~RenderConfig( ){ }
 
     unsigned int _aliveParticles;
-
   };
-
 }
-
 
 #endif /* RENDERCONFIG_H_ */

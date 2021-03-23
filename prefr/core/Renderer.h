@@ -33,13 +33,11 @@
 
 namespace prefr
 {
-
   class PREFR_API Renderer
   {
     friend class ParticleSystem;
 
   public:
-
      Renderer( );
 
      virtual ~Renderer();
@@ -55,7 +53,6 @@ namespace prefr
      void particles( const ParticleRange& particles );
 
   protected:
-
     virtual void _init( void ) = 0;
 
     ParticleCollection _particles;
@@ -64,11 +61,7 @@ namespace prefr
     RenderConfig* _renderConfig;
 
     bool _parallel;
-
   };
-
 }
-
-
 
 #endif /* __PREFR__RENDERER__ */

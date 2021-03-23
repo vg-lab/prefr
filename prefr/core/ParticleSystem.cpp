@@ -30,7 +30,6 @@
 
 namespace prefr
 {
-
   ParticleSystem::ParticleSystem( unsigned int maxParticles,
                                   ICamera* camera )
   : _sorter( nullptr )
@@ -44,7 +43,6 @@ namespace prefr
   , _parallel( true )
 #endif
   {
-
     _particles.resize( _maxParticles );
 
     // Initialize used and unused particles.
@@ -82,7 +80,6 @@ namespace prefr
     _noVariationFrames = 0;
   }
 
-
   ParticleSystem::~ParticleSystem()
   {
     for( Source* source : _sources )
@@ -99,7 +96,6 @@ namespace prefr
 
     delete( _sorter );
     delete( _renderer );
-
   }
 
   void ParticleSystem::resize( unsigned int newSize )
@@ -118,8 +114,6 @@ namespace prefr
   void ParticleSystem::addCluster( Cluster* cluster,
                                    const ParticleSet& indices )
   {
-//    assert( indices.size( ) > 0 );
-
     cluster->_updateConfig = &_updateConfig;
     cluster->particles( ParticleCollection( _particles, indices));
 
@@ -135,7 +129,6 @@ namespace prefr
                                   const ParticleSet& indices )
   {
     assert( source );
-//    assert( indices.size( ) > 0 );
 
     source->_updateConfig = &_updateConfig;
 
@@ -160,7 +153,6 @@ namespace prefr
 
       _unused.removeIndices( source->particles( ).indices( ));
       _used.addIndices( indices );
-
     }
 
     _sources.push_back( source );
@@ -239,8 +231,6 @@ namespace prefr
     }
   }
 
-
-
   void ParticleSystem::sorter( Sorter* sorter_ )
   {
     assert( sorter_ );
@@ -287,13 +277,11 @@ namespace prefr
   void ParticleSystem::start()
   {
     _run = true;
-
   }
 
   void ParticleSystem::update( const float& deltaTime )
   {
-    if( !_run )
-      return;
+    if( !_run ) return;
 
     if( _lastAlive != 0  && _noVariationFrames >= 50 )
     {
@@ -310,7 +298,6 @@ namespace prefr
      if( _lastAlive == _aliveParticles )
        _noVariationFrames++;
   }
-
 
   void ParticleSystem::prepareFrame( float deltaTime )
   {
@@ -335,12 +322,10 @@ namespace prefr
       // Set source's elapsed delta
       source->prepareFrame( deltaTime );
     }
-
   }
 
   void ParticleSystem::updateFrame( float deltaTime )
   {
-
 #ifdef PREFR_USE_OPENMP
     #pragma omp parallel for if( _parallel )
     for( int particleId = 0; particleId < ( int ) _used.size( ); ++particleId )
@@ -358,9 +343,7 @@ namespace prefr
       Updater* updater = _referenceUpdaters[ particle.id( )];
       if( updater )
         updater->updateParticle( particle, deltaTime );
-
     }
-
   }
 
   void ParticleSystem::finishFrame( void )
@@ -389,7 +372,6 @@ namespace prefr
 
     _sorter->_aliveParticles = _aliveParticles;
     _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
-
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
@@ -480,13 +462,10 @@ namespace prefr
 
     _used.removeIndices( indices);
     _unused.addIndices( indices );
-
   }
 
   ParticleCollection ParticleSystem::retrieveUnused( unsigned int size )
   {
-//    assert( size <= _maxParticles );
-
     if( size == 0  || size >= _maxParticles )
       size = _maxParticles;
 
@@ -519,7 +498,4 @@ namespace prefr
   {
     return _particles;
   }
-
 }
-
-
