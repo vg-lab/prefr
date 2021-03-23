@@ -31,7 +31,6 @@
 
 namespace prefr
 {
-
   class Source;
   class Model;
   class Emitter;
@@ -160,7 +159,6 @@ namespace prefr
   };
 
   typedef VectorizedSet< Cluster* > ClustersArray;
-
 }
 
 #endif /* __PREFR__CLUSTER__ */

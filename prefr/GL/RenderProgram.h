@@ -31,12 +31,12 @@
 
 namespace prefr
 {
-  class PREFR_API RenderProgram : public prefr::IGLRenderProgram,
-                        public reto::ShaderProgram
+  class PREFR_DLLEXPORT RenderProgram 
+  : public prefr::IGLRenderProgram
+  , public reto::ShaderProgram
   {
   public:
 
-    
     RenderProgram( )
     : prefr::IGLRenderProgram( )
     , reto::ShaderProgram( )
@@ -46,14 +46,12 @@ namespace prefr
       _viewMatrixRightComponentAlias = std::string( "cameraRight" );
     }
 
-    
     virtual ~RenderProgram( ){ }
 
-    
     void prefrActivateGLProgram( void ){ use( );}
 
-    
-    unsigned int prefrGLProgramID( void ){ return program( ); }
+    unsigned int prefrGLProgramID( void )
+    { return program( ); }
   };
 
 }

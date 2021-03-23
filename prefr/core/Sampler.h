@@ -25,6 +25,8 @@
 
 #include "Source.h"
 
+#include <prefr/api.h>
+
 namespace prefr
 {
   class Source;
@@ -33,30 +35,22 @@ namespace prefr
   class PREFR_API Sampler
   {
   public:
-
-    
     Sampler( ){ }
 
-    
     virtual ~Sampler( ){ }
 
-    
     virtual void sample( const Source& source,
                          SampledValues* values ) const = 0;
 
   };
-
+  
   class PREFR_API PointSampler : public Sampler
   {
   public:
-
-    
     PointSampler( ): Sampler( ){ }
 
-    
     virtual ~PointSampler( ){ }
 
-    
     virtual void sample( const Source& source,
                          SampledValues* values ) const;
   };
@@ -64,34 +58,25 @@ namespace prefr
   class PREFR_API SphereSampler : public Sampler
   {
   public:
-
-    
     SphereSampler( float radius = 0.0f, float angleTheta = 360 );
 
-    
     virtual ~SphereSampler( ){ }
 
-    
     virtual void sample( const Source& source,
                          SampledValues* values ) const;
 
-    
     void angleTheta( float angle );
 
-    
     float angleTheta( void ) const;
 
-    
     void radius( float radiusDegrees );
 
-    
     float radius( void ) const;
 
   protected:
 
     float _radius;
     float _angleTheta;
-
   };
 }
 

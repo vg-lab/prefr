@@ -44,14 +44,14 @@ namespace prefr
     VectorizedSet( void )
     { }
 
-    VectorizedSet( const VectorizedSet& other )
-    : _elementsList( other._elementsList )
-    {
+//    VectorizedSet( const VectorizedSet& other )
+//    : _elementsList( other._elementsList )
+//    {
 //      for( const_iterator it = _elementsList.begin( ); it != _elementsList.end( ); ++it )
 //      {
 //        _elementsRef.insert( std::make_pair( *it, it ));
 //      }
-    }
+//    }
 
     VectorizedSet( std::vector< T > elements )
     {
@@ -249,7 +249,6 @@ namespace prefr
       for( auto element : others )
         remove( element );
     }
-
 
     // TODO Add union, intersection
 

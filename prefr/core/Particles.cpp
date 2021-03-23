@@ -379,14 +379,6 @@ namespace prefr
   , _data( nullptr )
   { }
 
-  ParticleCollection::ParticleCollection( const ParticleCollection& other )
-  : _particleIndices( other._particleIndices )
-  , _indices( other._indices )
-  , _vectorReferences( other._vectorReferences )
-  , _size( other._particleIndices.size( ))
-  , _data( other._data )
-  { }
-
   ParticleCollection::ParticleCollection( const Particles& data_ )
   : _vectorReferences( data_.vectorReferences( ))
   , _data( & data_ )

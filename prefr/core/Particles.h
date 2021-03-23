@@ -72,7 +72,6 @@
   public: \
     void set_##name( const type& value ){ *_##name##_ptr = value; }
 
-
 namespace prefr
 {
   class Particles;
@@ -127,7 +126,6 @@ namespace prefr
    */
   class PREFR_API Particles : public boost::noncopyable
   {
-
   public:
 
     class base_iterator;
@@ -314,7 +312,6 @@ namespace prefr
     friend class ParticleSystem;
 
     ParticleCollection( void );
-    ParticleCollection( const ParticleCollection& other );
 
     ParticleCollection( const Particles& data, const ParticleSet& indices_ );
     ParticleCollection( const Particles& data, const ParticleIndices& indices_ );
@@ -458,14 +455,11 @@ namespace prefr
 
   class PREFR_API Particles::base_iterator : public Particles::base_const_iterator
   {
-
   public:
-
     base_iterator( const base_const_iterator& other );
     virtual ~base_iterator( void );
 
   protected:
-
     base_iterator( void );
 
     PREFR_IT_ATRIB( id, unsigned int )
@@ -483,12 +477,10 @@ namespace prefr
 
   class PREFR_API Particles::iterator : public Particles::base_iterator
   {
-
     friend class ParticleCollection;
     friend class Particles::const_iterator;
 
   public:
-
     iterator( void );
     iterator( const iterator& other );
     iterator( const const_iterator& other );
@@ -510,17 +502,14 @@ namespace prefr
 
     iterator operator*( void );
     iterator operator->( void );
-
   };
 
   class PREFR_API Particles::const_iterator : public Particles::base_const_iterator
   {
-
     friend class ParticleCollection;
     friend class Particles::iterator;
 
   public:
-
     const_iterator( void );
     const_iterator( const iterator& other );
     const_iterator( const const_iterator& other );
@@ -541,7 +530,6 @@ namespace prefr
 
     const_iterator operator*( void );
     const_iterator operator->( void );
-
   };
 
   typedef Particles::iterator tparticle;
@@ -549,6 +537,5 @@ namespace prefr
 
   std::ostream& operator<<( std::ostream& stream,
                             const Particles::base_const_iterator& it );
-
 }
 #endif /* __PREFR__PARTICLES__ */

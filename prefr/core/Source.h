@@ -33,10 +33,8 @@
 #include "Sampler.h"
 #include "UpdateConfig.h"
 
-
 namespace prefr
 {
-
   class Cluster;
   class Sampler;
 
@@ -182,8 +180,6 @@ namespace prefr
      virtual void closeFrame( );
 
   };
-
 }
-
 
 #endif /* __PREFR__SOURCE__ */
