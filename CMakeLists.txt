@@ -56,6 +56,7 @@ common_find_package( GLUT SYSTEM )
 common_find_package( Boost REQUIRED )
 common_find_package( Eigen3 SYSTEM )
 common_find_package( ReTo REQUIRED )
+common_find_package( Qt5OpenGL )
 
 list( APPEND PREFR_DEPENDENT_LIBRARIES ReTo OpenGL GLEW GLM Boost )
 
