@@ -1,4 +1,4 @@
-#include <qDebug>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QSurfaceFormat>
 #include <QOpenGLFunctions>
@@ -93,7 +93,6 @@ public:
   {
     QTimer* timer = new QTimer(this);
     timer->start(0);
-    //connect(timer,SIGNAL(timeout()),this,SLOT(idle()));
     connect( timer, &QTimer::timeout, [=](){update();} );
   }
 
@@ -106,6 +105,8 @@ public slots:
   {
     makeCurrent();
     auto ctx = QOpenGLContext::currentContext();
+
+    // Check if context is valid                                                                                                                                                                                                                                                                                                                                                                                            
     assert(ctx);
     qDebug() << ctx->isValid();
 
@@ -118,16 +119,8 @@ public slots:
     vertPath.append( "/GL/shd/GL-vert.glsl" );
     fragPath.append( "/GL/shd/GL-frag.glsl" );
     prefr::Config::init( );
-    //   glCreateShader(GL_VERTEX_SHADER);
     initShader( vertPath.c_str( ), fragPath.c_str( ));
 
-    // _shaderParticlesDefault = new reto::ShaderProgram( );
-    std::cout << vertPath << std::endl;
-    // program.loadVertexShaderFromText( vertPath.c_str( ));
-    // program.loadFragmentShaderFromText( fragPath.c_str( ) );
-    // program.compileAndLink( );
-    // program.autocatching( );
-    
     particleSystem = new ParticleSystem( maxParticles, &camera );
 
     Model* model1 = new Model( 3.0f, 10.0f );
@@ -234,7 +227,6 @@ public slots:
 
     QOpenGLWindow::initializeGL( );
 
-    //init( );
   }
   void resizeGL(int width, int height)
   {
@@ -288,17 +280,7 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat fmt;
     fmt.setDepthBufferSize(24);
-
-    // Request OpenGL 3.3 core or OpenGL ES 3.0.
-    if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
-        qDebug("Requesting 3.3 core context");
-        fmt.setVersion(4, 0);
-        fmt.setProfile(QSurfaceFormat::CoreProfile);
-    } else {
-        qDebug("Requesting 3.0 context");
-        fmt.setVersion(4, 0);
-    }
-
+    fmt.setVersion(4, 0);
     fmt.setProfile( QSurfaceFormat::CoreProfile );
     QSurfaceFormat::setDefaultFormat(fmt);
 

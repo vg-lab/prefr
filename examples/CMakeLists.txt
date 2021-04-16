@@ -30,9 +30,7 @@ if( PREFR_WITH_EXAMPLES )
   if ( QT5OPENGL_FOUND )
     set( PREFRQT_HEADERS )
     set( PREFRQT_SOURCES qt.cpp )
-    set( PREFRQT_LINK_LIBRARIES prefr
-      Qt5::OpenGL
-      )
+    set( PREFRQT_LINK_LIBRARIES prefr Qt5::OpenGL )
     common_application( prefrQt )
   endif( )
 
