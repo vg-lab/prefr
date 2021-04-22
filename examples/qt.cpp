@@ -96,19 +96,17 @@ public:
     connect( timer, &QTimer::timeout, [=](){update();} );
   }
 
-public slots:
-
-  void idle( void )
-  {this->update();}
 
   void init (void )
   {
+//    prefr::Config::init( );
     makeCurrent();
-    auto ctx = QOpenGLContext::currentContext();
 
-    // Check if context is valid                                                                                                                                                                                                                                                                                                                                                                                            
-    assert(ctx);
-    qDebug() << ctx->isValid();
+//    auto ctx = QOpenGLContext::currentContext();
+
+   // Check if context is valid                                                                                                                                                                                                                                                                                                                                                                                            
+    //  assert(ctx);
+    //qDebug() << ctx->isValid();
 
     unsigned int maxParticles = 1000;
     unsigned int maxClusters = 1;
@@ -118,7 +116,7 @@ public slots:
     vertPath = fragPath = std::string( PREFR_LIBRARY_BASE_PATH );
     vertPath.append( "/GL/shd/GL-vert.glsl" );
     fragPath.append( "/GL/shd/GL-frag.glsl" );
-    prefr::Config::init( );
+
     initShader( vertPath.c_str( ), fragPath.c_str( ));
 
     particleSystem = new ParticleSystem( maxParticles, &camera );
@@ -216,7 +214,7 @@ public slots:
   }
   void initializeGL()
   {
-
+    prefr::Config::init( );
     std::cout << "init gl" << std::endl;
     glEnable( GL_DEPTH_TEST );
     glClearColor( 1.0f, 1.f, 1.f, 0.0f );
@@ -227,6 +225,13 @@ public slots:
 
     QOpenGLWindow::initializeGL( );
 
+    auto ctx = QOpenGLContext::currentContext();
+
+    // Check if context is valid                                                                                                                                                                                                                                                                                                                                                                                            
+    assert(ctx);
+    qDebug() << ctx->isValid();
+
+    this->init();
   }
   void resizeGL(int width, int height)
   {
@@ -286,6 +291,6 @@ int main(int argc, char *argv[])
 
     GLWindow glWindow;
     glWindow.show();
-    glWindow.init();
+//    glWindow.init();
     return app.exec();
 }
