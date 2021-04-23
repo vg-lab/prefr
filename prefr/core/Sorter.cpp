@@ -73,7 +73,11 @@ namespace prefr
 #endif
     }
     else
+    {
       std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
+    }
+#else
+    std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
 #endif
 
 #ifdef PREFR_WITH_LOGGING
