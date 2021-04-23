@@ -29,7 +29,6 @@
 
 namespace prefr
 {
-
   GLRenderer::GLRenderer(  )
   : Renderer( )
   , _glRenderConfig( nullptr )
@@ -165,9 +164,7 @@ namespace prefr
   void GLRenderer::setupRender( void )
   {
 #ifdef PREFR_USE_OPENMP
-
     #pragma omp parallel for if( _parallel )
-
 #endif
     for( int i = 0; i < ( int ) _glRenderConfig->_aliveParticles; ++i )
     {
@@ -226,7 +223,6 @@ namespace prefr
                      &_glRenderConfig->_particleColors->front( ));
 
     glBindVertexArray( 0 );
-
   }
 
   void GLRenderer::paint( void ) const
@@ -270,7 +266,6 @@ namespace prefr
                    viewMatrix[ 0 ][ 0 ],
                    viewMatrix[ 1 ][ 0 ],
                    viewMatrix[ 2 ][ 0 ]);
-
     }
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4,
@@ -280,7 +275,5 @@ namespace prefr
 
     glDepthMask( GL_TRUE );
     glEnable( GL_CULL_FACE );
-
   }
-
 }

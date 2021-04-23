@@ -43,8 +43,6 @@
 #include <reto/reto.h>
 #include <Eigen/Dense>
 
-
-
 // GLUT Functions
 void renderFunc( void );
 void resizeFunc( int width, int height );
@@ -120,7 +118,6 @@ public:
   unsigned int prefrGLProgramID( void ){ return program( ); }
 };
 
-
 Camera camera;
 RenderProgram program;
 RenderProgram pickProgram;
@@ -137,10 +134,8 @@ bool paintNeurites = true;
 
 int mxCoord, myCoord;
 
-
 int pickX, pickY;
 bool checkPicking = false;
-
 
 void initContext( int argc, char** argv )
 {
@@ -179,7 +174,6 @@ void initOGL( void )
   glFrontFace( GL_CCW );
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
   glEnable( GL_CULL_FACE );
-
 }
 
 void initShader( const char *vname, const char *fname )
@@ -253,8 +247,8 @@ void idleFunc( void )
   static float angle = 0.0f;
   angle = ( angle > 2.0f * float( M_PI )) ? 0 : angle + 0.01f;
   glutPostRedisplay( );
-
 }
+
 void mouseFunc( int button, int state, int xCoord, int yCoord )
 {
   if( button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN )
@@ -424,9 +418,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 #endif
 
   particleSystem->run( true );
-
 }
-
 
 void usage( void )
 {

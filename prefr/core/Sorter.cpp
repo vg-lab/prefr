@@ -32,7 +32,6 @@
 
 namespace prefr
 {
-
   Sorter::Sorter( )
   : _sources( nullptr )
   , _distances( nullptr )
@@ -42,7 +41,6 @@ namespace prefr
 
   Sorter::~Sorter()
   {
-
     if ( _distances )
       delete( _distances );
   }
@@ -73,7 +71,11 @@ namespace prefr
 #endif
     }
     else
+    {
       std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
+    }
+#else
+    std::sort( _distances->begin( ), end, DistanceArray::sortDescending );
 #endif
 
 #ifdef PREFR_WITH_LOGGING

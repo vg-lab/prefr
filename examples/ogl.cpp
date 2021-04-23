@@ -43,8 +43,6 @@
 #include <reto/reto.h>
 #include <Eigen/Dense>
 
-
-
 // GLUT Functions
 void renderFunc( void );
 void resizeFunc( int width, int height );
@@ -102,7 +100,6 @@ class RenderProgram : public prefr::IGLRenderProgram,
                       public reto::ShaderProgram
 {
 public:
-
   RenderProgram( )
   : prefr::IGLRenderProgram( )
   , reto::ShaderProgram( )
@@ -119,7 +116,6 @@ public:
   unsigned int prefrGLProgramID( void ){ return program( ); }
 };
 
-
 Camera camera;
 RenderProgram program;
 
@@ -132,7 +128,6 @@ bool paintSoma = true;
 bool paintNeurites = true;
 
 int mxCoord, myCoord;
-
 
 void initContext( int argc, char** argv )
 {
@@ -171,7 +166,6 @@ void initOGL( void )
   glFrontFace( GL_CCW );
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
   glEnable( GL_CULL_FACE );
-
 }
 
 void initShader( const char *vname, const char *fname )
@@ -192,8 +186,6 @@ void expandBoundingBox( Eigen::Vector3f& minBounds,
   }
 }
 
-
-
 void renderFunc( void )
 {
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -205,9 +197,7 @@ void renderFunc( void )
   particleSystem->updateRender( );
   particleSystem->render( );
 
-
   glutSwapBuffers( );
-
 }
 
 void resizeFunc( int width, int height )
@@ -218,14 +208,14 @@ void resizeFunc( int width, int height )
 
 void idleFunc( void )
 {
-
   static float angle = 0.0f;
   angle = ( angle > 2.0f * float( M_PI )) ? 0 : angle + 0.01f;
   glutPostRedisplay( );
-
 }
+
 prefr::GLRenderer* renderer;
 prefr::GLRenderer::BlendFunc alphaBlendFunc;
+
 void mouseFunc( int button, int state, int xCoord, int yCoord )
 {
   if( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN )
@@ -329,7 +319,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
   Source* source;
   Sampler* sampler = new SphereSampler( 1.0f, 360 );
 
-  unsigned int particlesPerCluster = maxParticles / maxClusters;
+  const unsigned int particlesPerCluster = maxParticles / maxClusters;
 
   Eigen::Vector3f boundingBoxMin( std::numeric_limits< float >::max( ),
                                   std::numeric_limits< float >::max( ),
@@ -350,8 +340,8 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
     ParticleIndices indices;
     indices.reserve( particlesPerCluster );
 
-    unsigned int start = particlesPerCluster * i;
-    unsigned int end = start + particlesPerCluster;
+    const unsigned int start = particlesPerCluster * i;
+    const unsigned int end = start + particlesPerCluster;
 
     for( unsigned int index = start; index < end; ++index )
     {
@@ -385,9 +375,7 @@ void InitParticleSystem( unsigned int maxParticles, unsigned int maxClusters )
 #endif
 
   particleSystem->run( true );
-
 }
-
 
 void usage( void )
 {

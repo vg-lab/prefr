@@ -41,6 +41,8 @@ namespace prefr
   , _useExternalCamera( camera ? true : false )
 #ifdef PREFR_USE_OPENMP
   , _parallel( true )
+#else
+  , _parallel( false )
 #endif
   {
     _particles.resize( _maxParticles );
@@ -244,7 +246,6 @@ namespace prefr
 #ifdef PREFR_USE_OPENMP
     _sorter->_parallel = _parallel;
 #endif
-
   }
 
   Sorter* ParticleSystem::sorter( void ) const
@@ -303,10 +304,11 @@ namespace prefr
   {
     _aliveParticles = 0;
 
-#ifdef PREFR_USE_OPENMP
 
     _sourcesVec = _sources.vector( );
     _sorter->sources( &_sourcesVec );
+
+#ifdef PREFR_USE_OPENMP
 
     #pragma omp parallel for if( _parallel )
     for( int s = 0; s < ( int ) _sources.size( ); ++s )
