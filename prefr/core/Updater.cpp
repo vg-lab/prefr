@@ -25,7 +25,7 @@
 namespace prefr
 {
 
-  static float invRandMax = 1.0f / RAND_MAX;
+  constexpr float invRandMax = 1.0f / RAND_MAX;
 
   Updater::Updater( void )
   : _updateConfig( nullptr )
@@ -37,7 +37,6 @@ namespace prefr
   void Updater::updateParticle( tparticle current,
                                 float deltaTime )
   {
-
     unsigned int id = current.id( );
     Source* source = _updateConfig->source( id );
     Model* model = _updateConfig->model( id );
@@ -82,7 +81,7 @@ namespace prefr
         _updateConfig->setDead( id, true );
       }
 
-      float refLife = 1.0f -
+      const float refLife = 1.0f -
           glm::clamp( current.life( ) * ( model->_lifeNormalization ),
                       0.0f, 1.0f );
 
@@ -93,9 +92,6 @@ namespace prefr
 
       current.set_position( current.position( ) + current.velocity( ) *
                              current.velocityModule( ) * deltaTime );
-
     }
-
   }
-
 }

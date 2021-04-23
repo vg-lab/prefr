@@ -67,7 +67,6 @@ class MyRenderProgram : public prefr::IGLRenderProgram,
                         public reto::ShaderProgram
 {
 public:
-
   MyRenderProgram( )
   : prefr::IGLRenderProgram( )
   , reto::ShaderProgram( )
@@ -84,8 +83,6 @@ public:
   unsigned int prefrGLProgramID( void ){ return program( ); }
 };
 
-
-
 class GLWindow : public QOpenGLWindow
 {
 public:
@@ -95,7 +92,6 @@ public:
     timer->start(0);
     connect( timer, &QTimer::timeout, [=](){update();} );
   }
-
 
   void init (void )
   {
@@ -151,7 +147,7 @@ public:
     Source* source;
     Sampler* sampler = new SphereSampler( 1.0f, 360 );
 
-    unsigned int particlesPerCluster = maxParticles / maxClusters;
+    const unsigned int particlesPerCluster = maxParticles / maxClusters;
 
     Eigen::Vector3f boundingBoxMin( std::numeric_limits< float >::max( ),
                                     std::numeric_limits< float >::max( ),
@@ -172,8 +168,8 @@ public:
       ParticleIndices indices;
       indices.reserve( particlesPerCluster );
 
-      unsigned int start = particlesPerCluster * i;
-      unsigned int end = start + particlesPerCluster;
+      const unsigned int start = particlesPerCluster * i;
+      const unsigned int end = start + particlesPerCluster;
 
       for( unsigned int index = start; index < end; ++index )
       {
@@ -207,11 +203,11 @@ public:
 #endif
 
     particleSystem->run( true );
+  }
 
-  }
   ~GLWindow()
-  {
-  }
+  {}
+
   void initializeGL()
   {
     prefr::Config::init( );
@@ -233,12 +229,12 @@ public:
 
     this->init();
   }
+
   void resizeGL(int width, int height)
   {
       camera.windowSize(width, height);
       glViewport( 0, 0, width, height );
   }
-
   
   void paintGL()
   {
@@ -250,7 +246,6 @@ public:
     particleSystem->updateCameraDistances( );
     particleSystem->updateRender( );
     particleSystem->render( );
-
   }
 
   void initShader( const char *vname, const char *fname )
@@ -276,7 +271,6 @@ protected:
 
   prefr::GLRenderer* renderer;
   prefr::GLRenderer::BlendFunc alphaBlendFunc;
-
 };
   
 int main(int argc, char *argv[])

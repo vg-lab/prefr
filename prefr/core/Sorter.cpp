@@ -32,7 +32,6 @@
 
 namespace prefr
 {
-
   Sorter::Sorter( )
   : _sources( nullptr )
   , _distances( nullptr )
@@ -42,7 +41,6 @@ namespace prefr
 
   Sorter::~Sorter()
   {
-
     if ( _distances )
       delete( _distances );
   }

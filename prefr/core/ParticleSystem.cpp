@@ -246,7 +246,6 @@ namespace prefr
 #ifdef PREFR_USE_OPENMP
     _sorter->_parallel = _parallel;
 #endif
-
   }
 
   Sorter* ParticleSystem::sorter( void ) const
