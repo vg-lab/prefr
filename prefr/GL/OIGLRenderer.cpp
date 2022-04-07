@@ -22,17 +22,17 @@
  *
  */
 
-#include "GLRenderer.h"
+#include "OIGLRenderer.h"
 
+#include <tuple>
 #include <prefr/core/ParticleSystem.h>
 #include <prefr/GL/IGLRenderProgram.h>
 
 namespace prefr
 {
-  GLRenderer::GLRenderer( IGLRenderProgram* program )
-    : GLAbstractRenderer( false )
+  OIGLRenderer::OIGLRenderer( IGLRenderProgram* program )
+    : GLAbstractRenderer( true )
     , _glRenderProgram( program )
-    , _blendFuncValue( GL_ONE_MINUS_SRC_ALPHA )
     , _particleAmount( 0 )
     , _vao( 0 )
     , _vertexVBO( 0 )
@@ -42,25 +42,26 @@ namespace prefr
     , _uniformMatrix( 0 )
     , _uniformCameraUp( 0 )
     , _uniformCameraRight( 0 )
+    , _accumulativeMode( false )
   {
+    setRenderProgram(_glRenderProgram);
   }
 
-  GLRenderer::~GLRenderer( )
+  OIGLRenderer::~OIGLRenderer( )
+  = default;
+
+  void OIGLRenderer::enableAccumulativeMode( bool accumulativeMode )
   {
-    setRenderProgram( _glRenderProgram );
+    _accumulativeMode = accumulativeMode;
   }
 
-  void GLRenderer::_init( unsigned int particleAmount )
+  void OIGLRenderer::_init( unsigned int particleAmount )
   {
 
     _particleAmount = particleAmount;
 
     GLfloat vertices[] = { -0.5f , -0.5f , 0.0f , 0.5f , -0.5f , 0.0f ,
                            -0.5f , 0.5f , 0.0f , 0.5f , 0.5f , 0.0f };
-
-    _sizes.resize( particleAmount );
-    _positions.resize( particleAmount * 3 );
-    _colors.resize( particleAmount * 4 );
 
     glGenVertexArrays( 1 , &_vao );
     glBindVertexArray( _vao );
@@ -124,58 +125,30 @@ namespace prefr
     glVertexAttribDivisor( 3 , 1 );
   }
 
-  void GLRenderer::enableAccumulativeMode( bool accumulativeMode )
+  void OIGLRenderer::updateRender( ParticleSystem& system )
   {
-    _blendFuncValue = accumulativeMode
-                      ? ( unsigned int ) GL_ONE_MINUS_CONSTANT_ALPHA
-                      : ( unsigned int ) GL_ONE_MINUS_SRC_ALPHA;
-  }
-
-  void GLRenderer::updateRender( ParticleSystem& system )
-  {
-    auto aliveParticles = static_cast<int>(system.aliveParticles( ));
-    auto& particles = system.particles( );
-    auto distances = system.sorter( )->getDistanceArray( );
-
-#ifdef PREFR_USE_OPENMP
-#pragma omp parallel for if( system.isParallel())
-#endif
-    for ( int i = 0; i < aliveParticles; i++ )
-    {
-      tparticle currentParticle = particles[ distances->getID( i ) ];
-
-      auto positionIterator = _positions.begin( ) + i * 3;
-      auto colorIterator = _colors.begin( ) + i * 4;
-
-      _sizes.at( i ) = currentParticle.size( );
-
-      *positionIterator++ = currentParticle.position( ).x;
-      *positionIterator++ = currentParticle.position( ).y;
-      *positionIterator++ = currentParticle.position( ).z;
-
-      *colorIterator++ = currentParticle.color( ).x;
-      *colorIterator++ = currentParticle.color( ).y;
-      *colorIterator++ = currentParticle.color( ).z;
-      *colorIterator++ = currentParticle.color( ).w;
-    }
+    auto& vectors = system.particles( ).vectorReferences( );
 
     glBindVertexArray( _vao );
 
-    GLsizeiptr aux = static_cast<int>(sizeof( GLfloat )) * aliveParticles;
+    GLsizeiptr aux = static_cast<int>(sizeof( GLfloat )) * _particleAmount;
+
 
     glBindBuffer( GL_ARRAY_BUFFER , _sizeVBO );
-    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux , _sizes.data( ));
+    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux , std::get< 2 >( vectors ));
 
     glBindBuffer( GL_ARRAY_BUFFER , _positionVBO );
-    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux * 3 , _positions.data( ));
+    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux * 3 ,
+                     &std::get< 3 >( vectors )[ 0 ].x );
 
     glBindBuffer( GL_ARRAY_BUFFER , _colorVBO );
-    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux * 4 , _colors.data( ));
+    glBufferSubData( GL_ARRAY_BUFFER , 0 , aux * 4 ,
+                     &std::get< 4 >( vectors )[ 0 ].x );
 
     glBindVertexArray( 0 );
   }
 
-  void GLRenderer::paint( const ParticleSystem& system ) const
+  void OIGLRenderer::paint( const ParticleSystem& system ) const
   {
     glBindVertexArray( _vao );
 
@@ -184,10 +157,21 @@ namespace prefr
     if ( _glRenderProgram && camera )
     {
       glEnable( GL_DEPTH_TEST );
-      glDepthMask( GL_FALSE );
-      glDisable( GL_CULL_FACE );
       glEnable( GL_BLEND );
-      glBlendFunc( GL_SRC_ALPHA , _blendFuncValue );
+
+      if ( _accumulativeMode )
+      {
+        glDepthMask( GL_FALSE );
+        glBlendFunc( GL_SRC_ALPHA , GL_ONE_MINUS_CONSTANT_ALPHA );
+      }
+      else
+      {
+        glDepthMask( GL_TRUE );
+        glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+        glEnable( GL_SAMPLE_ALPHA_TO_ONE );
+        glBlendFunc( GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA );
+      }
+
 
       _glRenderProgram->prefrActivateGLProgram( );
 
@@ -210,7 +194,13 @@ namespace prefr
     }
 
     glDrawArraysInstanced( GL_TRIANGLE_STRIP , 0 , 4 ,
-                           system.aliveParticles( ));
+                           static_cast<GLsizei>(_particleAmount));
+
+    if ( !_accumulativeMode )
+    {
+      glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+      glDisable( GL_SAMPLE_ALPHA_TO_ONE );
+    }
 
     glBindVertexArray( 0 );
 
@@ -218,7 +208,7 @@ namespace prefr
     glEnable( GL_CULL_FACE );
   }
 
-  void GLRenderer::_dispose( )
+  void OIGLRenderer::_dispose( )
   {
     glDeleteBuffers( 1 , &_vertexVBO );
     glDeleteBuffers( 1 , &_sizeVBO );
@@ -227,12 +217,12 @@ namespace prefr
     glDeleteVertexArrays( 1 , &_vao );
   }
 
-  IGLRenderProgram* GLRenderer::getRenderProgram( )
+  IGLRenderProgram* OIGLRenderer::getRenderProgram( )
   {
     return _glRenderProgram;
   }
 
-  void GLRenderer::setRenderProgram( IGLRenderProgram* program )
+  void OIGLRenderer::setRenderProgram( IGLRenderProgram* program )
   {
     _glRenderProgram = program;
 

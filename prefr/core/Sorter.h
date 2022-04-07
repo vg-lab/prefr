@@ -37,7 +37,7 @@ namespace prefr
 {
   static inline float length2( const glm::vec3& elem )
   {
-    return( elem.x * elem.x + elem.y * elem.y + elem.z * elem.z );
+    return ( elem.x * elem.x + elem.y * elem.y + elem.z * elem.z );
   }
 
   class PREFR_API Sorter
@@ -48,34 +48,34 @@ namespace prefr
 
     enum SortOrder
     {
-      Descending = 0,
-      Ascending = 1,
+      Descending = 0 ,
+      Ascending = 1 ,
     };
 
-     Sorter( );
+    Sorter( );
 
-     virtual ~Sorter( );
+    virtual ~Sorter( );
 
-     virtual void sort( SortOrder order = Descending );
+    const DistanceArray* getDistanceArray( ) const;
 
-    
-    virtual void updateCameraDistance( const glm::vec3& cameraPosition,
+    virtual void sort( SortOrder order = Descending );
+
+    virtual void updateCameraDistance( const glm::vec3& cameraPosition ,
                                        bool renderDeadParticles = false );
 
-    
+
     void updateCameraDistance( bool renderDeadParticles = false );
 
-    
-    virtual void updateParticleDistance( const tparticle_ptr current,
-                                         const glm::vec3& cameraPosition,
+
+    virtual void updateParticleDistance( const tparticle_ptr current ,
+                                         const glm::vec3& cameraPosition ,
                                          bool renderDeadParticles = false );
 
-     virtual void initDistanceArray( ICamera* camera );
+    virtual void initDistanceArray( ICamera* camera );
 
-     void particles( const ParticleRange& particles );
+    void particles( const ParticleRange& particles );
 
-     void aliveParticles( unsigned int alive );
-protected:
+  protected:
 
     void sources( std::vector< Source* >* sources_ );
 

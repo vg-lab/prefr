@@ -22,14 +22,13 @@ set(PREFR_PUBLIC_HEADERS
   core/Model.h
   core/DistanceArray.hpp
   core/Sorter.h
-  core/RenderConfig.h
-  core/Renderer.h
+        core/Renderer.h
   core/ICamera.h
   
   GL/GLRenderer.h
+  GL/OIGLRenderer.h
   GL/GLPickRenderer.h
-  GL/GLRenderConfig.h
-  GL/IGLRenderProgram.h
+        GL/IGLRenderProgram.h
   GL/RenderProgram.h
   
   cuda/ThrustSorter.cuh
@@ -54,7 +53,9 @@ set(PREFR_SOURCES
   core/Sorter.cpp  
   core/Renderer.cpp
   
+  GL/GLAbstractRenderer.h
   GL/GLRenderer.cpp
+  GL/OIGLRenderer.cpp
   GL/GLPickRenderer.cpp
       
   cuda/ThrustSorter.cu

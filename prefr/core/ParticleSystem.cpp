@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2014-2020 VG-Lab/URJC.
+ * Copyright (c) 2014-2022 VG-Lab/URJC.
  *
- * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
+ * Authors:
+ * - Sergio E. Galindo <sergio.galindo@urjc.es>
+ * - Gael Rial Costas <g.rial.2018@alumnos.urjc.es>
  *
  * This file is part of PReFr <https://github.com/gmrvvis/prefr>
  *
@@ -25,22 +27,24 @@
 #include "../utils/Log.h"
 
 #ifdef PREFR_USE_OPENMP
+
 #include <omp.h>
+
 #endif
 
 namespace prefr
 {
-  ParticleSystem::ParticleSystem( unsigned int maxParticles,
+  ParticleSystem::ParticleSystem( unsigned int maxParticles ,
                                   ICamera* camera )
-  : _sorter( nullptr )
-  , _renderer( nullptr )
-  , _maxParticles ( maxParticles )
-  , _renderDeadParticles( false )
-  , _run( false )
-  , _camera( camera )
-  , _useExternalCamera( camera ? true : false )
+    : _sorter( nullptr )
+    , _renderer( nullptr )
+    , _maxParticles( maxParticles )
+    , _renderDeadParticles( false )
+    , _run( false )
+    , _camera( camera )
+    , _useExternalCamera( camera != nullptr )
 #ifdef PREFR_USE_OPENMP
-  , _parallel( true )
+    , _parallel( true )
 #else
   , _parallel( false )
 #endif
@@ -48,15 +52,16 @@ namespace prefr
     _particles.resize( _maxParticles );
 
     // Initialize used and unused particles.
-    _used = ParticleCollection( _particles, ParticleIndices( ));
-    _unused = ParticleCollection( _particles, _particles.begin( ), _particles.end( ) );
+    _used = ParticleCollection( _particles , ParticleIndices( ));
+    _unused = ParticleCollection( _particles , _particles.begin( ) ,
+                                  _particles.end( ));
 
-    _referenceModels.resize( _maxParticles, nullptr );
-    _referenceSources.resize( _maxParticles, nullptr );
-    _referenceUpdaters.resize( _maxParticles, nullptr );
+    _referenceModels.resize( _maxParticles , nullptr );
+    _referenceSources.resize( _maxParticles , nullptr );
+    _referenceUpdaters.resize( _maxParticles , nullptr );
 
-    _flagsEmitted.resize( _maxParticles, false );
-    _flagsDead.resize( _maxParticles, false );
+    _flagsEmitted.resize( _maxParticles , false );
+    _flagsDead.resize( _maxParticles , false );
 
     _updateConfig._refModels = &_referenceModels;
     _updateConfig._refSources = &_referenceSources;
@@ -69,7 +74,7 @@ namespace prefr
     _updateConfig._unused = &_unused;
 
     auto particle = _particles.begin( );
-    for( unsigned int i = 0; i < _maxParticles; i++ )
+    for ( unsigned int i = 0; i < _maxParticles; i++ )
     {
       particle.set_id( i );
       particle.set_alive( false );
@@ -82,42 +87,42 @@ namespace prefr
     _noVariationFrames = 0;
   }
 
-  ParticleSystem::~ParticleSystem()
+  ParticleSystem::~ParticleSystem( )
   {
-    for( Source* source : _sources )
-      delete( source );
+    for ( Source* source: _sources )
+      delete ( source );
 
-    for( Model* model : _models )
-      delete( model );
+    for ( Model* model: _models )
+      delete ( model );
 
-    for( Updater* updater : _updaters )
-      delete( updater );
+    for ( Updater* updater: _updaters )
+      delete ( updater );
 
-    for( Cluster* cluster : _clusters )
-      delete( cluster );
+    for ( Cluster* cluster: _clusters )
+      delete ( cluster );
 
-    delete( _sorter );
-    delete( _renderer );
+    delete ( _sorter );
+    delete ( _renderer );
   }
 
   void ParticleSystem::resize( unsigned int newSize )
   {
     _particles.resize( newSize );
 
-    _referenceModels.resize( newSize, nullptr );
-    _referenceSources.resize( newSize, nullptr );
-    _referenceUpdaters.resize( newSize, nullptr );
+    _referenceModels.resize( newSize , nullptr );
+    _referenceSources.resize( newSize , nullptr );
+    _referenceUpdaters.resize( newSize , nullptr );
 
-    _flagsEmitted.resize( newSize, false );
-    _flagsDead.resize( newSize, false );
+    _flagsEmitted.resize( newSize , false );
+    _flagsDead.resize( newSize , false );
 
   }
 
-  void ParticleSystem::addCluster( Cluster* cluster,
+  void ParticleSystem::addCluster( Cluster* cluster ,
                                    const ParticleSet& indices )
   {
     cluster->_updateConfig = &_updateConfig;
-    cluster->particles( ParticleCollection( _particles, indices));
+    cluster->particles( ParticleCollection( _particles , indices ));
 
     _clusters.push_back( cluster );
   }
@@ -127,23 +132,23 @@ namespace prefr
     _clusters.remove( cluster );
   }
 
-  void ParticleSystem::addSource( Source* source,
+  void ParticleSystem::addSource( Source* source ,
                                   const ParticleSet& indices )
   {
     assert( source );
 
     source->_updateConfig = &_updateConfig;
 
-    source->_particles = ParticleCollection( _particles, indices );
+    source->_particles = ParticleCollection( _particles , indices );
 
-    if( indices.size( ) > 0 )
+    if ( indices.size( ) > 0 )
     {
-      for( unsigned int idx : indices )
+      for ( unsigned int idx: indices )
       {
-        if( !_unused.hasElement( idx ))
+        if ( !_unused.hasElement( idx ))
         {
           Source* previous = _referenceSources[ idx ];
-          if( previous )
+          if ( previous )
             previous->particles( ).removeIndex( idx );
         }
 
@@ -186,11 +191,11 @@ namespace prefr
     assert( model );
     _models.remove( model );
 
-    for( auto const & particle : _used )
+    for ( auto const& particle: _used )
     {
       unsigned int idx = particle.id( );
 
-      if( _referenceModels[ idx ] == model )
+      if ( _referenceModels[ idx ] == model )
       {
         _referenceModels[ idx ] = nullptr;
 
@@ -209,18 +214,18 @@ namespace prefr
 
     updater->_updateConfig = &_updateConfig;
 
-    _updaters.push_back(updater);
+    _updaters.push_back( updater );
   }
 
   void ParticleSystem::detachUpdater( Updater* updater )
   {
     assert( updater );
 
-    for( auto const & particle : _used )
+    for ( auto const& particle: _used )
     {
       unsigned int idx = particle.id( );
 
-      if( _referenceUpdaters[ idx ] == updater )
+      if ( _referenceUpdaters[ idx ] == updater )
       {
         _referenceUpdaters[ idx ] = nullptr;
 
@@ -256,18 +261,13 @@ namespace prefr
   void ParticleSystem::renderer( Renderer* renderer_ )
   {
     assert( renderer_ );
-    _renderer = renderer_ ;
+    if ( _renderer != nullptr )
+    {
+      _renderer->_dispose( );
+    }
 
-    _renderer->particles( _particles );
-
-    _renderer->_init( );
-
-    assert( _sorter->_distances );
-    _renderer->distanceArray( _sorter->_distances );
-
-#ifdef PREFR_USE_OPENMP
-    _renderer->_parallel = _parallel;
-#endif
+    _renderer = renderer_;
+    _renderer->_init( _maxParticles );
   }
 
   Renderer* ParticleSystem::renderer( void ) const
@@ -275,29 +275,29 @@ namespace prefr
     return _renderer;
   }
 
-  void ParticleSystem::start()
+  void ParticleSystem::start( )
   {
     _run = true;
   }
 
   void ParticleSystem::update( const float& deltaTime )
   {
-    if( !_run ) return;
+    if ( !_run ) return;
 
-    if( _lastAlive != 0  && _noVariationFrames >= 50 )
+    if ( _lastAlive != 0 && _noVariationFrames >= 50 )
     {
       _run = false;
       return;
 
     }
-     prepareFrame( deltaTime );
+    prepareFrame( deltaTime );
 
-     updateFrame( deltaTime );
+    updateFrame( deltaTime );
 
-     finishFrame( );
+    finishFrame( );
 
-     if( _lastAlive == _aliveParticles )
-       _noVariationFrames++;
+    if ( _lastAlive == _aliveParticles )
+      _noVariationFrames++;
   }
 
   void ParticleSystem::prepareFrame( float deltaTime )
@@ -310,15 +310,15 @@ namespace prefr
 
 #ifdef PREFR_USE_OPENMP
 
-    #pragma omp parallel for if( _parallel )
-    for( int s = 0; s < ( int ) _sources.size( ); ++s )
+#pragma omp parallel for if( _parallel )
+    for ( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
       Source* source = _sourcesVec[ s ];
 #else
-    for( auto& source : _sources )
-    {
+      for( auto& source : _sources )
+      {
 #endif
-      if( source->particles( ).empty( ) || !source->active( ))
+      if ( source->particles( ).empty( ) || !source->active( ))
         continue;
 
       // Set source's elapsed delta
@@ -329,22 +329,22 @@ namespace prefr
   void ParticleSystem::updateFrame( float deltaTime )
   {
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for if( _parallel )
-    for( int particleId = 0; particleId < ( int ) _used.size( ); ++particleId )
+#pragma omp parallel for if( _parallel )
+    for ( int particleId = 0; particleId < ( int ) _used.size( ); ++particleId )
     {
       tparticle particle = _used[ particleId ];
 #else
-    for( auto particle : _used )
-    {
+      for( auto particle : _used )
+      {
 #endif
 
-      Source* source = _referenceSources[ particle.id( )];
-      if( !source || !source->active( ) || source->particles( ).empty( ))
+      Source* source = _referenceSources[ particle.id( ) ];
+      if ( !source || !source->active( ) || source->particles( ).empty( ))
         continue;
 
-      Updater* updater = _referenceUpdaters[ particle.id( )];
-      if( updater )
-        updater->updateParticle( particle, deltaTime );
+      Updater* updater = _referenceUpdaters[ particle.id( ) ];
+      if ( updater )
+        updater->updateParticle( particle , deltaTime );
     }
   }
 
@@ -352,55 +352,58 @@ namespace prefr
   {
     // For each source...
 #ifdef PREFR_USE_OPENMP
-    #pragma omp parallel for if( _parallel )
+#pragma omp parallel for if( _parallel )
 
-    for( int s = 0; s < ( int ) _sources.size( ); ++s )
+    for ( int s = 0; s < ( int ) _sources.size( ); ++s )
     {
       Source* source = _sourcesVec[ s ];
 #else
-    for( auto& source : _sources )
-    {
+      for( auto& source : _sources )
+      {
 #endif
-      if( source->particles( ).empty( ) || !source->active( ))
+      if ( source->particles( ).empty( ) || !source->active( ))
         continue;
 
       // Finish frame
       source->closeFrame( );
 
-      #pragma omp atomic
+#pragma omp atomic
       _aliveParticles += source->aliveParticles( );
 
     }
 
     _sorter->_aliveParticles = _aliveParticles;
-    _renderer->renderConfig( )->_aliveParticles = _aliveParticles;
   }
 
   void ParticleSystem::updateCameraDistances( const glm::vec3& cameraPosition )
   {
-    if( _run )
-      _sorter->updateCameraDistance( cameraPosition, _renderDeadParticles );
+    if ( _run )
+      _sorter->updateCameraDistance( cameraPosition , _renderDeadParticles );
   }
 
   void ParticleSystem::updateCameraDistances( void )
   {
-    if( _run )
-        _sorter->updateCameraDistance( _renderDeadParticles );
+    if ( _run )
+      _sorter->updateCameraDistance( _renderDeadParticles );
   }
 
   void ParticleSystem::updateRender( )
   {
-    if( _run )
+    if ( _run )
     {
-      _sorter->sort( );
-      _renderer->setupRender( );
+      if ( !_renderer->isOrderIndependent( ))
+      {
+        _sorter->updateCameraDistance( _camera->PReFrCameraPosition( ));
+        _sorter->sort( );
+      }
+      _renderer->updateRender( *this );
     }
   }
 
   void ParticleSystem::render( ) const
   {
-    if( _run )
-      _renderer->paint( );
+    if ( _run )
+      _renderer->paint( *this );
   }
 
   void ParticleSystem::run( bool run_ )
@@ -408,12 +411,12 @@ namespace prefr
     _run = run_;
   }
 
-  bool ParticleSystem::run( void ) const
+  bool ParticleSystem::run( ) const
   {
     return _run;
   }
 
-  unsigned int ParticleSystem::aliveParticles( void ) const
+  unsigned int ParticleSystem::aliveParticles( ) const
   {
     return _aliveParticles;
   }
@@ -427,21 +430,24 @@ namespace prefr
   {
     _parallel = parallelProcessing;
 
-    if( _sorter )
+    if ( _sorter )
       _sorter->_parallel = parallelProcessing;
-
-    if( _renderer )
-      _renderer->_parallel = parallelProcessing;
   }
 
-  const ClustersArray& ParticleSystem::clusters( void ) const
+  bool ParticleSystem::isParallel( ) const
+  {
+    return _parallel;
+  }
+
+  const ClustersArray& ParticleSystem::clusters( ) const
   {
     return _clusters;
   }
 
-  ParticleCollection ParticleSystem::createCollection( const ParticleSet& indices )
+  ParticleCollection
+  ParticleSystem::createCollection( const ParticleSet& indices )
   {
-    return ParticleCollection( _particles, indices );
+    return { _particles , indices };
   }
 
   void ParticleSystem::releaseParticles( const ParticleCollection& collection )
@@ -451,7 +457,7 @@ namespace prefr
 
   void ParticleSystem::releaseParticles( const ParticleSet& indices )
   {
-    for( auto const & idx : indices )
+    for ( auto const& idx: indices )
     {
       _referenceModels[ idx ] = nullptr;
       _referenceSources[ idx ] = nullptr;
@@ -459,45 +465,48 @@ namespace prefr
 
       _flagsDead[ idx ] = false;
       _flagsEmitted[ idx ] = false;
+      _particles[idx].set_alive( false);
 
     }
 
-    _used.removeIndices( indices);
+    _used.removeIndices( indices );
     _unused.addIndices( indices );
   }
 
   ParticleCollection ParticleSystem::retrieveUnused( unsigned int size )
   {
-    if( size == 0  || size >= _maxParticles )
+    if ( size == 0 || size >= _maxParticles )
       size = _maxParticles;
 
     unsigned int count = 0;
 
     ParticleSet indices;
 
-    for( auto particleId : _unused.indices( ) )
+    for ( auto particleId: _unused.indices( ))
     {
-      if( count >= size )
+      if ( count >= size )
         break;
 
       indices.append( particleId );
 
       ++count;
     }
-//
-//    _unused.removeIndices( indices );
-//    _used.addIndices( indices );
 
-    return ParticleCollection( _particles, indices );
+    return { _particles , indices };
   }
 
-  ParticleCollection ParticleSystem::retrieveActive( void )
+  ParticleCollection& ParticleSystem::retrieveActive( )
   {
     return _used;
   }
 
-  ParticleCollection ParticleSystem::particles( void )
+  Particles& ParticleSystem::particles( )
   {
     return _particles;
+  }
+
+  ICamera* ParticleSystem::getCamera( ) const
+  {
+    return _camera;
   }
 }

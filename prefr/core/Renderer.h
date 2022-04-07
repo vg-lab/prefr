@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2014-2020 VG-Lab/URJC.
+ * Copyright (c) 2014-2022 VG-Lab/URJC.
  *
- * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
+ * Authors:
+ * - Sergio E. Galindo <sergio.galindo@urjc.es>
+ * - Gael Rial Costas <g.rial.2018@alumnos.urjc.es>
  *
  * This file is part of PReFr <https://github.com/gmrvvis/prefr>
  *
@@ -24,43 +26,101 @@
 #define __PREFR__RENDERER__
 
 #include <prefr/api.h>
-#include "../utils/types.h"
-
-#include "Particles.h"
-
-#include "DistanceArray.hpp"
-#include "RenderConfig.h"
+#include <memory>
 
 namespace prefr
 {
+  class ParticleSystem;
+
+  /**
+   * Represents a particle render.
+   *
+   * A particle render grabs the current particles inside a ParticleSystem
+   * and creates a frame in the current OpenGL context.
+   *
+   * A particle renderer may implement an order-independent transparency
+   * algorithm. These renderers are much faster than order-dependent
+   * algorithms, but the quality may be poorer.
+   */
   class PREFR_API Renderer
   {
     friend class ParticleSystem;
 
   public:
-     Renderer( );
 
-     virtual ~Renderer();
+    /**
+     * Creates an empty particle renderer.
+     * @param orderIndependent whether the renderer implements
+     * an order-independent transparency algorithm.
+     */
+    explicit Renderer( bool orderIndependent );
 
-     virtual void setupRender( void ) = 0;
+    /**
+     * The destroyer of the renderer.
+     *
+     * Do not release OpenGL resources here.
+     * Use _dispose( ) instead.
+     */
+    virtual ~Renderer( ) = default;
 
-     virtual void paint( void ) const = 0;
+    /**
+     * Returns whether this renderer implements an order-independent
+     * transparency algorithm.
+     * @return whether this renderer implements an order-independent
+     * transparency algorithm.
+     */
+    bool isOrderIndependent( ) const;
 
-     RenderConfig* renderConfig( void ) const;
+    /**
+     * Enables or disables the accumulative mode of this renderer.
+     * @param accumulativeMode whether the accumulative mode should be enabled.
+     */
+    virtual void enableAccumulativeMode( bool accumulativeMode ) = 0;
 
-     virtual void distanceArray( DistanceArray* distanceArray );
+    /**
+     *  Updates the render with the current particles' data.
+     *
+     *  This method must be overridden.
+     *
+     *  @param system the ParticleSystem requesting the update.
+     */
+    virtual void updateRender( ParticleSystem& system ) = 0;
 
-     void particles( const ParticleRange& particles );
+    /**
+     * Renders a frame.
+     *
+     * This method must be overridden.
+     *
+     * @param system the ParticleSystem requesting the update.
+     */
+    virtual void paint( const ParticleSystem& system ) const = 0;
 
   protected:
-    virtual void _init( void ) = 0;
 
-    ParticleCollection _particles;
+    /**
+     * Initializes this renderer.
+     *
+     * Implementations must initialize their OpenGL resources in this method.
+     *
+     * This method MUST be called from a OpenGL context's thread.
+     *
+     * @param particleAmount the amount of particles the system can hold.
+     */
+    virtual void _init( unsigned int particleAmount ) = 0;
 
-    DistanceArray* _distances;
-    RenderConfig* _renderConfig;
+    /**
+     * Disposes this renderer.
+     *
+     * Implementations must release all their OpenGL resources in this method.
+     *
+     * This method MUST be called from a OpenGL context's thread.
+     */
+    virtual void _dispose( ) = 0;
 
-    bool _parallel;
+  private:
+
+    bool _orderIndependent;
+
   };
 }
 

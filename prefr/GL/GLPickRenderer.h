@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2014-2020 VG-Lab/URJC.
+ * Copyright (c) 2014-2022 VG-Lab/URJC.
  *
- * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
+ * Authors:
+ * - Sergio E. Galindo <sergio.galindo@urjc.es>
+ * - Gael Rial Costas <g.rial.2018@alumnos.urjc.es>
  *
  * This file is part of PReFr <https://github.com/gmrvvis/prefr>
  *
@@ -26,7 +28,6 @@
 #include <prefr/api.h>
 
 #include "GLRenderer.h"
-#include "GLRenderConfig.h"
 
 #include <vector>
 
@@ -36,31 +37,33 @@ namespace prefr
   {
   public:
 
-    
-    GLPickRenderer( void );
 
-    
-    virtual ~GLPickRenderer( void );
+    explicit GLPickRenderer( IGLRenderProgram* program = nullptr );
 
-    
-    virtual uint32_t pick( int posX, int posY );
+    ~GLPickRenderer( ) override;
 
-    
-    virtual std::vector< uint32_t > pickArea( int minPointX, int minPointY, 
-                                              int maxPointX, int maxPointY );
+
+    virtual uint32_t pick( const ParticleSystem& system , int posX , int posY );
+
+
+    virtual std::vector< uint32_t > pickArea(
+      const ParticleSystem& system ,
+      int minPointX , int minPointY ,
+      int maxPointX , int maxPointY );
 
     void setDefaultFBO( int defaultFBO );
 
-    
-    void setWindowSize( uint32_t w, uint32_t h );
+    void setWindowSize( uint32_t w , uint32_t h );
 
-    
     void glPickProgram( IGLRenderProgram* renderProgram );
 
   protected:
 
-    void _recreateFBOFunc( void );
-    void _drawFunc( void );
+    void _dispose () override;
+
+    void _recreateFBOFunc( );
+
+    void _drawFunc( const ParticleSystem& system );
 
     IGLRenderProgram* _glPickProgram;
     uint32_t _framebuffer;
@@ -75,8 +78,6 @@ namespace prefr
 
 
 }
-
-
 
 
 #endif /* __PREFR__GL_PICKRENDERER__ */

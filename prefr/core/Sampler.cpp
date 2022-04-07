@@ -26,7 +26,7 @@
 
 namespace prefr
 {
-  static float invRandMax = 1.0f / RAND_MAX;
+  static float invRandMax = 1.0f / static_cast<float>(RAND_MAX);
   static float pi2 = 2.0f * float( M_PI );
 
   glm::vec3 randomSphericalDirection( float thetaAngle = pi2 )

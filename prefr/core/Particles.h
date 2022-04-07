@@ -46,26 +46,12 @@
     void p##name( unsigned int i, const type& value ) \
       { _##name##Vector[ i ] = value; }
 
-#define PREFR_ATRIB_BOOL( name ) \
-  protected: \
-    std::vector< char > _##name##Vector; \
-  public: \
-    bool p##name( unsigned int i ){ return _##name##Vector[ i ]; } \
-    void p##name( unsigned int i, const bool& value ) \
-      { _##name##Vector[ i ] = value; }
-
 #define PREFR_CONST_IT_ATRIB( name, type ) \
   protected: \
     type* _##name##_ptr; \
   public: \
     type name( void ) const { return *_##name##_ptr; }
 //    type name( void ) const { std::cout << "attrib " << STRINGIZE( name ) << " " << _##name##_ptr << std::endl; return *_##name##_ptr; }
-
-#define PREFR_CONST_IT_ATRIB_BOOL( name ) \
-  protected: \
-    char* _##name##_ptr; \
-  public: \
-    bool name( void ) const { return *_##name##_ptr; }
 
 
 #define PREFR_IT_ATRIB( name, type ) \
@@ -275,11 +261,15 @@ namespace prefr
      */
     const_iterator operator[]( unsigned int i ) const;
 
+    const TParticle& vectorReferences( void ) const;
+
   protected:
 
     iterator _createIterator( unsigned int i ) const;
 
-    const TParticle& vectorReferences( void ) const;
+    bool p_alive( unsigned int i ){ return _aliveVector[ i ]; } \
+    void p_alive( unsigned int i, const bool& value ) \
+      { _aliveVector[ i ] = value ? 1 : 0; }
 
     void initVectorReferences( void );
 
@@ -293,7 +283,7 @@ namespace prefr
     PREFR_ATRIB( accelerationModule, float )
     PREFR_ATRIB( acceleration, glm::vec3 )
 
-    PREFR_ATRIB_BOOL( alive )
+    std::vector< char > _aliveVector;
 
     unsigned int _size;
 
@@ -418,6 +408,8 @@ namespace prefr
 
     void print( std::ostream& stream = std::cout ) const;
 
+    bool alive( ) const { return *_alive_ptr; }
+
   protected:
 
     base_const_iterator( void );
@@ -450,7 +442,9 @@ namespace prefr
     PREFR_CONST_IT_ATRIB( velocity, glm::vec3 )
     PREFR_CONST_IT_ATRIB( accelerationModule, float )
     PREFR_CONST_IT_ATRIB( acceleration, glm::vec3 )
-    PREFR_CONST_IT_ATRIB_BOOL( alive )
+
+    char* _alive_ptr;
+
   };
 
   class PREFR_API Particles::base_iterator : public Particles::base_const_iterator
@@ -458,6 +452,11 @@ namespace prefr
   public:
     base_iterator( const base_const_iterator& other );
     virtual ~base_iterator( void );
+
+    void set_alive(const bool value) {
+      *_alive_ptr = value ? 1 : 0;
+      *_size_ptr *= value ? 1 : 0;
+    }
 
   protected:
     base_iterator( void );
@@ -471,7 +470,6 @@ namespace prefr
     PREFR_IT_ATRIB( velocity, glm::vec3 )
     PREFR_IT_ATRIB( accelerationModule, float )
     PREFR_IT_ATRIB( acceleration, glm::vec3 )
-    PREFR_IT_ATRIB( alive, bool )
 
   };
 

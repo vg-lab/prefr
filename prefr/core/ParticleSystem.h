@@ -1,7 +1,9 @@
 /*
- * Copyright (c) 2014-2020 VG-Lab/URJC.
+ * Copyright (c) 2014-2022 VG-Lab/URJC.
  *
- * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
+ * Authors:
+ * - Sergio E. Galindo <sergio.galindo@urjc.es>
+ * - Gael Rial Costas <g.rial.2018@alumnos.urjc.es>
  *
  * This file is part of PReFr <https://github.com/gmrvvis/prefr>
  *
@@ -28,7 +30,6 @@
 #include <vector>
 
 #include "DistanceArray.hpp"
-#include "RenderConfig.h"
 
 #include "Particles.h"
 
@@ -78,32 +79,32 @@ namespace prefr
    * steps of the pipeline could be avoided such as sorting.
    *
    */
- class PREFR_API ParticleSystem
- {
+  class PREFR_API ParticleSystem
+  {
 
- public:
+  public:
 
-   /*! \brief Default constructor.
-    *
-    * This constructor method creates the particle system with the
-    * given number of particles. As optional parameter an instance
-    * of a class inheriting from ICamera can be passed in order
-    * to manage automatically the camera data retrieved each frame.
-    *
-    * @param maxParticles Number of particles to be potentially used.
-    * @param camera (Optional) ICamera inherited class instance pointer.
-    *
-    * @see ICamera
-    *
-    *  */
-    
-    ParticleSystem( unsigned int maxParticles, ICamera* camera = nullptr );
+    /*! \brief Default constructor.
+     *
+     * This constructor method creates the particle system with the
+     * given number of particles. As optional parameter an instance
+     * of a class inheriting from ICamera can be passed in order
+     * to manage automatically the camera data retrieved each frame.
+     *
+     * @param maxParticles Number of particles to be potentially used.
+     * @param camera (Optional) ICamera inherited class instance pointer.
+     *
+     * @see ICamera
+     *
+     *  */
+    explicit ParticleSystem( unsigned int maxParticles ,
+                             ICamera* camera = nullptr );
 
     /*! \brief Default destructor.
      *
      * Default destructor.
      * */
-    
+
     virtual ~ParticleSystem( );
 
     // Configuration methods
@@ -120,11 +121,11 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    
-    virtual void addCluster( Cluster* cluster,
+
+    virtual void addCluster( Cluster* cluster ,
                              const ParticleSet& indices = ParticleSet( ));
 
-    
+
     virtual void detachCluster( Cluster* cluster );
 
     /*! \brief Adds a Source object to the particle system.
@@ -138,11 +139,11 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    
-    virtual void addSource( Source* source,
-                            const ParticleSet& indices = ParticleSet( ) );
 
-    
+    virtual void addSource( Source* source ,
+                            const ParticleSet& indices = ParticleSet( ));
+
+
     virtual void detachSource( Source* source );
 
     /*! \brief Adds a Model object to the system.
@@ -155,10 +156,10 @@ namespace prefr
      *
      * @param model Model object to be added.
      */
-    
+
     virtual void addModel( Model* model );
 
-    
+
     virtual void detachModel( Model* model );
 
     /*! \brief Adds an Updater object to the system.
@@ -172,10 +173,10 @@ namespace prefr
      * @see ParticleSystem::update
      *
      */
-    
+
     virtual void addUpdater( Updater* updater );
 
-    
+
     virtual void detachUpdater( Updater* updater );
 
     /*! \brief Sets the Sorter object.
@@ -189,7 +190,7 @@ namespace prefr
      * @see updateRender
      *
      */
-    
+
     virtual void sorter( Sorter* sorter );
 
     /*! \brief Returns the sorter.
@@ -202,7 +203,7 @@ namespace prefr
      * @see updateRender
      *
      */
-    
+
     virtual Sorter* sorter( void ) const;
 
     /*! \brief Sets the Renderer object.
@@ -218,7 +219,7 @@ namespace prefr
      * @see render
      *
      */
-    
+
     virtual void renderer( Renderer* renderer );
 
     /*! \brief Returns the Renderer object.
@@ -227,7 +228,7 @@ namespace prefr
      *
      * @return Renderer object.
      */
-    
+
     Renderer* renderer( void ) const;
 
 
@@ -238,7 +239,7 @@ namespace prefr
      * Prepares the system for execution. Equivalent to run( true ).
      *
      */
-    
+
     virtual void start( void );
 
     /*! \brief Particle updating method.
@@ -253,7 +254,7 @@ namespace prefr
      * @see Source
      *
      *  */
-    
+
     virtual void update( const float& deltaTime );
 
     /*! \brief Computes particles distance to camera.
@@ -266,7 +267,7 @@ namespace prefr
      * @see Sorter
      *
      *  */
-    
+
     virtual void updateCameraDistances( const glm::vec3& cameraPosition );
 
     /*! \brief Computes particles distance to camera (only with integrated
@@ -279,7 +280,7 @@ namespace prefr
      * @see Sorter
      * @see ICamera
      *  */
-    
+
     virtual void updateCameraDistances( void );
 
     /*! \brief Particle render updating method
@@ -293,7 +294,7 @@ namespace prefr
      * @see Render
      *
      * */
-    
+
     virtual void updateRender( void );
 
     /*! \brief Rendering method.
@@ -308,7 +309,7 @@ namespace prefr
      * @see UpdateRender
      *
      */
-    
+
     virtual void render( void ) const;
 
     // Getters/Setters
@@ -319,7 +320,7 @@ namespace prefr
      *
      * @param run true to run, false to stop.
      */
-    
+
     virtual void run( bool run );
 
     /*! \brief Returns true if the system is running.
@@ -328,10 +329,10 @@ namespace prefr
      *
      * @return true if running, false if not.
      */
-    
-    virtual bool run( void ) const ;
 
-    
+    virtual bool run( void ) const;
+
+
     void resize( unsigned int newSize );
 
     /*! \brief Returns the current number of alive particles.
@@ -340,7 +341,7 @@ namespace prefr
      *
      * @return Current number of alive particles.
      */
-    
+
     virtual unsigned int aliveParticles( void ) const;
 
     /*! \brief Activates the rendering of dead particles.
@@ -365,8 +366,15 @@ namespace prefr
      *
      * @param parallelProcessing True to activate, false to deactivate.
      */
-    
     void parallel( bool parallelProcessing );
+
+    /**
+     * Returns whether the parallel execution is enabled in this system.
+     * If enabled, parallel execution will use all the resources provided
+     * by OpenMP, as it is not configured for a particular number of cores.
+     * @return whether the parallel execution is enabled in this system.
+     */
+    bool isParallel( ) const;
 
     /*! \brief Returns the collection of cluster objects.
      *
@@ -385,7 +393,6 @@ namespace prefr
      */
     ParticleCollection createCollection( const ParticleSet& indices );
 
-
     //TODO
     void releaseParticles( const ParticleCollection& indices );
 
@@ -400,15 +407,24 @@ namespace prefr
      */
     ParticleCollection retrieveUnused( unsigned int size = 0 );
 
-    ParticleCollection retrieveActive( void );
+    ParticleCollection& retrieveActive( );
 
-    ParticleCollection particles( void );
+    Particles& particles( );
+
+    /**
+     * Returns the camera used by this particle system.
+     * It may be null.
+     * @return the camera.
+     */
+    ICamera* getCamera( ) const;
 
   protected:
 
     virtual void prepareFrame( float deltaTime );
+
     virtual void updateFrame( float deltaTime );
-    virtual void finishFrame( void );
+
+    virtual void finishFrame( );
 
     /*! Particles collection the system will manage. */
     Particles _particles;
