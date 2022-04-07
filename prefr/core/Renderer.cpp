@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020 VG-Lab/URJC.
+ * Copyright (c) 2014-2022 VG-Lab/URJC.
  *
  * Authors: Sergio E. Galindo <sergio.galindo@urjc.es>
  *
@@ -25,31 +25,12 @@
 namespace prefr
 {
 
-  Renderer::Renderer( )
-  : _distances( nullptr )
-  , _renderConfig( nullptr )
-  , _parallel( false )
+  Renderer::Renderer( bool orderIndependent )
+    : _orderIndependent( orderIndependent )
   { }
 
-  Renderer::~Renderer()
+  bool Renderer::isOrderIndependent( ) const
   {
-    if (_renderConfig)
-      delete( _renderConfig );
+    return _orderIndependent;
   }
-
-  void Renderer::particles( const ParticleRange& particles_ )
-  {
-    _particles = particles_;
-  }
-
-  RenderConfig* Renderer::renderConfig( void ) const
-  {
-    return _renderConfig;
-  }
-
-  void Renderer::distanceArray( DistanceArray* distArray )
-  {
-    _distances = distArray;
-  }
-
 }

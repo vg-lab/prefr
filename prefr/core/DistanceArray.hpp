@@ -41,25 +41,25 @@ namespace prefr
     DistanceUnit( void )
     {
       _id = nullptr;
-      _distance = nullptr;
+      _distancesSquared = nullptr;
     }
 
-    DistanceUnit( int* id_, float* distance_ )
+    DistanceUnit( int* id_, float* distancesSquared_ )
       : _id( id_ )
-      , _distance( distance_ )
+      , _distancesSquared( distancesSquared_ )
     {
     }
 
     const int& id( void ) const { return *_id; }
     void id( int i ){ *_id = i; }
 
-    const float& distance( void ) const { return *_distance; }
-    void distance( float d ){ *_distance = d; }
+    const float& distanceSquared( void ) const { return *_distancesSquared; }
+    void distanceSquared( float d ){ *_distancesSquared = d; }
 
   protected:
 
     int* _id;
-    float* _distance;
+    float* _distancesSquared;
 
 
   };
@@ -89,7 +89,7 @@ namespace prefr
            ++element, ++currentId, ++currentDist )
       {
         ( *element )._id = &( *currentId );
-        ( *element )._distance = &( *currentDist );
+        ( *element )._distancesSquared = &( *currentDist );
       }
 
     }
@@ -123,9 +123,9 @@ namespace prefr
       return elements[ i ].id( );
     }
 
-    virtual inline const float& getDistance( unsigned int i ) const
+    virtual inline const float& getDistanceSquared( unsigned int i ) const
     {
-      return elements[ i ].distance( );
+      return elements[ i ].distanceSquared( );
     }
 
     inline void resetCounter( void )
@@ -151,13 +151,13 @@ namespace prefr
     inline static bool sortDescending ( const DistanceUnit& lhs,
                                         const DistanceUnit& rhs )
     {
-      return *lhs._distance > *rhs._distance;
+      return *lhs._distancesSquared > *rhs._distancesSquared;
     }
 
     inline static bool sortAscending ( const DistanceUnit& lhs,
                                        const DistanceUnit& rhs)
     {
-      return *lhs._distance < *rhs._distance;
+      return *lhs._distancesSquared < *rhs._distancesSquared;
     }
 
     std::vector< int > ids;

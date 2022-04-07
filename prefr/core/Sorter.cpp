@@ -33,24 +33,28 @@
 namespace prefr
 {
   Sorter::Sorter( )
-  : _sources( nullptr )
-  , _distances( nullptr )
-  , _aliveParticles( 0 )
-  , _parallel( false )
-  {}
+    : _sources( nullptr )
+    , _distances( nullptr )
+    , _aliveParticles( 0 )
+    , _parallel( false )
+  { }
 
-  Sorter::~Sorter()
+  Sorter::~Sorter( )
   {
-    if ( _distances )
-      delete( _distances );
+    delete _distances;
+  }
+
+  const DistanceArray* Sorter::getDistanceArray( ) const
+  {
+    return _distances;
   }
 
   void Sorter::initDistanceArray( ICamera* camera )
   {
-    _distances = new DistanceArray( _particles.size( ), camera );
+    _distances = new DistanceArray( _particles.size( ) , camera );
   }
 
-  void Sorter::sort(SortOrder /*order*/)
+  void Sorter::sort( SortOrder /*order*/ )
   {
     TDistUnitContainer::iterator end;
 #ifndef PREFR_USE_OPENMP
@@ -60,14 +64,14 @@ namespace prefr
 #endif
 
 #ifdef PREFR_USE_OPENMP
-    if( _parallel )
+    if ( _parallel )
     {
 #ifdef _WINDOWS
-    concurrency::parallel_sort(_distances->begin( ), end,
-                                  DistanceArray::sortDescending );
+      concurrency::parallel_sort(_distances->begin( ), end,
+                                    DistanceArray::sortDescending );
 #else
-    __gnu_parallel::sort( _distances->begin( ), end,
-                          DistanceArray::sortDescending );
+      __gnu_parallel::sort( _distances->begin( ) , end ,
+                            DistanceArray::sortDescending );
 #endif
     }
     else
@@ -162,15 +166,15 @@ namespace prefr
 
     DistanceUnit& dist =
 #ifdef PREFR_USE_OPENMP
-    _distances->at( current->id( ));
+      _distances->at( current->id( ));
 #else
     *_distances->next( );
 #endif
 
     dist.id( current->id( ));
-    dist.distance( current->alive() || renderDeadParticles ?
-                   glm::length( current->position( ) - cameraPosition ) :
-                   -1 );
+    dist.distanceSquared( current->alive( ) || renderDeadParticles ?
+                          length2( current->position( ) - cameraPosition ) :
+                          -1 );
 
 #ifdef PREFR_WITH_LOGGING
     std::cout << "Particle " << current->id( )
@@ -192,10 +196,5 @@ namespace prefr
   void Sorter::particles( const ParticleRange& particles_ )
   {
     _particles = particles_;
-  }
-
-  void Sorter::aliveParticles( unsigned int alive )
-  {
-    _aliveParticles = alive;
   }
 }

@@ -22,15 +22,16 @@
  *
  */
 
-#ifndef __PREFR__GL_RENDERER__
-#define __PREFR__GL_RENDERER__
+#ifndef __PREFR__OI_GL_RENDERER__
+#define __PREFR__OI_GL_RENDERER__
 
 #ifndef PREFR_SKIP_GLEW_INCLUDE
+
 #include <GL/glew.h>
+
 #endif
 
 #include <prefr/core/Renderer.h>
-#include <vector>
 #include "GLAbstractRenderer.h"
 
 namespace prefr
@@ -38,16 +39,16 @@ namespace prefr
 
   class IGLRenderProgram;
 
-  class PREFR_API GLRenderer : public GLAbstractRenderer
+  class PREFR_API OIGLRenderer : public GLAbstractRenderer
   {
 
   public:
 
-    explicit GLRenderer( IGLRenderProgram* program = nullptr );
+    explicit OIGLRenderer( IGLRenderProgram* program = nullptr );
 
-    ~GLRenderer( ) override;
+    ~OIGLRenderer( ) override;
 
-    void enableAccumulativeMode(bool accumulativeMode) override;
+    void enableAccumulativeMode( bool accumulativeMode ) override;
 
     void updateRender( ParticleSystem& system ) override;
 
@@ -64,9 +65,8 @@ namespace prefr
     void _dispose( ) override;
 
     IGLRenderProgram* _glRenderProgram;
-    unsigned int _blendFuncValue;
-    unsigned int _particleAmount;
 
+    unsigned int _particleAmount;
     GLuint _vao;
     GLuint _vertexVBO;
     GLuint _sizeVBO;
@@ -77,9 +77,7 @@ namespace prefr
     GLint _uniformCameraUp;
     GLint _uniformCameraRight;
 
-    std::vector<GLfloat> _sizes;
-    std::vector<GLfloat> _positions;
-    std::vector<GLfloat> _colors;
+    bool _accumulativeMode;
 
   };
 
@@ -87,4 +85,4 @@ namespace prefr
 }
 
 
-#endif /* __PREFR__GL_RENDERER__ */
+#endif /* __PREFR__OI_GL_RENDERER__ */
