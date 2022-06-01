@@ -74,6 +74,14 @@ namespace prefr
     void Source::active( bool state )
     {
       _active = state;
+      if(!_active) {
+        for( auto particle : _particles )
+        {
+          particle.set_alive( false );
+          _updateConfig->setDead( particle.id( ), true );
+          _updateConfig->setEmitted( particle.id( ), false );
+        }
+      }
     }
 
     bool Source::emits( ) const
