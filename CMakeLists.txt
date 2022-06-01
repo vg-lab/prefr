@@ -7,7 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-project( prefr VERSION 2.0.0 )
+project( prefr VERSION 2.0.1 )
 set( prefr_VERSION_ABI 6 )
 
 # Disable in source building
