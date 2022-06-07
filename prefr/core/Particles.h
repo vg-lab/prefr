@@ -455,7 +455,7 @@ namespace prefr
 
     void set_alive(const bool value) {
       *_alive_ptr = value ? 1 : 0;
-      *_size_ptr *= value ? 1 : 0;
+      *_size_ptr = std::abs(*_size_ptr) * (value ? 1.0f : -1.0f);
     }
 
   protected:
