@@ -1,8 +1,8 @@
 # PReFr - Particle Rendering Framework
-(c) 2015-2020. GMRV / URJC
+(c) 2015-2020. VG-Lab / URJC
 
-www.gmrv.es
-gmrv@gmrv.es
+www.vg-lab.es
+vg-lab@vg-lab.es
 
 ## Introduction
 
@@ -42,7 +42,7 @@ Yosemite and Windows 7/8 (Visual Studio 2013 Win64). The following steps
 should be enough to build it:
 
 ```bash
-git clone https://gitlab.gmrv.es/nsviz/prefr.git PReFr
+git clone https://gitlab.vg-lab.es/nsviz/prefr.git PReFr
 mkdir PReFr/build && cd PReFr/build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DPREFR_WITH_EXAMPLES=ON
 make
