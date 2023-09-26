@@ -1,2 +1,2 @@
 # -*- mode: cmake -*-
-git_subproject(ReTo https://github.com/gmrvvis/ReTo 14e08c01)
+git_subproject(ReTo https://github.com/vg-lab/ReTo 14e08c01)

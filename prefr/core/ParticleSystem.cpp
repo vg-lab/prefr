@@ -5,7 +5,7 @@
  * - Sergio E. Galindo <sergio.galindo@urjc.es>
  * - Gael Rial Costas <g.rial.2018@alumnos.urjc.es>
  *
- * This file is part of PReFr <https://github.com/gmrvvis/prefr>
+ * This file is part of PReFr <https://github.com/vg-lab/prefr>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License version 3.0 as published

@@ -1,9 +1,9 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 #   PReFr
-#   2014-2022 (c) GMRV / Universidad Rey Juan Carlos
-#   gmrv@gmrv.es
-#   www.gmrv.es
+#   2014-2022 (c) VG-Lab / Universidad Rey Juan Carlos
+#   vg-lab@vg-lab.es
+#   www.vg-lab.es
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
@@ -33,7 +33,7 @@ endif()
 include( GitExternal )
 
 set( PREFR_DESCRIPTION "PREFR - Particle Framework" )
-set( COMMON_PROJECT_DOMAIN gmrv.es )
+set( COMMON_PROJECT_DOMAIN vg-lab.es )
 
 option( PREFR_WITH_OPENSCENEGRAPH "PREFR_WITH_OPENSCENEGRAPH" OFF )
 #option( PREFR_WITH_CUDA "PREFR_WITH_CUDA" OFF )
